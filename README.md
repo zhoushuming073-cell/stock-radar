@@ -5,8 +5,9 @@ builds the data foundation: asset master, daily OHLCV bars in DuckDB, incrementa
 updates, validation, and universe export.
 
 It is research software only. **Nothing in this repository places orders** — no
-trading or order endpoint is called anywhere in the package. Strategy 2 scoring and
-backtests are later work and are **not implemented**.
+trading or order endpoint is called anywhere in the package. Strategy 2 scoring
+and a historical backtest are implemented for research; the evaluated strategy
+lost money and is not suitable for deployment.
 
 ## Setup
 
@@ -138,6 +139,35 @@ or changing the Site address:
 ```powershell
 & ./scripts/install-automation.ps1 -SiteOrigin 'https://stock-radar-local.zhoushuming.chatgpt.site'
 ```
+
+## Strategy 2 historical backtest
+
+Phase 2 research uses local SIP, split-adjusted daily bars in
+`data/phase2-research.duckdb`. The research database and detailed trade files
+stay on this computer and are gitignored. The rules and split definitions are
+in `config/research.yaml`, `config/backtest.yaml`, and the final one-time Test
+freeze in `config/frozen_backtest_v1.yaml`.
+
+The frozen combined-rank baseline returned **-81.14% Train**, **+4.49%
+Validation**, and **-55.10% final Test** after modeled fees and slippage. The
+Test portfolio fell from $1,000,000 to $448,957.69. See
+[`reports/phase2/backtest_final.md`](reports/phase2/backtest_final.md) for the
+full accounting, benchmark, verification, and limitations. The local interactive
+chart is `data/research/final-test-v1/回测报告.html` after the run.
+
+With the local research database already prepared, the reproducible commands are:
+
+```powershell
+& .\.venv\Scripts\python.exe scripts/run_backtest_research.py
+& .\.venv\Scripts\python.exe scripts/run_frozen_backtest.py
+& .\.venv\Scripts\python.exe scripts/verify_final_backtest.py
+& .\.venv\Scripts\python.exe scripts/render_backtest_report.py
+```
+
+The final Test runner records a one-time evaluation marker and returns the
+stored result on a repeat invocation. Any new strategy requires a new untouched
+Test period. The current strategy should remain a research result, not an order
+signal.
 
 ## Outputs
 
