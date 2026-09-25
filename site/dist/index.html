@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f8fc">
+  <meta name="description" content="Stock Radar 本地美股行情与数据质量看板">
+  <title>Stock Radar 数据总览</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23142a47'/%3E%3Cpath d='M9 41h11l8-20 9 17 7-10h11' fill='none' stroke='%2359c7b0' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./styles.css">
+  <script defer src="./vendor/plotly.min.js"></script>
+  <script defer src="./app.js"></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">STOCK RADAR / 数据看板</p>
+        <h1>美股行情总览</h1>
+        <p class="subtitle" id="asof">正在连接本机数据…</p>
+      </div>
+      <button id="refresh" class="refresh" type="button">刷新数据</button>
+    </header>
+
+    <div id="notice" class="notice" role="status" hidden></div>
+
+    <section class="metrics" aria-label="数据总览">
+      <article class="metric"><span>股票池</span><strong id="metric-universe">—</strong></article>
+      <article class="metric"><span>日线数据</span><strong id="metric-bars">—</strong></article>
+      <article class="metric"><span>校验错误</span><strong id="metric-errors">—</strong></article>
+      <article class="metric"><span>研究警告</span><strong id="metric-warnings">—</strong></article>
+    </section>
+
+    <section class="workarea" aria-label="股票行情">
+      <div class="controls">
+        <label>股票代码
+          <input id="symbol" type="search" list="symbol-options" placeholder="输入代码，如 AAPL" autocomplete="off" spellcheck="false">
+          <datalist id="symbol-options"></datalist>
+        </label>
+        <label>图表范围
+          <select id="period"><option value="65">3 个月</option><option value="130" selected>6 个月</option><option value="260">1 年</option><option value="all">全部</option></select>
+        </label>
+      </div>
+      <div class="market-grid">
+        <article class="panel chart-panel">
+          <div class="panel-head"><div><h2 id="chart-title">行情图表</h2><p>拆股调整后的历史日线 · 成交量</p></div><span class="badge">只读</span></div>
+          <div id="chart" class="chart" aria-label="价格和成交量图表"></div>
+        </article>
+        <article class="panel detail-panel">
+          <h2>标的信息</h2>
+          <dl id="details"><div><dt>公司名称</dt><dd>—</dd></div></dl>
+          <div class="divider"></div>
+          <h2>数据覆盖</h2>
+          <dl id="coverage"><div><dt>日线记录</dt><dd>—</dd></div></dl>
+          <p class="footnote">历史行情仅供研究，不代表实时价格。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="warnings-grid" aria-label="数据质量">
+      <article class="panel warning-summary">
+        <h2>研究警告统计</h2>
+        <div class="warning-cards">
+          <div><span>价格大幅跳变</span><strong id="count-jump">—</strong></div>
+          <div><span>缺失交易日</span><strong id="count-missing">—</strong></div>
+          <div><span>无日线数据</span><strong id="count-empty">—</strong></div>
+          <div><span>近期无更新</span><strong id="count-stale">—</strong></div>
+        </div>
+      </article>
+      <article class="panel issues-panel">
+        <div class="issues-head"><h2>研究警告明细</h2><p id="issue-count">—</p></div>
+        <div class="filters">
+          <label>警告类型<select id="issue-type"><option value="all">全部</option><option value="abnormal_price_jump">价格大幅跳变</option><option value="missing_trading_session">缺失交易日</option><option value="no_bars">无日线数据</option><option value="stale_ticker">近期无更新</option></select></label>
+          <label>标的范围<select id="issue-scope"><option value="all">全部标的</option><option value="selected">仅当前标的</option></select></label>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>代码</th><th>日期</th><th>类型</th><th>说明</th></tr></thead><tbody id="issues"></tbody></table></div>
+        <button id="show-more" class="show-more" type="button" hidden>显示更多</button>
+      </article>
+    </section>
+    <footer>数据保存在本机。Sites 只托管页面，不存储行情或 Alpaca 密钥。</footer>
+  </main>
+</body>
+</html>

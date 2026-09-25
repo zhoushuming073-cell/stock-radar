@@ -1,0 +1,6 @@
+provider: alpaca
+database_path: data/market.duckdb
+daily_bars:
+  feed: sip
+  adjustment: split
+  lookback_sessions: 400

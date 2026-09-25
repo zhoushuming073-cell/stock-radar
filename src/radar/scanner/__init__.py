@@ -1,0 +1,1 @@
+"""Future market scanner."""

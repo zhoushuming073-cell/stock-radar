@@ -1,0 +1,20 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+!site/dist/
+!site/dist/**
+.env
+*.log
+site-package.tar.gz
+site/.sites-runtime/
+site/.git/
+# Generated files directly under data/ are ignored, but keep the directory tracked.
+data/*
+!data/.gitkeep
+alpacakey.txt

@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "stock-radar"
+version = "0.1.0"
+description = "Broad US-equity quantitative research and screening"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "alpaca-py",
+    "duckdb",
+    "numpy",
+    "pandas",
+    "pyarrow",
+    "pydantic>=2",
+    "python-dotenv",
+    "PyYAML",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+viz = ["streamlit>=1.40", "plotly>=5.24"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
