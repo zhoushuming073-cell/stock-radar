@@ -1,0 +1,68 @@
+{
+  "database": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\phase2-research.duckdb",
+  "daily_bars": {
+    "rows": 6133793,
+    "symbols": 13206,
+    "sessions": 1271,
+    "start": "2021-09-01",
+    "end": "2026-09-24",
+    "null_ohlcv_rows": 0,
+    "invalid_price_volume_rows": 0
+  },
+  "provenance": [
+    {
+      "provider": "alpaca",
+      "feed": "sip",
+      "adjustment": "split",
+      "rows": 6133793
+    }
+  ],
+  "benchmarks": [
+    {
+      "symbol": "QQQ",
+      "sessions": 1271,
+      "start": "2021-09-01",
+      "end": "2026-09-24"
+    },
+    {
+      "symbol": "SPY",
+      "sessions": 1271,
+      "start": "2021-09-01",
+      "end": "2026-09-24"
+    }
+  ],
+  "stock_history": {
+    "at_least_1000_sessions": 1804,
+    "250_to_999_sessions": 9008,
+    "under_250_sessions": 2392,
+    "max_sessions": 1271,
+    "median_sessions": 401.0
+  },
+  "current_asset_master": {
+    "active_us_equity": 14397,
+    "name_contains_etf": 5324,
+    "name_contains_etn": 72,
+    "name_contains_trust": 1399,
+    "otc": 1162,
+    "note": "Name patterns are only audit hints, not reliable security classification."
+  },
+  "selected_research_symbols": {
+    "count": 2000,
+    "name_contains_etf": 418,
+    "name_contains_etn": 4,
+    "name_contains_trust": 80
+  },
+  "research_tables": {
+    "daily_features": 2988365,
+    "forward_labels": 1853222,
+    "research_runs": 3
+  },
+  "scored_feature_rows": 2273856,
+  "current_run_feature_rows": 2374117,
+  "current_run_label_rows": 1851998,
+  "last_forward_label_signal_date": "2025-09-04",
+  "limitations": [
+    "current active asset list has survivorship bias",
+    "Alpaca us_equity includes funds and other equity-like securities"
+  ]
+}

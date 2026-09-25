@@ -1,0 +1,5 @@
+Local frozen research-source database: data/phase2-source-snapshot.duckdb
+Snapshot bytes: 1655451648
+SHA-256: F6081CFC1A8BBE5856A5A3659BE7AE6DFC3F864CB865CE2D12E2FD67200D0FD9
+Source: Alpaca SIP split-adjusted daily bars through 2026-09-24.
+The snapshot was copied from the working research database after the 2000-symbol backfill. Earlier exploratory research tables were removed from this copy. It contains the frozen assets and daily_bars inputs plus base schema metadata.

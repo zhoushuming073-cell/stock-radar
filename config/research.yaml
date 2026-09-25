@@ -1,0 +1,42 @@
+elasticity:
+  version: elasticity_v1
+  weights:
+    beta: 0.15
+    atr: 0.20
+    idio: 0.20
+    burst: 0.25
+    hit_rate: 0.20
+  hit_5_weight: 0.70
+  hit_10_weight: 0.30
+  history_window: 126
+  history_min: 40
+  burst_quantile: 0.75
+tradability:
+  min_price: 2.0
+  min_avg_dollar_volume_20: 1000000.0
+  min_history_sessions: 126
+research:
+  train_fraction: 0.60
+  validation_fraction: 0.20
+  embargo_sessions: 10
+  max_forward_sessions: 10
+illustrative_costs:
+  profile: usmart_hk_us_pro_spec_sep2026_unconfirmed
+  order_notional_usd: 10000
+  commission_per_share: 0.01
+  commission_min: 1.00
+  commission_cap_notional_fraction: 0.005
+  platform_per_share: 0.009
+  platform_min: 2.88
+  platform_cap_notional_fraction: 0.005
+  settlement_per_share: 0.003
+  settlement_min: 0.01
+  settlement_cap_notional_fraction: 0.03
+  sec_sell_notional_fraction: 0.0000206
+  sec_sell_min: 0.01
+  finra_sell_per_share: 0.000195
+  finra_sell_min: 0.01
+  finra_sell_max: 9.79
+  cat_per_share: 0.000003
+  cat_min: 0.01
+  slippage_bps_per_side: [0, 5, 10, 20]

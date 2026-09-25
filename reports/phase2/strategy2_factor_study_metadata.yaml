@@ -1,0 +1,32 @@
+sessions: 1271
+train_start: '2021-09-01'
+train_end_usable: '2024-08-28'
+validation_start_usable: '2024-09-27'
+validation_end_usable: '2025-09-04'
+test_start: '2025-09-19'
+test_end: '2026-09-24'
+train_rows_after_gate: 1290010
+validation_rows_after_gate: 438513
+factors_studied: 11
+output: C:\Users\周树铭\Desktop\美股策略研究\stock-radar\reports\phase2\strategy2_factor_study.csv
+interaction_output: C:\Users\周树铭\Desktop\美股策略研究\stock-radar\reports\phase2\strategy2_interaction_study.csv
+elasticity_output: C:\Users\周树铭\Desktop\美股策略研究\stock-radar\reports\phase2\elasticity_distribution.csv
+correlation_output: C:\Users\周树铭\Desktop\美股策略研究\stock-radar\reports\phase2\factor_spearman_train.csv
+security_name_proxy_output: C:\Users\周树铭\Desktop\美股策略研究\stock-radar\reports\phase2\security_name_proxy_sensitivity.csv
+security_name_proxy_rows:
+  train: 1044053
+  validation: 348913
+exploratory_train_thresholds:
+  elastic_top20: 76.21433772581146
+  drawdown_bottom20: -0.11320317321925143
+  prior_strength_top40: 0.037214572444864716
+  lower_wick_top40: 0.29464285714285443
+illustrative_cost_profile: usmart_hk_us_pro_spec_sep2026_unconfirmed
+illustrative_order_notional_usd: 10000
+limitations:
+- current-snapshot assets introduce survivorship bias
+- ETF/ETN exclusion by name is an incomplete classification proxy
+- factor events overlap in time and are descriptive, not independent observations
+- execution labels are gross; separate cost columns model fees and slippage
+- fee profile is illustrative and the user's actual plan is unconfirmed
+- final test period was not read into the event study
