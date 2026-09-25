@@ -213,6 +213,17 @@ def run_frozen_test(frozen_path: Path) -> dict:
     for key, actual in expected.items():
         if frozen[key].lower() != actual.lower():
             raise ValueError(f"frozen {key} does not match current input")
+    output_dir = root / "data" / "research" / "final-test-v1"
+    marker = root / "data" / "research" / "test_evaluation_record.json"
+    freeze_hash = _sha256(frozen_path)
+    if marker.exists():
+        existing = json.loads(marker.read_text(encoding="utf-8"))
+        if existing.get("frozen_sha256") != freeze_hash:
+            raise ValueError("the sealed Test was already evaluated under another frozen strategy")
+        summary_path = output_dir / "backtest_summary.json"
+        if summary_path.exists():
+            return json.loads(summary_path.read_text(encoding="utf-8"))
+        raise ValueError("Test marker exists but summary is incomplete; inspect the run")
     commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root,
                             capture_output=True, text=True, check=True).stdout.strip()
     if commit != frozen["simulation_commit"]:
@@ -226,17 +237,6 @@ def run_frozen_test(frozen_path: Path) -> dict:
     fees = load_fee_config(research_config)
     if frozen["fee_profile"] != fees.profile:
         raise ValueError("fee profile differs from frozen manifest")
-    output_dir = root / "data" / "research" / "final-test-v1"
-    marker = root / "data" / "research" / "test_evaluation_record.json"
-    freeze_hash = _sha256(frozen_path)
-    if marker.exists():
-        existing = json.loads(marker.read_text(encoding="utf-8"))
-        if existing.get("frozen_sha256") != freeze_hash:
-            raise ValueError("the sealed Test was already evaluated under another frozen strategy")
-        summary_path = output_dir / "backtest_summary.json"
-        if summary_path.exists():
-            return json.loads(summary_path.read_text(encoding="utf-8"))
-        raise ValueError("Test marker exists but summary is incomplete; inspect the run")
     split = split_dates(database, research_config)
     dates = split["test"]
     frame = load_segment(database, dates[0], dates[2])

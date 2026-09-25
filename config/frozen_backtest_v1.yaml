@@ -1,0 +1,14 @@
+# Diagnostic one-time Test of the original predeclared baseline.
+# Train and Validation did not establish a deployable edge.
+strategy_version: strategy2_context_v1
+candidate_variant: combined_rank
+allocator: equal_cash
+market_guard: none
+max_position_fraction: 0.3333333333
+slippage_bps: 10
+fee_profile: usmart_hk_us_pro_spec_sep2026_unconfirmed
+simulation_commit: bc48bec3e420c4f6e403c596f37004e86b125e3f
+research_config_sha256: 4c02bd140db1f9a172ca7e3ec213eee05018abdfd9dda50f732583748e457f0c
+backtest_config_sha256: 924a8822f386d0bbfb56e3e2cc03fec04080198f071a4602383334e7bf627593
+source_snapshot_sha256: f6081cfc1a8bbe5856a5a3659be7ae6dfc3f864cb865ce2d12e2fd67200d0fd9
+decision: diagnostic_only_do_not_deploy
