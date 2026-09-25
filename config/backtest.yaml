@@ -1,0 +1,25 @@
+strategy_version: strategy2_context_v1
+initial_capital: 1000000.0
+max_new_candidates: 3
+take_profit: 0.05
+stop_loss: -0.10
+max_holding_sessions: 10
+entry_gap_min: -0.10
+entry_gap_max: 0.05
+elasticity_min: 80.0
+drawdown_20_max: -0.10
+exclude_explicit_etf_etn_names: true
+max_position_fraction: 0.3333333333
+minimum_position_fraction: 0.01
+max_order_to_avg_dollar_volume: 0.02
+base_slippage_bps: 10
+candidate_variants: [elastic_rank, drawdown_rank, combined_rank, reversal_confirmed]
+allocator_variants: [equal_cash, strategy_score, strategy_times_elasticity]
+fee_config: config/research.yaml
+market_guard_variants: [none, spy_ma200]
+exploratory_trend_reversal:
+  elasticity_min: 60.0
+  ret_60_min: 0.037
+  drawdown_20_min: -0.20
+  drawdown_20_max: -0.05
+  close_location_min: 0.50
