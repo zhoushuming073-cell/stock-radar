@@ -1,5 +1,6 @@
 const API = "http://127.0.0.1:8765";
 const number = new Intl.NumberFormat("zh-CN");
+const priceNumber = new Intl.NumberFormat("zh-CN", { minimumFractionDigits: 2, maximumFractionDigits: 4 });
 const labels = {
   abnormal_price_jump: "价格大幅跳变",
   missing_trading_session: "缺失交易日",
@@ -17,6 +18,9 @@ let overview = null;
 let selected = "AAPL";
 let symbolData = null;
 let visibleIssueLimit = 200;
+let relayoutHandler = null;
+let chartDrawId = 0;
+let chartResizeObserver = null;
 
 function notice(message, error = false) {
   const element = $("notice");
@@ -82,6 +86,82 @@ function chartBars() {
   return range === "all" ? symbolData.bars : symbolData.bars.slice(-Number(range));
 }
 
+function showBarDetails(row) {
+  const change = row.close - row.open;
+  const changeClass = change >= 0 ? "up" : "down";
+  const signedChange = `${change >= 0 ? "+" : ""}${priceNumber.format(change)}`;
+  $("chart-hover").innerHTML = `<strong>${escapeHtml(row.date)}</strong>
+    <span>开 ${priceNumber.format(row.open)}</span><span>高 ${priceNumber.format(row.high)}</span>
+    <span>低 ${priceNumber.format(row.low)}</span><span>收 ${priceNumber.format(row.close)}</span>
+    <span class="${changeClass}">${signedChange}</span><span>量 ${number.format(row.volume)}</span>`;
+}
+
+function resetChartHover() {
+  $("chart-hover").textContent = "将鼠标移到 K 线上查看当日行情";
+  $("price-cursor").hidden = true;
+  $("price-guide").hidden = true;
+}
+
+function visibleVolumeRange(chart, rows) {
+  const range = chart._fullLayout?.xaxis?.range;
+  if (!range) return [0, Math.max(1, ...rows.map((row) => row.volume)) * 1.18];
+  const first = Math.max(0, Math.ceil(Math.min(...range)));
+  const last = Math.min(rows.length - 1, Math.floor(Math.max(...range)));
+  const visible = first <= last ? rows.slice(first, last + 1) : rows.slice(Math.max(0, Math.round(range[0])), Math.max(0, Math.round(range[0])) + 1);
+  return [0, Math.max(1, ...visible.map((row) => row.volume)) * 1.18];
+}
+
+function dateTicks(rows, chartWidth, range = [-.5, rows.length - .5]) {
+  const first = Math.max(0, Math.ceil(Math.min(...range)));
+  const last = Math.min(rows.length - 1, Math.floor(Math.max(...range)));
+  const maxTicks = Math.max(2, Math.min(7, Math.floor(chartWidth / 95)));
+  const step = Math.max(1, Math.ceil((last - first + 1) / maxTicks));
+  const indices = [];
+  for (let index = first; index <= last; index += step) indices.push(index);
+  return { "xaxis.tickvals": indices.map((index) => rows[index].date),
+    "xaxis.ticktext": indices.map((index) => rows[index].date.slice(5)) };
+}
+
+function visibleDateTicks(chart, rows) {
+  return dateTicks(rows, chart.clientWidth, chart._fullLayout?.xaxis?.range);
+}
+
+function trackChartPointer(event, chart, rows) {
+  const layout = chart._fullLayout;
+  if (!layout?._size || !layout.xaxis?.range || !layout.yaxis?.range) return;
+  const { l, t, w, h } = layout._size;
+  const bounds = chart.getBoundingClientRect();
+  const x = event.clientX - bounds.left;
+  const y = event.clientY - bounds.top;
+  if (x < l || x > l + w || y < t || y > t + h) {
+    resetChartHover();
+    return;
+  }
+  const xRange = layout.xaxis.range;
+  const index = Math.round(xRange[0] + (x - l) / w * (xRange[1] - xRange[0]));
+  if (index >= 0 && index < rows.length) showBarDetails(rows[index]);
+  else $("chart-hover").textContent = "将鼠标移到 K 线上查看当日行情";
+
+  const domain = layout.yaxis.domain;
+  const top = t + (1 - domain[1]) * h;
+  const bottom = t + (1 - domain[0]) * h;
+  const marker = $("price-cursor");
+  const guide = $("price-guide");
+  if (y < top || y > bottom) {
+    marker.hidden = true;
+    guide.hidden = true;
+    return;
+  }
+  const yRange = layout.yaxis.range;
+  marker.textContent = priceNumber.format(yRange[1] - (y - top) / (bottom - top) * (yRange[1] - yRange[0]));
+  marker.style.top = `${y}px`;
+  marker.hidden = false;
+  guide.style.top = `${y}px`;
+  guide.style.left = `${l}px`;
+  guide.style.width = `${w}px`;
+  guide.hidden = false;
+}
+
 function drawChart() {
   if (!symbolData || !window.Plotly) return;
   const rows = chartBars();
@@ -90,21 +170,45 @@ function drawChart() {
     Plotly.purge(chart);
     chart.textContent = "这个标的在当前数据库中没有日线数据。";
     chart.classList.add("empty");
+    resetChartHover();
     return;
   }
   chart.classList.remove("empty");
   const dates = rows.map((row) => row.date);
   const colors = rows.map((row) => row.close >= row.open ? "#159a88" : "#d65d63");
+  const ticks = dateTicks(rows, chart.clientWidth);
+  const drawId = ++chartDrawId;
+  resetChartHover();
   Plotly.react(chart, [
-    { type: "candlestick", x: dates, open: rows.map((row) => row.open), high: rows.map((row) => row.high), low: rows.map((row) => row.low), close: rows.map((row) => row.close), increasing: { line: { color: "#159a88" } }, decreasing: { line: { color: "#d65d63" } }, name: "价格", xaxis: "x", yaxis: "y" },
-    { type: "bar", x: dates, y: rows.map((row) => row.volume), marker: { color: colors }, opacity: .62, name: "成交量", xaxis: "x", yaxis: "y2" },
+    { type: "candlestick", x: dates, open: rows.map((row) => row.open), high: rows.map((row) => row.high), low: rows.map((row) => row.low), close: rows.map((row) => row.close), increasing: { line: { color: "#159a88" } }, decreasing: { line: { color: "#d65d63" } }, name: "价格", xaxis: "x", yaxis: "y", hoverinfo: "none" },
+    { type: "bar", x: dates, y: rows.map((row) => row.volume), marker: { color: colors }, opacity: .62, name: "成交量", xaxis: "x", yaxis: "y2", hoverinfo: "none" },
   ], {
     margin: { l: 52, r: 15, t: 15, b: 40 }, paper_bgcolor: "#fff", plot_bgcolor: "#fff",
-    showlegend: false, hovermode: "x unified", dragmode: "pan",
-    xaxis: { type: "date", showgrid: true, gridcolor: "#edf1f6", rangeslider: { visible: false }, tickformat: "%Y-%m" },
+    showlegend: false, hovermode: false, dragmode: "pan",
+    xaxis: { type: "category", showgrid: true, gridcolor: "#edf1f6", rangeslider: { visible: false }, tickmode: "array", tickvals: ticks["xaxis.tickvals"], ticktext: ticks["xaxis.ticktext"] },
     yaxis: { domain: [.29, 1], showgrid: true, gridcolor: "#edf1f6", title: { text: "价格" }, tickfont: { color: "#687a90" } },
-    yaxis2: { domain: [0, .21], showgrid: true, gridcolor: "#edf1f6", title: { text: "成交量" }, tickfont: { color: "#687a90" } },
-  }, { responsive: true, displaylogo: false, modeBarButtonsToRemove: ["lasso2d", "select2d"] });
+    yaxis2: { domain: [0, .21], range: [0, Math.max(1, ...rows.map((row) => row.volume)) * 1.18], fixedrange: true, showgrid: true, gridcolor: "#edf1f6", title: { text: "成交量" }, tickfont: { color: "#687a90" } },
+  }, { responsive: true, displaylogo: false, scrollZoom: true, modeBarButtonsToRemove: ["lasso2d", "select2d"] }).then(() => {
+    if (drawId !== chartDrawId) return;
+    if (relayoutHandler) chart.removeListener("plotly_relayout", relayoutHandler);
+    relayoutHandler = (changes) => {
+      if (!Object.keys(changes).some((key) => /^xaxis\.(range|autorange)/.test(key))) return;
+      const range = visibleVolumeRange(chart, rows);
+      const current = chart.layout.yaxis2.range;
+      Plotly.relayout(chart, { ...(current[1] !== range[1] ? { "yaxis2.range": range } : {}), ...visibleDateTicks(chart, rows) });
+    };
+    chart.on("plotly_relayout", relayoutHandler);
+    chart.onpointermove = (event) => trackChartPointer(event, chart, rows);
+    chart.onpointerleave = resetChartHover;
+    if (chartResizeObserver) chartResizeObserver.disconnect();
+    let observedWidth = chart.clientWidth;
+    chartResizeObserver = new ResizeObserver(() => {
+      if (chart.clientWidth === observedWidth) return;
+      observedWidth = chart.clientWidth;
+      Plotly.relayout(chart, visibleDateTicks(chart, rows));
+    });
+    chartResizeObserver.observe(chart);
+  });
 }
 
 function renderSymbol() {

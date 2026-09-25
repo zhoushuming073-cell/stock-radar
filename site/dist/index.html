@@ -44,7 +44,12 @@
       <div class="market-grid">
         <article class="panel chart-panel">
           <div class="panel-head"><div><h2 id="chart-title">行情图表</h2><p>拆股调整后的历史日线 · 成交量</p></div><span class="badge">只读</span></div>
-          <div id="chart" class="chart" aria-label="价格和成交量图表"></div>
+          <div id="chart-hover" class="chart-hover" aria-live="off">将鼠标移到 K 线上查看当日行情</div>
+          <div class="chart-frame">
+            <div id="chart" class="chart" aria-label="价格和成交量图表"></div>
+            <div id="price-guide" class="price-guide" hidden></div>
+            <div id="price-cursor" class="price-cursor" hidden></div>
+          </div>
         </article>
         <article class="panel detail-panel">
           <h2>标的信息</h2>
