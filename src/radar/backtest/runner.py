@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import hashlib
 import json
+import subprocess
+from uuid import uuid4
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -185,3 +187,130 @@ def run_research_grid(
             "research_config_hash": hashlib.sha256(research_config.read_bytes()).hexdigest(),
             "fee_profile": fees.profile,
             "generated_at": datetime.now(timezone.utc).isoformat()}
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for block in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def run_frozen_test(frozen_path: Path) -> dict:
+    """Evaluate one immutable diagnostic strategy once on the sealed Test slice."""
+    root = frozen_path.resolve().parents[1]
+    frozen = yaml.safe_load(frozen_path.read_text(encoding="utf-8"))
+    database = root / "data" / "phase2-research.duckdb"
+    snapshot = root / "data" / "phase2-source-snapshot.duckdb"
+    research_config = root / "config" / "research.yaml"
+    backtest_config = root / "config" / "backtest.yaml"
+    expected = {
+        "research_config_sha256": _sha256(research_config),
+        "backtest_config_sha256": _sha256(backtest_config),
+        "source_snapshot_sha256": _sha256(snapshot),
+    }
+    for key, actual in expected.items():
+        if frozen[key].lower() != actual.lower():
+            raise ValueError(f"frozen {key} does not match current input")
+    commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root,
+                            capture_output=True, text=True, check=True).stdout.strip()
+    if commit != frozen["simulation_commit"]:
+        raise ValueError("simulation commit changed after the strategy was frozen")
+    if subprocess.run(["git", "diff", "--quiet", "HEAD", "--", "src", "config/backtest.yaml",
+                       "config/research.yaml"], cwd=root, check=False).returncode != 0:
+        raise ValueError("simulation source or configuration has uncommitted changes")
+    raw = load_backtest_config(backtest_config)
+    if frozen["strategy_version"] != raw["strategy_version"]:
+        raise ValueError("strategy version differs from frozen manifest")
+    fees = load_fee_config(research_config)
+    if frozen["fee_profile"] != fees.profile:
+        raise ValueError("fee profile differs from frozen manifest")
+    output_dir = root / "data" / "research" / "final-test-v1"
+    marker = root / "data" / "research" / "test_evaluation_record.json"
+    freeze_hash = _sha256(frozen_path)
+    if marker.exists():
+        existing = json.loads(marker.read_text(encoding="utf-8"))
+        if existing.get("frozen_sha256") != freeze_hash:
+            raise ValueError("the sealed Test was already evaluated under another frozen strategy")
+        summary_path = output_dir / "backtest_summary.json"
+        if summary_path.exists():
+            return json.loads(summary_path.read_text(encoding="utf-8"))
+        raise ValueError("Test marker exists but summary is incomplete; inspect the run")
+    split = split_dates(database, research_config)
+    dates = split["test"]
+    frame = load_segment(database, dates[0], dates[2])
+    result, metrics = run_one_segment(
+        frame, dates, split["sessions"], raw, fees,
+        variant=frozen["candidate_variant"], allocator=frozen["allocator"],
+        slippage_bps=float(frozen["slippage_bps"]),
+        max_position_fraction=float(frozen["max_position_fraction"]),
+        market_guard=frozen["market_guard"],
+        market_ok=(load_spy_ma200_guard(database, dates[2])
+                   if frozen["market_guard"] == "spy_ma200" else None),
+    )
+    if result.open_positions:
+        raise ValueError("Test ended with open positions; do not report a complete trade return")
+    if result.equity["cash"].min() < -1e-7:
+        raise AssertionError("negative cash in final Test")
+    if abs(result.equity["equity"].iloc[-1] - float(raw["initial_capital"])
+           - result.trades["net_pnl"].sum()) > 1e-6:
+        raise AssertionError("trade ledger does not reconcile to ending equity")
+    if not result.trades.empty:
+        identity = (result.trades["gross_pnl"] - result.trades["buy_fee_total"]
+                    - result.trades["sell_fee_total"] - result.trades["slippage_cost"]
+                    - result.trades["net_pnl"])
+        if identity.abs().max() > 1e-6:
+            raise AssertionError("trade cost components do not reconcile")
+    conn = duckdb.connect(str(database), read_only=True)
+    try:
+        spy = conn.execute("""
+            SELECT date, close FROM daily_bars WHERE symbol='SPY'
+              AND date IN (?, ?) ORDER BY date
+        """, [dates[0].date(), dates[2].date()]).fetchall()
+        latest_download = conn.execute("SELECT MAX(downloaded_at) FROM daily_bars").fetchone()[0]
+    finally:
+        conn.close()
+    spy_return = spy[-1][1] / spy[0][1] - 1 if len(spy) == 2 else None
+    manifest = {
+        "run_id": str(uuid4()), "run_at_utc": datetime.now(timezone.utc).isoformat(),
+        "simulation_commit": commit, **expected,
+        "frozen_sha256": freeze_hash,
+        "provider": "alpaca", "feed": "sip", "adjustment": "split",
+        "latest_downloaded_at": str(latest_download),
+        "feature_version": FEATURE_VERSION, "label_version": "open_close_v1",
+        "strategy_version": frozen["strategy_version"],
+        "fee_profile": fees.profile, "slippage_bps": frozen["slippage_bps"],
+        "candidate_variant": frozen["candidate_variant"],
+        "allocator": frozen["allocator"],
+        "max_position_fraction": frozen["max_position_fraction"],
+        "market_guard": frozen["market_guard"],
+        "train": [str(day.date()) for day in split["train"]],
+        "validation": [str(day.date()) for day in split["validation"]],
+        "test": [str(day.date()) for day in dates],
+        "test_runs_for_this_freeze": 1,
+    }
+    summary = {
+        "status": "diagnostic_failed_candidate_not_for_deployment",
+        "test": metrics, "spy_close_to_close_return_before_costs": spy_return,
+        "cash_benchmark_return": 0.0,
+        "manifest": manifest,
+        "limitations": [
+            "current-snapshot survivorship bias and imperfect security classification",
+            "unconfirmed illustrative brokerage fee profile",
+            "fixed-bps slippage excludes market impact",
+            "this candidate failed Train and Validation stability checks before Test",
+        ],
+    }
+    output_dir.mkdir(parents=True, exist_ok=True)
+    result.equity.to_csv(output_dir / "backtest_daily_equity.csv", index=False)
+    result.trades.to_csv(output_dir / "backtest_trades.csv", index=False)
+    result.orders.to_csv(output_dir / "backtest_orders.csv", index=False)
+    (output_dir / "run_manifest.json").write_text(
+        json.dumps(manifest, ensure_ascii=False, indent=2, allow_nan=False), encoding="utf-8")
+    (output_dir / "backtest_summary.json").write_text(
+        json.dumps(summary, ensure_ascii=False, indent=2, allow_nan=False), encoding="utf-8")
+    marker.parent.mkdir(parents=True, exist_ok=True)
+    marker.write_text(json.dumps({"frozen_sha256": freeze_hash, "run_id": manifest["run_id"]}),
+                      encoding="utf-8")
+    return summary
