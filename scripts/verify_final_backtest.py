@@ -13,11 +13,12 @@ OUTPUT = ROOT / "data" / "research" / "final-test-v1"
 DB = ROOT / "data" / "phase2-research.duckdb"
 
 
-def main() -> None:
-    trades = pd.read_csv(OUTPUT / "backtest_trades.csv", parse_dates=["signal_date", "entry_date", "exit_date"])
-    equity = pd.read_csv(OUTPUT / "backtest_daily_equity.csv", parse_dates=["date"])
-    orders = pd.read_csv(OUTPUT / "backtest_orders.csv", parse_dates=["date"])
-    summary = json.loads((OUTPUT / "backtest_summary.json").read_text(encoding="utf-8"))
+def verify(output: Path, trade_file: str, equity_file: str, orders_file: str,
+           expected_return: float) -> dict:
+    """Replay a stored portfolio run against raw Open/Close bars."""
+    trades = pd.read_csv(output / trade_file, parse_dates=["signal_date", "entry_date", "exit_date"])
+    equity = pd.read_csv(output / equity_file, parse_dates=["date"])
+    orders = pd.read_csv(output / orders_file, parse_dates=["date"])
     conn = duckdb.connect(str(DB), read_only=True)
     try:
         sessions = [pd.Timestamp(row[0]) for row in conn.execute("""
@@ -44,7 +45,7 @@ def main() -> None:
     component_error = (trades.gross_pnl - trades.buy_fee_total - trades.sell_fee_total
                        - trades.slippage_cost - trades.net_pnl).abs().max()
     assert component_error < 1e-6
-    assert abs(summary["test"]["total_return"] - (equity.equity.iloc[-1] / 1_000_000 - 1)) < 1e-6
+    assert abs(expected_return - (equity.equity.iloc[-1] / 1_000_000 - 1)) < 1e-6
     assert not trades.duplicated(["symbol", "entry_date"]).any()
 
     checked = 0
@@ -98,7 +99,14 @@ def main() -> None:
               "ending_equity_reconciliation_error": float(
                   abs(equity.equity.iloc[-1] - 1_000_000 - trades.net_pnl.sum())),
               "maximum_trade_component_error": float(component_error)}
-    (OUTPUT / "verification.json").write_text(json.dumps(result, indent=2), encoding="utf-8")
+    (output / "verification.json").write_text(json.dumps(result, indent=2), encoding="utf-8")
+    return result
+
+
+def main() -> None:
+    summary = json.loads((OUTPUT / "backtest_summary.json").read_text(encoding="utf-8"))
+    result = verify(OUTPUT, "backtest_trades.csv", "backtest_daily_equity.csv",
+                    "backtest_orders.csv", summary["test"]["total_return"])
     print(json.dumps(result))
 
 

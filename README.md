@@ -6,10 +6,9 @@ updates, validation, and universe export.
 
 It is research software only. **Nothing in this repository places orders** — no
 trading or order endpoint is called anywhere in the package. The Phase 2
-features and historical backtest engine are implemented. The evaluated candidate
-is a simplified Elasticity-plus-pullback baseline, not the full Strategy 2
-setup described in the Phase 2 specification; it lost money and is not suitable
-for deployment.
+features, historical backtest engine, a simplified baseline, and an initial
+seven-stage Strategy 2 candidate are implemented. Neither backtest establishes
+a deployable trading edge.
 
 ## Setup
 
@@ -171,10 +170,34 @@ does not yet require prior strength, downside exhaustion, support/absorption,
 absence of new lows, and early bullish confirmation together. Its result must
 not be presented as the full Strategy 2 return.
 
-The final Test runner records a one-time evaluation marker and returns the
-stored result on a repeat invocation. Any new strategy requires a new untouched
-Test period. The current strategy should remain a research result, not an order
-signal.
+The baseline's final Test runner records a one-time evaluation marker and
+returns the stored result on a repeat invocation.
+
+## Full Strategy 2 exploratory research
+
+The first seven-stage candidate includes prior strength, pullback, downside
+exhaustion, support/absorption, stopped new lows, early reversal, and an
+extension limit. The exact feature mapping and provisional thresholds are in
+[`reports/phase2/full_strategy2_feature_map.md`](reports/phase2/full_strategy2_feature_map.md).
+At 10 bps slippage per side plus illustrative fees, it returned **-36.83%
+Train**, **+29.11% Validation**, and **+10.75% on the previously viewed
+historical Test**. Results and cost sensitivity are in
+[`reports/phase2/full_strategy2_backtest.md`](reports/phase2/full_strategy2_backtest.md).
+That Test result is exploratory because its dates were already viewed for the
+baseline; it is not fresh out-of-sample evidence.
+
+```powershell
+& .\.venv\Scripts\python.exe scripts/run_full_strategy2_backtest.py --splits train validation
+& .\.venv\Scripts\python.exe scripts/run_full_strategy2_backtest.py --splits test
+& .\.venv\Scripts\python.exe scripts/verify_full_strategy2_backtest.py
+& .\.venv\Scripts\python.exe scripts/print_full_strategy2_summary.py
+& .\.venv\Scripts\python.exe scripts/render_full_strategy2_report.py
+```
+
+Detailed ledgers, scenario summaries, and verification stay in the gitignored
+`data/research/full-strategy2-v1/` directory. The self-contained local chart is
+`data/research/full-strategy2-v1/策略2完整条件回测.html`. A new untouched period is needed
+to validate any claimed improvement. This remains research, not an order signal.
 
 ## Outputs
 
