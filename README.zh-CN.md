@@ -2,11 +2,11 @@
   <a href="./README.md">English</a> · <strong>简体中文</strong>
 </p>
 
+<h1 align="center">📡 Stock Radar</h1>
+
 <p align="center">
   <img src="./docs/repo-banner.png" alt="Stock Radar 仓库横幅：美股量化策略研究" width="100%">
 </p>
-
-<h1 align="center">📡 Stock Radar</h1>
 
 <p align="center">
   <strong>本地优先的美股市场数据研究基础设施。</strong><br>
