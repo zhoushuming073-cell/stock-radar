@@ -1,0 +1,37 @@
+name: Full Strategy 2 v1
+id: full_strategy2_v1
+version: 1.0.0
+interface_version: 1
+author:
+  type: ai
+  name: Codex
+description: Seven-stage causal pullback and reversal candidate strategy migrated unchanged from Phase 2.
+required_features:
+  - avg_dollar_volume_20
+  - body_pct
+  - close_location
+  - decline_acceleration
+  - decline_speed_prev_3
+  - dist_ma_5
+  - drawdown_20
+  - drawdown_60
+  - elasticity_score
+  - failed_breakdown
+  - higher_low_proxy
+  - lower_wick_ratio
+  - new_low_frequency_5
+  - pullback_days_20
+  - range_contraction
+  - rebound_from_low_5
+  - reclaim_ma_5
+  - red_body_avg_3
+  - red_body_avg_5
+  - ret_1
+  - ret_60
+  - support_reclaim
+  - tradability_pass
+  - volume_contraction
+tags:
+  - pullback
+  - reversal
+  - phase2-migration

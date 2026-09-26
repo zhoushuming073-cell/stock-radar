@@ -1,0 +1,15 @@
+name: Example Measured Pullback
+id: example_measured_pullback
+version: 1.0.0
+interface_version: 1
+author:
+  type: ai
+  name: Example Author
+description: Finds liquid prior winners with a measured pullback, then ranks by prior return.
+required_features:
+  - tradability_pass
+  - ret_60
+  - drawdown_20
+tags:
+  - example
+  - pullback

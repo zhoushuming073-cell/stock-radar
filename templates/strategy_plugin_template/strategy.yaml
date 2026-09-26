@@ -1,0 +1,7 @@
+prior_strength:
+  min_return_60: 0.15
+pullback:
+  min_depth: 0.08
+  max_depth: 0.30
+selection:
+  max_candidates: 3

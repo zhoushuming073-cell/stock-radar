@@ -15,6 +15,7 @@ dependencies = [
     "pandas",
     "pyarrow",
     "pydantic>=2",
+    "pluggy>=1.5,<2",
     "python-dotenv",
     "PyYAML",
 ]
