@@ -5,7 +5,7 @@
 <h1 align="center">📡 Stock Radar</h1>
 
 <p align="center">
-  <img src="./docs/repo-banner.png" alt="Stock Radar repository banner" width="100%">
+  <img src="./docs/repo-banner.webp" alt="Stock Radar repository banner" width="100%">
 </p>
 
 <p align="center">
