@@ -2,6 +2,10 @@
   <a href="./README.md">English</a> · <strong>简体中文</strong>
 </p>
 
+<p align="center">
+  <img src="./docs/repo-banner.png" alt="Stock Radar 仓库横幅：美股量化策略研究" width="100%">
+</p>
+
 <h1 align="center">📡 Stock Radar</h1>
 
 <p align="center">
@@ -18,8 +22,20 @@
   <img alt="No order execution" src="https://img.shields.io/badge/Orders-Disabled-success">
 </p>
 
+<p align="center">
+  <sub>研究用途 · 本地优先 · 不执行下单</sub>
+</p>
+
 > [!IMPORTANT]
 > Stock Radar 仅用于研究。**本仓库中的任何代码都不会执行下单。** 项目不会调用交易或订单接口。Strategy 2 评分和回测属于后续工作，目前**尚未实现**。
+
+## 快速导航
+
+- [项目简介](#项目简介)
+- [主要能力](#主要能力)
+- [Dashboard 预览](#dashboard-预览)
+- [系统架构](#系统架构)
+- [快速开始](#快速开始)
 
 ## 项目简介
 
