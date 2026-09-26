@@ -2,6 +2,10 @@
   <strong>English</strong> · <a href="./README.zh-CN.md">简体中文</a>
 </p>
 
+<p align="center">
+  <img src="./docs/repo-banner.png" alt="Stock Radar repository banner for US equity quant research" width="100%">
+</p>
+
 <h1 align="center">📡 Stock Radar</h1>
 
 <p align="center">
@@ -18,8 +22,20 @@
   <img alt="No order execution" src="https://img.shields.io/badge/Orders-Disabled-success">
 </p>
 
+<p align="center">
+  <sub>Research-only · Local-first · No order execution</sub>
+</p>
+
 > [!IMPORTANT]
 > Stock Radar is research software only. **Nothing in this repository places orders.** No trading or order endpoint is called anywhere in the package. Strategy 2 scoring and backtests are future work and are **not implemented**.
+
+## Quick navigation
+
+- [Overview](#overview)
+- [What it does](#what-it-does)
+- [Dashboard preview](#dashboard-preview)
+- [Architecture](#architecture)
+- [Quick start](#quick-start)
 
 ## Overview
 
