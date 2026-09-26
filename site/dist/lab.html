@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7fb">
+  <meta name="description" content="Stock Radar 本机策略研究实验室">
+  <title>策略实验室 · Stock Radar</title>
+  <link rel="stylesheet" href="./lab.css">
+  <script defer src="./vendor/plotly.min.js"></script>
+  <script defer src="./lab.js"></script>
+</head>
+<body>
+  <aside class="rail">
+    <a class="brand" href="./lab.html"><span class="brand-icon">▥</span> Stock Radar <span>Strategy Lab</span></a>
+    <nav aria-label="主导航">
+      <a href="./index.html">⌂ <span>行情总览</span></a>
+      <a class="active" href="./lab.html">▤ <span>策略实验室</span></a>
+      <a href="#runs">▷ <span>运行记录</span></a>
+      <a href="#compare">▥ <span>策略比较</span></a>
+      <a href="#experiments">♧ <span>稳定性实验</span></a>
+      <a href="#parameters">⚙ <span>参数</span></a>
+    </nav>
+    <div class="rail-foot"><span class="green-dot"></span> 本机数据模式<br><small>数据和策略只保存在此电脑</small></div>
+  </aside>
+  <main class="workspace">
+    <header class="topbar">
+      <div><p class="eyebrow">STOCK RADAR / RESEARCH</p><h1>策略实验室</h1></div>
+      <div class="connection" id="connection"><span class="green-dot"></span> 正在连接本机…</div>
+    </header>
+    <div id="notice" class="notice" hidden role="status"></div>
+    <section class="toolbar" aria-label="实验设置">
+      <label class="upload">＋ 导入策略 ZIP<input type="file" id="plugin-file" accept=".zip,application/zip" hidden></label>
+      <label>回测区间<select id="split"><option value="train">训练期</option><option value="validation" selected>验证期</option><option value="test">测试期（探索性）</option></select></label>
+      <label>滑点（基点）<input id="slippage" type="number" min="0" max="100" step="1" value="10"></label>
+      <button id="run-selected" class="primary" type="button">▷ 运行所选策略</button>
+    </section>
+    <section class="strategy-strip" id="strategies" aria-label="可用策略"></section>
+    <div class="content">
+      <section class="run-main">
+        <div class="title-row"><div><p class="eyebrow">CURRENT EXPERIMENT</p><h2 id="run-title">选择一次运行</h2><p id="run-subtitle" class="muted">导入策略或从上方选择后开始回测</p></div><div class="run-state"><span id="run-status" class="status">—</span><button id="cancel-run" class="danger" hidden>停止运行</button></div></div>
+        <div class="metric-grid" id="metrics">
+          <article><span>当前权益</span><strong id="m-equity">—</strong></article><article><span>总收益</span><strong id="m-return">—</strong></article><article><span>最大回撤</span><strong id="m-dd">—</strong></article><article><span>现金比例</span><strong id="m-cash">—</strong></article><article><span>当前持仓</span><strong id="m-positions">—</strong></article><article><span>完成交易</span><strong id="m-trades">—</strong></article>
+        </div>
+        <article class="card chart-card"><div class="card-head"><h3>权益曲线</h3><span id="chart-caption">按实际交易日</span></div><div id="equity-chart" class="chart"></div><div class="card-head divider"><h3>回撤曲线</h3><span>相对历史最高权益</span></div><div id="drawdown-chart" class="chart small-chart"></div></article>
+        <div class="bottom-grid"><article class="card"><div class="card-head"><h3>最近交易</h3><span id="trade-count">—</span></div><div class="table-wrap"><table><thead><tr><th>退出日</th><th>代码</th><th>净收益</th><th>收益率</th><th>原因</th></tr></thead><tbody id="trades-body"><tr><td colspan="5">暂无交易</td></tr></tbody></table></div></article><article class="card"><div class="card-head"><h3>运行日志</h3><span id="event-count">—</span></div><div id="events" class="events">暂无记录</div></article></div>
+      </section>
+      <aside class="detail-column">
+        <article class="card"><div class="card-head"><h3>当前持仓</h3><span id="position-count">—</span></div><div class="table-wrap"><table><thead><tr><th>代码</th><th>数量</th><th>入场价</th><th>最新价</th></tr></thead><tbody id="positions-body"><tr><td colspan="4">暂无持仓</td></tr></tbody></table></div></article>
+        <article class="card" id="parameters"><div class="card-head"><h3>策略参数</h3><button class="text-button" id="reset-config">恢复默认</button></div><p class="helper">编辑后将创建新的不可变运行，历史结果不会被覆盖。</p><div id="parameter-fields" class="fields"></div></article>
+        <article class="card"><div class="card-head"><h3>运行信息</h3></div><dl id="run-meta" class="metadata"></dl></article>
+      </aside>
+    </div>
+    <section id="runs" class="card section-card"><div class="card-head"><h3>运行记录</h3><button id="refresh" class="text-button">刷新</button></div><p class="helper">每次运行连同策略版本、参数和数据指纹独立保存。</p><div id="run-list" class="run-list"></div></section>
+    <section id="compare" class="card section-card"><div class="card-head"><h3>策略比较</h3><span>可勾选多次已完成运行</span></div><div id="comparison-chart" class="compare-chart"></div><div class="table-wrap"><table><thead><tr><th>运行</th><th>区间</th><th>总收益</th><th>最大回撤</th><th>夏普</th><th>交易数</th></tr></thead><tbody id="comparison-body"><tr><td colspan="6">请选择运行</td></tr></tbody></table></div></section>
+    <section id="experiments" class="card section-card"><div class="card-head"><h3>稳定性实验</h3><span>仅使用训练期与验证期；最终测试期不参与参数搜索</span></div><div class="experiment-controls"><label>实验类型<select id="experiment-kind"><option value="grid">参数网格</option><option value="ablation">逐项剔除</option><option value="walk_forward">滚动区间</option></select></label><label>参数<select id="grid-param"></select></label><label>候选值（逗号分隔）<input id="grid-values" placeholder="例如 0.15, 0.20, 0.25"></label><button id="start-experiment" class="primary">创建实验</button></div><p class="helper">参数网格最多 64 组；逐项剔除对完整策略 2 分别关闭八个阶段；滚动区间采用固定参数，逐折独立记录，报告样本外结果。</p><div id="experiment-list" class="experiment-list"></div></section>
+    <footer>本页面托管于 Sites；行情、策略文件、运行结果和密钥均保存在这台电脑。电脑关机或本机服务未运行时，实验室无法连接。</footer>
+  </main>
+</body>
+</html>
