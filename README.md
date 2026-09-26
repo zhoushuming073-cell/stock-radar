@@ -1,17 +1,119 @@
-# Stock Radar
+<p align="center">
+  <strong>English</strong> · <a href="./README.zh-CN.md">简体中文</a>
+</p>
 
-<p align="center"><strong>English</strong> · <a href="./README.zh-CN.md">简体中文</a></p>
-<p align="center"><img src="./docs/repo-banner.png" alt="Stock Radar repository banner" width="100%"></p>
+<h1 align="center">📡 Stock Radar</h1>
 
-A broad US-equity research and screening project using Alpaca market data. Phase 1
-builds the data foundation: asset master, daily OHLCV bars in DuckDB, incremental
-updates, validation, and universe export.
+<p align="center">
+  <img src="./docs/repo-banner.png" alt="Stock Radar repository banner" width="100%">
+</p>
 
-It is research software only. **Nothing in this repository places orders** — no
-trading or order endpoint is called anywhere in the package. The Phase 2
-features, historical backtest engine, a simplified baseline, and an initial
-seven-stage Strategy 2 candidate are implemented. Neither backtest establishes
-a deployable trading edge.
+<p align="center">
+  <strong>Local-first US-equity research infrastructure.</strong><br>
+  Market data · validation · historical backtesting · Strategy Lab · reproducible experiments
+</p>
+
+<p align="center">
+  <img alt="Python 3.11+" src="https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white">
+  <img alt="Alpaca" src="https://img.shields.io/badge/Data-Alpaca-FFCC00">
+  <img alt="DuckDB" src="https://img.shields.io/badge/Storage-DuckDB-FFF000?logo=duckdb&logoColor=black">
+  <img alt="Streamlit" src="https://img.shields.io/badge/UI-Streamlit-FF4B4B?logo=streamlit&logoColor=white">
+  <img alt="pluggy" src="https://img.shields.io/badge/Plugins-pluggy-6C5CE7">
+  <img alt="No order execution" src="https://img.shields.io/badge/Orders-Disabled-success">
+</p>
+
+<p align="center">
+  <sub>Research-only · Local-first · Reproducible · No broker execution</sub>
+</p>
+
+> [!IMPORTANT]
+> Stock Radar is research software only. **Nothing in this repository places broker orders.** Phase 1 market-data infrastructure, Phase 2 historical backtesting, the initial seven-stage Strategy 2 candidate, and the Phase 3 local Strategy Lab are implemented. Existing backtest results do **not** establish a deployable trading edge; the previously viewed Test slice is exploratory rather than fresh out-of-sample evidence.
+
+<p align="center">
+  <a href="#overview">Overview</a> ·
+  <a href="#project-status">Status</a> ·
+  <a href="#dashboard-preview">Preview</a> ·
+  <a href="#architecture">Architecture</a> ·
+  <a href="#setup">Setup</a> ·
+  <a href="#local-strategy-lab-phase-3">Strategy Lab</a> ·
+  <a href="#conventions-and-limitations">Limitations</a>
+</p>
+
+## Overview
+
+Stock Radar is a broad US-equity research and screening system built around Alpaca market data. It started as a local market-data foundation and now extends into reproducible historical backtesting and a persistent Strategy Lab for plugin-based experiments.
+
+The design remains deliberately **local-first**: Alpaca credentials, DuckDB market data, strategy plugins, run metadata, and detailed research artifacts stay on the machine running Stock Radar. The private browser dashboard talks only to a loopback API on that machine.
+
+### What it includes
+
+| Layer | Current implementation |
+| --- | --- |
+| **Phase 1 · Data foundation** | Asset master, split-adjusted daily OHLCV, incremental sync, validation, universe export, DuckDB provenance checks |
+| **Phase 2 · Research engine** | Historical backtest engine, frozen simplified baseline, initial seven-stage Strategy 2 candidate, verification and local reports |
+| **Phase 3 · Strategy Lab** | Plugin interface v1, trusted ZIP import, persistent run queue, live equity/drawdown, run comparison, parameter grids, ablations and walk-forward folds |
+| **Dashboards** | Read-only market-data dashboard plus private Sites / Streamlit Strategy Lab interfaces |
+| **Automation** | Windows scheduled market refresh and local API startup |
+| **Execution boundary** | No broker-order path; research runs and dashboards do not place trades |
+
+## Project status
+
+- [x] Asset master and eligible-universe export
+- [x] Incremental Alpaca SIP daily-bar ingestion
+- [x] DuckDB storage with provider/feed/adjustment provenance
+- [x] Non-destructive market-data validation
+- [x] Local Streamlit market dashboard
+- [x] Historical backtest engine and frozen baseline
+- [x] Initial seven-stage Strategy 2 research candidate
+- [x] Strategy plugin interface v1 and ZIP-ready template
+- [x] Persistent local Strategy Lab and run queue
+- [x] Parameter-grid, stage-ablation, and rolling walk-forward experiments
+- [x] Private Sites integration and unattended local updates
+- [ ] Fresh untouched out-of-sample period for validating claimed strategy improvement
+- [ ] Broker execution / live trading — intentionally not implemented
+
+## Dashboard preview
+
+<table>
+  <tr>
+    <td width="50%" align="center"><strong>Market overview</strong></td>
+    <td width="50%" align="center"><strong>Validation diagnostics</strong></td>
+  </tr>
+  <tr>
+    <td><img src="./docs/dashboard-preview.png" alt="Stock Radar market-data dashboard overview"></td>
+    <td><img src="./docs/dashboard-warnings.png" alt="Stock Radar validation diagnostics"></td>
+  </tr>
+</table>
+
+<p align="center"><sub>Read-only visualization over the local research database. Strategy Lab runs and research artifacts remain local as well.</sub></p>
+
+## Architecture
+
+```mermaid
+flowchart LR
+    A[Alpaca Market Data] --> B[Sync + Validation]
+    B --> C[(Market DuckDB)]
+    B --> D[Universe + JSON Reports]
+
+    C --> E[Market Dashboard]
+    C --> F[Historical Backtest Engine]
+
+    G[Strategy Plugins] --> H[Strategy Lab]
+    H --> F
+    H --> I[(Run Metadata SQLite)]
+    F --> J[Equity / Orders / Trades / Reports]
+
+    C --> K[Loopback API<br/>127.0.0.1:8765]
+    D --> K
+    I --> K
+    J --> K
+    K --> L[Private Sites Dashboard]
+
+    M[Windows Scheduled Tasks] --> B
+    M --> K
+```
+
+The market database remains read-only to research workers. Strategy Lab stores reproducibility metadata separately in local SQLite WAL, and queued runs fail on source/data hash mismatches instead of silently executing changed inputs.
 
 ## Setup
 
