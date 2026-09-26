@@ -22,7 +22,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8"]
-viz = ["streamlit>=1.40", "plotly>=5.24"]
+viz = ["streamlit>=1.40", "plotly>=5.24", "psutil>=6"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

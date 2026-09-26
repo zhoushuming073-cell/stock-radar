@@ -103,12 +103,63 @@ and [Plotly.py](https://github.com/plotly/plotly.py) components.
 
 Preview: [overview](docs/dashboard-preview.png) · [warning details](docs/dashboard-warnings.png).
 
+## Local Strategy Lab (Phase 3)
+
+The Strategy Lab is available inside the existing private Sites dashboard at
+[`/lab.html`](https://stock-radar-local.zhoushuming.chatgpt.site/lab.html).
+The same research interface also has a separate local Streamlit page. It
+imports trusted strategy ZIPs, queues several backtests, shows each Run's live
+equity/drawdown in its own tab, and compares completed Runs. Market data and
+Run results remain on this computer. Nothing in the Lab places broker orders.
+
+```powershell
+uv pip install --python .\.venv\Scripts\python.exe -e ".[viz,dev]"
+& .\.venv\Scripts\python.exe -m streamlit run src/radar/strategy_lab_ui.py --server.address 127.0.0.1 --server.port 8502
+```
+
+Open `http://127.0.0.1:8502`. The current `full_strategy2_v1` plugin is
+installed under `strategies/`. A standalone authoring guide and ZIP-ready
+example are in [the Strategy Plugin specification](docs/STRATEGY_PLUGIN_SPEC.md)
+and `templates/strategy_plugin_template/`. Only import Python strategy code
+from authors you trust: structural, AST and test checks are useful validation,
+but they are not an operating-system sandbox.
+
+Each run stores its configuration and reproducibility metadata in local SQLite
+WAL at `data/strategy-lab/runs.sqlite3`, while workers read the market DuckDB
+read-only. Completed Runs are immutable. The two-process local worker cap keeps
+the UI responsive and lets a browser refresh recover progress. Cancelling a Run
+stops it between sessions. A source/data hash mismatch fails the queued Run
+instead of silently executing changed inputs.
+
+The complete Phase 2 Strategy 2 migration was checked against the saved
+Train, Validation and previously viewed Test artifacts: 1,231 signal dates and
+all equity, order and trade CSV rows matched exactly. Recheck locally with:
+
+```powershell
+& .\.venv\Scripts\python.exe scripts/verify_phase3_plugin_parity.py
+```
+
+The Test slice was already viewed before Phase 3 and is exploratory. Do not
+treat reruns or parameter comparisons on it as fresh out-of-sample evidence.
+The open-source selection and license notes are in
+[the Phase 3 audit](docs/phase3-open-source-audit.md).
+
+The experiment panel can queue bounded parameter grids (at most 64 variants),
+full Strategy 2 stage ablations (baseline plus eight omissions), and rolling
+walk-forward folds. Experiments use Train/Validation history only and save each
+variant as an independent Run. Walk-forward currently holds parameters fixed
+across folds; it reports OOS distribution rather than fitting parameters in
+each fold. This avoids a misleading optimization claim.
+
 ## Private Sites dashboard and unattended updates
 
 The private [Sites dashboard](https://stock-radar-local.zhoushuming.chatgpt.site)
-hosts only HTML, CSS and JavaScript. It reads market data from the read-only
-`127.0.0.1:8765` API on **this computer**. DuckDB, the validation report and
-Alpaca credentials stay local. After signing in to the Site, allow its browser
+hosts only HTML, CSS and JavaScript. It reads market data and controls local
+research Runs through the loopback `127.0.0.1:8765` API on **this computer**.
+The dashboard's market endpoints remain read-only; Strategy Lab endpoints can
+queue Runs and import a user-selected plugin ZIP only for the configured Site
+origin. DuckDB, Run results, plugin files and Alpaca credentials stay local.
+After signing in to the Site, allow its browser
 prompt to access the local computer if one appears. Other computers cannot read
 this computer's loopback API.
 
@@ -117,7 +168,7 @@ Two Windows tasks are installed for the current user:
 | Task | When | Purpose |
 | --- | --- | --- |
 | `StockRadar-DailyUpdate` | Tuesday–Saturday at 08:30 China time, and at next logon | Update the most recent completed US trading day, backfill missing sessions, then validate. An already successful target date is skipped. |
-| `StockRadar-LocalApi` | At logon | Serve the read-only local API on `127.0.0.1:8765`. |
+| `StockRadar-LocalApi` | At logon | Serve the local dashboard and Strategy Lab API on `127.0.0.1:8765`. |
 
 Both use `pythonw.exe` and run without a console window. A missed update while
 the computer is off runs after the next logon; the computer must be online to

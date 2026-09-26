@@ -18,7 +18,7 @@ class FullStrategy2Plugin(StrategyPlugin):
     @staticmethod
     def _rules(config: Mapping[str, Any]) -> FullStrategy2Rules:
         names = FullStrategy2Rules.__dataclass_fields__
-        return FullStrategy2Rules(**{name: config[name] for name in names})
+        return FullStrategy2Rules(**{name: config[name] for name in names if name in config})
 
     def hard_filter(self, context: StrategyContext, config: Mapping[str, Any]) -> pd.Series:
         return score_full_strategy2(context.frame, self._rules(config))["strategy2_eligible"]

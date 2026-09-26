@@ -63,7 +63,7 @@ def _full_rules(path: Path) -> tuple[FullStrategy2Rules, dict]:
     if not isinstance(raw, dict) or raw.get("version") != "full_strategy2_v1_exploratory":
         raise ValueError("wrong full Strategy 2 configuration version")
     defaults = FullStrategy2Rules.__dataclass_fields__
-    keys = set(defaults)
+    keys = set(defaults) - {"disabled_stages"}
     if not keys.issubset(raw):
         raise ValueError(f"missing full Strategy 2 rules: {sorted(keys - set(raw))}")
     return FullStrategy2Rules(**{key: raw[key] for key in keys}), raw

@@ -41,12 +41,18 @@ class FullStrategy2Rules:
     min_wick_ratio: float = 0.25
     max_volume_contraction: float = 0.80
     exclude_explicit_funds: bool = True
+    disabled_stages: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
         if self.max_new < 1 or not 0 < self.min_pullback < self.max_pullback < 1:
             raise ValueError("invalid Strategy 2 candidate limits")
         if not 0 <= self.max_new_low_frequency_5 <= 1:
             raise ValueError("invalid new-low limit")
+        known = {"prior_strength", "pullback_quality", "exhaustion",
+                 "support_absorption", "new_low_stop", "early_reversal",
+                 "not_extended", "elasticity"}
+        if set(self.disabled_stages) - known:
+            raise ValueError("unknown Strategy 2 ablation stage")
 
 
 def _numeric(frame: pd.DataFrame, column: str) -> pd.Series:
@@ -136,6 +142,26 @@ def score_full_strategy2(daily: pd.DataFrame, rules: FullStrategy2Rules) -> pd.D
         + 0.20 * frame["early_reversal_score"]
         + 0.05 * frame["not_extended_score"]
     )
+    disabled = set(rules.disabled_stages)
+    if disabled:
+        components = {
+            "prior_strength": (0.15, "prior_strength_score"),
+            "pullback_quality": (0.20, "pullback_quality_score"),
+            "exhaustion": (0.15, "downside_exhaustion_score"),
+            "support_absorption": (0.15, "support_absorption_score"),
+            "new_low_stop": (0.10, "new_low_stop_score"),
+            "early_reversal": (0.20, "early_reversal_score"),
+            "not_extended": (0.05, "not_extended_score"),
+        }
+        active = [(weight, column) for stage, (weight, column) in components.items()
+                  if stage not in disabled]
+        if active:
+            total_weight = sum(weight for weight, _ in active)
+            frame["strategy2_score"] = 100 * sum(
+                weight * frame[column] for weight, column in active
+            ) / total_weight
+        else:
+            frame["strategy2_score"] = 0.0
 
     liquid = _flag(frame, "tradability_pass")
     elastic = _numeric(frame, "elasticity_score").ge(rules.min_elasticity)
@@ -146,6 +172,17 @@ def score_full_strategy2(daily: pd.DataFrame, rules: FullStrategy2Rules) -> pd.D
     stopped_lows = low_frequency.le(rules.max_new_low_frequency_5)
     eligible = (liquid & elastic & prior & pullback & exhaustion & absorption
                 & stopped_lows & early_up & not_extended)
+    if disabled:
+        stages = {
+            "elasticity": elastic, "prior_strength": prior,
+            "pullback_quality": pullback, "exhaustion": exhaustion,
+            "support_absorption": absorption, "new_low_stop": stopped_lows,
+            "early_reversal": early_up, "not_extended": not_extended,
+        }
+        eligible = liquid.copy()
+        for name, mask in stages.items():
+            if name not in disabled:
+                eligible &= mask
     if rules.exclude_explicit_funds:
         fund = frame["security_name"].astype("string").str.contains(
             r"\bETF\b|\bETN\b|exchange.traded", case=False, regex=True, na=False)

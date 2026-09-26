@@ -2,9 +2,10 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import pytest
 
 from radar.backtest.costs import load_fee_config
-from radar.backtest.engine import BacktestConfig, run_backtest
+from radar.backtest.engine import BacktestCancelled, BacktestConfig, run_backtest
 from radar.strategy.ranking import CandidateRules
 
 
@@ -134,3 +135,39 @@ def test_gap_gate_can_leave_cash_idle():
     assert result.trades.empty
     assert result.orders.iloc[0].status == "gap_rejected"
     assert result.equity.equity.eq(1_000_000).all()
+
+
+def test_progress_observer_does_not_change_fills_or_equity():
+    days, frame = market(next_close=106)
+    snapshots = []
+    observed = run_backtest(
+        frame, days, signal_start=days[0], signal_end=days[0],
+        evaluation_end=days[10], rules=RULES, fee_config=FEES,
+        config=BacktestConfig(slippage_bps=0, max_position_fraction=1.0,
+                              max_order_to_avg_dollar_volume=1.0),
+        progress_callback=snapshots.append,
+    )
+    baseline = run(days, frame)
+    pd.testing.assert_frame_equal(observed.equity, baseline.equity, check_exact=True)
+    pd.testing.assert_frame_equal(observed.trades, baseline.trades, check_exact=True)
+    pd.testing.assert_frame_equal(observed.orders, baseline.orders, check_exact=True)
+    assert len(snapshots) == len(observed.equity)
+    assert snapshots[-1]["completed_sessions"] == snapshots[-1]["total_sessions"]
+    assert snapshots[1]["closed_trades"] == 1
+
+
+def test_running_backtest_can_be_cancelled_between_sessions():
+    days, frame = market()
+    checked = []
+
+    def cancel_requested():
+        checked.append(True)
+        return len(checked) >= 3
+
+    with pytest.raises(BacktestCancelled):
+        run_backtest(
+            frame, days, signal_start=days[0], signal_end=days[0],
+            evaluation_end=days[10], rules=RULES, fee_config=FEES,
+            cancel_requested=cancel_requested,
+        )
+    assert len(checked) == 3

@@ -1,4 +1,4 @@
-"""Read-only loopback API for the private Sites dashboard.
+"""Loopback API for the private Sites dashboard and local Strategy Lab.
 
 The database and credentials remain on this computer. Only an explicitly allowed
 browser origin can read responses, and the server listens on 127.0.0.1 only.
@@ -11,9 +11,11 @@ import csv
 import json
 import re
 from collections import Counter
+from functools import lru_cache
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from urllib.parse import parse_qs, urlsplit
 
 import duckdb
@@ -25,6 +27,45 @@ DB = DATA / "market.duckdb"
 UNIVERSE = DATA / "universe.csv"
 VALIDATION = DATA / "validation-summary.json"
 SYMBOL = re.compile(r"^[A-Z0-9.\-]{1,20}$")
+MAX_JSON_BYTES = 1_000_000
+MAX_PLUGIN_BYTES = 5_000_000
+
+
+@lru_cache(maxsize=1)
+def lab_manager():
+    from radar.lab.manager import RunManager
+    return RunManager(ROOT)
+
+
+def lab_runs() -> list[dict]:
+    manager = lab_manager()
+    manager.refresh()
+    manager.launch_queued()
+    return manager.store.list_runs(limit=10_000)
+
+
+def lab_strategies() -> list[dict]:
+    from radar.lab.manager import _plain
+    return [{
+        "id": item.manifest.id,
+        "version": item.manifest.version,
+        "name": item.manifest.name,
+        "description": item.manifest.description,
+        "author": item.manifest.author.model_dump(),
+        "tags": item.manifest.tags,
+        "config": _plain(item.config),
+    } for item in lab_manager().list_strategies()]
+
+
+def lab_spy(start: str, end: str) -> list[dict]:
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", start) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", end):
+        raise ValueError("dates must use YYYY-MM-DD")
+    with duckdb.connect(str(DATA / "phase2-research.duckdb"), read_only=True) as connection:
+        rows = connection.execute(
+            "SELECT date, close FROM daily_bars WHERE symbol='SPY' "
+            "AND date BETWEEN ? AND ? ORDER BY date", [start, end],
+        ).fetchall()
+    return [{"date": date.isoformat(), "close": close} for date, close in rows]
 
 
 def overview() -> dict[str, object]:
@@ -94,6 +135,9 @@ def make_handler(allowed_origins: set[str]):
             origin = self.headers.get("Origin")
             return origin is None or origin in allowed_origins
 
+        def _write_allowed(self) -> bool:
+            return self.headers.get("Origin") in allowed_origins
+
         def _headers(self, status: int, content_type: str = "application/json; charset=utf-8") -> None:
             self.send_response(status)
             self.send_header("Content-Type", content_type)
@@ -103,7 +147,7 @@ def make_handler(allowed_origins: set[str]):
             if origin in allowed_origins:
                 self.send_header("Access-Control-Allow-Origin", origin)
                 self.send_header("Vary", "Origin")
-                self.send_header("Access-Control-Allow-Methods", "GET, OPTIONS")
+                self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
                 self.send_header("Access-Control-Allow-Headers", "Content-Type")
                 if self.headers.get("Access-Control-Request-Private-Network") == "true":
                     self.send_header("Access-Control-Allow-Private-Network", "true")
@@ -133,13 +177,102 @@ def make_handler(allowed_origins: set[str]):
                 elif target.path == "/api/symbol":
                     symbol = parse_qs(target.query).get("symbol", [""])[0].upper()
                     payload = symbol_data(symbol)
+                elif target.path == "/api/lab/strategies":
+                    payload = lab_strategies()
+                elif target.path == "/api/lab/runs":
+                    payload = lab_runs()
+                elif target.path == "/api/lab/experiments":
+                    from radar.lab.experiments import summarize_experiments
+                    payload = summarize_experiments(lab_runs())
+                elif target.path in {"/api/lab/run", "/api/lab/equity", "/api/lab/trades", "/api/lab/events"}:
+                    run_id = parse_qs(target.query).get("id", [""])[0]
+                    if not re.fullmatch(r"[0-9a-f-]{36}", run_id):
+                        raise ValueError("invalid run ID")
+                    store = lab_manager().store
+                    if target.path.endswith("/run"):
+                        payload = store.get_run(run_id)
+                    elif target.path.endswith("/equity"):
+                        payload = store.get_equity(run_id).to_dict("records")
+                    elif target.path.endswith("/trades"):
+                        payload = store.get_trades(run_id).tail(100).to_dict("records")
+                    else:
+                        payload = store.get_events(run_id).tail(100).to_dict("records")
+                elif target.path == "/api/lab/spy":
+                    query = parse_qs(target.query)
+                    payload = lab_spy(query.get("start", [""])[0], query.get("end", [""])[0])
                 else:
                     self._json(HTTPStatus.NOT_FOUND, {"error": "not found"})
                     return
-            except ValueError as error:
+            except (ValueError, KeyError) as error:
                 self._json(HTTPStatus.BAD_REQUEST, {"error": str(error)})
                 return
             except (OSError, duckdb.Error, json.JSONDecodeError) as error:
+                self._json(HTTPStatus.SERVICE_UNAVAILABLE, {"error": str(error)})
+                return
+            self._json(HTTPStatus.OK, payload)
+
+        def do_POST(self) -> None:
+            if not self._write_allowed():
+                self._json(HTTPStatus.FORBIDDEN, {"error": "origin is not allowed for writes"})
+                return
+            target = urlsplit(self.path).path
+            if target not in {"/api/lab/import", "/api/lab/run", "/api/lab/cancel",
+                              "/api/lab/experiment"}:
+                self._json(HTTPStatus.NOT_FOUND, {"error": "not found"})
+                return
+            try:
+                length = int(self.headers.get("Content-Length", "0"))
+                maximum = MAX_PLUGIN_BYTES if target.endswith("/import") else MAX_JSON_BYTES
+                if not 0 < length <= maximum:
+                    raise ValueError("invalid request size")
+                body = self.rfile.read(length)
+                manager = lab_manager()
+                if target.endswith("/import"):
+                    if self.headers.get("Content-Type", "").split(";", 1)[0] != "application/zip":
+                        raise ValueError("strategy upload must be a ZIP")
+                    with TemporaryDirectory(prefix="stock-radar-upload-") as directory:
+                        path = Path(directory) / "strategy.zip"
+                        path.write_bytes(body)
+                        registration = manager.import_zip(path)
+                    payload = {"id": registration.manifest.id,
+                               "version": registration.manifest.version,
+                               "name": registration.manifest.name}
+                else:
+                    if self.headers.get("Content-Type", "").split(";", 1)[0] != "application/json":
+                        raise ValueError("request must be JSON")
+                    data = json.loads(body)
+                    if not isinstance(data, dict):
+                        raise ValueError("request must be an object")
+                    if target.endswith("/experiment"):
+                        from radar.lab.experiments import queue_experiment
+                        payload = queue_experiment(
+                            manager, kind=str(data["kind"]),
+                            strategy_id=str(data["strategy_id"]),
+                            split=str(data.get("split", "validation")),
+                            grid=data.get("grid"),
+                            slippage_bps=float(data.get("slippage_bps", 10)),
+                        )
+                    elif target.endswith("/cancel"):
+                        manager.cancel(str(data["run_id"]))
+                        payload = {"ok": True}
+                    else:
+                        ids = data.get("strategy_ids")
+                        if not isinstance(ids, list) or not all(isinstance(item, str) for item in ids):
+                            raise ValueError("strategy_ids must be a list")
+                        configs = data.get("configs_by_strategy")
+                        if configs is not None and not isinstance(configs, dict):
+                            raise ValueError("configs_by_strategy must be an object")
+                        run_ids = manager.queue_runs(
+                            ids, split=str(data.get("split", "validation")),
+                            slippage_bps=float(data.get("slippage_bps", 10)),
+                            configs_by_strategy=configs,
+                        )
+                        manager.launch_queued()
+                        payload = {"run_ids": run_ids}
+            except (ValueError, KeyError, TypeError, json.JSONDecodeError) as error:
+                self._json(HTTPStatus.BAD_REQUEST, {"error": str(error)})
+                return
+            except Exception as error:
                 self._json(HTTPStatus.SERVICE_UNAVAILABLE, {"error": str(error)})
                 return
             self._json(HTTPStatus.OK, payload)
@@ -148,7 +281,7 @@ def make_handler(allowed_origins: set[str]):
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Stock Radar loopback read-only API")
+    parser = argparse.ArgumentParser(description="Stock Radar loopback API")
     parser.add_argument("--port", type=int, default=8765)
     parser.add_argument("--allow-origin", action="append", required=True)
     args = parser.parse_args()

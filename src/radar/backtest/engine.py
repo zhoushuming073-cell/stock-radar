@@ -83,6 +83,10 @@ class BacktestResult:
     open_positions: list[Position]
 
 
+class BacktestCancelled(Exception):
+    """A local research run was cancelled between trading sessions."""
+
+
 def _price(row: pd.Series | None, column: str) -> float | None:
     if row is None:
         return None
@@ -115,6 +119,8 @@ def run_backtest(
     config: BacktestConfig = BacktestConfig(),
     market_ok: dict[pd.Timestamp, bool] | None = None,
     candidate_selector: Callable[[pd.DataFrame, set[str]], pd.DataFrame] | None = None,
+    progress_callback: Callable[[dict], None] | None = None,
+    cancel_requested: Callable[[], bool] | None = None,
 ) -> BacktestResult:
     """Run one chronological segment from its first signal date through exits.
 
@@ -147,6 +153,7 @@ def run_backtest(
     trade_rows: list[dict] = []
     order_rows: list[dict] = []
     equity_rows: list[dict] = []
+    peak_equity = float(config.initial_capital)
 
     def exit_position(position: Position, day: pd.Timestamp, reference: float,
                       reason: str, holding_sessions: int) -> None:
@@ -184,7 +191,11 @@ def run_backtest(
         del positions[position.symbol]
 
     for idx in range(start_idx, end_idx + 1):
+        if cancel_requested is not None and cancel_requested():
+            raise BacktestCancelled("backtest cancelled by user")
         day = sessions[idx]
+        trade_count_before = len(trade_rows)
+        order_count_before = len(order_rows)
         try:
             daily = bars_and_features.xs(day, level="date", drop_level=True)
         except KeyError:
@@ -298,6 +309,7 @@ def run_backtest(
         equity_rows.append({"date": day, "cash": cash, "equity": equity,
                             "positions": len(positions), "gross_exposure": equity - cash,
                             "missing_marks": missing_marks})
+        peak_equity = max(peak_equity, equity)
         allowed_by_market = config.market_guard == "none" or bool(market_ok.get(day, False))
         if idx <= signal_end_idx and not daily.empty and allowed_by_market:
             selected = (candidate_selector(daily, set(positions))
@@ -311,6 +323,26 @@ def run_backtest(
                         "drawdown_20": float(row.drawdown_20),
                         "avg_dollar_volume_20": float(row.avg_dollar_volume_20)}
                        for row in selected.itertuples(index=False)]
+        if progress_callback is not None:
+            progress_callback({
+                "date": day,
+                "completed_sessions": idx - start_idx + 1,
+                "total_sessions": end_idx - start_idx + 1,
+                "equity": equity,
+                "cash": cash,
+                "gross_exposure": equity - cash,
+                "drawdown": equity / peak_equity - 1,
+                "open_positions": [
+                    {"symbol": p.symbol, "quantity": p.quantity,
+                     "entry_date": p.entry_date, "entry_total": p.entry_total,
+                     "last_close": p.last_close}
+                    for p in positions.values()
+                ],
+                "closed_trades": len(trade_rows),
+                "new_trades": trade_rows[trade_count_before:],
+                "new_orders": order_rows[order_count_before:],
+                "latest_signals": [dict(candidate) for candidate in pending],
+            })
     trades = pd.DataFrame(trade_rows)
     if trades.empty:
         trades = pd.DataFrame(columns=list(TRADE_COLUMNS))
