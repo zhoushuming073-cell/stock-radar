@@ -1,4 +1,7 @@
-# Strategy 2 portfolio development review — before final Test
+# Phase 2 simplified-baseline portfolio development review — before final Test
+
+These candidate rules test partial signals, chiefly Elasticity and drawdown.
+They do not implement the full Strategy 2 lifecycle in the Phase 2 specification.
 
 The simulator starts each segment with $1,000,000, uses next-session Open
 entry, Open/Close exits (+5%, -10%, 10 sessions), whole shares, no leverage,

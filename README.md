@@ -5,9 +5,11 @@ builds the data foundation: asset master, daily OHLCV bars in DuckDB, incrementa
 updates, validation, and universe export.
 
 It is research software only. **Nothing in this repository places orders** — no
-trading or order endpoint is called anywhere in the package. Strategy 2 scoring
-and a historical backtest are implemented for research; the evaluated strategy
-lost money and is not suitable for deployment.
+trading or order endpoint is called anywhere in the package. The Phase 2
+features and historical backtest engine are implemented. The evaluated candidate
+is a simplified Elasticity-plus-pullback baseline, not the full Strategy 2
+setup described in the Phase 2 specification; it lost money and is not suitable
+for deployment.
 
 ## Setup
 
@@ -140,7 +142,7 @@ or changing the Site address:
 & ./scripts/install-automation.ps1 -SiteOrigin 'https://stock-radar-local.zhoushuming.chatgpt.site'
 ```
 
-## Strategy 2 historical backtest
+## Phase 2 simplified-baseline historical backtest
 
 Phase 2 research uses local SIP, split-adjusted daily bars in
 `data/phase2-research.duckdb`. The research database and detailed trade files
@@ -163,6 +165,11 @@ With the local research database already prepared, the reproducible commands are
 & .\.venv\Scripts\python.exe scripts/verify_final_backtest.py
 & .\.venv\Scripts\python.exe scripts/render_backtest_report.py
 ```
+
+The tested candidate ranks high Elasticity and deep 20-session drawdowns. It
+does not yet require prior strength, downside exhaustion, support/absorption,
+absence of new lows, and early bullish confirmation together. Its result must
+not be presented as the full Strategy 2 return.
 
 The final Test runner records a one-time evaluation marker and returns the
 stored result on a repeat invocation. Any new strategy requires a new untouched
