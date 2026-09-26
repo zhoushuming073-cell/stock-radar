@@ -1,5 +1,8 @@
 # Stock Radar
 
+<p align="center"><strong>English</strong> · <a href="./README.zh-CN.md">简体中文</a></p>
+<p align="center"><img src="./docs/repo-banner.png" alt="Stock Radar repository banner" width="100%"></p>
+
 A broad US-equity research and screening project using Alpaca market data. Phase 1
 builds the data foundation: asset master, daily OHLCV bars in DuckDB, incremental
 updates, validation, and universe export.
