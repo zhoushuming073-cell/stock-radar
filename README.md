@@ -9,8 +9,8 @@
 </p>
 
 <p align="center">
-  <strong>Local-first US-equity research infrastructure.</strong><br>
-  Market data · validation · historical backtesting · Strategy Lab · reproducible experiments
+  <strong>A local-first quantitative stock radar for turning discretionary trading ideas into measurable, testable candidate selection.</strong><br>
+  Market data · pattern quantification · candidate ranking · historical validation · reproducible research
 </p>
 
 <p align="center">
@@ -27,7 +27,7 @@
 </p>
 
 > [!IMPORTANT]
-> Stock Radar is research software only. **Nothing in this repository places broker orders.** Phase 1 market-data infrastructure, Phase 2 historical backtesting, the initial seven-stage Strategy 2 candidate, and the Phase 3 local Strategy Lab are implemented. Existing backtest results do **not** establish a deployable trading edge; the previously viewed Test slice is exploratory rather than fresh out-of-sample evidence.
+> Stock Radar is research software only. **Nothing in this repository places broker orders.** The project is being refocused from a general-purpose backtesting platform toward a personal quantitative stock-selection research system. The primary question is not how high a historical portfolio return can be, but whether subjective setup language can be translated into causal, reproducible market features that consistently enrich favorable forward outcomes. Existing backtest results do **not** establish a deployable trading edge; the previously viewed Test slice is exploratory rather than fresh out-of-sample evidence.
 
 <p align="center">
   <a href="#overview">Overview</a> ·
@@ -41,10 +41,48 @@
 
 ## Overview
 
-Stock Radar is a broad US-equity research and screening system built around Alpaca market data. It started as a local market-data foundation and now extends into reproducible historical backtesting and a persistent Strategy Lab for plugin-based experiments.
+Stock Radar is a personal US-equity quantitative research system built around a practical workflow: reduce thousands of stocks to a small daily watchlist whose price structure matches a defined trading setup, then leave contextual judgment—news, catalysts, fundamentals, premarket behavior and other non-price information—to a later research stage.
 
 The design remains deliberately **local-first**: Alpaca credentials, DuckDB market data, strategy plugins, run metadata, and detailed research artifacts stay on the machine running Stock Radar. The private browser dashboard talks only to a loopback API on that machine.
 
+## Research direction
+
+Stock Radar is being refocused around **pattern quantification** rather than maximizing a historical equity curve.
+
+The practical workflow is:
+
+```text
+Full US-equity universe
+→ causal quantitative screening
+→ a small ranked candidate list
+→ later GPT-assisted review of news, catalysts, fundamentals and premarket context
+→ optional intraday confirmation
+```
+
+The research questions are now:
+
+1. Can discretionary chart language such as *strong before the pullback, fell hard, stopped deteriorating, showed support, and may be ready for upside expansion* be translated into measurable features?
+2. Does the quantitative scanner actually retrieve the kinds of charts a human would label as matching that setup?
+3. Are those candidates enriched for favorable forward outcomes over a fixed horizon, even before any news or fundamental filter is applied?
+4. Does a later contextual review add incremental value over the quantitative candidate list alone?
+
+Backtesting therefore remains important, but increasingly as a **validation instrument**. The next research phase will emphasize candidate-quality metrics such as:
+
+- Precision@5 / Precision@10 / Precision@20
+- Lift@K versus the eligible-market base rate
+- calibrated probability of reaching +3%, +5%, +8% or +10% within a fixed horizon
+- forward MFE / MAE and time-to-target
+- false falling-knife / post-signal new-low rate
+- stability across years, bull/bear regimes and volatility environments
+
+Planned research branches:
+
+- **Quant** — structured features, interpretable pattern scores and probability models.
+- **Vision** — a separate future path using standardized candlestick/volume images to test whether visual representations capture structure missed by hand-crafted features.
+- **Fusion** — compare Quant-only, Vision-only and agreement between the two.
+- **Intraday** — candidate-only minute data for support, reversal and execution-confirmation research rather than full-market minute data as the starting point.
+
+The long-term goal is not to reproduce a universal institutional trading stack. It is to build a reproducible **personal quantitative stock radar** that turns a discretionary selection process into something measurable, falsifiable and useful as the first stage of a human/GPT research workflow.
 ### What it includes
 
 | Layer | Current implementation |
@@ -69,6 +107,13 @@ The design remains deliberately **local-first**: Alpaca credentials, DuckDB mark
 - [x] Persistent local Strategy Lab and run queue
 - [x] Parameter-grid, stage-ablation, and rolling walk-forward experiments
 - [x] Private Sites integration and unattended local updates
+- [ ] Human-labelled chart-snapshot dataset for pattern ground truth
+- [ ] Pattern-match evaluation with Precision@K / Recall / Lift@K
+- [ ] Fixed-horizon target-hit probability research and calibration
+- [ ] Market-regime conditioning
+- [ ] Candidate-only intraday data for support / reversal / execution studies
+- [ ] Quant vs Vision vs Fusion research branch
+- [ ] Point-in-time candidate/context log for future GPT-assisted second-stage review
 - [ ] Fresh untouched out-of-sample period for validating claimed strategy improvement
 - [ ] Broker execution / live trading — intentionally not implemented
 
