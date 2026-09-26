@@ -2,11 +2,11 @@
   <strong>English</strong> · <a href="./README.zh-CN.md">简体中文</a>
 </p>
 
+<h1 align="center">📡 Stock Radar</h1>
+
 <p align="center">
   <img src="./docs/repo-banner.png" alt="Stock Radar repository banner for US equity quant research" width="100%">
 </p>
-
-<h1 align="center">📡 Stock Radar</h1>
 
 <p align="center">
   <strong>Local-first US equity market-data research infrastructure.</strong><br>
