@@ -1,6 +1,6 @@
 const API = "http://127.0.0.1:8765";
 const $ = id => document.getElementById(id);
-const state = {strategies:[], runs:[], selected:new Set(), active:null, config:{}, compare:new Set(), loading:false};
+const state = {strategies:[], runs:[], selected:new Set(), focused:null, parameterFor:null, active:null, config:{}, compare:new Set(), loading:false};
 const money = n => n!==null&&n!==undefined&&Number.isFinite(Number(n)) ? new Intl.NumberFormat("zh-CN",{maximumFractionDigits:0}).format(Number(n)) : "—";
 const pct = n => n!==null&&n!==undefined&&Number.isFinite(Number(n)) ? `${(Number(n)*100).toFixed(2)}%` : "—";
 const day = s => s ? String(s).slice(0,10) : "—";
@@ -15,29 +15,41 @@ async function api(path, options={}){
 }
 async function post(path, body){return api(path,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});}
 function drawStrategies(){
-  $("strategies").innerHTML=state.strategies.map(s=>`<button class="strategy-chip ${state.selected.has(s.id)?"selected":""}" data-strategy="${safe(s.id)}" title="${safe(s.description)}">${safe(s.name)} <small>v${safe(s.version)}</small></button>`).join("")||"<span class='muted'>暂无策略，请导入 ZIP</span>";
+  $("strategies").innerHTML=state.strategies.map(s=>`<button class="strategy-chip ${state.selected.has(s.id)?"selected":""} ${state.focused===s.id?"focused":""}" data-strategy="${safe(s.id)}" title="${safe(s.description)}">${safe(s.name)} <small>v${safe(s.version)}</small></button>`).join("")||"<span class='muted'>暂无策略，请导入 ZIP</span>";
   document.querySelectorAll("[data-strategy]").forEach(button=>button.onclick=()=>{
     const id=button.dataset.strategy;
-    if(state.selected.has(id))state.selected.delete(id);else state.selected.add(id);
+    if(state.selected.has(id)){if(state.focused===id)state.selected.delete(id);else state.focused=id;}
+    else{state.selected.add(id);state.focused=id;}
+    if(!state.selected.has(state.focused))state.focused=[...state.selected][0]||null;
     if(!state.config[id])state.config[id]=structuredClone(state.strategies.find(s=>s.id===id).config);
     drawStrategies();drawParameters();
   });
 }
-function drawParameters(){
-  const id=[...state.selected][0];const strategy=state.strategies.find(s=>s.id===id);
-  if(!strategy){$("parameter-fields").innerHTML="<span class='helper'>选择策略后编辑参数</span>";return;}
+function drawParameters(force=false){
+  const id=state.focused||[...state.selected][0];const strategy=state.strategies.find(s=>s.id===id);
+  if(!strategy){$("parameter-fields").innerHTML="<span class='helper'>选择策略后编辑参数</span>";$("config-diff").textContent="";return;}
+  if(!force&&state.parameterFor===id&&$("parameter-fields").querySelector("[data-param]"))return;
+  state.parameterFor=id;
   if(!state.config[id])state.config[id]=structuredClone(strategy.config);
   const config=state.config[id];
   $("parameter-fields").innerHTML=Object.entries(config).map(([key,value])=>{
-    const input=typeof value==="boolean"?`<input type="checkbox" data-param="${safe(key)}" ${value?"checked":""}>`:`<input type="${typeof value==="number"?"number":"text"}" step="any" data-param="${safe(key)}" value="${safe(value)}">`;
+    const input=typeof value==="boolean"?`<input type="checkbox" data-param="${safe(key)}" ${value?"checked":""}>`:`<input type="${typeof value==="number"?"number":"text"}" step="any" data-param="${safe(key)}" value="${safe(Array.isArray(value)?JSON.stringify(value):value)}">`;
     return `<div class="field"><label for="param-${safe(key)}">${safe(key)}</label>${input}</div>`;
   }).join("");
   document.querySelectorAll("[data-param]").forEach(input=>input.onchange=()=>{
     const key=input.dataset.param,previous=config[key];
-    config[key]=typeof previous==="boolean"?input.checked:typeof previous==="number"?Number(input.value):input.value;
+    if(Array.isArray(previous)){try{const parsed=JSON.parse(input.value);if(!Array.isArray(parsed))throw Error();config[key]=parsed}catch{input.value=JSON.stringify(previous);notice("列表参数必须填写 JSON 数组，例如 [\"elasticity\"]。");return}}
+    else config[key]=typeof previous==="boolean"?input.checked:typeof previous==="number"?Number(input.value):input.value;
     if(typeof previous==="number"&&!Number.isFinite(config[key])){config[key]=previous;input.value=previous;notice("参数必须是有效数字。");}
+    drawConfigDiff();
   });
   $("grid-param").innerHTML=Object.entries(config).filter(([,value])=>typeof value==="number").map(([key])=>`<option value="${safe(key)}">${safe(key)}</option>`).join("");
+  drawConfigDiff();
+}
+function drawConfigDiff(){
+  const id=state.focused,s=state.strategies.find(x=>x.id===id);if(!s)return;
+  const changes=Object.entries(state.config[id]||{}).filter(([key,value])=>JSON.stringify(value)!==JSON.stringify(s.config[key]));
+  $("config-diff").textContent=changes.length?`与默认参数不同：${changes.map(([key])=>key).join("、")}`:"当前使用默认参数";
 }
 function drawRuns(){
   $("run-list").innerHTML=state.runs.map(r=>`<div class="run-item"><button data-run="${safe(r.run_id)}">${safe(r.metadata?.strategy_name||r.metadata?.strategy_id||"策略")} · ${safe(human[r.metadata?.split]||r.metadata?.split||"")}</button><span>${safe(statusLabel[r.status]||r.status)}</span><span>${safe(day(r.created_at))}</span><label><input type="checkbox" data-compare="${safe(r.run_id)}" ${state.compare.has(r.run_id)?"checked":""} ${r.status!=="completed"?"disabled":""}> 比较</label></div>`).join("")||"<span class='helper'>暂无运行记录</span>";
@@ -100,6 +112,7 @@ async function refresh(){
     const [strategies,runs]=await Promise.all([api("/api/lab/strategies"),api("/api/lab/runs")]);
     state.strategies=strategies;state.runs=runs;
     if(!state.selected.size&&strategies.length)state.selected.add(strategies[0].id);
+    if(!state.focused&&strategies.length)state.focused=[...state.selected][0];
     if(!state.active&&runs.length)state.active=runs[0].run_id;
     $("connection").innerHTML="<span class='green-dot'></span> 已连接本机";
     drawStrategies();drawParameters();drawRuns();if(state.active)await drawActive();await drawCompare();await drawExperiments();notice("");
@@ -115,10 +128,17 @@ $("run-selected").onclick=async()=>{
 $("plugin-file").onchange=async event=>{
   const file=event.target.files[0];if(!file)return;
   if(file.size>5_000_000){notice("策略 ZIP 不能超过 5 MB。");return}
-  try{const result=await api("/api/lab/import",{method:"POST",headers:{"Content-Type":"application/zip"},body:file});state.selected.add(result.id);await refresh();notice(`已导入 ${result.name}。请检查参数后运行。`)}catch(error){notice(`导入失败：${error.message}`)}finally{event.target.value=""}
+  try{const result=await api("/api/lab/import",{method:"POST",headers:{"Content-Type":"application/zip"},body:file});state.selected.add(result.id);state.focused=result.id;await refresh();notice(`已导入 ${result.name}。请检查参数后运行。`)}catch(error){notice(`导入失败：${error.message}`)}finally{event.target.value=""}
 };
 $("cancel-run").onclick=async()=>{if(!state.active)return;try{await post("/api/lab/cancel",{run_id:state.active});await refresh()}catch(error){notice(`停止失败：${error.message}`)}};
-$("reset-config").onclick=()=>{const id=[...state.selected][0],s=state.strategies.find(x=>x.id===id);if(s){state.config[id]=structuredClone(s.config);drawParameters()}};
+$("reset-config").onclick=()=>{const id=state.focused,s=state.strategies.find(x=>x.id===id);if(s){state.config[id]=structuredClone(s.config);drawParameters(true)}};
+$("clone-run").onclick=()=>{
+  const run=state.runs.find(r=>r.run_id===state.active),id=run?.metadata?.strategy_id;
+  if(!run||!state.strategies.some(s=>s.id===id)){notice("此运行对应的策略当前不可用，无法克隆。");return}
+  state.selected.add(id);state.focused=id;state.config[id]=structuredClone(run.metadata.config);
+  drawStrategies();drawParameters(true);document.getElementById("parameters").scrollIntoView({behavior:"smooth",block:"center"});
+  notice("已复制这次运行的参数。修改后点击“运行所选策略”，会生成新的独立运行。");
+};
 $("refresh").onclick=refresh;
 const experimentName={grid:"参数网格",ablation:"逐项剔除",walk_forward:"滚动区间"};
 async function drawExperiments(){
@@ -128,11 +148,11 @@ async function drawExperiments(){
 }
 $("experiment-kind").onchange=()=>{const grid=$("experiment-kind").value==="grid";$("grid-param").parentElement.hidden=!grid;$("grid-values").parentElement.hidden=!grid};
 $("start-experiment").onclick=async()=>{
-  const strategy_id=[...state.selected][0];if(!strategy_id){notice("请先选择一个策略。");return}
+  const strategy_id=state.focused;if(!strategy_id){notice("请先选择一个策略。");return}
   const kind=$("experiment-kind").value;
   const payload={kind,strategy_id,split:$("split").value,slippage_bps:Number($("slippage").value)};
   if(kind==="grid"){
-    const key=$("grid-param").value,values=$("grid-values").value.split(",").map(x=>Number(x.trim()));
+    const key=$("grid-param").value,values=$("grid-values").value.split(",").map(x=>x.trim()).filter(Boolean).map(Number);
     if(!key||!values.length||values.some(x=>!Number.isFinite(x))){notice("请输入有效的候选数值，用逗号分隔。");return}
     payload.grid={[key]:values};
   }

@@ -47,8 +47,8 @@
       </section>
       <aside class="detail-column">
         <article class="card"><div class="card-head"><h3>当前持仓</h3><span id="position-count">—</span></div><div class="table-wrap"><table><thead><tr><th>代码</th><th>数量</th><th>入场价</th><th>最新价</th></tr></thead><tbody id="positions-body"><tr><td colspan="4">暂无持仓</td></tr></tbody></table></div></article>
-        <article class="card" id="parameters"><div class="card-head"><h3>策略参数</h3><button class="text-button" id="reset-config">恢复默认</button></div><p class="helper">编辑后将创建新的不可变运行，历史结果不会被覆盖。</p><div id="parameter-fields" class="fields"></div></article>
-        <article class="card"><div class="card-head"><h3>运行信息</h3></div><dl id="run-meta" class="metadata"></dl></article>
+        <article class="card" id="parameters"><div class="card-head"><h3>策略参数</h3><button class="text-button" id="reset-config">恢复默认</button></div><p class="helper">编辑后将创建新的不可变运行，历史结果不会被覆盖。</p><div id="parameter-fields" class="fields"></div><div id="config-diff" class="helper"></div></article>
+        <article class="card"><div class="card-head"><h3>运行信息</h3><button class="text-button" id="clone-run">克隆参数</button></div><dl id="run-meta" class="metadata"></dl></article>
       </aside>
     </div>
     <section id="runs" class="card section-card"><div class="card-head"><h3>运行记录</h3><button id="refresh" class="text-button">刷新</button></div><p class="helper">每次运行连同策略版本、参数和数据指纹独立保存。</p><div id="run-list" class="run-list"></div></section>
