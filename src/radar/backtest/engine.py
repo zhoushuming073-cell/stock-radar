@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from math import floor, isfinite
+from typing import Callable
 
 import pandas as pd
 
@@ -113,6 +114,7 @@ def run_backtest(
     fee_config: FeeConfig,
     config: BacktestConfig = BacktestConfig(),
     market_ok: dict[pd.Timestamp, bool] | None = None,
+    candidate_selector: Callable[[pd.DataFrame, set[str]], pd.DataFrame] | None = None,
 ) -> BacktestResult:
     """Run one chronological segment from its first signal date through exits.
 
@@ -298,8 +300,10 @@ def run_backtest(
                             "missing_marks": missing_marks})
         allowed_by_market = config.market_guard == "none" or bool(market_ok.get(day, False))
         if idx <= signal_end_idx and not daily.empty and allowed_by_market:
-            selected = rank_candidates(daily, rules, variant=config.candidate_variant,
-                                       already_held=set(positions))
+            selected = (candidate_selector(daily, set(positions))
+                        if candidate_selector is not None
+                        else rank_candidates(daily, rules, variant=config.candidate_variant,
+                                             already_held=set(positions)))
             pending = [{"symbol": row.symbol, "signal_date": day,
                         "signal_close": float(row.close),
                         "strategy2_score": float(row.strategy2_score),
