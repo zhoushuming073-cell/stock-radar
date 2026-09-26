@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Stock Radar Strategy Lab</title>
+<style>
+:root{--bg:#f6f8fb;--panel:#fff;--line:#e7ebf0;--text:#172033;--muted:#7a8499;--blue:#2563eb;--blue2:#eaf2ff;--green:#13a66a;--red:#e34b4b}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+button,select,input{font:inherit}.app{display:grid;grid-template-columns:176px 1fr;min-height:100vh}.sidebar{background:#fbfcfe;border-right:1px solid var(--line);padding:18px 12px}
+.brand{font-weight:750;padding:8px 10px 18px}.nav{display:flex;flex-direction:column;gap:5px}.nav button{border:0;background:transparent;text-align:left;padding:10px 11px;border-radius:9px;color:#4b566b;cursor:pointer}.nav button.active{background:var(--blue2);color:var(--blue);font-weight:650}.sep{height:1px;background:var(--line);margin:12px 4px}
+main{padding:18px 22px}.page{display:none}.page.active{display:block}.top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}h1{font-size:22px;margin:0 0 4px}.sub{font-size:13px;color:var(--muted)}
+.btn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:8px 12px;cursor:pointer}.primary{background:var(--blue);border-color:var(--blue);color:#fff}.danger{border-color:#f2b3b3;color:var(--red);background:#fff7f7}
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}.field{background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px 11px}.spacer{flex:1}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:14px}.tabs button{border:0;background:transparent;padding:10px 13px;color:#59647a;border-bottom:2px solid transparent}.tabs button.active{color:var(--blue);border-color:var(--blue);font-weight:650}
+.panel{background:#fff;border:1px solid var(--line);border-radius:12px}.runbar{display:flex;align-items:center;gap:14px;padding:13px 15px;margin-bottom:12px}.status{font-size:12px;font-weight:700;color:var(--blue);background:var(--blue2);padding:7px 10px;border-radius:999px}.progress{height:6px;background:#edf1f6;border-radius:99px;overflow:hidden;flex:1;max-width:350px}.progress div{height:100%;width:67%;background:var(--blue)}
+.metrics{display:grid;grid-template-columns:repeat(6,minmax(110px,1fr));gap:10px;margin-bottom:12px}.metric{padding:13px 14px}.label{font-size:12px;color:var(--muted);margin-bottom:7px}.value{font-size:21px;font-weight:750}.pos{color:var(--green)}.neg{color:var(--red)}
+.grid{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(285px,.7fr);gap:12px}.chartp{padding:14px}.title{font-weight:700;font-size:14px;margin-bottom:10px}.chart{height:270px;background:linear-gradient(#fff,#fbfcfe);border-radius:8px;border:1px solid #f0f2f5;overflow:hidden}.small{height:150px}.stack{display:flex;flex-direction:column;gap:12px}.mini{padding:13px}
+table{width:100%;border-collapse:collapse;font-size:12px}th,td{padding:9px 10px;border-bottom:1px solid #eef1f5;text-align:left}th{color:#748096;background:#fafbfc}.kv{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f2f5;font-size:12px}
+.bottom{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:12px;margin-top:12px}.log{padding:7px 0;border-bottom:1px solid #f0f2f5;font-size:12px}.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-right:7px}
+.row{display:grid;grid-template-columns:1.3fr .6fr .7fr 1.7fr .6fr .7fr;gap:10px;align-items:center;padding:12px 14px;border-bottom:1px solid #eef1f5;font-size:13px}.head{font-size:11px;color:var(--muted);font-weight:650;background:#fafbfc}.badge{display:inline-block;padding:4px 7px;border-radius:999px;background:#eaf8f1;color:var(--green);font-size:11px;font-weight:650}
+.exp{display:grid;grid-template-columns:1.4fr .8fr .8fr .6fr .6fr .7fr;gap:10px;padding:12px 14px;border-bottom:1px solid #eef1f5;font-size:13px}.compare{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,.7fr);gap:12px}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}.settings{display:grid;grid-template-columns:170px 1fr;gap:12px}.settings-menu button{display:block;width:100%;border:0;background:transparent;text-align:left;padding:9px 10px;border-radius:8px;color:#566075}.settings-menu button.active{background:var(--blue2);color:var(--blue);font-weight:650}.form{display:grid;grid-template-columns:repeat(2,minmax(180px,1fr));gap:12px;padding:16px}.fg label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}.fg input,.fg select{width:100%;border:1px solid var(--line);border-radius:8px;padding:9px 10px;background:#fff}
+svg{width:100%;height:100%;display:block}
+@media(max-width:1100px){.metrics{grid-template-columns:repeat(3,1fr)}.grid,.compare{grid-template-columns:1fr}.bottom{grid-template-columns:1fr}.cards{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand">◉ Stock Radar</div>
+  <div class="nav">
+    <button class="active" data-page="lab">◫ &nbsp;Lab</button>
+    <button data-page="strategies">◈ &nbsp;Strategies</button>
+    <button data-page="experiments">⌬ &nbsp;Experiments</button>
+    <button data-page="compare">⌘ &nbsp;Compare</button>
+    <div class="sep"></div>
+    <button data-page="data">▤ &nbsp;Data</button>
+    <button data-page="settings">⚙ &nbsp;Settings</button>
+  </div>
+</aside>
+
+<main>
+<section id="lab" class="page active">
+  <div class="top"><div><h1>Strategy Lab</h1><div class="sub">导入、运行并观察多个策略。</div></div></div>
+  <div class="toolbar">
+    <button class="btn primary">＋ Import Strategy</button>
+    <select class="field"><option>2023-01-01 → 2024-12-31</option></select>
+    <select class="field"><option>Fee: Default</option></select>
+    <select class="field"><option>Slippage: 5 bps</option></select>
+    <span class="spacer"></span><button class="btn primary">▶ Run Selected</button>
+  </div>
+  <div class="tabs"><button class="active">Strategy2 v1</button><button>Tight Pullback</button><button>High Elasticity</button><button>＋</button></div>
+  <div class="panel runbar"><strong>Strategy2 v1</strong><span class="status">RUNNING · 67%</span><div class="progress"><div></div></div><span class="sub">2024-08-14 · Day 398/504</span><span class="spacer"></span><button class="btn danger">■ Stop</button></div>
+  <div class="metrics">
+    <div class="panel metric"><div class="label">Current Equity</div><div class="value">$1,284,200</div></div>
+    <div class="panel metric"><div class="label">Return</div><div class="value pos">+28.4%</div></div>
+    <div class="panel metric"><div class="label">Drawdown</div><div class="value neg">-8.1%</div></div>
+    <div class="panel metric"><div class="label">Cash</div><div class="value">42%</div></div>
+    <div class="panel metric"><div class="label">Open Positions</div><div class="value">3</div></div>
+    <div class="panel metric"><div class="label">Closed Trades</div><div class="value">126</div></div>
+  </div>
+  <div class="grid">
+    <div>
+      <div class="panel chartp"><div class="title">Equity Curve</div><div class="chart"><svg viewBox="0 0 900 270" preserveAspectRatio="none"><polyline fill="none" stroke="#b9c0cc" stroke-width="2" points="0,230 90,222 180,216 270,205 360,197 450,184 540,178 630,169 720,156 810,148 900,139"/><polyline fill="none" stroke="#2563eb" stroke-width="3" points="0,235 45,220 90,205 135,191 180,202 225,188 270,180 315,165 360,174 405,154 450,148 495,151 540,135 585,129 630,115 675,123 720,96 765,101 810,82 855,65 900,49"/></svg></div></div>
+      <div class="panel chartp" style="margin-top:12px"><div class="title">Drawdown</div><div class="chart small"><svg viewBox="0 0 900 150" preserveAspectRatio="none"><polyline fill="none" stroke="#e34b4b" stroke-width="2.5" points="0,18 55,25 90,20 140,60 175,43 220,34 270,27 320,72 365,49 420,31 480,41 530,30 590,76 640,50 700,34 760,62 820,39 900,22"/></svg></div></div>
+    </div>
+    <div class="stack">
+      <div class="panel mini"><div class="title">Current Positions</div><table><thead><tr><th>Symbol</th><th>Avg</th><th>P&L</th></tr></thead><tbody><tr><td>RKLB</td><td>5.12</td><td class="pos">+12.4%</td></tr><tr><td>SOFI</td><td>7.21</td><td class="pos">+8.7%</td></tr><tr><td>PLTR</td><td>28.15</td><td class="neg">-2.1%</td></tr></tbody></table></div>
+      <div class="panel mini"><div class="title">Parameters <span style="float:right;color:#2563eb;font-weight:500">Edit</span></div><div class="kv"><span>Elasticity Min</span><b>80</b></div><div class="kv"><span>Pullback Max</span><b>30%</b></div><div class="kv"><span>Rebound Max</span><b>12%</b></div><div class="kv"><span>Take Profit</span><b>5%</b></div><div class="kv"><span>Stop Loss</span><b>10%</b></div></div>
+    </div>
+  </div>
+  <div class="bottom">
+    <div class="panel mini"><div class="title">Recent Trades</div><table><thead><tr><th>Date</th><th>Symbol</th><th>Action</th><th>Return</th></tr></thead><tbody><tr><td>08-14</td><td>RKLB</td><td>SELL</td><td class="pos">+12.3%</td></tr><tr><td>08-12</td><td>SOFI</td><td>SELL</td><td class="pos">+8.9%</td></tr><tr><td>08-09</td><td>ACHR</td><td>BUY</td><td>—</td></tr></tbody></table></div>
+    <div class="panel mini"><div class="title">Logs / Activity</div><div class="log"><span class="dot"></span>Backtest progress 67%</div><div class="log"><span class="dot"></span>Exited RKLB · Take Profit</div><div class="log"><span class="dot"></span>Loaded strategy2_v1</div></div>
+    <div class="panel mini"><div class="title">Compare Preview</div><div class="kv"><span>Strategy2 v1</span><b class="pos">+28.4%</b></div><div class="kv"><span>Tight Pullback</span><b class="pos">+17.2%</b></div><div class="kv"><span>High Elasticity</span><b class="pos">+31.6%</b></div></div>
+  </div>
+</section>
+
+<section id="strategies" class="page">
+  <div class="top"><div><h1>Strategies</h1><div class="sub">管理策略插件、版本和参数。</div></div><button class="btn primary">＋ Import Strategy</button></div>
+  <div class="panel">
+    <div class="row head"><div>Name</div><div>Version</div><div>Author</div><div>Description</div><div>Status</div><div>Action</div></div>
+    <div class="row"><div><b>Strategy2</b></div><div>1.0.0</div><div>Codex</div><div>强势回撤 + 止跌转强</div><div><span class="badge">Active</span></div><div><button class="btn">Open</button></div></div>
+    <div class="row"><div><b>Tight Pullback</b></div><div>0.1.0</div><div>ChatGPT</div><div>更紧的回撤与转强条件</div><div><span class="badge">Active</span></div><div><button class="btn">Open</button></div></div>
+    <div class="row"><div><b>High Elasticity</b></div><div>0.1.0</div><div>Claude</div><div>高弹性机会池变体</div><div><span class="badge">Active</span></div><div><button class="btn">Open</button></div></div>
+  </div>
+</section>
+
+<section id="experiments" class="page">
+  <div class="top"><div><h1>Experiments</h1><div class="sub">参数网格、消融、敏感性与 Walk-forward。</div></div><button class="btn primary">＋ New Experiment</button></div>
+  <div class="panel">
+    <div class="exp head"><div>Name</div><div>Type</div><div>Strategy</div><div>Status</div><div>Variants</div><div>Action</div></div>
+    <div class="exp"><div><b>Strategy2 Param Grid</b></div><div>Grid Search</div><div>S2 v1</div><div><span class="status">RUNNING</span></div><div>24 / 48</div><div><button class="btn">View</button></div></div>
+    <div class="exp"><div><b>Pullback Sensitivity</b></div><div>Sensitivity</div><div>S2 v1</div><div><span class="badge">Done</span></div><div>20 / 20</div><div><button class="btn">View</button></div></div>
+    <div class="exp"><div><b>Ablation Study</b></div><div>Ablation</div><div>S2 v1</div><div><span class="badge">Done</span></div><div>8 / 8</div><div><button class="btn">View</button></div></div>
+  </div>
+</section>
+
+<section id="compare" class="page">
+  <div class="top"><div><h1>Compare</h1><div class="sub">比较多个策略或 Run 的表现与参数。</div></div></div>
+  <div class="toolbar"><select class="field"><option>3 Runs Selected</option></select><select class="field"><option>2023-01-01 → 2024-12-31</option></select><button class="btn">Show SPY ✓</button></div>
+  <div class="compare">
+    <div class="panel chartp"><div class="title">Equity Curves</div><div class="chart"><svg viewBox="0 0 900 270" preserveAspectRatio="none"><polyline fill="none" stroke="#2563eb" stroke-width="3" points="0,225 120,205 240,194 360,176 480,162 600,132 720,105 900,78"/><polyline fill="none" stroke="#12a66a" stroke-width="3" points="0,225 120,214 240,202 360,168 480,155 600,118 720,95 900,55"/><polyline fill="none" stroke="#f59e0b" stroke-width="3" points="0,225 120,219 240,212 360,201 480,190 600,178 720,162 900,146"/><polyline fill="none" stroke="#aab2bf" stroke-width="2" points="0,225 120,218 240,211 360,199 480,191 600,180 720,169 900,157"/></svg></div></div>
+    <div class="panel mini"><div class="title">Performance Metrics</div><table><thead><tr><th>Metric</th><th>S2</th><th>High E</th></tr></thead><tbody><tr><td>Return</td><td>28.4%</td><td>31.6%</td></tr><tr><td>Max DD</td><td>-12.6%</td><td>-18.9%</td></tr><tr><td>Sharpe</td><td>0.74</td><td>0.68</td></tr><tr><td>PF</td><td>1.72</td><td>1.64</td></tr></tbody></table></div>
+  </div>
+  <div class="panel mini" style="margin-top:12px"><div class="title">Parameter Diff</div><table><thead><tr><th>Parameter</th><th>Strategy2 v1</th><th>High Elasticity</th></tr></thead><tbody><tr><td>Elasticity Min</td><td>80</td><td>90</td></tr><tr><td>Pullback Max</td><td>30%</td><td>35%</td></tr><tr><td>Rebound Max</td><td>12%</td><td>15%</td></tr></tbody></table></div>
+</section>
+
+<section id="data" class="page">
+  <div class="top"><div><h1>Data</h1><div class="sub">行情覆盖、同步和研究数据状态。</div></div><button class="btn primary">Sync from Alpaca</button></div>
+  <div class="cards">
+    <div class="panel metric"><div class="label">Daily Bars</div><div class="value pos">98.7%</div></div>
+    <div class="panel metric"><div class="label">Intraday Bars</div><div class="value">85.2%</div></div>
+    <div class="panel metric"><div class="label">Tradable Symbols</div><div class="value">5,231</div></div>
+    <div class="panel metric"><div class="label">Last Sync</div><div class="value" style="font-size:16px">10:32</div></div>
+  </div>
+  <div class="panel"><table><thead><tr><th>Asset Type</th><th>Total</th><th>Daily</th><th>Intraday</th><th>Coverage</th></tr></thead><tbody><tr><td>US Stocks</td><td>5,231</td><td>5,164</td><td>4,462</td><td class="pos">90.7%</td></tr><tr><td>NYSE</td><td>2,036</td><td>2,018</td><td>1,782</td><td class="pos">88.3%</td></tr><tr><td>NASDAQ</td><td>3,064</td><td>3,041</td><td>2,610</td><td class="pos">85.9%</td></tr></tbody></table></div>
+</section>
+
+<section id="settings" class="page">
+  <div class="top"><div><h1>Settings</h1><div class="sub">回测默认值、数据源和本地系统设置。</div></div></div>
+  <div class="settings">
+    <div class="panel mini settings-menu"><button class="active">Backtest</button><button>Data Sources</button><button>Fees & Slippage</button><button>System</button><button>Appearance</button><button>Advanced</button></div>
+    <div class="panel">
+      <div class="form">
+        <div class="fg"><label>Default Start Date</label><input value="2023-01-01"></div>
+        <div class="fg"><label>Default End Date</label><input value="2024-12-31"></div>
+        <div class="fg"><label>Initial Capital</label><input value="$1,000,000"></div>
+        <div class="fg"><label>Max New Candidates / Day</label><input value="3"></div>
+        <div class="fg"><label>Take Profit</label><input value="5%"></div>
+        <div class="fg"><label>Stop Loss</label><input value="10%"></div>
+        <div class="fg"><label>Max Holding</label><input value="10 trading days"></div>
+        <div class="fg"><label>Default Slippage</label><select><option>5 bps</option><option>10 bps</option><option>20 bps</option></select></div>
+      </div>
+      <div style="padding:0 16px 16px;text-align:right"><button class="btn primary">Save Changes</button></div>
+    </div>
+  </div>
+</section>
+</main>
+</div>
+<script>
+const buttons=[...document.querySelectorAll('.nav button[data-page]')];
+const pages=[...document.querySelectorAll('.page')];
+buttons.forEach(b=>b.onclick=()=>{buttons.forEach(x=>x.classList.remove('active'));b.classList.add('active');pages.forEach(p=>p.classList.remove('active'));document.getElementById(b.dataset.page).classList.add('active')});
+</script>
+</body>
+</html>

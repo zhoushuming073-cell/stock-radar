@@ -574,9 +574,13 @@ def _manager(root: str) -> Any:
 
 
 def main() -> None:
-    st.set_page_config(page_title="Stock Radar Strategy Lab", layout="wide")
-    st.title("Stock Radar Strategy Lab")
-    st.caption("本机多策略研究 · 每次运行单独保存 · 行情数据保留在本机")
+    st.set_page_config(page_title="Stock Radar Strategy Lab", layout="wide",
+                       initial_sidebar_state="expanded")
+    from radar.ui.navigation import render as render_navigation
+    from radar.ui.theme import apply_theme
+
+    apply_theme()
+    page = render_navigation()
     try:
         manager = _manager(str(ROOT))
     except Exception as exc:
@@ -584,8 +588,30 @@ def main() -> None:
         with st.expander("技术详情"):
             st.exception(exc)
         return
-    _sidebar(manager)
-    _live_area(manager)
+    if page == "Lab":
+        from radar.ui.pages.lab import render_lab
+
+        render_lab(manager)
+    elif page == "Strategies":
+        from radar.ui.pages.strategies import render_strategies
+
+        render_strategies(manager)
+    elif page == "Experiments":
+        from radar.ui.pages.experiments import render_experiments
+
+        render_experiments(manager)
+    elif page == "Compare":
+        from radar.ui.pages.compare import render_compare
+
+        render_compare(manager)
+    elif page == "Data":
+        from radar.ui.pages.data import render_data
+
+        render_data(manager)
+    elif page == "Settings":
+        from radar.ui.pages.settings import render_settings
+
+        render_settings(manager)
 
 
 if __name__ == "__main__":

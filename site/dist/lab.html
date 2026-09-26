@@ -12,28 +12,32 @@
 </head>
 <body>
   <aside class="rail">
-    <a class="brand" href="./lab.html"><span class="brand-icon">▥</span> Stock Radar <span>Strategy Lab</span></a>
+    <a class="brand" href="./lab.html"><span class="brand-icon">▥</span> Stock Radar</a>
     <nav aria-label="主导航">
-      <a href="./index.html">⌂ <span>行情总览</span></a>
-      <a class="active" href="./lab.html">▤ <span>策略实验室</span></a>
-      <a href="#runs">▷ <span>运行记录</span></a>
-      <a href="#compare">▥ <span>策略比较</span></a>
-      <a href="#experiments">♧ <span>稳定性实验</span></a>
-      <a href="#parameters">⚙ <span>参数</span></a>
+      <button class="nav-link active" data-page="lab" type="button">◫ <span>Lab</span></button>
+      <button class="nav-link" data-page="strategies-page" type="button">◈ <span>Strategies</span></button>
+      <button class="nav-link" data-page="experiments" type="button">⌬ <span>Experiments</span></button>
+      <button class="nav-link" data-page="compare" type="button">⌘ <span>Compare</span></button>
+      <span class="nav-divider"></span>
+      <a href="./index.html">▤ <span>Data</span></a>
+      <button class="nav-link" data-page="settings" type="button">⚙ <span>Settings</span></button>
     </nav>
-    <div class="rail-foot"><span class="green-dot"></span> 本机数据模式<br><small>数据和策略只保存在此电脑</small></div>
+    <div class="rail-foot"><span class="green-dot"></span> Local Mode<br><small>数据和策略只保存在此电脑</small></div>
   </aside>
   <main class="workspace">
     <header class="topbar">
-      <div><p class="eyebrow">STOCK RADAR / RESEARCH</p><h1>策略实验室</h1></div>
+      <div><h1>Stock Radar Strategy Lab</h1></div>
       <div class="connection" id="connection"><span class="green-dot"></span> 正在连接本机…</div>
     </header>
     <div id="notice" class="notice" hidden role="status"></div>
+    <section id="lab" class="page active">
+    <div class="page-heading"><h2>Strategy Lab</h2><p>导入、运行并观察多个策略。</p></div>
     <section class="toolbar" aria-label="实验设置">
-      <label class="upload">＋ 导入策略 ZIP<input type="file" id="plugin-file" accept=".zip,application/zip" hidden></label>
+      <label class="upload">＋ Import Strategy<input type="file" id="plugin-file" accept=".zip,application/zip" hidden></label>
       <label>回测区间<select id="split"><option value="train">训练期</option><option value="validation" selected>验证期</option><option value="test">测试期（探索性）</option></select></label>
+      <label>费用配置<span>Default</span></label>
       <label>滑点（基点）<input id="slippage" type="number" min="0" max="100" step="1" value="10"></label>
-      <button id="run-selected" class="primary" type="button">▷ 运行所选策略</button>
+      <button id="run-selected" class="primary" type="button">▷ Run Selected</button>
     </section>
     <section class="strategy-strip" id="strategies" aria-label="可用策略"></section>
     <div class="content">
@@ -43,7 +47,7 @@
           <article><span>当前权益</span><strong id="m-equity">—</strong></article><article><span>总收益</span><strong id="m-return">—</strong></article><article><span>最大回撤</span><strong id="m-dd">—</strong></article><article><span>现金比例</span><strong id="m-cash">—</strong></article><article><span>当前持仓</span><strong id="m-positions">—</strong></article><article><span>完成交易</span><strong id="m-trades">—</strong></article>
         </div>
         <article class="card chart-card"><div class="card-head"><h3>权益曲线</h3><span id="chart-caption">按实际交易日</span></div><div id="equity-chart" class="chart"></div><div class="card-head divider"><h3>回撤曲线</h3><span>相对历史最高权益</span></div><div id="drawdown-chart" class="chart small-chart"></div></article>
-        <div class="bottom-grid"><article class="card"><div class="card-head"><h3>最近交易</h3><span id="trade-count">—</span></div><div class="table-wrap"><table><thead><tr><th>退出日</th><th>代码</th><th>净收益</th><th>收益率</th><th>原因</th></tr></thead><tbody id="trades-body"><tr><td colspan="5">暂无交易</td></tr></tbody></table></div></article><article class="card"><div class="card-head"><h3>运行日志</h3><span id="event-count">—</span></div><div id="events" class="events">暂无记录</div></article></div>
+        <div class="bottom-grid"><article class="card"><div class="card-head"><h3>Recent Trades</h3><span id="trade-count">—</span></div><div class="table-wrap"><table><thead><tr><th>退出日</th><th>代码</th><th>净收益</th><th>收益率</th><th>原因</th></tr></thead><tbody id="trades-body"><tr><td colspan="5">暂无交易</td></tr></tbody></table></div></article><article class="card"><div class="card-head"><h3>Logs / Activity</h3><span id="event-count">—</span></div><div id="events" class="events">暂无记录</div></article><article class="card"><div class="card-head"><h3>Compare Preview</h3><button class="text-button" data-open-page="compare">Open Compare</button></div><div id="compare-preview" class="preview-list">在 Strategies 中勾选运行进行比较</div></article></div>
       </section>
       <aside class="detail-column">
         <article class="card"><div class="card-head"><h3>当前持仓</h3><span id="position-count">—</span></div><div class="table-wrap"><table><thead><tr><th>代码</th><th>数量</th><th>入场价</th><th>最新价</th></tr></thead><tbody id="positions-body"><tr><td colspan="4">暂无持仓</td></tr></tbody></table></div></article>
@@ -51,9 +55,11 @@
         <article class="card"><div class="card-head"><h3>运行信息</h3><button class="text-button" id="clone-run">克隆参数</button></div><dl id="run-meta" class="metadata"></dl></article>
       </aside>
     </div>
-    <section id="runs" class="card section-card"><div class="card-head"><h3>运行记录</h3><button id="refresh" class="text-button">刷新</button></div><p class="helper">每次运行连同策略版本、参数和数据指纹独立保存。</p><div id="run-list" class="run-list"></div></section>
-    <section id="compare" class="card section-card"><div class="card-head"><h3>策略比较</h3><span>可勾选多次已完成运行</span></div><div id="comparison-chart" class="compare-chart"></div><div class="table-wrap"><table><thead><tr><th>运行</th><th>区间</th><th>总收益</th><th>最大回撤</th><th>夏普</th><th>交易数</th></tr></thead><tbody id="comparison-body"><tr><td colspan="6">请选择运行</td></tr></tbody></table></div></section>
-    <section id="experiments" class="card section-card"><div class="card-head"><h3>稳定性实验</h3><span>仅使用训练期与验证期；最终测试期不参与参数搜索</span></div><div class="experiment-controls"><label>实验类型<select id="experiment-kind"><option value="grid">参数网格</option><option value="ablation">逐项剔除</option><option value="walk_forward">滚动区间</option></select></label><label>参数<select id="grid-param"></select></label><label>候选值（逗号分隔）<input id="grid-values" placeholder="例如 0.15, 0.20, 0.25"></label><button id="start-experiment" class="primary">创建实验</button></div><p class="helper">参数网格最多 64 组；逐项剔除对完整策略 2 分别关闭八个阶段；滚动区间采用固定参数，逐折独立记录，报告样本外结果。</p><div id="experiment-list" class="experiment-list"></div></section>
+    </section>
+    <section id="strategies-page" class="page"><div class="page-heading"><div><h2>Strategies</h2><p>管理策略插件、版本与历史运行。</p></div><label class="upload">＋ Import Strategy<input type="file" id="strategy-plugin-file" accept=".zip,application/zip" hidden></label></div><article class="card section-card"><div class="card-head"><h3>Available Strategies</h3><span id="strategy-count">—</span></div><div class="table-wrap"><table><thead><tr><th>Name</th><th>Version</th><th>Author</th><th>Description</th><th>Status</th><th>Action</th></tr></thead><tbody id="strategy-rows"></tbody></table></div></article><section id="runs" class="card section-card"><div class="card-head"><h3>Run History</h3><button id="refresh" class="text-button">刷新</button></div><p class="helper">每次运行连同策略版本、参数和数据指纹独立保存。</p><div id="run-list" class="run-list"></div></section></section>
+    <section id="compare" class="page"><div class="page-heading"><h2>Compare</h2><p>比较多个策略或 Run 的表现。</p></div><article class="card section-card"><div class="card-head"><h3>Equity Curves</h3><span>在 Strategies 中勾选已完成的运行</span></div><div id="comparison-chart" class="compare-chart"></div></article><article class="card section-card"><div class="card-head"><h3>Performance Metrics</h3></div><div class="table-wrap"><table><thead><tr><th>运行</th><th>区间</th><th>总收益</th><th>最大回撤</th><th>夏普</th><th>交易数</th></tr></thead><tbody id="comparison-body"><tr><td colspan="6">请选择运行</td></tr></tbody></table></div></article></section>
+    <section id="experiments" class="page"><div class="page-heading"><h2>Experiments</h2><p>参数网格、逐项剔除与滚动区间。</p></div><article class="card section-card"><div class="card-head"><h3>New Experiment</h3><span>最终测试期不参与参数搜索</span></div><div class="experiment-controls"><label>实验类型<select id="experiment-kind"><option value="grid">参数网格</option><option value="ablation">逐项剔除</option><option value="walk_forward">滚动区间</option></select></label><label>参数<select id="grid-param"></select></label><label>候选值（逗号分隔）<input id="grid-values" placeholder="例如 0.15, 0.20, 0.25"></label><button id="start-experiment" class="primary">创建实验</button></div><p class="helper">参数网格最多 64 组；逐项剔除与滚动区间在独立运行中保存。</p></article><article class="card section-card"><div class="card-head"><h3>Experiment History</h3></div><div id="experiment-list" class="experiment-list"></div></article></section>
+    <section id="settings" class="page"><div class="page-heading"><h2>Settings</h2><p>本机服务与研究环境。</p></div><article class="card section-card settings-card"><h3>Local Mode</h3><p>行情数据、策略文件、运行结果与密钥都保存在这台电脑。电脑关机或本机服务未运行时，托管页面无法读取这些内容。</p><p>回测区间与滑点可在 Lab 页面调整。详细设置请打开本地应用。</p><a class="primary local-link" href="http://127.0.0.1:8502/">打开本地应用</a></article></section>
     <footer>本页面托管于 Sites；行情、策略文件、运行结果和密钥均保存在这台电脑。电脑关机或本机服务未运行时，实验室无法连接。</footer>
   </main>
 </body>
