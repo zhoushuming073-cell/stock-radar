@@ -16,6 +16,7 @@ from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from threading import Event, Thread
 from urllib.parse import parse_qs, urlsplit
 
 import duckdb
@@ -280,6 +281,24 @@ def make_handler(allowed_origins: set[str]):
     return Handler
 
 
+def start_lab_dispatcher(interval_seconds: float = 5.0) -> Event:
+    """Keep queued Runs moving even after every browser tab is closed."""
+    stop = Event()
+
+    def dispatch() -> None:
+        while not stop.wait(interval_seconds):
+            try:
+                lab_manager().launch_queued()
+            except Exception as error:
+                log = DATA / "strategy-lab" / "dispatcher.log"
+                log.parent.mkdir(parents=True, exist_ok=True)
+                with log.open("a", encoding="utf-8") as stream:
+                    stream.write(f"{type(error).__name__}: {error}\n")
+
+    Thread(target=dispatch, name="stock-radar-lab-dispatcher", daemon=True).start()
+    return stop
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Stock Radar loopback API")
     parser.add_argument("--port", type=int, default=8765)
@@ -289,10 +308,14 @@ def main() -> None:
         if not origin.startswith(("https://", "http://127.0.0.1:", "http://localhost:")):
             parser.error("allowed origins must be HTTPS or local development origins")
     server = ThreadingHTTPServer(("127.0.0.1", args.port), make_handler(set(args.allow_origin)))
+    dispatcher_stop = start_lab_dispatcher()
     import sys
     if sys.stdout is not None:
         print(f"Stock Radar local API on http://127.0.0.1:{args.port}", flush=True)
-    server.serve_forever()
+    try:
+        server.serve_forever()
+    finally:
+        dispatcher_stop.set()
 
 
 if __name__ == "__main__":
