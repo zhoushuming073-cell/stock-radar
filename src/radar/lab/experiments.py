@@ -18,6 +18,29 @@ ABLATION_STAGES = (
 )
 
 
+def _resolve_leaf(base: dict, dotted: str) -> bool:
+    """True when a (possibly dotted) parameter path exists in the config."""
+    node = base
+    parts = dotted.split(".")
+    for part in parts[:-1]:
+        if not isinstance(node, dict) or part not in node:
+            return False
+        node = node[part]
+    return isinstance(node, dict) and parts[-1] in node
+
+
+def _apply_variant(base: dict, variant: dict) -> dict:
+    """Copy the base config and set each (possibly dotted) variant value."""
+    config = _plain(base)
+    for name, value in variant.items():
+        parts = name.split(".")
+        node = config
+        for part in parts[:-1]:
+            node = node[part]
+        node[parts[-1]] = value
+    return config
+
+
 def _registration(manager: RunManager, strategy_id: str):
     return manager.registry.get(strategy_id)
 
@@ -37,14 +60,14 @@ def queue_experiment(
         if not grid or not isinstance(grid, dict) or len(grid) > 4:
             raise ValueError("grid requires 1 to 4 parameter lists")
         for name, values in grid.items():
-            if name not in base or not isinstance(values, list) or not 1 <= len(values) <= 12:
+            if not _resolve_leaf(base, name) or not isinstance(values, list) or not 1 <= len(values) <= 12:
                 raise ValueError(f"invalid grid parameter: {name}")
         combinations = list(product(*grid.values()))
         if len(combinations) > 64:
             raise ValueError("grid is limited to 64 variants")
         for index, values in enumerate(combinations):
             variant = dict(zip(grid, values))
-            config = {**base, **variant}
+            config = _apply_variant(base, variant)
             queued.extend(manager.queue_runs(
                 [strategy_id], split=split, slippage_bps=slippage_bps,
                 configs_by_strategy={strategy_id: config},

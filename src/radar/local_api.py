@@ -18,6 +18,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from threading import Event, Thread
 from urllib.parse import parse_qs, urlsplit
+from uuid import uuid4
 
 import duckdb
 
@@ -42,11 +43,21 @@ def lab_runs() -> list[dict]:
     manager = lab_manager()
     manager.refresh()
     manager.launch_queued()
+    manager.launch_queued_scanners()
     return manager.store.list_runs(limit=10_000)
 
 
 def lab_strategies() -> list[dict]:
     from radar.lab.manager import _plain
+    manager = lab_manager()
+    registrations = manager.list_strategies()
+    plugin_root = manager.plugin_dir.resolve()
+    removable: dict[str, bool] = {}
+    for item in registrations:
+        imported = (not item.path.is_symlink()
+                    and item.path.parent.resolve() == plugin_root
+                    and item.path.name == f"{item.manifest.id}@{item.manifest.version}")
+        removable[item.manifest.id] = removable.get(item.manifest.id, True) and imported
     return [{
         "id": item.manifest.id,
         "version": item.manifest.version,
@@ -55,7 +66,8 @@ def lab_strategies() -> list[dict]:
         "author": item.manifest.author.model_dump(),
         "tags": item.manifest.tags,
         "config": _plain(item.config),
-    } for item in lab_manager().list_strategies()]
+        "removable": removable[item.manifest.id],
+    } for item in registrations]
 
 
 def lab_spy(start: str, end: str) -> list[dict]:
@@ -182,10 +194,24 @@ def make_handler(allowed_origins: set[str]):
                     payload = lab_strategies()
                 elif target.path == "/api/lab/runs":
                     payload = lab_runs()
+                elif target.path == "/api/lab/scanner/runs":
+                    manager = lab_manager()
+                    manager.launch_queued_scanners()
+                    payload = manager.store.list_scanner_runs(limit=1000)
+                elif target.path in {"/api/lab/scanner/run", "/api/lab/scanner/candidates"}:
+                    run_id = parse_qs(target.query).get("id", [""])[0]
+                    if not re.fullmatch(r"[0-9a-f-]{36}", run_id):
+                        raise ValueError("invalid scanner run ID")
+                    store = lab_manager().store
+                    payload = (store.get_scanner_run(run_id) if target.path.endswith("/run")
+                               else store.get_scanner_candidates(
+                                   run_id, max_rank=int(parse_qs(target.query).get("top", ["20"])[0]),
+                                   limit=100000))
                 elif target.path == "/api/lab/experiments":
                     from radar.lab.experiments import summarize_experiments
                     payload = summarize_experiments(lab_runs())
-                elif target.path in {"/api/lab/run", "/api/lab/equity", "/api/lab/trades", "/api/lab/events"}:
+                elif target.path in {"/api/lab/run", "/api/lab/equity", "/api/lab/trades",
+                                     "/api/lab/events", "/api/lab/days"}:
                     run_id = parse_qs(target.query).get("id", [""])[0]
                     if not re.fullmatch(r"[0-9a-f-]{36}", run_id):
                         raise ValueError("invalid run ID")
@@ -196,6 +222,9 @@ def make_handler(allowed_origins: set[str]):
                         payload = store.get_equity(run_id).to_dict("records")
                     elif target.path.endswith("/trades"):
                         payload = store.get_trades(run_id).tail(100).to_dict("records")
+                    elif target.path.endswith("/days"):
+                        after = int(parse_qs(target.query).get("after", ["0"])[0])
+                        payload = store.get_daily_snapshots(run_id, after_event_id=after)
                     else:
                         payload = store.get_events(run_id).tail(100).to_dict("records")
                 elif target.path == "/api/lab/spy":
@@ -217,8 +246,9 @@ def make_handler(allowed_origins: set[str]):
                 self._json(HTTPStatus.FORBIDDEN, {"error": "origin is not allowed for writes"})
                 return
             target = urlsplit(self.path).path
-            if target not in {"/api/lab/import", "/api/lab/run", "/api/lab/cancel",
-                              "/api/lab/experiment"}:
+            if target not in {"/api/lab/import", "/api/lab/run", "/api/lab/timeline", "/api/lab/cancel",
+                              "/api/lab/uninstall",
+                              "/api/lab/experiment", "/api/lab/scanner/run"}:
                 self._json(HTTPStatus.NOT_FOUND, {"error": "not found"})
                 return
             try:
@@ -253,9 +283,49 @@ def make_handler(allowed_origins: set[str]):
                             grid=data.get("grid"),
                             slippage_bps=float(data.get("slippage_bps", 10)),
                         )
+                    elif target == "/api/lab/scanner/run":
+                        strategy_id = data.get("strategy_id")
+                        if not isinstance(strategy_id, str) or not strategy_id:
+                            raise ValueError("strategy_id must be a non-empty string")
+                        maximum = data.get("max_candidates", 20)
+                        config = data.get("config")
+                        if config is not None and not isinstance(config, dict):
+                            raise ValueError("config must be an object")
+                        run_id = manager.queue_scanner(
+                            strategy_id, split=str(data.get("split", "validation")),
+                            max_candidates=maximum, config_override=config)
+                        manager.launch_queued_scanners()
+                        payload = {"run_id": run_id}
                     elif target.endswith("/cancel"):
                         manager.cancel(str(data["run_id"]))
                         payload = {"ok": True}
+                    elif target.endswith("/uninstall"):
+                        strategy_id = data.get("strategy_id")
+                        if not isinstance(strategy_id, str) or not strategy_id:
+                            raise ValueError("strategy_id must be a non-empty string")
+                        removed = manager.uninstall_strategy(strategy_id)
+                        payload = {"ok": True, "removed_versions": removed}
+                    elif target.endswith("/timeline"):
+                        strategy_id = data.get("strategy_id")
+                        config = data.get("config")
+                        pace_ms = data.get("pace_ms", 500)
+                        if not isinstance(strategy_id, str) or not isinstance(config, dict):
+                            raise ValueError("timeline needs a strategy_id and configuration")
+                        batch_id = str(uuid4())
+                        run_ids = []
+                        predecessor = None
+                        for stage in ("train", "validation", "test"):
+                            run_id = manager.queue_runs(
+                                [strategy_id], split=stage,
+                                slippage_bps=float(data.get("slippage_bps", 10)),
+                                configs_by_strategy={strategy_id: config},
+                                batch_id=batch_id, after_run_id=predecessor,
+                                pace_ms=pace_ms,
+                            )[0]
+                            run_ids.append(run_id)
+                            predecessor = run_id
+                        manager.launch_queued()
+                        payload = {"batch_id": batch_id, "run_ids": run_ids}
                     else:
                         ids = data.get("strategy_ids")
                         if not isinstance(ids, list) or not all(isinstance(item, str) for item in ids):
@@ -289,6 +359,7 @@ def start_lab_dispatcher(interval_seconds: float = 5.0) -> Event:
         while not stop.wait(interval_seconds):
             try:
                 lab_manager().launch_queued()
+                lab_manager().launch_queued_scanners()
             except Exception as error:
                 log = DATA / "strategy-lab" / "dispatcher.log"
                 log.parent.mkdir(parents=True, exist_ok=True)
@@ -302,12 +373,15 @@ def start_lab_dispatcher(interval_seconds: float = 5.0) -> Event:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Stock Radar loopback API")
     parser.add_argument("--port", type=int, default=8765)
-    parser.add_argument("--allow-origin", action="append", required=True)
+    parser.add_argument("--allow-origin", action="append", default=[])
     args = parser.parse_args()
     for origin in args.allow_origin:
         if not origin.startswith(("https://", "http://127.0.0.1:", "http://localhost:")):
             parser.error("allowed origins must be HTTPS or local development origins")
-    server = ThreadingHTTPServer(("127.0.0.1", args.port), make_handler(set(args.allow_origin)))
+    allowed_origins = set(args.allow_origin)
+    allowed_origins.add("http://127.0.0.1:4174")
+    allowed_origins.add("http://localhost:4174")
+    server = ThreadingHTTPServer(("127.0.0.1", args.port), make_handler(allowed_origins))
     dispatcher_stop = start_lab_dispatcher()
     import sys
     if sys.stdout is not None:

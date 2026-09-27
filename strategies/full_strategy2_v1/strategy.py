@@ -27,9 +27,18 @@ class FullStrategy2Plugin(StrategyPlugin):
         return score_full_strategy2(context.frame, self._rules(config))["strategy2_score"]
 
     def select(self, candidates: pd.DataFrame, config: Mapping[str, Any]) -> pd.DataFrame:
+        selection = config.get("selection")
+        maximum = selection.get("max_candidates") if isinstance(selection, Mapping) else config["max_new"]
         return candidates.sort_values(
             ["strategy_score", "symbol"], ascending=[False, True]
-        ).head(int(config["max_new"])).copy()
+        ).head(len(candidates) if maximum is None else int(maximum)).copy()
+
+    def diagnostic_scores(self, context: StrategyContext,
+                          config: Mapping[str, Any]) -> pd.DataFrame:
+        scored = score_full_strategy2(context.frame, self._rules(config))
+        columns = [name for name in scored if name.endswith("_score")
+                   and name != "strategy2_score"]
+        return scored[columns].copy()
 
 
 PLUGIN = FullStrategy2Plugin()

@@ -159,6 +159,33 @@ def test_two_identical_worker_runs_persist_identical_results(worker_setup, monke
     assert len(store.get_events(first).query("kind == 'progress'")) == 2
 
 
+def test_worker_applies_queued_stop_loss_override(worker_setup, monkeypatch):
+    root, store, metadata = worker_setup
+    details = metadata()
+    details["config"]["execution"] = {"stop_loss": -0.20}
+    details["execution_policy"] = {"stop_loss": -0.20}
+    monkeypatch.setattr(worker_module, "load_backtest_config", lambda _path: {
+        "stop_loss": -0.10, "max_position_fraction": 0.3,
+        "max_new_candidates": 3,
+    })
+    captured = {}
+
+    def engine_config(raw, **_kwargs):
+        captured["stop_loss"] = raw["stop_loss"]
+        return SimpleNamespace(initial_capital=10_000.0)
+
+    monkeypatch.setattr(worker_module, "_engine_config", engine_config)
+    monkeypatch.setattr(worker_module, "run_backtest", lambda *_args, **_kwargs:
+                        SimpleNamespace(
+                            equity=pd.DataFrame(), trades=pd.DataFrame(),
+                            orders=pd.DataFrame(), open_positions=[],
+                        ))
+    run_id = store.create_run(details)
+    worker_module.execute_run(root, store.path, run_id)
+    assert captured["stop_loss"] == -0.20
+    assert store.get_run(run_id)["status"] == "completed"
+
+
 def test_worker_cancellation_and_changed_source_fail_cleanly(worker_setup, monkeypatch):
     root, store, metadata = worker_setup
     cancelled = store.create_run(metadata())

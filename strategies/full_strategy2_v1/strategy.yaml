@@ -1,4 +1,4 @@
-# Exact Phase 2 seven-stage thresholds; execution settings remain in config/backtest.yaml.
+# Exact Phase 2 seven-stage thresholds; exits are strategy-owned.
 max_new: 3
 min_elasticity: 76.21433772581146
 min_prior_peak_gain: 0.13230715023626216
@@ -12,3 +12,7 @@ min_close_location: 0.50
 min_wick_ratio: 0.25
 max_volume_contraction: 0.80
 exclude_explicit_funds: true
+exit:
+  take_profit: 0.05
+  stop_loss: -0.10
+  max_holding_sessions: 10

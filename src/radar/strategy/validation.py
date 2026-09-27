@@ -25,6 +25,7 @@ _BASE_COLUMNS = frozenset({"symbol", "security_name", "close"})
 _FUTURE_COLUMNS = frozenset({
     "forward_labels", "entry_open", "return_close_1d", "return_close_3d",
     "return_close_5d", "return_close_10d", "mfe_high_5d", "mae_low_5d",
+    "entry_reference_price", "new_low_after_signal", "false_falling_knife",
 })
 _RAW_BAR_COLUMNS = frozenset({
     "open", "high", "low", "volume", "vwap", "trade_count",
@@ -108,7 +109,8 @@ class StrategyManifest(BaseModel):
 def is_future_feature(name: str) -> bool:
     return (
         name in _FUTURE_COLUMNS
-        or name.startswith(("forward_", "future_", "entry_", "mfe_", "mae_"))
+        or name.startswith(("forward_", "future_", "entry_", "mfe_", "mae_",
+                            "hit_", "time_to_"))
         or name.startswith("return_close_")
     )
 
@@ -234,9 +236,9 @@ def validate_plugin_outputs(
     if not isinstance(selection_config, Mapping):
         raise StrategyValidationError("selection config must be a mapping")
     maximum = selection_config.get("max_candidates", 3)
-    if isinstance(maximum, bool) or not isinstance(maximum, int) or not 0 <= maximum <= 3:
-        raise StrategyValidationError("selection.max_candidates must be an integer from 0 to 3")
-    if len(selected) > maximum:
+    if maximum is not None and (isinstance(maximum, bool) or not isinstance(maximum, int) or maximum < 0):
+        raise StrategyValidationError("selection.max_candidates must be a non-negative integer or null")
+    if maximum is not None and len(selected) > maximum:
         raise StrategyValidationError("select exceeded selection.max_candidates")
     repeat_eligible = plugin.hard_filter(context, config)
     repeat_scores = plugin.score(context, config)

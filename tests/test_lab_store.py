@@ -62,6 +62,10 @@ def test_status_progress_results_survive_reopen(tmp_path):
     assert active["positions"] == 2
     assert active["latest_signals"] == ["ABC"]
     assert active["metadata"] == _metadata()
+    daily = reopened.get_daily_snapshots(run_id)
+    assert len(daily) == 1
+    assert daily[0]["date"] == "2025-01-03T00:00:00"
+    assert reopened.get_daily_snapshots(run_id, after_event_id=daily[0]["event_id"]) == []
 
     class Result:
         equity = pd.DataFrame([{"date": pd.Timestamp("2025-01-03"), "equity": 10_100.0}])
@@ -120,14 +124,13 @@ def test_completed_run_immutable_even_via_direct_sql(tmp_path):
                                (run_id, other_id))
 
 
-def test_schema_v1_migrates_to_v2(tmp_path):
+def test_schema_v1_migrates_to_v4(tmp_path):
     path = tmp_path / "runs.sqlite"
+    with closing(sqlite3.connect(path)) as connection:
+        RunStore._migrate_v1(connection)
     RunStore(path)
     with closing(sqlite3.connect(path)) as connection:
-        connection.execute("PRAGMA user_version=1")
-    RunStore(path)
-    with closing(sqlite3.connect(path)) as connection:
-        assert connection.execute("PRAGMA user_version").fetchone()[0] == 2
+        assert connection.execute("PRAGMA user_version").fetchone()[0] == 4
 
 
 def test_cancellation_and_required_metadata(tmp_path):

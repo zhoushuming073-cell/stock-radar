@@ -27,7 +27,13 @@
 </p>
 
 > [!IMPORTANT]
-> Stock Radar 仅用于研究。**本仓库中的任何代码都不会执行下单。** 项目不会调用交易或订单接口。Strategy 2 评分和回测属于后续工作，目前**尚未实现**。
+> Stock Radar 仅用于研究。**本仓库中的任何代码都不会执行下单。** 项目不会调用交易或订单接口。Strategy2、组合回测与本机 Scanner Research 均已实现；Scanner 现为主要研究路径，回测用于次级诊断。
+
+## 当前研究方向：候选股优先
+
+Scanner Research 按交易日保存策略筛选出的完整候选排序、子评分和可选概率；主程序随后按次一交易日开盘价计算未来 10 个交易日的命中率、MFE/MAE、跌破信号日低点与“假企稳继续下跌”标签。界面显示 Top 5/10/20 的 Precision 和相对同日合格股票池的 Lift。此模式不创建仓位，也不把组合收益当作候选质量的唯一依据。
+
+本地入口：双击根目录 `启动本地看板.cmd`，打开 `127.0.0.1:8502` 或 `localhost:4174/lab.html#scanner`。组合回测在同一网页的 Strategy Backtest 页；止盈、止损和最长持有天数由每个策略的 `exit` 参数决定，`null` 表示关闭相应自动退出。完整配置、标签公式与限制见 [策略插件规范](docs/STRATEGY_PLUGIN_SPEC.md)。
 
 ## 快速导航
 
@@ -66,8 +72,9 @@ Stock Radar 用于构建可复现、可校验的本地美股研究数据底座�
 - [x] Streamlit 本地 Dashboard
 - [x] 基于回环 API 的私有 Sites Dashboard
 - [x] Windows 无人值守日更
-- [ ] Strategy 2 评分
-- [ ] 回测引擎
+- [x] Strategy 2 评分
+- [x] 回测引擎（次级研究工具）
+- [x] Scanner Research 候选快照、前瞻标签与质量指标
 
 ## Dashboard 预览
 
@@ -179,7 +186,15 @@ python -m radar validate --end 2026-09-24 --lookback 5 --max-symbols 20
 
 每个命令都会向 stdout 输出一行 JSON 结果。
 
-## 本地 Streamlit Dashboard
+## 本地网页
+
+### 一键打开本地网页
+
+在项目文件夹中双击 `启动本地看板.cmd`。它会同时打开 `127.0.0.1:8502` 的 Streamlit 策略实验室和 `127.0.0.1:4174/lab.html` 的本地网页，并启动或复用 `127.0.0.1:8765` 数据接口。两个入口都能查看三阶段逐日时间线；4174 页面导航还可进入行情看板。网页直接使用 `site/dist/` 中的文件，修改本地网页后无需重新部署 Sites。数据库、策略和回测结果仍留在本机。大版本完成后再按需部署 Sites。
+
+首次使用需先按项目安装说明创建 `.venv`。如果服务启动失败，启动窗口会显示错误并停留，方便排查。自动行情更新仍由 `StockRadar-DailyUpdate` 计划任务负责。
+
+### Streamlit Dashboard
 
 安装可视化可选依赖并启动只读 Dashboard：
 

@@ -4,7 +4,7 @@ This is a complete example for Stock Radar Strategy Plugin interface version 1. 
 
 ## What it does
 
-After each trading session closes, the strategy keeps tradable symbols that gained at least 15% over 60 sessions and are now 8%–30% below their 20-session high. It ranks the remaining symbols by 60-session return and proposes at most three new candidates. The Stock Radar engine decides whether those candidates can be bought at the next session Open and manages all exits.
+After each trading session closes, the strategy keeps tradable symbols that gained at least 15% over 60 sessions and are now 8%–30% below their 20-session high. It ranks the remaining symbols by 60-session return and surfaces up to 20 candidates by default; `selection.max_candidates: null` surfaces all. Scanner Research evaluates those candidates without a portfolio. The optional Strategy Backtest uses host-controlled fills and the strategy's `exit` settings, which are all disabled in this template until the author chooses them.
 
 ## Files
 

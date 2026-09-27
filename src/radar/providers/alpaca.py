@@ -73,7 +73,7 @@ class AlpacaProvider:
         data_client: Any,
         *,
         batch_size: int = 50,
-        max_attempts: int = 3,
+        max_attempts: int = 5,
         sleep: Callable[[float], None] = time.sleep,
         now: Callable[[], datetime] = lambda: datetime.now(UTC),
     ) -> None:
@@ -88,7 +88,12 @@ class AlpacaProvider:
 
     @classmethod
     def from_credentials(
-        cls, api_key: str, secret_key: str, *, batch_size: int = 50
+        cls,
+        api_key: str,
+        secret_key: str,
+        *,
+        batch_size: int = 50,
+        max_attempts: int = 5,
     ) -> AlpacaProvider:
         if not api_key or not secret_key:
             raise ValueError("Alpaca API key and secret key are required")
@@ -96,6 +101,7 @@ class AlpacaProvider:
             _TimedTradingClient(api_key, secret_key, paper=True),
             _TimedStockClient(api_key, secret_key),
             batch_size=batch_size,
+            max_attempts=max_attempts,
         )
 
     def _retry(self, operation: Callable[[], T]) -> T:
@@ -109,7 +115,10 @@ class AlpacaProvider:
             except (RequestException, TimeoutError):
                 pass
             if attempt + 1 < self.max_attempts:
-                self.sleep(min(2**attempt, 8))
+                # Cap the backoff at 30s so a long unattended batch download can
+                # ride out a short provider/network hiccup instead of failing the
+                # whole daily update after only a few seconds of retrying.
+                self.sleep(min(2**attempt, 30))
         raise ProviderError(f"provider failed after {self.max_attempts} attempts")
 
     def get_assets(self) -> list[AssetRecord]:

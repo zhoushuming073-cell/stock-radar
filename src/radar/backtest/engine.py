@@ -20,9 +20,9 @@ from radar.strategy.ranking import CandidateRules, rank_candidates
 @dataclass(frozen=True)
 class BacktestConfig:
     initial_capital: float = 1_000_000.0
-    take_profit: float = 0.05
-    stop_loss: float = -0.10
-    max_holding_sessions: int = 10
+    take_profit: float | None = 0.05
+    stop_loss: float | None = -0.10
+    max_holding_sessions: int | None = 10
     entry_gap_min: float = -0.10
     entry_gap_max: float = 0.05
     max_position_fraction: float = 1 / 3
@@ -32,11 +32,15 @@ class BacktestConfig:
     allocator: str = "equal_cash"
     candidate_variant: str = "combined_rank"
     market_guard: str = "none"
+    execution_timing: str = "legacy_close"
 
     def __post_init__(self) -> None:
-        if self.initial_capital <= 0 or not 0 < self.take_profit or not -1 < self.stop_loss < 0:
+        if (self.initial_capital <= 0
+                or (self.take_profit is not None and not 0 < self.take_profit)
+                or (self.stop_loss is not None and not -1 < self.stop_loss < 0)):
             raise ValueError("invalid capital or exit thresholds")
-        if self.max_holding_sessions < 1 or self.entry_gap_min >= self.entry_gap_max:
+        if ((self.max_holding_sessions is not None and self.max_holding_sessions < 1)
+                or self.entry_gap_min >= self.entry_gap_max):
             raise ValueError("invalid holding period or gap limits")
         if not 0 < self.max_position_fraction <= 1 or not 0 <= self.minimum_position_fraction <= self.max_position_fraction:
             raise ValueError("invalid position fractions")
@@ -46,6 +50,8 @@ class BacktestConfig:
             raise ValueError("unknown allocator")
         if self.market_guard not in {"none", "spy_ma200"}:
             raise ValueError("unknown market guard")
+        if self.execution_timing not in {"legacy_close", "next_open"}:
+            raise ValueError("unknown execution timing")
 
 
 @dataclass
@@ -149,6 +155,7 @@ def run_backtest(
     slip = config.slippage_bps / 10_000
     cash = float(config.initial_capital)
     positions: dict[str, Position] = {}
+    pending_exits: dict[str, str] = {}
     pending: list[dict] = []
     trade_rows: list[dict] = []
     order_rows: list[dict] = []
@@ -217,10 +224,15 @@ def run_backtest(
             opening = _price(row_for(position.symbol), "open")
             if opening is None:
                 continue
+            queued_reason = pending_exits.pop(position.symbol, None)
+            if queued_reason is not None:
+                exit_position(position, day, opening, queued_reason,
+                              idx - position.entry_index + 1)
+                continue
             move = opening / position.cost_basis - 1
-            if move >= config.take_profit:
+            if config.take_profit is not None and move >= config.take_profit:
                 exit_position(position, day, opening, "take_profit_gap", idx - position.entry_index + 1)
-            elif move <= config.stop_loss:
+            elif config.stop_loss is not None and move <= config.stop_loss:
                 exit_position(position, day, opening, "stop_loss_gap", idx - position.entry_index + 1)
 
         executable: list[dict] = []
@@ -232,7 +244,7 @@ def run_backtest(
             current = row_for(symbol)
             opening = _price(current, "open")
             closing = _price(current, "close")
-            if opening is None or closing is None:
+            if opening is None or (config.execution_timing == "legacy_close" and closing is None):
                 order_rows.append({"date": day, "symbol": symbol, "status": "missing_entry_bar"})
                 continue
             gap = opening / candidate["signal_close"] - 1
@@ -296,11 +308,21 @@ def run_backtest(
             position.last_close = closing
             move = closing / position.cost_basis - 1
             holding_sessions = idx - position.entry_index + 1
-            if move >= config.take_profit:
+            if config.execution_timing == "next_open":
+                if position.symbol not in pending_exits:
+                    if config.take_profit is not None and move >= config.take_profit:
+                        pending_exits[position.symbol] = "take_profit_signal_next_open"
+                    elif config.stop_loss is not None and move <= config.stop_loss:
+                        pending_exits[position.symbol] = "stop_loss_signal_next_open"
+                    elif (config.max_holding_sessions is not None
+                          and holding_sessions >= config.max_holding_sessions):
+                        pending_exits[position.symbol] = "max_holding_signal_next_open"
+            elif config.take_profit is not None and move >= config.take_profit:
                 exit_position(position, day, closing, "take_profit_close", holding_sessions)
-            elif move <= config.stop_loss:
+            elif config.stop_loss is not None and move <= config.stop_loss:
                 exit_position(position, day, closing, "stop_loss_close", holding_sessions)
-            elif holding_sessions >= config.max_holding_sessions:
+            elif (config.max_holding_sessions is not None
+                  and holding_sessions >= config.max_holding_sessions):
                 exit_position(position, day, closing, "max_holding_period", holding_sessions)
 
         equity = cash + sum(p.quantity * p.last_close for p in positions.values())
@@ -335,7 +357,10 @@ def run_backtest(
                 "open_positions": [
                     {"symbol": p.symbol, "quantity": p.quantity,
                      "entry_date": p.entry_date, "entry_total": p.entry_total,
-                     "last_close": p.last_close}
+                     "entry_execution": p.entry_execution,
+                     "cost_basis": p.cost_basis,
+                     "last_close": p.last_close,
+                     "unrealized_pnl": p.quantity * p.last_close - p.entry_total}
                     for p in positions.values()
                 ],
                 "closed_trades": len(trade_rows),

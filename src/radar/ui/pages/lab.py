@@ -4,12 +4,14 @@ from __future__ import annotations
 
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from uuid import uuid4
 
 import streamlit as st
 import yaml
 
 from radar.backtest.runner import split_dates
 from radar.strategy_lab_ui import _plain, _progress_fraction
+from radar.ui.pages.lab_timeline import available_batches, render_timeline
 
 
 def _import_strategy(manager, key: str) -> None:
@@ -41,7 +43,8 @@ def _toolbar(manager, selected: str | None) -> None:
     research_path = manager.root / "config" / "research.yaml"
     labels = _window_labels(str(manager.database), str(research_path),
                             manager.database.stat().st_mtime_ns)
-    a, b, c, d, e = st.columns([1.2, 1.9, 1.2, 1.1, 1.3], gap="small")
+    a, b, c, d, pace, timeline, e = st.columns(
+        [1.2, 1.8, 1.1, 1.0, 0.9, 1.4, 1.1], gap="small")
     with a:
         with st.popover("＋ Import Strategy", width="stretch"):
             _import_strategy(manager, "lab_import")
@@ -59,9 +62,35 @@ def _toolbar(manager, selected: str | None) -> None:
     with d:
         st.number_input("Slippage (bps)", min_value=0.0, max_value=100.0,
                         value=10.0, step=1.0, key="lab_slippage")
+    with pace:
+        st.selectbox("逐日间隔", [1000, 2000],
+                     format_func=lambda value: f"{value / 1000:g} 秒", key="lab_timeline_pace")
+    with timeline:
+        st.write("")
+        if st.button("▷ 三阶段逐日回测", type="primary", disabled=not selected,
+                     width="stretch", key="lab_start_timeline"):
+            draft = st.session_state.get("lab_drafts", {}).get(selected)
+            configs = {selected: _plain(draft)} if draft is not None else None
+            try:
+                batch_id = str(uuid4())
+                predecessor = None
+                for split in ("train", "validation", "test"):
+                    predecessor = manager.queue_runs(
+                        [selected], split=split,
+                        slippage_bps=float(st.session_state["lab_slippage"]),
+                        configs_by_strategy=configs, batch_id=batch_id,
+                        after_run_id=predecessor,
+                        pace_ms=int(st.session_state["lab_timeline_pace"]),
+                    )[0]
+                manager.launch_queued()
+                st.session_state["lab_timeline_batch"] = batch_id
+                st.session_state["lab_view"] = "三阶段时间线"
+                st.rerun()
+            except Exception as exc:
+                st.error(f"无法启动三阶段回测：{exc}")
     with e:
         st.write("")
-        if st.button("▷ Run Selected", type="primary", disabled=not selected,
+        if st.button("单阶段运行", disabled=not selected,
                      width="stretch", key="lab_run_selected"):
             draft = st.session_state.get("lab_drafts", {}).get(selected)
             configs = {selected: _plain(draft)} if draft is not None else None
@@ -137,7 +166,18 @@ def _run_content(manager, selected: str) -> None:
     chosen = st.session_state["lab_run_choice"]
     record = next(run for run in runs if run["run_id"] == chosen)
     _status(manager, record, runs)
+    exits = (record.get("metadata") or {}).get("execution_policy") or {}
+    st.caption("本策略退出规则 · 止盈：{} · 止损：{} · 最长持有：{}".format(
+        _exit_value(exits.get("take_profit"), percent=True),
+        _exit_value(exits.get("stop_loss"), percent=True),
+        _exit_value(exits.get("max_holding_sessions"))))
     render_run_panels(manager, record)
+
+
+def _exit_value(value, *, percent: bool = False) -> str:
+    if value is None:
+        return "Off"
+    return f"{value:+.0%}" if percent else f"{value} 个交易日"
 
 
 @st.fragment(run_every="2s")
@@ -159,7 +199,6 @@ def render_lab(manager) -> None:
     if references and st.session_state.get("lab_active_strategy") not in by_ref:
         st.session_state["lab_active_strategy"] = references[0]
     selected = st.session_state.get("lab_active_strategy") if references else None
-    _toolbar(manager, selected)
     if not references:
         st.info("尚未加载策略。点击 Import Strategy 导入插件后开始。")
         return
@@ -182,6 +221,37 @@ def render_lab(manager) -> None:
         st.session_state["lab_previous_strategy"] = selected
     drafts = st.session_state.setdefault("lab_drafts", {})
     drafts.setdefault(selected, _plain(registration.config))
+    mode = st.segmented_control("研究模式", ["Scanner Research", "Strategy Backtest"],
+                                default="Scanner Research", key="lab_research_mode",
+                                width="stretch")
+    if mode == "Scanner Research":
+        from radar.ui.pages.lab_scanner import render_scanner
+        render_scanner(manager, selected, drafts[selected])
+        return
+    _toolbar(manager, selected)
+    all_runs = manager.store.list_runs(limit=100)
+    batches = available_batches(all_runs, selected)
+    view = st.segmented_control(
+        "视图", ["三阶段时间线", "单阶段运行"],
+        key="lab_view", default="三阶段时间线" if batches else "单阶段运行",
+        width="stretch",
+    )
+    if view == "三阶段时间线":
+        if not batches:
+            st.info("此策略还没有三阶段运行，点击上方“三阶段逐日回测”启动。")
+            return
+        ids = [batch["id"] for batch in batches]
+        if st.session_state.get("lab_timeline_batch") not in ids:
+            st.session_state["lab_timeline_batch"] = ids[0]
+        chosen_batch = st.selectbox(
+            "三阶段运行记录", ids, key="lab_timeline_batch",
+            format_func=lambda value: next(
+                f"{item['runs']['train']['created_at'][:10]} · "
+                f"{item['runs']['train']['metadata']['strategy_name']} · {value[:8]}"
+                for item in batches if item["id"] == value),
+        )
+        render_timeline(manager, chosen_batch)
+        return
     if any(
         run["status"] in {"running", "queued", "cancel_requested"}
         for run in manager.store.list_runs(limit=100)

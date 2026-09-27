@@ -6,6 +6,7 @@ import pytest
 
 from radar.backtest.costs import load_fee_config
 from radar.backtest.engine import BacktestCancelled, BacktestConfig, run_backtest
+from radar.lab.execution import resolve_exit_policy
 from radar.strategy.ranking import CandidateRules
 
 
@@ -53,6 +54,24 @@ def test_entry_day_close_stop_and_high_low_not_required():
     assert not {"high", "low"}.intersection(frame.columns)
 
 
+def test_strict_close_signal_exits_at_next_open_even_after_adverse_gap():
+    days, frame = market(next_open=100, next_close=106,
+                         after_open=95, after_close=95)
+    result = run_backtest(
+        frame, days, signal_start=days[0], signal_end=days[0],
+        evaluation_end=days[10], rules=RULES, fee_config=FEES,
+        config=BacktestConfig(slippage_bps=0, execution_timing="next_open",
+                              max_position_fraction=1.0,
+                              max_order_to_avg_dollar_volume=1.0),
+    )
+    trade = result.trades.iloc[0]
+    assert trade.entry_date == days[1]
+    assert trade.exit_date == days[2]
+    assert trade.exit_reference == 95
+    assert trade.exit_reason == "take_profit_signal_next_open"
+    assert result.equity.iloc[1].positions == 1
+
+
 def test_intraday_high_low_do_not_trigger_exits():
     days, frame = market(next_open=100, next_close=103)
     frame["high"] = 108
@@ -94,6 +113,26 @@ def test_no_threshold_for_ten_sessions_forces_close_exit():
     assert trade.exit_reason == "max_holding_period"
     assert trade.holding_sessions == 10
     assert trade.exit_date == days[10]
+
+
+def test_strategy_exits_can_be_independent_or_all_disabled():
+    defaults = {"take_profit": .05, "stop_loss": -.10, "max_holding_sessions": 10}
+    first, source = resolve_exit_policy(defaults, {"exit": defaults})
+    assert first == defaults and source == "strategy_exit"
+    second, source = resolve_exit_policy(defaults, {"exit": {
+        "take_profit": None, "stop_loss": -.08, "max_holding_sessions": 5}})
+    assert second == {"take_profit": None, "stop_loss": -.08, "max_holding_sessions": 5}
+    assert source == "strategy_exit"
+    disabled, _ = resolve_exit_policy(defaults, {"exit": {
+        "take_profit": None, "stop_loss": None, "max_holding_sessions": None}})
+    days, frame = market(next_close=106, after_open=84)
+    result = run_backtest(
+        frame, days, signal_start=days[0], signal_end=days[0],
+        evaluation_end=days[10], rules=RULES, fee_config=FEES,
+        config=BacktestConfig(slippage_bps=0, max_position_fraction=1.0,
+                              max_order_to_avg_dollar_volume=1.0, **disabled))
+    assert result.trades.empty
+    assert result.equity.iloc[-1].positions == 1
 
 
 def test_fees_slippage_and_cash_reconcile():

@@ -42,14 +42,14 @@ class ExampleMeasuredPullback(StrategyPlugin):
     def select(
         self, candidates: pd.DataFrame, config: Mapping[str, Any]
     ) -> pd.DataFrame:
-        maximum = int(config["selection"]["max_candidates"])
-        if not 0 <= maximum <= 3:
-            raise ValueError("max_candidates must be between 0 and 3")
+        maximum = config["selection"]["max_candidates"]
+        if maximum is not None and (isinstance(maximum, bool) or not isinstance(maximum, int) or maximum < 0):
+            raise ValueError("max_candidates must be a non-negative integer or null")
         return (
             candidates.sort_values(
                 ["strategy_score", "symbol"], ascending=[False, True], kind="stable"
             )
-            .head(maximum)
+            .head(maximum if maximum is not None else len(candidates))
             .copy()
         )
 

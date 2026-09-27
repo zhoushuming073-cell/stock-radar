@@ -1,0 +1,172 @@
+from __future__ import annotations
+
+import sqlite3
+import hashlib
+from typing import Any, Mapping
+
+import pandas as pd
+import pytest
+
+from radar.lab.data import _market_context
+from radar.lab.scanner import (LABEL_VERSION, build_labels, candidate_metrics,
+                               evaluation_settings, label_candidate, target_name)
+from radar.lab.scanner_worker import scan_frames
+from radar.lab.store import RunStore, _json
+from radar.strategy.base import StrategyPlugin
+from radar.strategy.context import StrategyContext
+from radar.strategy.validation import is_future_feature
+
+
+class ManyCandidates(StrategyPlugin):
+    seen_columns: set[str] = set()
+
+    def required_features(self) -> set[str]:
+        return {"ret_1"}
+
+    def hard_filter(self, context: StrategyContext, config: Mapping[str, Any]) -> pd.Series:
+        self.seen_columns = set(context.frame)
+        return pd.Series(True, index=context.frame.index)
+
+    def score(self, context: StrategyContext, config: Mapping[str, Any]) -> pd.Series:
+        return context.frame["ret_1"]
+
+    def select(self, candidates: pd.DataFrame, config: Mapping[str, Any]) -> pd.DataFrame:
+        ranked = candidates.sort_values(["strategy_score", "symbol"], ascending=[False, True])
+        maximum = config["selection"]["max_candidates"]
+        return ranked if maximum is None else ranked.head(maximum)
+
+    def diagnostic_scores(self, context: StrategyContext, config: Mapping[str, Any]) -> pd.DataFrame:
+        return pd.DataFrame({"support_evidence": context.frame["ret_1"] * 2,
+                             "p_hit_5pct_10d": 0.5}, index=context.frame.index)
+
+
+def test_golden_forward_labels_and_incomplete_horizon():
+    settings = evaluation_settings(None)
+    sessions = pd.bdate_range("2025-01-02", periods=11)
+    bars = pd.DataFrame({"date": sessions, "symbol": "AAA", "open": 10.0,
+                         "high": [10.0, 10.1, 10.2, 10.6, 10.1, 10.0, 10.0,
+                                  10.0, 10.0, 10.0, 10.0],
+                         "low": [9.8, 9.9, 9.6, 9.5, 8.9, 9.0, 9.0, 9.0, 9.0, 9.0, 9.0]})
+    label = label_candidate(sessions[0], 9.8, bars.iloc[1:], settings)
+    assert label["entry_reference_price"] == 10.0
+    assert label["hit_3pct_10d"] is True
+    assert label["hit_5pct_10d"] is True
+    assert label["hit_8pct_10d"] is False
+    assert label["time_to_5pct"] == 3
+    assert label["mfe_10"] == pytest.approx(0.06)
+    assert label["mae_10"] == pytest.approx(-0.11)
+    assert label["new_low_after_signal"] is True
+    assert label["false_falling_knife"] is True
+    signal = pd.DataFrame({"signal_date": [sessions[0], sessions[1]], "symbol": "AAA"})
+    labels = build_labels(signal, bars, sessions, settings)["label"].tolist()
+    assert labels[0] == label
+    assert labels[1] is None
+
+
+def test_precision_and_lift_use_full_eligible_background():
+    settings = evaluation_settings(None)
+    date = pd.Timestamp("2025-01-02")
+    hit = {"hit_5pct_10d": True, "mfe_10": 0.08, "mae_10": -0.02,
+           "false_falling_knife": False, **{f"hit_{n}pct_10d": True for n in (3, 8, 10)}}
+    miss = {**hit, "hit_5pct_10d": False, "mfe_10": 0.01}
+    candidates = pd.DataFrame({"signal_date": [date] * 5, "rank": [1, 2, 3, 4, 5],
+                               "label": [hit, hit, hit, hit, miss]})
+    background = pd.DataFrame({"signal_date": [date] * 10,
+                               "label": [hit, hit, hit, hit, miss, miss, miss, miss, miss, miss]})
+    metrics = candidate_metrics(candidates, background, settings)
+    assert metrics["base_rate"] == pytest.approx(0.4)
+    assert metrics["precision_at_5"] == pytest.approx(0.8)
+    assert metrics["lift_at_5"] == pytest.approx(2.0)
+    assert metrics["top_10_count"] == 5
+
+
+def test_missing_top_rank_label_does_not_promote_rank_six():
+    settings = evaluation_settings(None)
+    hit = {"hit_5pct_10d": True, "mfe_10": .1, "mae_10": -.01,
+           "false_falling_knife": False,
+           **{f"hit_{n}pct_10d": True for n in (3, 8, 10)}}
+    miss = {**hit, "hit_5pct_10d": False}
+    day = pd.Timestamp("2025-01-02")
+    candidates = pd.DataFrame({"signal_date": [day] * 6, "rank": range(1, 7),
+                               "label": [None, hit, miss, hit, hit, hit]})
+    background = pd.DataFrame({"label": [hit, miss]})
+    metrics = candidate_metrics(candidates, background, settings)
+    assert metrics["top_5_count"] == 4
+    assert metrics["precision_at_5"] == pytest.approx(.75)
+
+
+@pytest.mark.parametrize("maximum", [5, 10, 20, None])
+def test_scanner_more_than_three_candidates_without_portfolio(maximum):
+    plugin = ManyCandidates()
+    sessions = pd.bdate_range("2025-01-02", periods=11)
+    symbols = [f"S{i:02d}" for i in range(21)]
+    first = pd.DataFrame({"date": sessions[0], "symbol": symbols,
+                          "security_name": symbols, "close": 10.0,
+                          "ret_1": list(range(21)), "tradability_pass": True})
+    frame = first.set_index(["date", "symbol"], drop=False)
+    bars = pd.DataFrame([{"date": day, "symbol": symbol, "open": 10.0,
+                          "high": 10.6, "low": 9.9, "close": 10.0}
+                         for day in sessions for symbol in symbols])
+    rows, metrics = scan_frames(plugin, {"selection": {"max_candidates": maximum}}, frame,
+                                bars, sessions, sessions[0], sessions[0],
+                                evaluation_settings(None))
+    assert len(rows) == 21
+    assert sum(row["selected"] for row in rows) == (21 if maximum is None else maximum)
+    assert rows[0]["symbol"] == "S20"
+    assert rows[0]["diagnostics"]["support_evidence"] == 40
+    assert rows[0]["features"] == {"close": 10.0, "ret_1": 20}
+    assert rows[0]["probabilities"]["p_hit_5pct_10d"] == 0.5
+    assert plugin.seen_columns == {"symbol", "security_name", "close", "ret_1"}
+    assert metrics["candidate_count"] == 21
+    assert metrics["precision_at_20"] == 1.0
+    assert metrics["p_hit_5pct_10d_brier"] == pytest.approx(0.25)
+    assert metrics["p_hit_5pct_10d_calibration_bins"][0]["count"] == 21
+
+
+def test_market_context_uses_history_through_signal_date_only():
+    days = pd.bdate_range("2025-01-02", periods=80)
+    original = pd.DataFrame([{"date": day, "symbol": symbol, "close": float(i + 100)}
+                             for i, day in enumerate(days) for symbol in ("SPY", "QQQ")])
+    breadth = pd.DataFrame({"date": days, "market_breadth": 0.6})
+    first = _market_context(original, breadth)
+    changed = original.copy()
+    changed.loc[changed["date"] > days[65], "close"] *= 100
+    second = _market_context(changed, breadth)
+    columns = ["spy_trend", "qqq_trend", "spy_drawdown", "qqq_drawdown",
+               "market_realized_volatility", "market_breadth"]
+    pd.testing.assert_series_equal(first.loc[65, columns], second.loc[65, columns])
+
+
+def test_scanner_outcomes_are_prohibited_plugin_inputs():
+    for name in ("hit_5pct_10d", "time_to_5pct", "mfe_10", "mae_10",
+                 "entry_reference_price", "new_low_after_signal", "false_falling_knife"):
+        assert is_future_feature(name)
+    assert not is_future_feature("p_hit_5pct_10d")
+    assert target_name(.025, 10) == "hit_2p5pct_10d"
+
+
+def test_completed_scanner_snapshot_is_immutable(tmp_path):
+    store = RunStore(tmp_path / "runs.sqlite")
+    metadata = {key: "sample" for key in ("strategy_id", "strategy_version",
+                "plugin_interface_version", "config", "selection", "evaluation",
+                "feature_version", "market_feature_version", "data_snapshot",
+                "source_watermark", "git_revision", "signal_start", "signal_end",
+                "label_version", "strategy_code_hash", "config_hash")}
+    metadata["label_version"] = LABEL_VERSION
+    run_id = store.create_scanner_run(metadata)
+    store.start_scanner_run(run_id, 123)
+    store.finish_scanner_run(run_id, [{"signal_date": "2025-01-02", "symbol": "AAA",
+        "security_name": "A", "rank": 1, "strategy_score": 1.0, "selected": True,
+        "diagnostics": {"x_score": 2.0}, "probabilities": {}, "label": None,
+        "market_context": {}, "features": {"close": 10.0}}], {"candidate_count": 1})
+    assert len(store.get_scanner_candidates(run_id)) == 1
+    assert store.get_scanner_candidates(run_id)[0]["features"] == {"close": 10.0}
+    assert store.get_scanner_run(run_id)["artifact_hashes"]["candidates_sha256"]
+    assert store.get_scanner_run(run_id)["artifact_hashes"]["candidates_sha256"] == hashlib.sha256(
+        _json(store.get_scanner_candidates(run_id)).encode("utf-8")).hexdigest()
+    assert store.verify_scanner_artifacts(run_id)
+    with sqlite3.connect(store.path) as connection:
+        with pytest.raises(sqlite3.DatabaseError, match="immutable"):
+            connection.execute("UPDATE scanner_candidates SET strategy_score=2 WHERE run_id=?", (run_id,))
+        with pytest.raises(sqlite3.DatabaseError, match="immutable"):
+            connection.execute("UPDATE scanner_runs SET metadata_json='{}' WHERE run_id=?", (run_id,))

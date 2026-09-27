@@ -32,6 +32,7 @@ def target_date(now: datetime) -> str:
 
 
 def credentials(root: Path) -> tuple[str, str]:
+    """Resolve Alpaca credentials from .env or the existing user-owned key file."""
     try:
         return load_credentials(root)
     except ValueError:

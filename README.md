@@ -106,9 +106,25 @@ and [Plotly.py](https://github.com/plotly/plotly.py) components.
 
 Preview: [overview](docs/dashboard-preview.png) · [warning details](docs/dashboard-warnings.png).
 
-## Local Strategy Lab (Phase 3)
+## Local Research Scanner and Strategy Lab
 
-The Strategy Lab is available inside the existing private Sites dashboard at
+On Windows, double-click `启动本地看板.cmd` in the project root to open both
+the Streamlit Strategy Lab on port 8502 and the local web dashboard on port 4174.
+It starts or reuses the loopback API on port 8765. Both Lab views show the
+three-stage trading-day timeline. The Data navigation link opens the market dashboard.
+Local changes to `site/dist/` appear without a Sites
+deployment; deploy Sites only when a release is ready.
+
+Scanner Research is the primary workflow: it saves daily candidate rankings,
+generic diagnostic scores, 10-session host-generated forward labels, Precision/Lift
+at 5/10/20, MFE/MAE and market-regime breakdowns without opening simulated
+positions. Strategy Backtest remains available for portfolio diagnostics, with
+per-strategy exits (including `null` to turn each automatic exit off).
+The plugin interface stays at version 1; see
+[the v1.5 scanner specification](docs/STRATEGY_PLUGIN_SPEC.md) for exact label
+formulas, eligibility and reproducibility rules.
+
+The Scanner and Strategy Lab are available inside the existing private Sites dashboard at
 [`/lab.html`](https://stock-radar-local.zhoushuming.chatgpt.site/lab.html).
 The same research interface also has a separate local Streamlit page. It
 imports trusted strategy ZIPs, queues several backtests, shows each Run's live

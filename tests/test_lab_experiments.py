@@ -38,6 +38,22 @@ def test_grid_is_bounded_and_keeps_test_out() -> None:
             for call in manager.calls] == [70, 75, 80]
 
 
+def test_grid_updates_nested_parameter_without_changing_siblings() -> None:
+    manager = FakeManager()
+    manager.registry = SimpleNamespace(get=lambda strategy_id: SimpleNamespace(
+        config={"pullback": {"min_depth": 0.1, "max_depth": 0.3}}))
+    result = experiments.queue_experiment(
+        manager, kind="grid", strategy_id="nested_strategy",
+        grid={"pullback.min_depth": [0.12, 0.18]},
+    )
+    assert result["count"] == 2
+    assert [call[1]["configs_by_strategy"]["nested_strategy"]["pullback"]
+            for call in manager.calls] == [
+                {"min_depth": 0.12, "max_depth": 0.3},
+                {"min_depth": 0.18, "max_depth": 0.3},
+            ]
+
+
 def test_ablation_creates_full_baseline_and_each_stage() -> None:
     manager = FakeManager()
     result = experiments.queue_experiment(manager, kind="ablation",

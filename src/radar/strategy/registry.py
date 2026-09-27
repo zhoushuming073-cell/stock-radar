@@ -90,6 +90,16 @@ class StrategyRegistry:
             self._manager.register(self._hooks[key], name=f"{strategy_id}:{version}")
             self._enabled.add(key)
 
+    def unregister(self, strategy_id: str, version: str) -> None:
+        """Remove a registration entirely, e.g. when uninstalling a plugin."""
+        key = (strategy_id, version)
+        self.get(strategy_id, version)
+        if key in self._enabled:
+            self._manager.unregister(self._hooks[key])
+            self._enabled.remove(key)
+        del self._hooks[key]
+        del self._registrations[key]
+
     def hook_plugins(self) -> tuple[StrategyPlugin, ...]:
         """Call the pluggy hook to enumerate registered plugin instances."""
         return tuple(self._manager.hook.strategy_plugin())

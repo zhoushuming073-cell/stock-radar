@@ -99,6 +99,56 @@ def test_queue_metadata_and_new_config_create_new_run(manager):
         assert key in b["metadata"]
 
 
+def test_stop_loss_override_changes_only_the_new_run(manager):
+    baseline = manager.queue_runs(["tiny_strategy"])[0]
+    variant = manager.queue_runs(
+        ["tiny_strategy"],
+        configs_by_strategy={"tiny_strategy": {
+            "selection": {"max_candidates": 3},
+            "execution": {"stop_loss": -0.20},
+        }},
+    )[0]
+    original = manager.store.get_run(baseline)["metadata"]["execution_policy"]
+    changed = manager.store.get_run(variant)["metadata"]["execution_policy"]
+    assert original["stop_loss"] == 1  # fixture's original policy
+    assert changed == {**original, "stop_loss": -0.20}
+    with pytest.raises(ValueError, match="execution.stop_loss"):
+        manager.queue_runs(
+            ["tiny_strategy"],
+            configs_by_strategy={"tiny_strategy": {"execution": {"stop_loss": 0}}},
+        )
+
+
+def test_uninstall_only_imported_strategy_and_keep_run_history(manager):
+    with pytest.raises(ValueError, match="built-in"):
+        manager.uninstall_strategy("tiny_strategy")
+
+    plugin_path = manager.plugin_dir / "imported_strategy@1.0.0"
+    plugin_path.mkdir()
+    (plugin_path / "strategy.py").write_text("# imported plugin\n", encoding="utf-8")
+    manifest = StrategyManifest.model_validate({
+        "name": "Imported Strategy", "id": "imported_strategy", "version": "1.0.0",
+        "interface_version": 1, "author": {"type": "ai", "name": "Test"},
+        "description": "Test fixture", "required_features": [],
+    })
+    manager.registry.register(StrategyRegistration(
+        manifest, {"selection": {"max_candidates": 3}}, _Strategy(), plugin_path,
+    ))
+    run_id = manager.queue_runs(["imported_strategy"])[0]
+    with pytest.raises(ValueError, match="active run"):
+        manager.uninstall_strategy("imported_strategy")
+    assert plugin_path.exists()
+
+    manager.store.start_run(run_id, 1234)
+    manager.store.finish_run(run_id, {"equity": [], "trades": [],
+                                      "orders": [], "events": []}, {})
+    assert manager.uninstall_strategy("imported_strategy") == 1
+    assert not plugin_path.exists()
+    assert manager.store.get_run(run_id)["status"] == "completed"
+    with pytest.raises(KeyError):
+        manager.registry.get("imported_strategy")
+
+
 def test_max_two_queued_launches_and_rerun_no_duplicates(manager, monkeypatch):
     run_ids = manager.queue_runs(["tiny_strategy"] * 3)
     launched: list[list[str]] = []
@@ -120,6 +170,39 @@ def test_max_two_queued_launches_and_rerun_no_duplicates(manager, monkeypatch):
     assert all(any(run_id in command for command in launched) for run_id in manager._processes)
     remaining = (set(run_ids) - set(manager._processes)).pop()
     assert manager.store.get_run(remaining)["status"] == "queued"
+
+
+def test_timeline_stages_launch_in_order(manager, monkeypatch):
+    ids = []
+    predecessor = None
+    for stage in ("train", "validation", "test"):
+        run_id = manager.queue_runs(["tiny_strategy"], split=stage,
+                                    batch_id="timeline-1", after_run_id=predecessor,
+                                    pace_ms=500)[0]
+        ids.append(run_id)
+        predecessor = run_id
+
+    launched = []
+
+    class FakeProcess:
+        def __init__(self, command, **_kwargs):
+            launched.append(command[-1])
+            self.pid = 9000 + len(launched)
+
+        def poll(self):
+            return None
+
+    monkeypatch.setattr(manager_module.subprocess, "Popen", FakeProcess)
+    manager.launch_queued()
+    assert launched == ids[:1]
+    manager.store.start_run(ids[0], 9001)
+    manager.store.finish_run(ids[0], {"equity": [], "trades": [],
+                                      "orders": [], "events": []}, {})
+    manager.launch_queued()
+    assert launched == ids[:2]
+    manager.store.cancel_run(ids[1])
+    manager.launch_queued()
+    assert manager.store.get_run(ids[2])["status"] == "cancelled"
 
 
 def test_recovery_uses_worker_pid_after_manager_restarts(manager, monkeypatch):

@@ -1,6 +1,6 @@
 const API = "http://127.0.0.1:8765";
 const $ = id => document.getElementById(id);
-const state = {strategies:[], runs:[], selected:new Set(), focused:null, parameterFor:null, active:null, config:{}, compare:new Set(), loading:false};
+const state = {strategies:[], runs:[], selected:new Set(), closed:new Set(), focused:null, parameterFor:null, active:null, config:{}, compare:new Set(), loading:false};
 const money = n => n!==null&&n!==undefined&&Number.isFinite(Number(n)) ? new Intl.NumberFormat("zh-CN",{maximumFractionDigits:0}).format(Number(n)) : "—";
 const pct = n => n!==null&&n!==undefined&&Number.isFinite(Number(n)) ? `${(Number(n)*100).toFixed(2)}%` : "—";
 const day = s => s ? String(s).slice(0,10) : "—";
@@ -15,7 +15,7 @@ function showPage(id){
 }
 document.querySelectorAll(".nav-link[data-page]").forEach(button=>button.onclick=()=>showPage(button.dataset.page));
 document.querySelectorAll("[data-open-page]").forEach(button=>button.onclick=()=>showPage(button.dataset.openPage));
-if(["lab","strategies-page","experiments","compare","settings"].includes(location.hash.slice(1)))showPage(location.hash.slice(1));
+if(["scanner","lab","strategies-page","experiments","compare","settings"].includes(location.hash.slice(1)))showPage(location.hash.slice(1));
 function notice(message){$("notice").textContent=message;$("notice").hidden=!message;}
 function safe(value){return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));}
 async function api(path, options={}){
@@ -24,19 +24,49 @@ async function api(path, options={}){
   return response.json();
 }
 async function post(path, body){return api(path,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});}
+function focusRun(id){
+  window.timelineController?.detach();
+  const run=state.runs.find(r=>r.metadata?.strategy_id===id);
+  if(run){if(state.active!==run.run_id){state.active=run.run_id;drawActive();}}
+  else notice(`「${state.strategies.find(x=>x.id===id)?.name||id}」还没有运行记录。`);
+}
 function drawStrategies(){
-  $("strategies").innerHTML=state.strategies.map(s=>`<button class="strategy-chip ${state.selected.has(s.id)?"selected":""} ${state.focused===s.id?"focused":""}" data-strategy="${safe(s.id)}" title="${safe(s.description)}">${safe(s.name)} <small>v${safe(s.version)}</small></button>`).join("")||"<span class='muted'>暂无策略，请导入 ZIP</span>";
+  const visible=state.strategies.filter(s=>!state.closed.has(s.id));
+  $("strategies").innerHTML=visible.map(s=>`<button class="strategy-chip ${state.selected.has(s.id)?"selected":""} ${state.focused===s.id?"focused":""}" data-strategy="${safe(s.id)}" title="${safe(s.description)}">${safe(s.name)} <small>v${safe(s.version)}</small><span class="chip-close" data-close="${safe(s.id)}" title="关闭标签页">×</span></button>`).join("")||(state.strategies.length?"<span class='muted'>所有标签页已关闭，可在 Strategies 页重新打开</span>":"<span class='muted'>暂无策略，请导入 ZIP</span>");
+  document.querySelectorAll("[data-close]").forEach(x=>x.onclick=event=>{
+    event.stopPropagation();
+    const id=x.dataset.close;
+    state.closed.add(id);state.selected.delete(id);
+    if(state.focused===id)state.focused=[...state.selected][0]||null;
+    if(state.focused)focusRun(state.focused);
+    drawStrategies();drawParameters(true);
+  });
   document.querySelectorAll("[data-strategy]").forEach(button=>button.onclick=()=>{
     const id=button.dataset.strategy;
     if(state.selected.has(id)){if(state.focused===id)state.selected.delete(id);else state.focused=id;}
     else{state.selected.add(id);state.focused=id;}
     if(!state.selected.has(state.focused))state.focused=[...state.selected][0]||null;
     if(!state.config[id])state.config[id]=structuredClone(state.strategies.find(s=>s.id===id).config);
+    if(state.focused===id)focusRun(id);
     drawStrategies();drawParameters();
   });
   $("strategy-count").textContent=`${state.strategies.length} 个策略`;
-  $("strategy-rows").innerHTML=state.strategies.map(s=>`<tr><td><strong>${safe(s.name)}</strong></td><td>${safe(s.version)}</td><td>${safe(s.author?.name||"—")}</td><td>${safe(s.description||"—")}</td><td><span class="active-badge">Active</span></td><td><button class="text-button" data-strategy-open="${safe(s.id)}">Open</button></td></tr>`).join("")||"<tr><td colspan='6'>暂无策略</td></tr>";
-  document.querySelectorAll("[data-strategy-open]").forEach(button=>button.onclick=()=>{state.selected.add(button.dataset.strategyOpen);state.focused=button.dataset.strategyOpen;drawStrategies();drawParameters(true);showPage("lab")});
+  $("strategy-rows").innerHTML=state.strategies.map(s=>`<tr><td><strong>${safe(s.name)}</strong></td><td>${safe(s.version)}</td><td>${safe(s.author?.name||"—")}</td><td>${safe(s.description||"—")}</td><td><span class="active-badge">${s.removable?"已安装":"内置"}</span></td><td><button class="text-button" data-strategy-open="${safe(s.id)}">Open</button>${s.removable?` <button class="text-button danger" data-strategy-uninstall="${safe(s.id)}">卸载</button>`:""}</td></tr>`).join("")||"<tr><td colspan='6'>暂无策略</td></tr>";
+  document.querySelectorAll("[data-strategy-open]").forEach(button=>button.onclick=()=>{state.selected.add(button.dataset.strategyOpen);state.closed.delete(button.dataset.strategyOpen);state.focused=button.dataset.strategyOpen;drawStrategies();drawParameters(true);focusRun(button.dataset.strategyOpen);showPage("lab")});
+  document.querySelectorAll("[data-strategy-uninstall]").forEach(button=>button.onclick=async()=>{
+    const id=button.dataset.strategyUninstall;
+    const name=state.strategies.find(s=>s.id===id)?.name||id;
+    if(!window.confirm(`确定卸载「${name}」吗？本机策略插件文件会删除，历史运行记录会保留。`))return;
+    button.disabled=true;
+    try{
+      const result=await post("/api/lab/uninstall",{strategy_id:id});
+      state.selected.delete(id);state.closed.delete(id);delete state.config[id];
+      if(state.focused===id)state.focused=null;
+      state.parameterFor=null;
+      await refresh();
+      notice(`已卸载「${name}」的 ${result.removed_versions} 个版本；历史运行记录已保留。`);
+    }catch(error){notice(`卸载失败：${error.message}`);button.disabled=false;}
+  });
 }
 function drawParameters(force=false){
   const id=state.focused||[...state.selected][0];const strategy=state.strategies.find(s=>s.id===id);
@@ -46,8 +76,13 @@ function drawParameters(force=false){
   if(!state.config[id])state.config[id]=structuredClone(strategy.config);
   const config=state.config[id];
   $("parameter-fields").innerHTML=Object.entries(config).map(([key,value])=>{
-    const input=typeof value==="boolean"?`<input type="checkbox" data-param="${safe(key)}" ${value?"checked":""}>`:`<input type="${typeof value==="number"?"number":"text"}" step="any" data-param="${safe(value!==null&&typeof value==="object"?JSON.stringify(value):value)}">`;
-    return `<div class="field"><label for="param-${safe(key)}">${safe(key)}</label>${input}</div>`;
+    const idAttr=`param-${safe(key)}`;
+    let input;
+    if(typeof value==="boolean")input=`<input type="checkbox" id="${idAttr}" data-param="${safe(key)}" ${value?"checked":""}>`;
+    else if(typeof value==="number")input=`<input type="number" id="${idAttr}" step="any" data-param="${safe(key)}" value="${safe(value)}">`;
+    else if(value!==null&&typeof value==="object")input=`<input type="text" id="${idAttr}" data-param="${safe(key)}" value="${safe(JSON.stringify(value))}">`;
+    else input=`<input type="text" id="${idAttr}" data-param="${safe(key)}" value="${safe(value??"")}">`;
+    return `<div class="field"><label for="${idAttr}">${safe(key)}</label>${input}</div>`;
   }).join("");
   document.querySelectorAll("[data-param]").forEach(input=>input.onchange=()=>{
     const key=input.dataset.param,previous=config[key];
@@ -56,7 +91,13 @@ function drawParameters(force=false){
     if(typeof previous==="number"&&!Number.isFinite(config[key])){config[key]=previous;input.value=previous;notice("参数必须是有效数字。");}
     drawConfigDiff();
   });
-  $("grid-param").innerHTML=Object.entries(config).filter(([,value])=>typeof value==="number").map(([key])=>`<option value="${safe(key)}">${safe(key)}</option>`).join("");
+  const flatNumbers=(obj,prefix="")=>Object.entries(obj).flatMap(([k,v])=>{
+    const name=prefix?`${prefix}.${k}`:k;
+    if(typeof v==="number")return [name];
+    if(v&&typeof v==="object"&&!Array.isArray(v))return flatNumbers(v,name);
+    return [];
+  });
+  $("grid-param").innerHTML=flatNumbers(config).map(name=>`<option value="${safe(name)}">${safe(name)}</option>`).join("");
   drawConfigDiff();
 }
 function drawConfigDiff(){
@@ -65,13 +106,30 @@ function drawConfigDiff(){
   $("config-diff").textContent=changes.length?`与默认参数不同：${changes.map(([key])=>key).join("、")}`:"当前使用默认参数";
 }
 function drawRuns(){
-  $("run-list").innerHTML=state.runs.map(r=>`<div class="run-item"><button data-run="${safe(r.run_id)}">${safe(r.metadata?.strategy_name||r.metadata?.strategy_id||"策略")} · ${safe(human[r.metadata?.split]||r.metadata?.split||"")}</button><span>${safe(statusLabel[r.status]||r.status)}</span><span>${safe(day(r.created_at))}</span><label><input type="checkbox" data-compare="${safe(r.run_id)}" ${state.compare.has(r.run_id)?"checked":""} ${r.status!=="completed"?"disabled":""}> 比较</label></div>`).join("")||"<span class='helper'>暂无运行记录</span>";
-  document.querySelectorAll("#run-list [data-run]").forEach(b=>b.onclick=()=>{state.active=b.dataset.run;drawActive();showPage("lab")});
+  const batches=[...new Map(state.runs.filter(r=>r.metadata?.batch_id).map(r=>[r.metadata.batch_id,r])).keys()];
+  const batchRows=batches.map(id=>{
+    const members=state.runs.filter(r=>r.metadata?.batch_id===id);
+    if(members.length!==3)return "";
+    const phase=members.find(r=>r.status==="running")?.metadata?.split;
+    const label=phase?`${human[phase]}进行中`:members.every(r=>r.status==="completed")?"已完成":"排队或已停止";
+    return `<div class="run-item"><button data-timeline-batch="${safe(id)}">三阶段时间线 · ${safe(members[0].metadata?.strategy_name||members[0].metadata?.strategy_id)}</button><span>${safe(label)}</span><span>${safe(day(members[0].created_at))}</span></div>`;
+  }).join("");
+  $("run-list").innerHTML=batchRows+state.runs.map(r=>`<div class="run-item"><button data-run="${safe(r.run_id)}">${safe(r.metadata?.strategy_name||r.metadata?.strategy_id||"策略")} · ${safe(human[r.metadata?.split]||r.metadata?.split||"")}</button><span>${safe(statusLabel[r.status]||r.status)}</span><span>${safe(day(r.created_at))}</span><label><input type="checkbox" data-compare="${safe(r.run_id)}" ${state.compare.has(r.run_id)?"checked":""} ${r.status!=="completed"?"disabled":""}> 比较</label></div>`).join("")||"<span class='helper'>暂无运行记录</span>";
+  document.querySelectorAll("[data-timeline-batch]").forEach(b=>b.onclick=()=>{
+    const members=state.runs.filter(r=>r.metadata?.batch_id===b.dataset.timelineBatch);
+    const ids=["train","validation","test"].map(split=>members.find(r=>r.metadata?.split===split)?.run_id);
+    if(ids.some(id=>!id)){notice("这个批次缺少阶段运行记录。");return}
+    window.timelineController?.activate({batch_id:b.dataset.timelineBatch,run_ids:ids,pace_ms:Number(members[0].metadata?.pace_ms)||500},true);
+    window.timelineController?.sync(state.runs);
+    showPage("lab");
+  });
+  document.querySelectorAll("#run-list [data-run]").forEach(b=>b.onclick=()=>{window.timelineController?.detach();state.active=b.dataset.run;drawActive();showPage("lab")});
   document.querySelectorAll("[data-compare]").forEach(b=>b.onchange=()=>{if(b.checked)state.compare.add(b.dataset.compare);else state.compare.delete(b.dataset.compare);drawCompare();});
 }
 function setMetric(id,value,kind=""){const e=$(id);e.textContent=value;e.classList.remove("positive","negative");if(kind&&Number.isFinite(kind))e.classList.add(kind>0?"positive":"negative");}
-function chart(element,traces,layout={}){if(!window.Plotly)return;Plotly.react(element,traces,{margin:{l:52,r:12,t:8,b:32},paper_bgcolor:"#fff",plot_bgcolor:"#fff",font:{family:'Inter,"Segoe UI",sans-serif',size:10,color:"#768aa7"},xaxis:{showgrid:true,gridcolor:"#edf1f6",...layout.xaxis},yaxis:{showgrid:true,gridcolor:"#edf1f6",...layout.yaxis},showlegend:false,hovermode:"x unified",...layout},{displayModeBar:false,responsive:true});}
+function chart(element,traces,layout={}){if(!window.Plotly)return;return Plotly.react(element,traces,{margin:{l:52,r:12,t:8,b:32},paper_bgcolor:"#fff",plot_bgcolor:"#fff",font:{family:'Inter,"Segoe UI",sans-serif',size:10,color:"#768aa7"},xaxis:{showgrid:true,gridcolor:"#edf1f6",...layout.xaxis},yaxis:{showgrid:true,gridcolor:"#edf1f6",...layout.yaxis},showlegend:false,hovermode:"x unified",...layout},{displayModeBar:false,responsive:true});}
 async function drawActive(){
+  if(window.timelineController?.active)return;
   const run=state.runs.find(r=>r.run_id===state.active);
   if(!run)return;
   $("run-title").textContent=run.metadata?.strategy_name||run.metadata?.strategy_id||"策略运行";
@@ -90,12 +148,18 @@ async function drawActive(){
   const positions=run.positions||p.open_positions||run.result?.open_positions||[];
   $("position-count").textContent=`${positions.length} 个`;
   $("positions-body").innerHTML=positions.map(x=>`<tr><td>${safe(x.symbol)}</td><td>${money(x.quantity??x.shares)}</td><td>${money(x.entry_execution??x.entry_price)}</td><td>${money(x.last_price??x.mark_price)}</td></tr>`).join("")||"<tr><td colspan='4'>暂无持仓</td></tr>";
-  const fields={"策略版本":run.metadata?.strategy_version,"区间":human[run.metadata?.split]||run.metadata?.split,"开始":day(run.metadata?.start_date),"结束":day(run.metadata?.evaluation_end),"滑点":`${run.metadata?.slippage_bps??"—"} bps`,"费用配置":run.metadata?.fee_profile,"数据指纹":run.metadata?.data_snapshot?.slice(0,12),"策略指纹":run.metadata?.strategy_code_hash?.slice(0,12)};
+  const timing=run.metadata?.execution_policy?.execution_timing||"legacy_close";
+  const exits=run.metadata?.execution_policy||{};
+  const exitText=(value,percent=false)=>value===null||value===undefined?"Off":percent?`${(100*Number(value)).toFixed(1)}%`:`${value} 日`;
+  const fields={"策略版本":run.metadata?.strategy_version,"区间":human[run.metadata?.split]||run.metadata?.split,"成交口径":timing==="next_open"?"收盘信号→次日开盘成交":"旧版：同日收盘成交（偏乐观）","止盈":exitText(exits.take_profit,true),"止损":exitText(exits.stop_loss,true),"最长持有":exitText(exits.max_holding_sessions),"开始":day(run.metadata?.start_date),"结束":day(run.metadata?.evaluation_end),"滑点":`${run.metadata?.slippage_bps??"—"} bps`,"费用配置":run.metadata?.fee_profile,"数据指纹":run.metadata?.data_snapshot?.slice(0,12),"策略指纹":run.metadata?.strategy_code_hash?.slice(0,12)};
   $("run-meta").innerHTML=Object.entries(fields).map(([k,v])=>`<dt>${safe(k)}</dt><dd title="${safe(v)}">${safe(v)}</dd>`).join("");
   if(run.error_text)notice(`运行失败：${run.error_text}`);
+  const signature=`${run.run_id}:${run.status}:${run.updated_at||""}`;
+  if(["completed","failed","cancelled"].includes(run.status)&&state.drawnSignature===signature)return;
   try{
     const [rows,trades,events]=await Promise.all([api(`/api/lab/equity?id=${run.run_id}`),api(`/api/lab/trades?id=${run.run_id}`),api(`/api/lab/events?id=${run.run_id}`)]);
     if(state.active!==run.run_id)return;
+    state.drawnSignature=signature;
     const dates=rows.map(x=>day(x.date)),values=rows.map(x=>x.equity),peak=[];let highest=0;values.forEach(v=>{highest=Math.max(highest,v);peak.push(highest?100*(v/highest-1):0)});
     chart($("equity-chart"),[{x:dates,y:values,type:"scatter",mode:"lines",line:{color:"#1769ed",width:2},fill:"tozeroy",fillcolor:"rgba(23,105,237,.08)"}],{yaxis:{tickprefix:"$",tickformat:"~s"}});
     chart($("drawdown-chart"),[{x:dates,y:peak,type:"scatter",mode:"lines",line:{color:"#f05260",width:1.5},fill:"tozeroy",fillcolor:"rgba(240,82,96,.09)"}],{yaxis:{ticksuffix:"%"}});
@@ -107,9 +171,12 @@ async function drawActive(){
 }
 async function drawCompare(){
   const runs=state.runs.filter(r=>state.compare.has(r.run_id)&&r.status==="completed").slice(0,6);
+  const signature=[...state.compare].sort().join(",")+"|"+runs.map(r=>`${r.run_id}:${r.status}:${r.updated_at||""}`).join(",");
+  if(state.compareSignature===signature)return;
+  state.compareSignature=signature;
   $("comparison-body").innerHTML=runs.map(r=>`<tr><td>${safe(r.metadata?.strategy_name||r.metadata?.strategy_id)} #${r.run_id.slice(0,8)}</td><td>${safe(human[r.metadata?.split]||r.metadata?.split)}</td><td class="${r.metrics?.total_return>=0?"positive":"negative"}">${pct(r.metrics?.total_return)}</td><td>${pct(r.metrics?.max_drawdown)}</td><td>${safe(r.metrics?.sharpe?.toFixed?.(2)||"—")}</td><td>${money(r.metrics?.trade_count)}</td></tr>`).join("")||"<tr><td colspan='6'>请在运行记录中勾选已完成的运行</td></tr>";
   $("compare-preview").innerHTML=(runs.length?runs:state.runs.filter(r=>r.status==="completed").slice(0,3)).map(r=>`<div class="preview-row"><span>${safe(r.metadata?.strategy_name||r.metadata?.strategy_id||"Strategy")}</span><strong class="${(r.metrics?.total_return||0)>=0?"positive":"negative"}">${pct(r.metrics?.total_return)}</strong></div>`).join("")||"暂无已完成运行";
-  if(!runs.length){chart($("comparison-chart"),[]);return}
+  if(!runs.length){const chartEl=$("comparison-chart");if(window.Plotly&&chartEl.data)Plotly.purge(chartEl);return}
   try{
     const rows=await Promise.all(runs.map(r=>api(`/api/lab/equity?id=${r.run_id}`)));
     const colors=["#1769ed","#17a673","#ed9840","#8b63d9","#e2546b","#35a4c4"];
@@ -125,15 +192,18 @@ async function refresh(){
   try{
     const [strategies,runs]=await Promise.all([api("/api/lab/strategies"),api("/api/lab/runs")]);
     state.strategies=strategies;state.runs=runs;
+    window.timelineController?.autoAttach(runs);
+    window.timelineController?.sync(runs);
     if(!state.selected.size&&strategies.length)state.selected.add(strategies[0].id);
     if(!state.focused&&strategies.length)state.focused=[...state.selected][0];
-    if(!state.active&&runs.length)state.active=runs[0].run_id;
+    if(!state.active&&runs.length){const focusedRun=runs.find(r=>r.metadata?.strategy_id===state.focused);state.active=(focusedRun||runs[0]).run_id;}
     $("connection").innerHTML="<span class='green-dot'></span> 已连接本机";
-    drawStrategies();drawParameters();drawRuns();if(state.active)await drawActive();await drawCompare();await drawExperiments();notice("");
+    drawStrategies();drawParameters();drawRuns();if(state.active&&!window.timelineController?.active)await drawActive();await drawCompare();await drawExperiments();notice("");
   }catch(error){$("connection").textContent="本机服务未连接";notice(`无法连接本机实验室：${error.message}。请启动本机 Stock Radar 服务。`)}
   finally{state.loading=false}
 }
 $("run-selected").onclick=async()=>{
+  window.timelineController?.detach();
   if(!state.selected.size){notice("请先选择至少一个策略。");return}
   const selected=[...state.selected];
   try{const result=await post("/api/lab/run",{strategy_ids:selected,split:$("split").value,slippage_bps:Number($("slippage").value),configs_by_strategy:Object.fromEntries(selected.map(id=>[id,state.config[id]||state.strategies.find(s=>s.id===id).config]))});state.active=result.run_ids[0];await refresh();showPage("lab");}
@@ -142,7 +212,7 @@ $("run-selected").onclick=async()=>{
 async function importStrategy(event){
   const file=event.target.files[0];if(!file)return;
   if(file.size>5_000_000){notice("策略 ZIP 不能超过 5 MB。");return}
-  try{const result=await api("/api/lab/import",{method:"POST",headers:{"Content-Type":"application/zip"},body:file});state.selected.add(result.id);state.focused=result.id;await refresh();notice(`已导入 ${result.name}。请检查参数后运行。`)}catch(error){notice(`导入失败：${error.message}`)}finally{event.target.value=""}
+  try{const result=await api("/api/lab/import",{method:"POST",headers:{"Content-Type":"application/zip"},body:file});state.selected.add(result.id);state.closed.delete(result.id);state.focused=result.id;await refresh();notice(`已导入 ${result.name}。请检查参数后运行。`)}catch(error){notice(`导入失败：${error.message}`)}finally{event.target.value=""}
 }
 $("plugin-file").onchange=importStrategy;
 $("strategy-plugin-file").onchange=importStrategy;
@@ -160,13 +230,13 @@ const experimentName={grid:"参数网格",ablation:"逐项剔除",walk_forward:"
 async function drawExperiments(){
   const summaries=await api("/api/lab/experiments");
   $("experiment-list").innerHTML=summaries.map(e=>`<article class="experiment-card"><h4>${safe(experimentName[e.kind]||e.kind)} · ${safe(e.strategy_id)} <small>#${e.id.slice(0,8)}</small></h4><div class="experiment-stats"><span>完成 ${e.completed}/${e.total}</span><span>正收益 ${e.positive} 折</span><span>收益中位数 ${pct(e.median_return)}</span><span>平均收益 ${pct(e.mean_return)}</span><span>最差 ${pct(e.worst_return)}</span><span>最好 ${pct(e.best_return)}</span><span>回撤中位数 ${pct(e.median_drawdown)}</span></div><div class="table-wrap experiment-variants"><table><thead><tr><th>变体 / 样本外区间</th><th>状态</th><th>收益</th><th>回撤</th><th>运行</th></tr></thead><tbody>${e.runs.map(r=>`<tr><td>${safe(typeof r.variant==="object"?JSON.stringify(r.variant):r.variant)}</td><td>${safe(statusLabel[r.status]||r.status)}</td><td>${pct(r.total_return)}</td><td>${pct(r.max_drawdown)}</td><td><button class="text-button" data-run="${safe(r.run_id)}">查看</button></td></tr>`).join("")}</tbody></table></div></article>`).join("")||"<p class='helper'>暂无实验</p>";
-  document.querySelectorAll("#experiment-list [data-run]").forEach(button=>button.onclick=()=>{state.active=button.dataset.run;drawActive();showPage("lab")});
+  document.querySelectorAll("#experiment-list [data-run]").forEach(button=>button.onclick=()=>{window.timelineController?.detach();state.active=button.dataset.run;drawActive();showPage("lab")});
 }
 $("experiment-kind").onchange=()=>{const grid=$("experiment-kind").value==="grid";$("grid-param").parentElement.hidden=!grid;$("grid-values").parentElement.hidden=!grid};
 $("start-experiment").onclick=async()=>{
   const strategy_id=state.focused;if(!strategy_id){notice("请先选择一个策略。");return}
   const kind=$("experiment-kind").value;
-  const payload={kind,strategy_id,split:$("split").value,slippage_bps:Number($("slippage").value)};
+  const payload={kind,strategy_id,split:$("experiment-split").value,slippage_bps:Number($("slippage").value)};
   if(kind==="grid"){
     const key=$("grid-param").value,values=$("grid-values").value.split(",").map(x=>x.trim()).filter(Boolean).map(Number);
     if(!key||!values.length||values.some(x=>!Number.isFinite(x))){notice("请输入有效的候选数值，用逗号分隔。");return}

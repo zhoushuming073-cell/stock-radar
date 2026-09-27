@@ -112,8 +112,10 @@ def _engine_config(raw: dict, *, variant: str, allocator: str,
                    market_guard: str = "none") -> BacktestConfig:
     return BacktestConfig(
         initial_capital=float(raw["initial_capital"]),
-        take_profit=float(raw["take_profit"]), stop_loss=float(raw["stop_loss"]),
-        max_holding_sessions=int(raw["max_holding_sessions"]),
+        take_profit=(None if raw["take_profit"] is None else float(raw["take_profit"])),
+        stop_loss=(None if raw["stop_loss"] is None else float(raw["stop_loss"])),
+        max_holding_sessions=(None if raw["max_holding_sessions"] is None
+                              else int(raw["max_holding_sessions"])),
         entry_gap_min=float(raw["entry_gap_min"]),
         entry_gap_max=float(raw["entry_gap_max"]),
         max_position_fraction=float(max_position_fraction),
