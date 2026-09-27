@@ -175,7 +175,8 @@ $("run-timeline").onclick=async()=>{
   try{
     const pace_ms=Number($("timeline-pace").value);
     const result=await post("/api/lab/timeline",{strategy_id:id,
-      config:state.config[id]||strategy.config,slippage_bps:Number($("slippage").value),pace_ms});
+      config:state.config[id]||strategy.config,slippage_bps:Number($("slippage").value),
+      execution:state.execution[id]||{},universe_mode:$("universe-mode").value,pace_ms});
     timelineController.activate({...result,pace_ms});
     showPage("lab");await refresh();
   }catch(error){notice(`Could not start daily backtest: ${error.message}`)}

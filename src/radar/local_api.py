@@ -70,6 +70,38 @@ def lab_strategies() -> list[dict]:
     } for item in registrations]
 
 
+def lab_parameter_schema(strategy_id: str) -> list[dict]:
+    from radar.backtest.runner import load_backtest_config
+    from radar.lab.parameters import execution_defaults_from_legacy
+    from radar.lab.scanner import evaluation_settings
+    from radar.lab.schema import parameter_schema
+    manager = lab_manager()
+    match = next((item for item in manager.list_strategies()
+                  if item.manifest.id == strategy_id), None)
+    if match is None:
+        raise ValueError(f"unknown strategy: {strategy_id}")
+    execution = execution_defaults_from_legacy(
+        load_backtest_config(ROOT / "config" / "backtest.yaml"),
+        slippage_bps=10, execution_timing="next_open")
+    return parameter_schema(strategy_id, match.config,
+                            evaluation_settings(None), execution)
+
+
+def lab_universe_status() -> dict:
+    from radar.lab.universe import current_snapshot_provenance, LocalSecurityMaster
+    base = {"current": current_snapshot_provenance().metadata(),
+            "point_in_time_available": False}
+    csv_path = DATA / "security-master.csv"
+    manifest_path = DATA / "security-master-manifest.json"
+    if csv_path.exists() and manifest_path.exists():
+        try:
+            base["point_in_time"] = LocalSecurityMaster(csv_path, manifest_path).provenance().metadata()
+            base["point_in_time_available"] = True
+        except ValueError as error:
+            base["point_in_time_error"] = str(error)
+    return base
+
+
 def lab_spy(start: str, end: str) -> list[dict]:
     if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", start) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", end):
         raise ValueError("dates must use YYYY-MM-DD")
@@ -192,6 +224,11 @@ def make_handler(allowed_origins: set[str]):
                     payload = symbol_data(symbol)
                 elif target.path == "/api/lab/strategies":
                     payload = lab_strategies()
+                elif target.path == "/api/lab/parameter-schema":
+                    strategy_id = parse_qs(target.query).get("strategy_id", [""])[0]
+                    payload = lab_parameter_schema(strategy_id)
+                elif target.path == "/api/lab/universe-status":
+                    payload = lab_universe_status()
                 elif target.path == "/api/lab/runs":
                     payload = lab_runs()
                 elif target.path == "/api/lab/scanner/runs":
@@ -287,13 +324,19 @@ def make_handler(allowed_origins: set[str]):
                         strategy_id = data.get("strategy_id")
                         if not isinstance(strategy_id, str) or not strategy_id:
                             raise ValueError("strategy_id must be a non-empty string")
-                        maximum = data.get("max_candidates", 20)
                         config = data.get("config")
                         if config is not None and not isinstance(config, dict):
                             raise ValueError("config must be an object")
+                        evaluation = data.get("evaluation")
+                        if evaluation is not None and not isinstance(evaluation, dict):
+                            raise ValueError("evaluation must be an object")
+                        legacy_cap = ({"max_candidates": data["max_candidates"]}
+                                      if "max_candidates" in data else {})
                         run_id = manager.queue_scanner(
                             strategy_id, split=str(data.get("split", "validation")),
-                            max_candidates=maximum, config_override=config)
+                            config_override=config, evaluation_overrides=evaluation,
+                            universe_mode=str(data.get("universe_mode", "current_snapshot")),
+                            **legacy_cap)
                         manager.launch_queued_scanners()
                         payload = {"run_id": run_id}
                     elif target.endswith("/cancel"):
@@ -321,6 +364,9 @@ def make_handler(allowed_origins: set[str]):
                                 configs_by_strategy={strategy_id: config},
                                 batch_id=batch_id, after_run_id=predecessor,
                                 pace_ms=pace_ms,
+                                execution_overrides=data.get("execution"),
+                                universe_mode=str(data.get("universe_mode", "current_snapshot")),
+                                source_scanner_run_id=data.get("source_scanner_run_id"),
                             )[0]
                             run_ids.append(run_id)
                             predecessor = run_id
@@ -337,6 +383,9 @@ def make_handler(allowed_origins: set[str]):
                             ids, split=str(data.get("split", "validation")),
                             slippage_bps=float(data.get("slippage_bps", 10)),
                             configs_by_strategy=configs,
+                            execution_overrides=data.get("execution"),
+                            universe_mode=str(data.get("universe_mode", "current_snapshot")),
+                            source_scanner_run_id=data.get("source_scanner_run_id"),
                         )
                         manager.launch_queued()
                         payload = {"run_ids": run_ids}

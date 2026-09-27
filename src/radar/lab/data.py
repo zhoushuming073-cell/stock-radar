@@ -7,6 +7,7 @@ from pathlib import Path
 import duckdb
 import pandas as pd
 
+from radar.lab.universe import PointInTimeUniverseProvider
 from radar.research.pipeline import FEATURE_VERSION
 
 
@@ -33,9 +34,12 @@ def available_features(database: Path) -> set[str]:
 def load_strategy_segment(
     database: Path, start: pd.Timestamp, end: pd.Timestamp,
     required_features: set[str],
+    universe_provider: PointInTimeUniverseProvider | None = None,
 ) -> pd.DataFrame:
     """Load only current/past feature columns; never join forward_labels."""
     fields = ENGINE_FEATURES | (required_features - MARKET_FEATURES)
+    if universe_provider is not None and "market_breadth" in required_features:
+        fields = fields | {"dist_ma_20"}
     connection = duckdb.connect(str(database), read_only=True)
     try:
         available = {row[1] for row in connection.execute("PRAGMA table_info('daily_features')").fetchall()}
@@ -44,12 +48,14 @@ def load_strategy_segment(
             raise ValueError(f"missing causal feature columns: {sorted(missing)}")
         # Identifiers come from the database schema, then are quoted for SQL.
         selected = ", ".join(f'f."{name}"' for name in sorted(fields))
+        asset_join = "" if universe_provider is not None else "JOIN assets AS a ON f.symbol=a.symbol"
+        security_name = "f.symbol" if universe_provider is not None else "COALESCE(a.name, f.symbol)"
         frame = connection.execute(f"""
             SELECT f.date, f.symbol, b.open, b.close, {selected},
-                   a.name AS security_name
+                   {security_name} AS security_name
             FROM daily_features AS f
             JOIN daily_bars AS b ON f.date=b.date AND f.symbol=b.symbol
-            JOIN assets AS a ON f.symbol=a.symbol
+            {asset_join}
             WHERE f.feature_version=? AND f.date BETWEEN ? AND ?
         """, [FEATURE_VERSION, pd.Timestamp(start).date(), pd.Timestamp(end).date()]).df()
         context = None
@@ -78,7 +84,15 @@ def load_strategy_segment(
             raise ValueError(f"market context unavailable: {missing_context}")
     if frame.duplicated(["date", "symbol"]).any():
         raise ValueError("duplicate market feature for one symbol/session")
-    return frame.set_index(["date", "symbol"], drop=False).sort_index()
+    result = frame.set_index(["date", "symbol"], drop=False).sort_index()
+    if universe_provider is None:
+        return result
+    result = universe_provider.filter_frame(result)
+    if "market_breadth" in required_features:
+        eligible = result["tradability_pass"].fillna(False).astype(bool)
+        breadth = (result.loc[eligible, "dist_ma_20"].gt(0).groupby(level="date").mean())
+        result["market_breadth"] = result.index.get_level_values("date").map(breadth)
+    return result
 
 
 def _market_context(benchmark: pd.DataFrame, breadth: pd.DataFrame) -> pd.DataFrame:

@@ -43,27 +43,65 @@ def _contains_complex(value: Any) -> bool:
 
 def _config_controls(config: Mapping[str, Any], reference: str,
                      path: tuple[str, ...] = ()) -> dict[str, Any]:
-    """Render scalar plugin parameters without knowing any strategy schema."""
-    result: dict[str, Any] = {}
-    for name, value in config.items():
-        current = (*path, str(name))
-        label = str(name).replace("_", " ")
-        key = f"param__{reference}__{'__'.join(current)}"
-        if isinstance(value, Mapping):
-            st.markdown(f"**{label}**")
-            result[str(name)] = _config_controls(value, reference, current)
-        elif isinstance(value, bool):
-            result[str(name)] = st.checkbox(label, value=value, key=key)
-        elif isinstance(value, int):
-            result[str(name)] = st.number_input(label, value=value, step=1, key=key)
-        elif isinstance(value, float):
-            result[str(name)] = st.number_input(label, value=value, step=0.01,
-                                                format="%.6f", key=key)
-        elif isinstance(value, str):
-            result[str(name)] = st.text_input(label, value=value, key=key)
+    """Render declared strategy controls; unknown v1 plugins use a raw draft."""
+    from radar.lab.schema import parameter_schema
+
+    result = _plain(config)
+    strategy_id = reference.split("@", 1)[0]
+    schema = [item for item in parameter_schema(strategy_id, config, {}, {})
+              if item["namespace"] == "strategy"]
+    if not schema:
+        raw = st.text_area("Run draft YAML", yaml.safe_dump(result, sort_keys=False),
+                           key=f"raw_draft_{reference}", height=180,
+                           help="No semantic control schema is declared for this v1 plugin.")
+        try:
+            parsed = yaml.safe_load(raw)
+            if not isinstance(parsed, dict):
+                raise ValueError("Run draft must be a mapping")
+            return parsed
+        except (yaml.YAMLError, ValueError) as error:
+            st.error(f"Invalid run draft: {error}")
+            return result
+
+    def render_item(item: dict) -> None:
+        parts = item["path"].split(".")[1:]
+        current = result
+        for part in parts[:-1]:
+            current = current.setdefault(part, {})
+        value = current.get(parts[-1])
+        key = f"param__{reference}__{'__'.join(parts)}"
+        label = item["label"]
+        if item["type"] == "boolean":
+            updated = st.checkbox(label, value=bool(value), key=key,
+                                  help=item["description"])
+        elif item["nullable"]:
+            raw = st.text_input(label, value="" if value is None else str(value),
+                                key=key, help=item["description"] + " Blank disables it.")
+            try:
+                updated = None if not raw.strip() else int(raw)
+            except ValueError:
+                st.error(f"{label} must be an integer or blank")
+                updated = value
         else:
-            result[str(name)] = _plain(value)
-            st.caption(f"{label}：请在高级 YAML 编辑中修改。")
+            integer = item["type"] == "integer"
+            updated = st.number_input(
+                label, value=int(value) if integer else float(value),
+                min_value=(int(item["min"]) if integer else float(item["min"]))
+                if item["min"] is not None else None,
+                max_value=(int(item["max"]) if integer else float(item["max"]))
+                if item["max"] is not None else None,
+                step=1 if integer else float(item["step"] or .01), key=key,
+                help=item["description"],
+            )
+        current[parts[-1]] = updated
+
+    for item in schema:
+        if item["level"] == "core":
+            render_item(item)
+    with st.expander("Advanced Research", expanded=False):
+        for item in schema:
+            if item["level"] == "advanced":
+                render_item(item)
     return result
 
 

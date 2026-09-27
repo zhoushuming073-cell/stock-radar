@@ -96,6 +96,33 @@ def evaluate_selection(plugin: StrategyPlugin, config: Mapping[str, Any],
     return ranked, selected
 
 
+def evaluate_filter_diagnostics(plugin: StrategyPlugin, config: Mapping[str, Any],
+                                daily: pd.DataFrame) -> pd.DataFrame:
+    """Optional causal filter-stage explanation, never forwarded to signals."""
+    method = getattr(plugin, "filter_diagnostics", None)
+    if not callable(method):
+        return pd.DataFrame(index=range(len(daily)))
+    required = set(plugin.required_features())
+    if any(is_future_feature(name) for name in required):
+        raise ValueError("strategy requested future-data field")
+    columns = ["symbol", "security_name", "close", *sorted(required - BASE_COLUMNS)]
+    missing = set(columns) - set(daily)
+    if missing:
+        raise ValueError(f"filter diagnostics missing causal features: {sorted(missing)}")
+    context = StrategyContext(pd.Timestamp(daily["date"].iloc[0]),
+                              daily[columns].reset_index(drop=True))
+    result = method(context, config)
+    if not isinstance(result, pd.DataFrame) or not result.index.equals(context.frame.index):
+        raise ValueError("filter_diagnostics must return an aligned DataFrame")
+    for name in result:
+        if not str(name).startswith("filter_pass_"):
+            raise ValueError(f"invalid filter diagnostic column: {name}")
+        values = result[name]
+        if not pd.api.types.is_bool_dtype(values.dtype) or values.isna().any():
+            raise ValueError(f"filter diagnostic must be non-null boolean: {name}")
+    return result.copy()
+
+
 def make_candidate_selector(
     plugin: StrategyPlugin,
     config: Mapping[str, Any],
@@ -111,8 +138,8 @@ def make_candidate_selector(
 
     def select(daily: pd.DataFrame, already_held: set[str]) -> pd.DataFrame:
         _, selected = evaluate_selection(plugin, config, daily, already_held)
-        if len(selected) > max_new:
-            raise ValueError("strategy exceeded new-candidate limit")
+        # Strategy output and portfolio intake are separate decisions.
+        selected = selected.head(max_new)
         output = daily.set_index("symbol", drop=False).loc[selected["symbol"].tolist()].copy()
         output["strategy2_score"] = selected["strategy_score"].to_numpy(dtype=float)
         return output.reset_index(drop=True)

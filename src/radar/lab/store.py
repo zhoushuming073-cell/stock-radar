@@ -22,7 +22,7 @@ from typing import Any, Iterator, Mapping
 import pandas as pd
 
 
-SCHEMA_VERSION = 4
+SCHEMA_VERSION = 5
 _TERMINAL = frozenset({"completed", "failed", "cancelled"})
 _STATUSES = frozenset({"queued", "running", "cancel_requested", *_TERMINAL})
 _REQUIRED_METADATA = frozenset({
@@ -106,6 +106,9 @@ class RunStore:
                 version = 3
             if version == 3:
                 self._migrate_v4(connection)
+                version = 4
+            if version == 4:
+                self._migrate_v5(connection)
 
     @contextmanager
     def _connect(self) -> Iterator[sqlite3.Connection]:
@@ -307,6 +310,21 @@ class RunStore:
                 connection.execute("ROLLBACK")
             raise
 
+    @staticmethod
+    def _migrate_v5(connection: sqlite3.Connection) -> None:
+        try:
+            connection.executescript("""
+                BEGIN IMMEDIATE;
+                ALTER TABLE scanner_candidates ADD COLUMN security_id TEXT;
+                ALTER TABLE scanner_candidates ADD COLUMN signal_event INTEGER NOT NULL DEFAULT 1;
+                PRAGMA user_version=5;
+                COMMIT;
+            """)
+        except Exception:
+            if connection.in_transaction:
+                connection.execute("ROLLBACK")
+            raise
+
     def create_scanner_run(self, metadata: Mapping[str, Any]) -> str:
         required = {"strategy_id", "strategy_version", "plugin_interface_version", "config",
                     "selection", "evaluation", "feature_version", "market_feature_version",
@@ -354,10 +372,12 @@ class RunStore:
             "label": row.get("label"),
             "market_context": row.get("market_context", {}),
             "features": row.get("features", {}),
+            "security_id": row.get("security_id"),
+            "signal_event": bool(row.get("signal_event", True)),
         } for row in source_rows), key=lambda row: (row["signal_date"], row["rank"], row["symbol"]))
         canonical = _json(rows).encode("utf-8")
         metrics_json = _json(metrics)
-        hashes = {"format": "scanner-candidates-v2",
+        hashes = {"format": "scanner-candidates-v3",
                   "candidates_sha256": hashlib.sha256(canonical).hexdigest(),
                   "metrics_sha256": hashlib.sha256(metrics_json.encode("utf-8")).hexdigest()}
         with self._connect() as connection:
@@ -370,14 +390,16 @@ class RunStore:
                 connection.executemany("""
                     INSERT INTO scanner_candidates
                     (run_id,signal_date,symbol,security_name,rank,strategy_score,selected,
-                     diagnostics_json,probabilities_json,labels_json,market_context_json,features_json)
-                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+                     diagnostics_json,probabilities_json,labels_json,market_context_json,features_json,
+                     security_id,signal_event)
+                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """, ((run_id, row["signal_date"], row["symbol"],
                        row["security_name"], row["rank"], row["strategy_score"],
                        int(row["selected"]), _json(row["diagnostics"]),
                        _json(row["probabilities"]),
                        _json(row["label"]) if row.get("label") is not None else None,
-                       _json(row["market_context"]), _json(row["features"])) for row in rows))
+                       _json(row["market_context"]), _json(row["features"]),
+                       row["security_id"], int(row["signal_event"])) for row in rows))
                 now = _now()
                 connection.execute("UPDATE scanner_runs SET status='completed',metrics_json=?,"
                                    "artifact_hashes_json=?,finished_at=?,updated_at=? WHERE run_id=?",
@@ -449,7 +471,9 @@ class RunStore:
                  "probabilities": json.loads(row["probabilities_json"]),
                  "label": json.loads(row["labels_json"]) if row["labels_json"] else None,
                  "market_context": json.loads(row["market_context_json"]),
-                 "features": json.loads(row["features_json"])} for row in rows]
+                 "features": json.loads(row["features_json"]),
+                 "security_id": row["security_id"],
+                 "signal_event": bool(row["signal_event"])} for row in rows]
 
     def verify_scanner_artifacts(self, run_id: str) -> bool:
         """Recompute saved hashes, including the two early v1.5 snapshot formats."""
@@ -461,6 +485,9 @@ class RunStore:
         rows = self.get_scanner_candidates(run_id, limit=max(1, count))
         if len(rows) != count:
             return False
+        if expected.get("format") != "scanner-candidates-v3":
+            rows = [{key: value for key, value in row.items()
+                     if key not in {"security_id", "signal_event"}} for row in rows]
         candidates_hash = hashlib.sha256(_json(rows).encode("utf-8")).hexdigest()
         if candidates_hash != expected["candidates_sha256"] and not expected.get("format"):
             legacy = [{**row, "signal_date": row["signal_date"] + "T00:00:00"}

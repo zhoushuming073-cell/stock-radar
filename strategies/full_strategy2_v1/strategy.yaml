@@ -1,5 +1,7 @@
 # Exact Phase 2 seven-stage thresholds; exits are strategy-owned.
 max_new: 3
+selection:
+  max_candidates: null
 min_elasticity: 76.21433772581146
 min_prior_peak_gain: 0.13230715023626216
 min_pullback: 0.08

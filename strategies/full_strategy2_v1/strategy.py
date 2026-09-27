@@ -40,5 +40,11 @@ class FullStrategy2Plugin(StrategyPlugin):
                    and name != "strategy2_score"]
         return scored[columns].copy()
 
+    def filter_diagnostics(self, context: StrategyContext,
+                           config: Mapping[str, Any]) -> pd.DataFrame:
+        scored = score_full_strategy2(context.frame, self._rules(config))
+        columns = [name for name in scored if name.startswith("filter_pass_")]
+        return scored[columns].copy()
+
 
 PLUGIN = FullStrategy2Plugin()

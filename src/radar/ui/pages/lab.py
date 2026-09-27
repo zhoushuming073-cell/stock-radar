@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from pathlib import Path
-from tempfile import TemporaryDirectory
 from uuid import uuid4
 
 import streamlit as st
@@ -12,21 +11,6 @@ import yaml
 from radar.backtest.runner import split_dates
 from radar.strategy_lab_ui import _plain, _progress_fraction
 from radar.ui.pages.lab_timeline import available_batches, render_timeline
-
-
-def _import_strategy(manager, key: str) -> None:
-    uploaded = st.file_uploader("策略插件 ZIP", type=["zip"], key=key)
-    if uploaded is None or not st.button("验证并导入", key=f"{key}_button"):
-        return
-    try:
-        with TemporaryDirectory(prefix="stock-radar-import-") as directory:
-            path = Path(directory) / "strategy.zip"
-            path.write_bytes(uploaded.getvalue())
-            registration = manager.import_zip(path)
-        st.success(f"已导入 {registration.manifest.name} {registration.manifest.version}")
-        st.rerun()
-    except Exception as exc:
-        st.error(f"导入失败：{exc}")
 
 
 @st.cache_data(ttl=3600, show_spinner=False)
@@ -46,8 +30,9 @@ def _toolbar(manager, selected: str | None) -> None:
     a, b, c, d, pace, timeline, e = st.columns(
         [1.2, 1.8, 1.1, 1.0, 0.9, 1.4, 1.1], gap="small")
     with a:
-        with st.popover("＋ Import Strategy", width="stretch"):
-            _import_strategy(manager, "lab_import")
+        if st.button("Open Strategies", width="stretch", key="lab_open_strategies"):
+            st.session_state["radar_lab_page"] = "Strategies"
+            st.rerun()
     with b:
         st.selectbox(
             "Date Range", ["validation", "train", "test"],
@@ -200,7 +185,7 @@ def render_lab(manager) -> None:
         st.session_state["lab_active_strategy"] = references[0]
     selected = st.session_state.get("lab_active_strategy") if references else None
     if not references:
-        st.info("尚未加载策略。点击 Import Strategy 导入插件后开始。")
+        st.info("尚未加载策略。请在 Strategies 页面导入插件后开始。")
         return
     tabs, add = st.columns([7, 1], gap="small")
     with tabs:
@@ -210,8 +195,9 @@ def render_lab(manager) -> None:
             label_visibility="collapsed", width="stretch",
         )
     with add:
-        with st.popover("＋", width="stretch"):
-            _import_strategy(manager, "lab_add_import")
+        if st.button("Strategies", width="stretch", key="lab_tabs_open_strategies"):
+            st.session_state["radar_lab_page"] = "Strategies"
+            st.rerun()
     if selected is None:
         st.info("请选择策略。")
         return

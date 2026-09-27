@@ -17,14 +17,14 @@
   <aside class="rail">
     <a class="brand" href="./lab.html"><span class="brand-icon">▥</span> Stock Radar</a>
     <nav aria-label="Main navigation">
+      <span class="rail-group-label">RESEARCH</span>
       <button class="nav-link active" data-page="scanner" type="button">◎ <span>Scanner</span></button>
       <button class="nav-link" data-page="lab" type="button">◫ <span>Backtest</span></button>
-      <button class="nav-link" data-page="strategies-page" type="button">◈ <span>Strategies</span></button>
+      <button class="nav-link" data-page="compare" type="button">⌘ <span>Compare history</span></button>
       <button class="nav-link" data-page="experiments" type="button">⌬ <span>Experiments</span></button>
-      <button class="nav-link" data-page="compare" type="button">⌘ <span>Compare</span></button>
       <span class="nav-divider"></span>
-      <a href="./index.html">▤ <span>Market</span></a>
-      <button class="nav-link" data-page="settings" type="button">⚙ <span>Settings</span></button>
+      <button class="nav-link" data-page="strategies-page" type="button">◈ <span>Strategies</span></button>
+      <button class="nav-link" data-page="settings" type="button">⚙ <span>System</span></button>
     </nav>
     <div class="rail-foot"><span class="green-dot"></span> Local Mode<br><small>Data and strategies stay on this computer</small></div>
   </aside>
@@ -35,30 +35,32 @@
     </header>
     <div id="notice" class="notice" hidden role="status"></div>
     <section id="scanner" class="page active">
-      <div class="page-heading"><h2>Scanner Research</h2><p>Filter, score, and rank each trading day. The local engine adds future labels afterward; no positions are opened.</p></div>
+      <div class="page-heading"><h2>Research · Scanner</h2><p>Filter, score, and rank each trading day. The local engine adds future labels afterward; no positions are opened.</p></div>
       <div class="toolbar scanner-toolbar">
         <label>Strategy<select id="scanner-strategy"></select></label>
         <label>Research period<select id="scanner-split"><option value="validation">Validation</option><option value="train">Training</option><option value="test">Historical test</option></select></label>
-        <label>Daily candidates<select id="scanner-maximum"><option value="5">Top 5</option><option value="10">Top 10</option><option value="20" selected>Top 20</option><option value="all">All</option></select></label>
         <button id="scanner-start" class="primary" type="button">▷ Run scanner</button>
         <button id="scanner-refresh" class="secondary" type="button">Refresh results</button>
       </div>
+      <section class="card section-card"><div class="card-head"><h3>Scanner run parameters</h3><span>Core first; advanced controls are collapsed</span></div><div id="scanner-parameter-fields" class="fields"></div></section>
       <section class="card section-card"><div class="card-head"><h3>Research runs</h3><select id="scanner-run"></select></div><p id="scanner-status" class="helper">No research runs yet</p><div id="scanner-metrics" class="scanner-metrics"></div></section>
-      <section class="card section-card"><div class="card-head"><h3>Top-K quality</h3><span>Main target: +5% within 10 sessions, compared with the same-day eligible market</span></div><div id="scanner-quality" class="table-wrap"></div></section>
+      <section class="card section-card"><div class="card-head"><h3>Top-K quality</h3><span id="scanner-quality-caption">Compared with the same-day eligible universe</span></div><div id="scanner-quality" class="table-wrap"></div></section>
       <section class="card section-card"><div class="card-head"><h3>Daily candidate snapshots</h3><div><select id="scanner-day"></select><select id="scanner-topk"><option value="5">Top 5</option><option value="10" selected>Top 10</option><option value="20">Top 20</option></select></div></div><div id="scanner-candidates" class="table-wrap"></div><details class="scanner-feature-panel"><summary>View candidate input features</summary><select id="scanner-inspect"></select><pre id="scanner-feature-details"></pre></details></section>
+      <section class="card section-card"><div class="card-head"><h3>Filter funnel</h3><span>Daily stage counts</span></div><div id="scanner-funnel" class="table-wrap"></div><details><summary>Near-miss exclusion reasons</summary><div id="scanner-near-misses" class="table-wrap"></div></details></section>
       <section class="card section-card"><div class="card-head"><h3>Market regime breakdown</h3></div><div id="scanner-regime" class="table-wrap"></div></section>
+      <section class="card section-card"><details class="run-audit"><summary>Scanner audit and parameter sources</summary><pre id="scanner-audit"></pre></details></section>
     </section>
     <section id="lab" class="page">
-    <div class="page-heading"><h2>Strategy Lab</h2><p>Import, run, and inspect multiple strategies.</p></div>
+    <div class="page-heading"><h2>Research · Backtest</h2><p>Simulate positions under an explicit host execution policy.</p></div>
     <section class="toolbar" aria-label="Experiment settings">
-      <label class="upload">＋ Import Strategy<input type="file" id="plugin-file" accept=".zip,application/zip" hidden></label>
       <label>Backtest period<select id="split"><option value="train">Training</option><option value="validation" selected>Validation</option><option value="test">Test (exploratory)</option></select></label>
       <label>Fee profile<span>Default</span></label>
       <label>Slippage (bps)<input id="slippage" type="number" min="0" max="100" step="1" value="10"></label>
-      <label>Daily pace<select id="timeline-pace"><option value="200">0.2 sec</option><option value="500" selected>0.5 sec</option><option value="1000">1 sec</option></select></label>
+      <label>Signal source (one stage)<select id="source-scanner-run"><option value="">Strategy (new signals)</option></select></label>
       <button id="run-timeline" class="primary" type="button">▷ Three-stage daily backtest</button>
       <button id="run-selected" class="secondary" type="button">Run one stage</button>
     </section>
+    <div class="view-controls"><label>Display pace <select id="timeline-pace"><option value="200">0.2 sec</option><option value="500" selected>0.5 sec</option><option value="1000">1 sec</option></select></label><span>Playback controls change the display only.</span></div>
     <section class="strategy-strip" id="strategies" aria-label="Available strategies"></section>
     <div class="content">
       <section class="run-main">
@@ -71,15 +73,15 @@
       </section>
       <aside class="detail-column">
         <article class="card"><div class="card-head"><h3>Open positions</h3><span id="position-count">—</span></div><div class="table-wrap"><table><thead><tr><th>Symbol</th><th>Shares</th><th>Entry price</th><th>Last price</th></tr></thead><tbody id="positions-body"><tr><td colspan="4">No open positions</td></tr></tbody></table></div></article>
-        <article class="card" id="parameters"><div class="card-head"><h3>Strategy parameters</h3><button class="text-button" id="reset-config">Reset defaults</button></div><p class="helper">Edits create a new immutable run. Historical results are preserved.</p><div id="parameter-fields" class="fields"></div><div id="config-diff" class="helper"></div></article>
-        <article class="card"><div class="card-head"><h3>Run details</h3><button class="text-button" id="clone-run">Clone parameters</button></div><dl id="run-meta" class="metadata"></dl></article>
+        <article class="card" id="parameters"><div class="card-head"><h3>Run parameters</h3><button class="text-button" id="reset-config">Reset run overrides</button></div><p class="helper">Edits create a new immutable run. Historical results are preserved.</p><div id="parameter-fields" class="fields"></div><div id="config-diff" class="helper"></div></article>
+        <article class="card"><div class="card-head"><h3>Run details</h3><button class="text-button" id="clone-run">Clone parameters</button></div><dl id="run-meta" class="metadata"></dl><details class="run-audit"><summary>Audit configuration and sources</summary><pre id="run-audit"></pre></details></article>
       </aside>
     </div>
     </section>
     <section id="strategies-page" class="page"><div class="page-heading"><div><h2>Strategies</h2><p>Manage strategy plugins, versions, and run history.</p></div><label class="upload">＋ Import Strategy<input type="file" id="strategy-plugin-file" accept=".zip,application/zip" hidden></label></div><article class="card section-card"><div class="card-head"><h3>Available Strategies</h3><span id="strategy-count">—</span></div><div class="table-wrap"><table><thead><tr><th>Name</th><th>Version</th><th>Author</th><th>Description</th><th>Status</th><th>Action</th></tr></thead><tbody id="strategy-rows"></tbody></table></div></article><section id="runs" class="card section-card"><div class="card-head"><h3>Run History</h3><button id="refresh" class="text-button">Refresh</button></div><p class="helper">Each run stores its strategy version, parameters, and data fingerprint.</p><div id="run-list" class="run-list"></div></section></section>
     <section id="compare" class="page"><div class="page-heading"><h2>Compare</h2><p>Compare strategy and run performance.</p></div><article class="card section-card"><div class="card-head"><h3>Equity Curves</h3><span>Select completed runs in Strategies</span></div><div id="comparison-chart" class="compare-chart"></div></article><article class="card section-card"><div class="card-head"><h3>Performance Metrics</h3></div><div class="table-wrap"><table><thead><tr><th>Run</th><th>Period</th><th>Total return</th><th>Max drawdown</th><th>Sharpe</th><th>Trades</th></tr></thead><tbody id="comparison-body"><tr><td colspan="6">Select a run</td></tr></tbody></table></div></article></section>
     <section id="experiments" class="page"><div class="page-heading"><h2>Experiments</h2><p>Parameter grids, ablations, and rolling windows.</p></div><article class="card section-card"><div class="card-head"><h3>New Experiment</h3><span>The final test period is excluded from parameter search</span></div><div class="experiment-controls"><label>Experiment type<select id="experiment-kind"><option value="grid">Parameter grid</option><option value="ablation">Ablation</option><option value="walk_forward">Rolling window</option></select></label><label>Research period<select id="experiment-split"><option value="validation" selected>Validation</option><option value="train">Training</option></select></label><label>Parameter<select id="grid-param"></select></label><label>Values (comma separated)<input id="grid-values" placeholder="e.g. 0.15, 0.20, 0.25"></label><button id="start-experiment" class="primary">Create experiment</button></div><p class="helper">Parameter grids allow up to 64 variants. Ablations and rolling windows are saved as separate runs.</p></article><article class="card section-card"><div class="card-head"><h3>Experiment History</h3></div><div id="experiment-list" class="experiment-list"></div></article></section>
-    <section id="settings" class="page"><div class="page-heading"><h2>Settings</h2><p>Local services and research environment.</p></div><article class="card section-card settings-card"><h3>Local Mode</h3><p>Market data, strategy files, results, and keys remain on this computer. The website cannot read them while this computer or its services are off.</p><p>Adjust backtest period and slippage in the Lab. Open the local app for more settings.</p><a class="primary local-link" href="http://127.0.0.1:8502/">Open local app</a></article></section>
+    <section id="settings" class="page"><div class="page-heading"><h2>System</h2><p>Local data, provider, and research environment.</p></div><article class="card section-card settings-card"><h3>Historical Universe</h3><label>Mode for new runs <select id="universe-mode"><option value="current_snapshot">Current Snapshot</option><option value="point_in_time" disabled>Point-in-Time (import required)</option></select></label><p id="universe-status">Loading universe status…</p><p id="universe-pit-status"></p></article><article class="card section-card settings-card"><h3>Local Mode</h3><p>Market data, strategy files, results, and keys remain on this computer. The website cannot read them while this computer or its services are off.</p><a class="primary local-link" href="http://127.0.0.1:8502/">Open local app</a> <a class="primary local-link" href="./index.html">Market data</a></article></section>
     <footer>Open this website locally or through Sites. Market data, strategy files, results, and keys remain on this computer.</footer>
   </main>
 </body>

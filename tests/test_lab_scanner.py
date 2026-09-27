@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import sqlite3
 import hashlib
+import json
 from typing import Any, Mapping
 
 import pandas as pd
@@ -12,6 +13,7 @@ from radar.lab.scanner import (LABEL_VERSION, build_labels, candidate_metrics,
                                evaluation_settings, label_candidate, target_name)
 from radar.lab.scanner_worker import scan_frames
 from radar.lab.store import RunStore, _json
+from radar.lab.universe import LocalSecurityMaster
 from radar.strategy.base import StrategyPlugin
 from radar.strategy.context import StrategyContext
 from radar.strategy.validation import is_future_feature
@@ -121,6 +123,67 @@ def test_scanner_more_than_three_candidates_without_portfolio(maximum):
     assert metrics["precision_at_20"] == 1.0
     assert metrics["p_hit_5pct_10d_brier"] == pytest.approx(0.25)
     assert metrics["p_hit_5pct_10d_calibration_bins"][0]["count"] == 21
+
+
+def test_filter_funnel_and_exclusion_reasons_are_causal():
+    class FilterCandidates(ManyCandidates):
+        def hard_filter(self, context, config):
+            return context.frame["ret_1"].ge(15)
+
+        def filter_diagnostics(self, context, config):
+            score = context.frame["ret_1"]
+            return pd.DataFrame({"filter_pass_prior_strength": score.ge(10),
+                                 "filter_pass_pullback": score.ge(15)},
+                                index=context.frame.index)
+
+    sessions = pd.bdate_range("2025-01-02", periods=11)
+    symbols = [f"S{i:02d}" for i in range(21)]
+    first = pd.DataFrame({"date": sessions[0], "symbol": symbols,
+                          "security_name": symbols, "close": 10.0,
+                          "ret_1": list(range(21)), "tradability_pass": True})
+    bars = pd.DataFrame([{"date": day, "symbol": symbol, "open": 10.0,
+                          "high": 10.6, "low": 9.9, "close": 10.0}
+                         for day in sessions for symbol in symbols])
+    rows, metrics = scan_frames(FilterCandidates(), {"selection": {"max_candidates": None}},
+                                first.set_index(["date", "symbol"], drop=False),
+                                bars, sessions, sessions[0], sessions[0],
+                                evaluation_settings(None))
+    funnel = metrics["funnel_by_day"][0]
+    assert [funnel[key] for key in ("eligible_universe", "tradable", "feature_complete",
+                                   "prior_strength", "pullback", "final_ranked_candidate")] == [21, 21, 21, 11, 6, 6]
+    assert len(rows) == 6
+    reasons = {item["symbol"]: item["stages"] for item in metrics["near_misses"]}
+    assert reasons["S09"] == {"prior_strength": False, "pullback": False}
+    assert reasons["S14"] == {"prior_strength": True, "pullback": False}
+
+
+def test_pit_forward_label_follows_security_identity_across_ticker_change(tmp_path):
+    csv = tmp_path / "security-master.csv"
+    manifest = tmp_path / "security-master-manifest.json"
+    pd.DataFrame([
+        ["ID-1", "OLD", "2025-01-02", "2025-01-02", "2025-01-02", "", "NYSE", "common", True],
+        ["ID-1", "NEW", "2025-01-03", "", "2025-01-02", "", "NYSE", "common", True],
+    ], columns=["security_id", "symbol", "valid_from", "valid_to", "listing_date",
+                "delisting_date", "exchange", "security_type", "eligible"]).to_csv(csv, index=False)
+    manifest.write_text(json.dumps({"provider": "synthetic", "source_version": "1",
+                                    "coverage_start": "2025-01-02", "coverage_end": "2025-01-03",
+                                    "coverage_complete": True}), encoding="utf-8")
+    provider = LocalSecurityMaster(csv, manifest)
+    sessions = pd.DatetimeIndex(["2025-01-02", "2025-01-03"])
+    features = pd.DataFrame({"date": [sessions[0]], "symbol": ["OLD"],
+                             "security_id": ["ID-1"], "security_name": ["Example"],
+                             "close": [10.0], "ret_1": [.2], "tradability_pass": [True]})
+    bars = pd.DataFrame({"date": sessions, "symbol": ["OLD", "NEW"],
+                         "open": [10.0, 10.0], "high": [10.0, 10.6],
+                         "low": [9.9, 9.9], "close": [10.0, 10.5]})
+    settings = evaluation_settings({"horizon_sessions": 1})
+    rows, metrics = scan_frames(ManyCandidates(), {"selection": {"max_candidates": None}},
+                                features.set_index(["date", "symbol"], drop=False),
+                                bars, sessions, sessions[0], sessions[0], settings,
+                                universe_provider=provider)
+    assert rows[0]["security_id"] == "ID-1"
+    assert rows[0]["label"]["hit_5pct_1d"] is True
+    assert metrics["base_rate"] == 1.0
 
 
 def test_market_context_uses_history_through_signal_date_only():

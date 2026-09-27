@@ -36,16 +36,23 @@ def manager(tmp_path, monkeypatch):
     config.mkdir()
     (config / "research.yaml").write_text("fee_profile: test\n", encoding="utf-8")
     (config / "backtest.yaml").write_text("\n".join(
-        f"{key}: 1" for key in (
-            "initial_capital", "max_new_candidates", "take_profit", "stop_loss",
-            "max_holding_sessions", "entry_gap_min", "entry_gap_max",
-            "max_position_fraction", "minimum_position_fraction",
-            "max_order_to_avg_dollar_volume",
-        )
+        f"{key}: {value}" for key, value in {
+            "initial_capital": 1000000, "max_new_candidates": 3,
+            "take_profit": 0.05, "stop_loss": -0.10,
+            "max_holding_sessions": 10, "entry_gap_min": -0.10,
+            "entry_gap_max": 0.05, "max_position_fraction": 0.3333333333,
+            "minimum_position_fraction": 0.01,
+            "max_order_to_avg_dollar_volume": 0.02,
+        }.items()
     ), encoding="utf-8")
     for relative in (
         "src/radar/backtest/engine.py", "src/radar/strategy/adapter.py",
         "src/radar/strategy/full_strategy2.py",
+        "src/radar/lab/worker.py", "src/radar/lab/data.py",
+        "src/radar/lab/parameters.py", "src/radar/lab/universe.py",
+        "src/radar/backtest/runner.py", "src/radar/research/pipeline.py",
+        "src/radar/strategy/context.py", "src/radar/strategy/validation.py",
+        "src/radar/strategy/loader.py",
     ):
         target = root / relative
         target.parent.mkdir(parents=True, exist_ok=True)
@@ -110,7 +117,7 @@ def test_stop_loss_override_changes_only_the_new_run(manager):
     )[0]
     original = manager.store.get_run(baseline)["metadata"]["execution_policy"]
     changed = manager.store.get_run(variant)["metadata"]["execution_policy"]
-    assert original["stop_loss"] == 1  # fixture's original policy
+    assert original["stop_loss"] == -0.10
     assert changed == {**original, "stop_loss": -0.20}
     with pytest.raises(ValueError, match="execution.stop_loss"):
         manager.queue_runs(

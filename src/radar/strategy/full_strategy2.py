@@ -183,10 +183,29 @@ def score_full_strategy2(daily: pd.DataFrame, rules: FullStrategy2Rules) -> pd.D
         for name, mask in stages.items():
             if name not in disabled:
                 eligible &= mask
+    fund_ok = pd.Series(True, index=frame.index)
     if rules.exclude_explicit_funds:
         fund = frame["security_name"].astype("string").str.contains(
             r"\bETF\b|\bETN\b|exchange.traded", case=False, regex=True, na=False)
+        fund_ok = ~fund
         eligible &= ~fund
+    stages = {
+        "tradable": liquid,
+        "elasticity": elastic,
+        "prior_strength": prior,
+        "pullback": pullback,
+        "exhaustion": exhaustion,
+        "support_absorption": absorption,
+        "new_low_stop": stopped_lows,
+        "early_reversal": early_up,
+        "not_extended": not_extended,
+        "fund_filter": fund_ok,
+    }
+    for name, mask in stages.items():
+        active = name not in disabled or name in {"tradable", "fund_filter"}
+        frame[f"filter_pass_{name}"] = (
+            mask.fillna(False).astype(bool) if active
+            else pd.Series(True, index=frame.index))
     frame["strategy2_eligible"] = eligible.fillna(False)
     return frame
 

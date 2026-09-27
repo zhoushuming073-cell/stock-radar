@@ -33,6 +33,7 @@ class BacktestConfig:
     candidate_variant: str = "combined_rank"
     market_guard: str = "none"
     execution_timing: str = "legacy_close"
+    fail_on_missing_marks: bool = False
 
     def __post_init__(self) -> None:
         if (self.initial_capital <= 0
@@ -217,6 +218,14 @@ def run_backtest(
             if isinstance(row, pd.DataFrame):
                 raise ValueError(f"duplicate bar for {symbol} on {day.date()}")
             return row
+
+        if config.fail_on_missing_marks:
+            missing = [symbol for symbol in positions
+                       if row_for(symbol) is None or _price(row_for(symbol), "close") is None]
+            if missing:
+                raise ValueError(
+                    f"open PIT position has no eligible price on {day.date()}: {missing}; "
+                    "delisting or missing data requires an explicit policy")
 
         # Carried positions get first claim on the market Open. Their proceeds
         # can fund today's entries, but positions cannot be sold pre-entry.

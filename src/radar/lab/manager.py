@@ -13,14 +13,18 @@ from threading import RLock
 from typing import Any, Mapping
 
 import psutil
+import pandas as pd
 import yaml
 
 from radar.backtest.costs import load_fee_config
 from radar.backtest.runner import split_dates
 from radar.lab.data import MARKET_FEATURE_VERSION, available_features, source_watermark
-from radar.lab.execution import resolve_exit_policy
+from radar.lab.parameters import (engine_legacy_fields, execution_defaults_from_legacy,
+                                  research_hash, resolve_config, ResolvedRunConfig,
+                                  validate_execution)
 from radar.lab.scanner import LABEL_VERSION, evaluation_settings
 from radar.lab.store import RunStore
+from radar.lab.universe import load_universe
 from radar.lab.worker import sha256_file
 from radar.research.pipeline import FEATURE_VERSION
 from radar.strategy.loader import install_strategy_zip, load_strategy_directory
@@ -39,6 +43,9 @@ def _config_hash(config: dict) -> str:
     encoded = json.dumps(config, sort_keys=True, separators=(",", ":"),
                          ensure_ascii=False, allow_nan=False).encode("utf-8")
     return hashlib.sha256(encoded).hexdigest()
+
+
+_UNSET = object()
 
 
 class RunManager:
@@ -75,13 +82,15 @@ class RunManager:
         return list(self.registry.list_plugins())
 
     def queue_scanner(self, strategy_id: str, *, split: str = "validation",
-                      max_candidates: int | None = 20,
-                      config_override: dict | None = None) -> str:
+                      max_candidates: int | None | object = _UNSET,
+                      config_override: dict | None = None,
+                      evaluation_overrides: dict | None = None,
+                      universe_mode: str = "current_snapshot") -> str:
         if split not in {"train", "validation", "test"}:
             raise ValueError("scanner split must be train, validation or test")
-        if max_candidates is not None and (isinstance(max_candidates, bool) or
-                                           not isinstance(max_candidates, int) or
-                                           max_candidates < 0):
+        if max_candidates is not _UNSET and max_candidates is not None and (
+                isinstance(max_candidates, bool) or not isinstance(max_candidates, int) or
+                max_candidates < 0):
             raise ValueError("max_candidates must be non-negative or null")
         with self._lock:
             if "@" in strategy_id:
@@ -95,10 +104,41 @@ class RunManager:
             config = _plain(config_override if config_override is not None else registration.config)
             if not isinstance(config, dict):
                 raise ValueError("strategy configuration must be a mapping")
-            config["selection"] = {**(config.get("selection") or {}),
-                                   "max_candidates": max_candidates}
-            evaluation = evaluation_settings(config.get("evaluation"))
-            dates = split_dates(self.database, self.root / "config" / "research.yaml")[split]
+            warnings = []
+            if max_candidates is not _UNSET:
+                config["selection"] = {**(config.get("selection") or {}),
+                                       "max_candidates": max_candidates}
+                warnings.append(
+                    "Deprecated Scanner max_candidates changes strategy output truncation; "
+                    "use evaluation.top_k_values for quality metrics.")
+            windows = split_dates(self.database, self.root / "config" / "research.yaml")
+            dates = windows[split]
+            sessions = [day for day in windows.get("sessions", dates)
+                        if dates[0] <= day <= dates[2]]
+            _, provenance = load_universe(self.root, universe_mode, sessions)
+            dataset = {
+                "split": split, "signal_start": str(dates[0].date()),
+                "signal_end": str(dates[1].date()),
+                "evaluation_end": str(dates[2].date()),
+                "feature_version": FEATURE_VERSION,
+                "market_feature_version": MARKET_FEATURE_VERSION,
+                "label_version": LABEL_VERSION,
+                "data_snapshot": self._data_snapshot(),
+                "universe_mode": universe_mode,
+                "universe_fingerprint": provenance.fingerprint,
+                "universe_provider": provenance.provider,
+                "universe_version": provenance.source_version,
+                "universe_coverage_start": provenance.coverage_start,
+                "universe_coverage_end": provenance.coverage_end,
+            }
+            resolved = resolve_config(
+                strategy_defaults=registration.config, strategy_draft=config,
+                evaluation_defaults=evaluation_settings(None),
+                execution_defaults={}, dataset=dataset,
+                evaluation_overrides=evaluation_overrides)
+            evaluation = evaluation_settings(resolved.values["evaluation"])
+            canonical = {**resolved.values, "evaluation": evaluation}
+            resolved = ResolvedRunConfig(canonical, resolved.sources, research_hash(canonical))
             metadata = {
                 "strategy_id": registration.manifest.id,
                 "strategy_version": registration.manifest.version,
@@ -118,15 +158,22 @@ class RunManager:
                         "src/radar/strategy/validation.py", "src/radar/strategy/loader.py",
                         "src/radar/strategy/full_strategy2.py",
                         "src/radar/backtest/runner.py", "src/radar/research/pipeline.py",
+                        "src/radar/lab/universe.py", "src/radar/lab/parameters.py",
                     )
                 },
                 "config": config,
                 "config_hash": _config_hash(config),
-                "selection": config["selection"],
+                "selection": config.get("selection", {"max_candidates": None}),
                 "evaluation": evaluation,
+                "resolved_config": resolved.metadata(),
+                "resolved_config_hash": resolved.hash,
+                "universe_mode": universe_mode,
+                "survivorship_bias_risk": provenance.bias_risk,
+                "universe_provenance": provenance.metadata(),
+                "deprecation_warnings": warnings,
                 "feature_version": FEATURE_VERSION,
                 "market_feature_version": MARKET_FEATURE_VERSION,
-                "data_snapshot": self._data_snapshot(),
+                "data_snapshot": dataset["data_snapshot"],
                 "source_watermark": source_watermark(self.database),
                 "git_revision": self._git_revision(),
                 "git_dirty": self._git_dirty(),
@@ -201,6 +248,9 @@ class RunManager:
         execution_timing: str = "next_open",
         after_run_id: str | None = None,
         pace_ms: int = 0,
+        execution_overrides: dict | None = None,
+        universe_mode: str = "current_snapshot",
+        source_scanner_run_id: str | None = None,
     ) -> list[str]:
         if split not in {"train", "validation", "test", "walk_forward"}:
             raise ValueError("backtest period must be Train, Validation, or Test")
@@ -248,14 +298,49 @@ class RunManager:
                                                                     registration.config)))
                 if not isinstance(config, dict):
                     raise ValueError("strategy configuration must be a mapping")
-                execution_policy = {key: backtest_raw[key] for key in (
-                    "initial_capital", "max_new_candidates", "take_profit", "stop_loss",
-                    "max_holding_sessions", "entry_gap_min", "entry_gap_max",
-                    "max_position_fraction", "minimum_position_fraction",
-                    "max_order_to_avg_dollar_volume")}
-                exits, exit_source = resolve_exit_policy(backtest_raw, config)
-                execution_policy.update(exits)
-                execution_policy["execution_timing"] = execution_timing
+                universe_sessions = [day for day in dates.get("sessions", dates[split])
+                                     if pd.Timestamp(window[0]) <= day <= pd.Timestamp(window[2])]
+                _, provenance = load_universe(self.root, universe_mode, universe_sessions)
+                if source_scanner_run_id:
+                    scanner = self.store.get_scanner_run(source_scanner_run_id)
+                    study = scanner["metadata"]
+                    if scanner["status"] != "completed" or not self.store.verify_scanner_artifacts(
+                            source_scanner_run_id):
+                        raise ValueError("source Scanner run must be completed and verified")
+                    if (study["strategy_id"], study["strategy_version"]) != (
+                            registration.manifest.id, registration.manifest.version):
+                        raise ValueError("source Scanner strategy does not match")
+                    if study["data_snapshot"] != snapshot or study["split"] != split:
+                        raise ValueError("source Scanner dataset does not match")
+                    if (study.get("universe_mode", "current_snapshot") != universe_mode or
+                            (study.get("universe_provenance") or {}).get("fingerprint") != provenance.fingerprint):
+                        raise ValueError("source Scanner universe does not match")
+                    if (study["signal_start"] != window[0] or
+                            study["signal_end"] != window[1]):
+                        raise ValueError("source Scanner signal interval does not match")
+                    if _config_hash(config) != study["config_hash"]:
+                        raise ValueError("source Scanner strategy config does not match")
+                dataset = {
+                    "split": split, "signal_start": window[0], "signal_end": window[1],
+                    "evaluation_end": window[2], "feature_version": FEATURE_VERSION,
+                    "data_snapshot": snapshot, "universe_mode": universe_mode,
+                    "universe_fingerprint": provenance.fingerprint,
+                    "universe_provider": provenance.provider,
+                    "universe_version": provenance.source_version,
+                    "universe_coverage_start": provenance.coverage_start,
+                    "universe_coverage_end": provenance.coverage_end,
+                    "source_scanner_run_id": source_scanner_run_id,
+                }
+                defaults = execution_defaults_from_legacy(
+                    backtest_raw, slippage_bps=slippage_bps,
+                    execution_timing=execution_timing)
+                resolved = resolve_config(
+                    strategy_defaults=registration.config, strategy_draft=config,
+                    evaluation_defaults={}, execution_defaults=defaults,
+                    dataset=dataset, execution_overrides=execution_overrides)
+                validate_execution(resolved.values["execution"])
+                execution_policy = engine_legacy_fields(resolved.values["execution"])
+                exit_source = resolved.sources.get("execution.exit.stop_loss", "host_default")
                 metadata = {
                     "strategy_id": registration.manifest.id,
                     "strategy_version": registration.manifest.version,
@@ -266,6 +351,15 @@ class RunManager:
                     "engine_code_hash": sha256_file(self.root / "src" / "radar" / "backtest" / "engine.py"),
                     "adapter_code_hash": sha256_file(self.root / "src" / "radar" / "strategy" / "adapter.py"),
                     "legacy_strategy_code_hash": sha256_file(self.root / "src" / "radar" / "strategy" / "full_strategy2.py"),
+                    "host_source_hashes": {
+                        name: sha256_file(self.root / name) for name in (
+                            "src/radar/lab/worker.py", "src/radar/lab/data.py",
+                            "src/radar/lab/parameters.py", "src/radar/lab/universe.py",
+                            "src/radar/backtest/runner.py", "src/radar/research/pipeline.py",
+                            "src/radar/strategy/context.py", "src/radar/strategy/validation.py",
+                            "src/radar/strategy/loader.py",
+                        )
+                    },
                     "config": config,
                     "config_hash": _config_hash(config),
                     "git_revision": commit,
@@ -279,6 +373,12 @@ class RunManager:
                     "research_config_hash": sha256_file(research_path),
                     "execution_policy": execution_policy,
                     "exit_policy_source": exit_source,
+                    "resolved_config": resolved.metadata(),
+                    "resolved_config_hash": resolved.hash,
+                    "universe_mode": universe_mode,
+                    "survivorship_bias_risk": provenance.bias_risk,
+                    "universe_provenance": provenance.metadata(),
+                    "source_scanner_run_id": source_scanner_run_id,
                     "split": split,
                     "window": window,
                     "start_date": window[0],

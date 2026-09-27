@@ -1,6 +1,6 @@
 const API = "http://127.0.0.1:8765";
 const $ = id => document.getElementById(id);
-const state = {strategies:[], runs:[], selected:new Set(), closed:new Set(), focused:null, parameterFor:null, active:null, config:{}, compare:new Set(), loading:false};
+const state = {strategies:[], runs:[], scannerRuns:[], selected:new Set(), closed:new Set(), focused:null, parameterFor:null, active:null, config:{}, schemas:{}, evaluation:{}, execution:{}, compare:new Set(), loading:false};
 const money = n => n!==null&&n!==undefined&&Number.isFinite(Number(n)) ? new Intl.NumberFormat("en-US",{maximumFractionDigits:0}).format(Number(n)) : "—";
 const pct = n => n!==null&&n!==undefined&&Number.isFinite(Number(n)) ? `${(Number(n)*100).toFixed(2)}%` : "—";
 const day = s => s ? String(s).slice(0,10) : "—";
@@ -13,6 +13,7 @@ function showPage(id){
   window.scrollTo({top:0,behavior:"smooth"});
   if(id==="compare"&&window.Plotly)requestAnimationFrame(()=>{if($("comparison-chart").data)Plotly.Plots.resize($("comparison-chart"))});
 }
+$("lab").appendChild($("runs"));
 document.querySelectorAll(".nav-link[data-page]").forEach(button=>button.onclick=()=>showPage(button.dataset.page));
 document.querySelectorAll("[data-open-page]").forEach(button=>button.onclick=()=>showPage(button.dataset.openPage));
 if(["scanner","lab","strategies-page","experiments","compare","settings"].includes(location.hash.slice(1)))showPage(location.hash.slice(1));
@@ -68,42 +69,91 @@ function drawStrategies(){
     }catch(error){notice(`Uninstall failed: ${error.message}`);button.disabled=false;}
   });
 }
+function pathGet(object,path){return path.split(".").reduce((value,key)=>value?.[key],object)}
+function pathSet(object,path,value){const parts=path.split(".");let cursor=object;for(const part of parts.slice(0,-1))cursor=cursor[part]??={};cursor[parts.at(-1)]=value}
+function fieldValue(id,spec){
+  const path=spec.path.split(".").slice(1).join(".");
+  if(spec.namespace==="strategy")return pathGet(state.config[id],path);
+  const overrides=spec.namespace==="evaluation"?state.evaluation[id]:state.execution[id];
+  const override=pathGet(overrides||{},path);
+  if(override!==undefined)return override;
+  if(spec.namespace==="execution"&&path.startsWith("exit."))return pathGet(state.config[id],path);
+  if(spec.path==="execution.max_new_positions_per_day")return state.config[id]?.max_new??spec.default;
+  if(spec.path==="execution.slippage_bps")return Number($("slippage").value);
+  return spec.default;
+}
+function schemaField(id,spec){
+  const value=fieldValue(id,spec),key=`field-${id}-${spec.path.replaceAll(".","-")}`;
+  let input;
+  if(spec.type==="boolean")input=`<input id="${safe(key)}" type="checkbox" ${value?"checked":""}>`;
+  else if(spec.type==="choice"){
+    const options=spec.path==="evaluation.success_rule"?["target_touch","target_before_adverse"]:
+      spec.path==="execution.market_guard.mode"?["none","spy_ma200"]:
+      spec.path==="execution.execution_timing"?["next_open","legacy_close"]:["equal_cash","strategy_score","strategy_times_elasticity"];
+    input=`<select id="${safe(key)}">${options.map(option=>`<option value="${safe(option)}" ${option===value?"selected":""}>${safe(option)}</option>`).join("")}</select>`;
+  }else if(["integer_list","number_list"].includes(spec.type))input=`<input id="${safe(key)}" type="text" value="${safe((value||[]).join(", "))}">`;
+  else input=`<input id="${safe(key)}" type="number" ${spec.step!=null?`step="${spec.step}"`:"step=any"} ${spec.min!=null?`min="${spec.min}"`:""} ${spec.max!=null?`max="${spec.max}"`:""} value="${safe(value??"")}" placeholder="${spec.nullable?"Off":""}">`;
+  const source=spec.namespace==="strategy"?(JSON.stringify(value)===JSON.stringify(spec.default)?"Strategy default":"Run override"):pathGet((spec.namespace==="evaluation"?state.evaluation:state.execution)[id]||{},spec.path.split(".").slice(1).join("."))!==undefined?"Run override":spec.namespace==="execution"&&spec.path.includes(".exit.")?"Strategy default":"Host default";
+  return `<div class="field schema-field" title="${safe(spec.description)}"><label for="${safe(key)}">${safe(spec.label)}<small>${safe(source)}</small></label>${input}</div>`;
+}
+function renderSchema(container,id,mode){
+  const schema=(state.schemas[id]||[]).filter(spec=>spec.modes.includes(mode));
+  const element=$(container);
+  if(!schema.length){
+    element.innerHTML=`<details><summary>No declared parameter controls for this plugin</summary><p class="helper">Review the plugin documentation before editing its JSON run draft.</p><textarea class="raw-config" aria-label="Run draft JSON">${safe(JSON.stringify(state.config[id]||{},null,2))}</textarea><button class="secondary apply-raw-config" type="button">Apply JSON run draft</button></details>`;
+    element.querySelector(".apply-raw-config").onclick=()=>{
+      try{const draft=JSON.parse(element.querySelector(".raw-config").value);if(!draft||Array.isArray(draft)||typeof draft!=="object")throw Error("Expected an object");state.config[id]=draft;drawConfigDiff();notice("Run draft updated.")}
+      catch(error){notice(`Invalid run draft JSON: ${error.message}`)}
+    };return;
+  }
+  const core=schema.filter(spec=>spec.level==="core"),advanced=schema.filter(spec=>spec.level==="advanced");
+  element.innerHTML=core.map(spec=>schemaField(id,spec)).join("")+`<details class="advanced-fields"><summary>Advanced research parameters</summary>${advanced.map(spec=>schemaField(id,spec)).join("")}</details>`;
+  for(const spec of schema){
+    const input=document.getElementById(`field-${id}-${spec.path.replaceAll(".","-")}`);
+    input.onchange=()=>{
+      let value;
+      if(spec.type==="boolean")value=input.checked;
+      else if(spec.type==="choice")value=input.value;
+      else if(["integer_list","number_list"].includes(spec.type))value=input.value.split(",").map(part=>Number(part.trim()));
+      else value=input.value===""&&spec.nullable?null:Number(input.value);
+      if((Array.isArray(value)&&(!value.length||value.some(x=>!Number.isFinite(x)||spec.type==="integer_list"&&(!Number.isInteger(x)||x<1))))||
+          (typeof value==="number"&&(!Number.isFinite(value)||spec.min!=null&&value<spec.min||spec.max!=null&&value>spec.max||spec.type==="integer"&&!Number.isInteger(value)))){
+        notice(`Invalid value for ${spec.label}.`);renderSchema(container,id,mode);return;
+      }
+      const path=spec.path.split(".").slice(1).join(".");
+      const target=spec.namespace==="strategy"?state.config[id]:(spec.namespace==="evaluation"?(state.evaluation[id]??={}):(state.execution[id]??={}));
+      pathSet(target,path,value);
+      if(spec.path==="execution.slippage_bps")$("slippage").value=value;
+      input.closest(".schema-field").querySelector("small").textContent="Run override";
+      drawConfigDiff();
+    };
+  }
+}
 function drawParameters(force=false){
-  const id=state.focused||[...state.selected][0];const strategy=state.strategies.find(s=>s.id===id);
-  if(!strategy){$("parameter-fields").innerHTML="<span class='helper'>Select a strategy to edit parameters</span>";$("config-diff").textContent="";return;}
-  if(!force&&state.parameterFor===id&&$("parameter-fields").querySelector("[data-param]"))return;
-  state.parameterFor=id;
+  const id=state.focused||[...state.selected][0],strategy=state.strategies.find(s=>s.id===id);
+  if(!strategy){$("parameter-fields").innerHTML="Select a strategy to edit run parameters";return}
+  drawScannerSources();
+  if(!force&&state.parameterFor===id&&$("parameter-fields").querySelector("input,select"))return;
   if(!state.config[id])state.config[id]=structuredClone(strategy.config);
-  const config=state.config[id];
-  $("parameter-fields").innerHTML=Object.entries(config).map(([key,value])=>{
-    const idAttr=`param-${safe(key)}`;
-    let input;
-    if(typeof value==="boolean")input=`<input type="checkbox" id="${idAttr}" data-param="${safe(key)}" ${value?"checked":""}>`;
-    else if(typeof value==="number")input=`<input type="number" id="${idAttr}" step="any" data-param="${safe(key)}" value="${safe(value)}">`;
-    else if(value!==null&&typeof value==="object")input=`<input type="text" id="${idAttr}" data-param="${safe(key)}" value="${safe(JSON.stringify(value))}">`;
-    else input=`<input type="text" id="${idAttr}" data-param="${safe(key)}" value="${safe(value??"")}">`;
-    return `<div class="field"><label for="${idAttr}">${safe(key)}</label>${input}</div>`;
-  }).join("");
-  document.querySelectorAll("[data-param]").forEach(input=>input.onchange=()=>{
-    const key=input.dataset.param,previous=config[key];
-    if(previous!==null&&typeof previous==="object"){try{const parsed=JSON.parse(input.value);if(Array.isArray(parsed)!==Array.isArray(previous)||parsed===null||typeof parsed!=="object")throw Error();config[key]=parsed}catch{input.value=JSON.stringify(previous);notice("This parameter requires valid JSON.");return}}
-    else config[key]=typeof previous==="boolean"?input.checked:typeof previous==="number"?Number(input.value):input.value;
-    if(typeof previous==="number"&&!Number.isFinite(config[key])){config[key]=previous;input.value=previous;notice("Enter a valid number.");}
-    drawConfigDiff();
-  });
-  const flatNumbers=(obj,prefix="")=>Object.entries(obj).flatMap(([k,v])=>{
-    const name=prefix?`${prefix}.${k}`:k;
-    if(typeof v==="number")return [name];
-    if(v&&typeof v==="object"&&!Array.isArray(v))return flatNumbers(v,name);
-    return [];
-  });
-  $("grid-param").innerHTML=flatNumbers(config).map(name=>`<option value="${safe(name)}">${safe(name)}</option>`).join("");
+  state.parameterFor=id;
+  renderSchema("parameter-fields",id,"backtest");
+  $("grid-param").innerHTML=(state.schemas[id]||[]).filter(spec=>spec.namespace==="strategy"&&spec.searchable&&["number","integer","percentage"].includes(spec.type)).map(spec=>`<option value="${safe(spec.path.slice(9))}">${safe(spec.label)}</option>`).join("");
   drawConfigDiff();
 }
 function drawConfigDiff(){
   const id=state.focused,s=state.strategies.find(x=>x.id===id);if(!s)return;
-  const changes=Object.entries(state.config[id]||{}).filter(([key,value])=>JSON.stringify(value)!==JSON.stringify(s.config[key]));
-  $("config-diff").textContent=changes.length?`Changed from defaults: ${changes.map(([key])=>key).join(", ")}`:"Using default parameters";
+  const changed=Object.entries(state.config[id]||{}).filter(([key,value])=>JSON.stringify(value)!==JSON.stringify(s.config[key])).map(([key])=>`strategy.${key}`);
+  const flatten=(obj,prefix)=>Object.entries(obj||{}).flatMap(([key,value])=>value&&typeof value==="object"&&!Array.isArray(value)?flatten(value,`${prefix}.${key}`):[`${prefix}.${key}`]);
+  const overrides=[...changed,...flatten(state.evaluation[id],"evaluation"),...flatten(state.execution[id],"execution")];
+  $("config-diff").textContent=overrides.length?`Run overrides: ${overrides.join(", ")}`:"Using strategy and host defaults";
+}
+function drawScannerSources(){
+  const select=$("source-scanner-run"),previous=select.value;
+  const options=state.scannerRuns.filter(run=>run.status==="completed"&&
+    run.metadata?.strategy_id===state.focused&&run.metadata?.split===$("split").value);
+  select.innerHTML=`<option value="">Strategy (new signals)</option>`+options.map(run=>
+    `<option value="${safe(run.run_id)}">Scanner ${safe(run.run_id.slice(0,8))} · ${safe(day(run.created_at))}</option>`).join("");
+  if(options.some(run=>run.run_id===previous))select.value=previous;
 }
 function drawRuns(){
   const batches=[...new Map(state.runs.filter(r=>r.metadata?.batch_id).map(r=>[r.metadata.batch_id,r])).keys()];
@@ -151,8 +201,9 @@ async function drawActive(){
   const timing=run.metadata?.execution_policy?.execution_timing||"legacy_close";
   const exits=run.metadata?.execution_policy||{};
   const exitText=(value,percent=false)=>value===null||value===undefined?"Off":percent?`${(100*Number(value)).toFixed(1)}%`:`${value} days`;
-  const fields={"Strategy version":run.metadata?.strategy_version,"Period":human[run.metadata?.split]||run.metadata?.split,"Fill timing":timing==="next_open"?"Close signal → next-session open fill":"Legacy: same-day close fill (optimistic)","Take profit":exitText(exits.take_profit,true),"Stop loss":exitText(exits.stop_loss,true),"Max holding":exitText(exits.max_holding_sessions),"Start":day(run.metadata?.start_date),"End":day(run.metadata?.evaluation_end),"Slippage":`${run.metadata?.slippage_bps??"—"} bps`,"Fee profile":run.metadata?.fee_profile,"Data fingerprint":run.metadata?.data_snapshot?.slice(0,12),"Strategy fingerprint":run.metadata?.strategy_code_hash?.slice(0,12)};
+  const fields={"Strategy version":run.metadata?.strategy_version,"Period":human[run.metadata?.split]||run.metadata?.split,"Universe":run.metadata?.universe_mode==="point_in_time"?"Point-in-Time":"Current Snapshot · survivorship bias risk present","Provider":run.metadata?.universe_provenance?.provider||"—","Source Scanner":run.metadata?.source_scanner_run_id||"—","Fill timing":timing==="next_open"?"Close signal → next-session open fill":"Legacy: same-day close fill (optimistic)","Take profit":exitText(exits.take_profit,true),"Stop loss":exitText(exits.stop_loss,true),"Max holding":exitText(exits.max_holding_sessions),"Start":day(run.metadata?.start_date),"End":day(run.metadata?.evaluation_end),"Slippage":`${run.metadata?.slippage_bps??"—"} bps`,"Fee profile":run.metadata?.fee_profile,"Resolved hash":run.metadata?.resolved_config_hash?.slice(0,12),"Data fingerprint":run.metadata?.data_snapshot?.slice(0,12),"Strategy fingerprint":run.metadata?.strategy_code_hash?.slice(0,12)};
   $("run-meta").innerHTML=Object.entries(fields).map(([k,v])=>`<dt>${safe(k)}</dt><dd title="${safe(v)}">${safe(v)}</dd>`).join("");
+  $("run-audit").textContent=run.metadata?.resolved_config?JSON.stringify(run.metadata.resolved_config,null,2):"Legacy run: canonical resolved configuration was not recorded. See stored execution policy and strategy config in the original run metadata.";
   if(run.error_text)notice(`Run failed: ${run.error_text}`);
   const signature=`${run.run_id}:${run.status}:${run.updated_at||""}`;
   if(["completed","failed","cancelled"].includes(run.status)&&state.drawnSignature===signature)return;
@@ -190,15 +241,18 @@ async function drawCompare(){
 async function refresh(){
   if(state.loading)return;state.loading=true;
   try{
-    const [strategies,runs]=await Promise.all([api("/api/lab/strategies"),api("/api/lab/runs")]);
-    state.strategies=strategies;state.runs=runs;
+    const [strategies,runs,scannerRuns]=await Promise.all([api("/api/lab/strategies"),api("/api/lab/runs"),api("/api/lab/scanner/runs")]);
+    state.strategies=strategies;state.runs=runs;state.scannerRuns=scannerRuns;
+    await Promise.all(strategies.filter(item=>!state.schemas[item.id]).map(async item=>{
+      state.schemas[item.id]=await api(`/api/lab/parameter-schema?strategy_id=${encodeURIComponent(item.id)}`).catch(()=>[]);
+    }));
     window.timelineController?.autoAttach(runs);
     window.timelineController?.sync(runs);
     if(!state.selected.size&&strategies.length)state.selected.add(strategies[0].id);
     if(!state.focused&&strategies.length)state.focused=[...state.selected][0];
     if(!state.active&&runs.length){const focusedRun=runs.find(r=>r.metadata?.strategy_id===state.focused);state.active=(focusedRun||runs[0]).run_id;}
     $("connection").innerHTML="<span class='green-dot'></span> Connected locally";
-    drawStrategies();drawParameters();drawRuns();if(state.active&&!window.timelineController?.active)await drawActive();await drawCompare();await drawExperiments();notice("");
+    drawStrategies();drawParameters();drawScannerSources();drawRuns();if(state.active&&!window.timelineController?.active)await drawActive();await drawCompare();await drawExperiments();notice("");
   }catch(error){$("connection").textContent="Local service disconnected";notice(`Cannot connect to the local Strategy Lab: ${error.message}. Start the local Stock Radar service.`)}
   finally{state.loading=false}
 }
@@ -206,7 +260,8 @@ $("run-selected").onclick=async()=>{
   window.timelineController?.detach();
   if(!state.selected.size){notice("Select at least one strategy.");return}
   const selected=[...state.selected];
-  try{const result=await post("/api/lab/run",{strategy_ids:selected,split:$("split").value,slippage_bps:Number($("slippage").value),configs_by_strategy:Object.fromEntries(selected.map(id=>[id,state.config[id]||state.strategies.find(s=>s.id===id).config]))});state.active=result.run_ids[0];await refresh();showPage("lab");}
+  if($("source-scanner-run").value&&selected.length!==1){notice("A source Scanner run can be used with one matching strategy at a time.");return}
+  try{const result=await post("/api/lab/run",{strategy_ids:selected,split:$("split").value,slippage_bps:Number($("slippage").value),execution:state.execution[state.focused]||{},universe_mode:$("universe-mode").value,source_scanner_run_id:$("source-scanner-run").value||null,configs_by_strategy:Object.fromEntries(selected.map(id=>[id,state.config[id]||state.strategies.find(s=>s.id===id).config]))});state.active=result.run_ids[0];await refresh();showPage("lab");}
   catch(error){notice(`Could not start run: ${error.message}`)}
 };
 async function importStrategy(event){
@@ -214,10 +269,9 @@ async function importStrategy(event){
   if(file.size>5_000_000){notice("Strategy ZIP must be 5 MB or smaller.");return}
   try{const result=await api("/api/lab/import",{method:"POST",headers:{"Content-Type":"application/zip"},body:file});state.selected.add(result.id);state.closed.delete(result.id);state.focused=result.id;await refresh();notice(`Imported ${result.name}. Review the parameters before running.`)}catch(error){notice(`Import failed: ${error.message}`)}finally{event.target.value=""}
 }
-$("plugin-file").onchange=importStrategy;
 $("strategy-plugin-file").onchange=importStrategy;
 $("cancel-run").onclick=async()=>{if(!state.active)return;try{await post("/api/lab/cancel",{run_id:state.active});await refresh()}catch(error){notice(`Could not stop run: ${error.message}`)}};
-$("reset-config").onclick=()=>{const id=state.focused,s=state.strategies.find(x=>x.id===id);if(s){state.config[id]=structuredClone(s.config);drawParameters(true)}};
+$("reset-config").onclick=()=>{const id=state.focused,s=state.strategies.find(x=>x.id===id);if(s){state.config[id]=structuredClone(s.config);delete state.evaluation[id];delete state.execution[id];$("slippage").value=10;drawParameters(true);scannerState.parameterFor=null;drawScannerParameters()}};
 $("clone-run").onclick=()=>{
   const run=state.runs.find(r=>r.run_id===state.active),id=run?.metadata?.strategy_id;
   if(!run||!state.strategies.some(s=>s.id===id)){notice("The strategy for this run is unavailable, so it cannot be cloned.");return}
@@ -226,6 +280,7 @@ $("clone-run").onclick=()=>{
   notice("Run parameters copied. Edit them, then click Run Selected to create a separate run.");
 };
 $("refresh").onclick=refresh;
+$("split").onchange=drawScannerSources;
 const experimentName={grid:"Parameter grid",ablation:"Ablation",walk_forward:"Rolling window"};
 async function drawExperiments(){
   const summaries=await api("/api/lab/experiments");
@@ -244,4 +299,9 @@ $("start-experiment").onclick=async()=>{
   }
   try{const result=await post("/api/lab/experiment",payload);notice(`Created ${result.count} runs. They will be queued in the background.`);await refresh();document.getElementById("experiments").scrollIntoView({behavior:"smooth"})}catch(error){notice(`Could not create experiment: ${error.message}`)}
 };
+api("/api/lab/universe-status").then(status=>{
+  $("universe-status").textContent="Mode: Current Snapshot · Survivorship Bias Risk: Present";
+  $("universe-pit-status").textContent=status.point_in_time_available?`PIT import: ${status.point_in_time.provider}, ${status.point_in_time.coverage_start} to ${status.point_in_time.coverage_end}`:"PIT import: unavailable. Historical studies may omit delisted or renamed securities.";
+  $("universe-mode").querySelector('option[value="point_in_time"]').disabled=!status.point_in_time_available;
+}).catch(error=>{$("universe-status").textContent=`Universe status unavailable: ${error.message}`});
 refresh();setInterval(()=>{if(document.visibilityState==="visible")refresh()},6000);

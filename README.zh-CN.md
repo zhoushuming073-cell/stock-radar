@@ -258,6 +258,10 @@ Dashboard 读取现有 DuckDB、股票池 CSV 和校验报告，可查看数据�
 
 Scanner Research 是当前主要研究入口。它按交易日保存完整候选排序与诊断子评分，由主程序在后续十个交易日计算前瞻标签，并展示 Top 5/10/20 的 Precision、Lift、MFE/MAE 与市场环境分层结果。此模式不创建模拟仓位；组合回测仍可用于次级诊断。止盈、止损和最长持有天数由各策略的 `exit` 参数控制，`null` 表示关闭对应自动退出。
 
+新运行会保存统一的 `strategy/evaluation/execution/dataset` 参数值、来源和哈希。Scanner 现支持下行阈值、上涨目标先于下行阈值、同日先后顺序未知标记、重复信号事件计数、逐日筛选漏斗与近似入选股票的排除原因。浏览器把核心参数和高级参数分开显示，参数定义见[研究参数契约](docs/RESEARCH_PARAMETER_CONTRACT.md)。历史运行保留原有含义，不会自动重新计算。
+
+当前默认股票池来自现时资产快照，历史研究存在幸存者偏差风险。项目提供本地 PIT Security Master 的导入边界和覆盖检查，但**没有内置真实历史 Security Master**；仅导入当前 Alpaca 股票列表不能消除此风险。格式和限制见 [PIT 导入说明](docs/PIT_SECURITY_MASTER.md)。
+
 在项目根目录双击 `启动本地看板.cmd`，即可打开 `127.0.0.1:8502` 的 Streamlit 实验室和 `127.0.0.1:4174/lab.html` 的本地网页，同时启动或复用 `127.0.0.1:8765` 数据接口。两个入口均可查看三阶段逐日时间线。本地修改 `site/dist/` 后无需部署 Sites；行情数据库、策略文件、凭据和研究结果均留在本机。标签公式、合格股票池和复现规则见 [策略插件规范](docs/STRATEGY_PLUGIN_SPEC.md)。
 
 ## 本地 Strategy Lab（Phase 3）

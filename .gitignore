@@ -12,6 +12,11 @@ dist/
 .env
 *.log
 site-package.tar.gz
+site-package*.tar*
+/shot-*.png
+/_ui_*.js
+*.tmp
+*.bak
 site/.sites-runtime/
 site/.git/
 # Generated files directly under data/ are ignored, but keep the directory tracked.

@@ -210,3 +210,18 @@ def test_running_backtest_can_be_cancelled_between_sessions():
             cancel_requested=cancel_requested,
         )
     assert len(checked) == 3
+
+
+def test_pit_missing_held_price_fails_instead_of_fabricating_delisting_close():
+    days, frame = market()
+    frame = frame.loc[frame["date"] != days[2]]
+    with pytest.raises(ValueError, match="open PIT position has no eligible price"):
+        run_backtest(
+            frame, days, signal_start=days[0], signal_end=days[0],
+            evaluation_end=days[10], rules=RULES, fee_config=FEES,
+            config=BacktestConfig(slippage_bps=0, max_position_fraction=1.0,
+                                  max_order_to_avg_dollar_volume=1.0,
+                                  take_profit=None, stop_loss=None,
+                                  max_holding_sessions=None,
+                                  fail_on_missing_marks=True),
+        )

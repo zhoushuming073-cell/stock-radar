@@ -107,6 +107,7 @@ The long-term goal is not to reproduce a universal institutional trading stack. 
 - [x] Persistent local Strategy Lab and run queue
 - [x] Parameter-grid, stage-ablation, and rolling walk-forward experiments
 - [x] Private Sites integration and unattended local updates
+- [x] Canonical run configuration, Scanner outcome labels, event counts, filter funnel, and local PIT import boundary
 - [ ] Human-labelled chart-snapshot dataset for pattern ground truth
 - [ ] Pattern-match evaluation with Precision@K / Recall / Lift@K
 - [ ] Fixed-horizon target-hit probability research and calibration
@@ -263,16 +264,23 @@ Local changes to `site/dist/` appear without a Sites
 deployment; deploy Sites only when a release is ready.
 
 Scanner Research is the primary workflow: it saves daily candidate rankings,
-generic diagnostic scores, 10-session host-generated forward labels, Precision/Lift
-at 5/10/20, MFE/MAE and market-regime breakdowns without opening simulated
+generic diagnostic scores, host-generated forward labels, configurable Precision/Lift
+at Top-K, pooled and daily precision, target-before-adverse outcomes, unique
+signal-event counts, daily filter funnels, MFE/MAE and market-regime breakdowns without opening simulated
 positions. Strategy Backtest remains available for portfolio diagnostics, with
 per-strategy exits (including `null` to turn each automatic exit off).
+New runs persist the resolved `strategy/evaluation/execution/dataset` configuration
+and the source of each value. The browser uses an explicit core/advanced parameter
+schema. [Research parameter contract](docs/RESEARCH_PARAMETER_CONTRACT.md) explains
+the meaning and compatibility of these fields.
 The plugin interface stays at version 1; see
 [the v1.5 scanner specification](docs/STRATEGY_PLUGIN_SPEC.md) for exact label
 formulas, eligibility and reproducibility rules.
 
 The Scanner and Strategy Lab are available inside the existing private Sites dashboard at
 [`/lab.html`](https://stock-radar-local.zhoushuming.chatgpt.site/lab.html).
+Local source changes are visible on port 4174; the hosted Sites copy changes only
+after an explicit release deployment.
 The same research interface also has a separate local Streamlit page. It
 imports trusted strategy ZIPs, queues several backtests, shows each Run's live
 equity/drawdown in its own tab, and compares completed Runs. Market data and
@@ -435,6 +443,10 @@ Generated files under `data/` are gitignored.
   carries **survivor bias**; it is not a point-in-time universe.
   Previously observed assets remain in the master with an older `last_seen`;
   `validate` uses only the newest observed snapshot.
+- **PIT mode needs external historical evidence.** The local CSV + manifest adapter
+  accepts a dated security master with stable security IDs and checks interval
+  coverage. No real historical security master is bundled, and a current Alpaca
+  snapshot cannot make old studies bias-free. See [PIT import format](docs/PIT_SECURITY_MASTER.md).
 - **The eligible filter is coarse, not common-stock-only.** It keeps US-equity
   assets that are `active` and `tradable` and listed on NASDAQ, NYSE, AMEX, ARCA
   or BATS. ETFs, ADRs, preferred shares and similar listed equity-like classes pass

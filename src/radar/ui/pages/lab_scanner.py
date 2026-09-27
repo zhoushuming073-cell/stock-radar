@@ -14,13 +14,12 @@ def render_scanner(manager, strategy_ref: str, draft: dict) -> None:
     split = a.selectbox("研究时段", ["validation", "train", "test"],
                         format_func=lambda x: {"validation": "验证期", "train": "训练期",
                                                "test": "历史测试期"}[x], key="scanner_split")
-    maximum = b.selectbox("每日期望候选数", [5, 10, 20, None],
-                          format_func=lambda x: "全部" if x is None else f"Top {x}",
-                          index=2, key="scanner_maximum")
+    display_k = b.selectbox("显示候选数（仅视图）", [5, 10, 20],
+                            index=1, key="scanner_display_k")
     if c.button("运行 Scanner", type="primary", width="stretch"):
         try:
             run_id = manager.queue_scanner(strategy_ref, split=split,
-                                           max_candidates=maximum, config_override=draft)
+                                           config_override=draft)
             manager.launch_queued_scanners()
             st.session_state["scanner_run_choice"] = run_id
             st.rerun()
@@ -42,6 +41,8 @@ def render_scanner(manager, strategy_ref: str, draft: dict) -> None:
     run = manager.store.get_scanner_run(chosen)
     status = run["status"]
     progress = run.get("progress") or {}
+    if run["metadata"].get("universe_mode") != "point_in_time":
+        st.warning("Universe: Current Snapshot · Survivorship Bias Risk: Present")
     st.caption(f"状态：{status} · {progress.get('date', '—')} · "
                f"{progress.get('completed_sessions', 0)}/{progress.get('total_sessions', 0)} 交易日")
     if status == "failed":
@@ -50,18 +51,26 @@ def render_scanner(manager, strategy_ref: str, draft: dict) -> None:
     if status != "completed":
         return
     metrics = run["metrics"] or {}
-    k = st.segmented_control("Top-K", [5, 10, 20], default=10,
-                             key="scanner_top_k") or 10
-    boxes = st.columns(5)
+    k = display_k
+    horizon = run["metadata"].get("evaluation", {}).get("horizon_sessions", 10)
+    boxes = st.columns(6)
     boxes[0].metric("候选快照", metrics.get("candidate_count", 0))
-    boxes[1].metric(f"Precision@{k}", _pct(metrics.get(f"precision_at_{k}")))
-    boxes[2].metric(f"Lift@{k}", _ratio(metrics.get(f"lift_at_{k}")))
-    boxes[3].metric("平均 MFE", _pct(metrics.get("average_mfe_10")))
-    boxes[4].metric("平均 MAE", _pct(metrics.get("average_mae_10")))
+    boxes[1].metric("独立信号事件", metrics.get("unique_signal_event_count", "—"))
+    boxes[2].metric(f"Precision@{k}", _pct(metrics.get(f"pooled_precision_at_{k}", metrics.get(f"precision_at_{k}"))))
+    boxes[3].metric(f"Lift@{k}", _ratio(metrics.get(f"lift_at_{k}")))
+    boxes[4].metric("平均 MFE", _pct(metrics.get(f"average_mfe_{horizon}")))
+    boxes[5].metric("平均 MAE", _pct(metrics.get(f"average_mae_{horizon}")))
     st.caption(f"背景命中率 {_pct(metrics.get('base_rate'))} · "
                f"下跌延伸率 {_pct(metrics.get('false_falling_knife_rate'))} · "
                f"有效标签 {metrics.get('labeled_candidate_count', 0)} / "
-               f"{metrics.get('candidate_count', 0)}；窗口末尾不足 10 日的候选不参与命中率。")
+               f"{metrics.get('candidate_count', 0)}；窗口末尾不足 {horizon} 日的候选不参与命中率。")
+    if metrics.get("funnel_by_day"):
+        with st.expander("Filter Funnel · 每日筛选漏斗"):
+            st.dataframe(pd.DataFrame(metrics["funnel_by_day"]), hide_index=True,
+                         width="stretch")
+            if metrics.get("near_misses"):
+                st.dataframe(pd.DataFrame(metrics["near_misses"]), hide_index=True,
+                             width="stretch")
     hit_rows = [{"阈值": key.replace("_rate", ""), "命中率": _pct(value)}
                 for key, value in metrics.items() if key.startswith("hit_") and key.endswith("_rate")]
     if hit_rows:
@@ -93,7 +102,9 @@ def render_scanner(manager, strategy_ref: str, draft: dict) -> None:
                 st.json({"causal_features": chosen_row["features"],
                          "diagnostic_scores": chosen_row["diagnostics"],
                          "market_context": chosen_row["market_context"]})
-    st.caption(f"候选快照 SHA-256：{run['artifact_hashes']['candidates_sha256']}")
+    with st.expander("Audit"):
+        st.caption(f"Universe: {run['metadata'].get('universe_mode', 'current_snapshot')}")
+        st.caption(f"候选快照 SHA-256：{run['artifact_hashes']['candidates_sha256']}")
 
 
 def _pct(value) -> str:

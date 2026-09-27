@@ -110,7 +110,7 @@ def is_future_feature(name: str) -> bool:
     return (
         name in _FUTURE_COLUMNS
         or name.startswith(("forward_", "future_", "entry_", "mfe_", "mae_",
-                            "hit_", "time_to_"))
+                            "hit_", "time_to_", "up_"))
         or name.startswith("return_close_")
     )
 
