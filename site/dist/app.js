@@ -1,17 +1,17 @@
 const API = "http://127.0.0.1:8765";
-const number = new Intl.NumberFormat("zh-CN");
-const priceNumber = new Intl.NumberFormat("zh-CN", { minimumFractionDigits: 2, maximumFractionDigits: 4 });
+const number = new Intl.NumberFormat("en-US");
+const priceNumber = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 4 });
 const labels = {
-  abnormal_price_jump: "价格大幅跳变",
-  missing_trading_session: "缺失交易日",
-  no_bars: "无日线数据",
-  stale_ticker: "近期无更新",
+  abnormal_price_jump: "Large price jump",
+  missing_trading_session: "Missing trading session",
+  no_bars: "No daily bars",
+  stale_ticker: "No recent update",
 };
 const messages = {
-  abnormal_price_jump: "相邻日收盘价变化较大，需核对公司行动",
-  missing_trading_session: "中间交易日没有日线记录",
-  no_bars: "所选时段无日线数据",
-  stale_ticker: "最近多个交易日无日线",
+  abnormal_price_jump: "Large close-to-close move; check corporate actions",
+  missing_trading_session: "No daily bar for an intervening trading session",
+  no_bars: "No daily bars in the selected period",
+  stale_ticker: "No daily bars for several recent sessions",
 };
 const $ = (id) => document.getElementById(id);
 let overview = null;
@@ -55,7 +55,7 @@ function setDefinition(id, rows) {
 }
 
 function renderOverview() {
-  $("asof").textContent = `历史日线 · 截至 ${overview.last || "—"} · 本机只读`;
+  $("asof").textContent = `Historical daily bars · Through ${overview.last || "—"} · Local read only`;
   $("metric-universe").textContent = number.format(overview.universe.length);
   $("metric-bars").textContent = number.format(overview.bars);
   $("metric-errors").textContent = number.format(overview.errors);
@@ -65,7 +65,7 @@ function renderOverview() {
   $("count-missing").textContent = number.format(counts.missing_trading_session || 0);
   $("count-empty").textContent = number.format(counts.no_bars || 0);
   $("count-stale").textContent = number.format(counts.stale_ticker || 0);
-  if (overview.report_stale) notice("数据库比校验报告更新，请运行每日更新任务后刷新。", false);
+  if (overview.report_stale) notice("The database is newer than the validation report. Run the daily update, then refresh.", false);
   else notice("");
 }
 
@@ -91,13 +91,13 @@ function showBarDetails(row) {
   const changeClass = change >= 0 ? "up" : "down";
   const signedChange = `${change >= 0 ? "+" : ""}${priceNumber.format(change)}`;
   $("chart-hover").innerHTML = `<strong>${escapeHtml(row.date)}</strong>
-    <span>开 ${priceNumber.format(row.open)}</span><span>高 ${priceNumber.format(row.high)}</span>
-    <span>低 ${priceNumber.format(row.low)}</span><span>收 ${priceNumber.format(row.close)}</span>
-    <span class="${changeClass}">${signedChange}</span><span>量 ${number.format(row.volume)}</span>`;
+    <span>Open ${priceNumber.format(row.open)}</span><span>High ${priceNumber.format(row.high)}</span>
+    <span>Low ${priceNumber.format(row.low)}</span><span>Close ${priceNumber.format(row.close)}</span>
+    <span class="${changeClass}">${signedChange}</span><span>Volume ${number.format(row.volume)}</span>`;
 }
 
 function resetChartHover() {
-  $("chart-hover").textContent = "将鼠标移到 K 线上查看当日行情";
+  $("chart-hover").textContent = "Hover over a candle to view daily prices";
   $("price-cursor").hidden = true;
   $("price-guide").hidden = true;
 }
@@ -140,7 +140,7 @@ function trackChartPointer(event, chart, rows) {
   const xRange = layout.xaxis.range;
   const index = Math.round(xRange[0] + (x - l) / w * (xRange[1] - xRange[0]));
   if (index >= 0 && index < rows.length) showBarDetails(rows[index]);
-  else $("chart-hover").textContent = "将鼠标移到 K 线上查看当日行情";
+  else $("chart-hover").textContent = "Hover over a candle to view daily prices";
 
   const domain = layout.yaxis.domain;
   const top = t + (1 - domain[1]) * h;
@@ -168,7 +168,7 @@ function drawChart() {
   const chart = $("chart");
   if (!rows.length) {
     Plotly.purge(chart);
-    chart.textContent = "这个标的在当前数据库中没有日线数据。";
+    chart.textContent = "No daily bars for this symbol in the current database.";
     chart.classList.add("empty");
     resetChartHover();
     return;
@@ -180,14 +180,14 @@ function drawChart() {
   const drawId = ++chartDrawId;
   resetChartHover();
   Plotly.react(chart, [
-    { type: "candlestick", x: dates, open: rows.map((row) => row.open), high: rows.map((row) => row.high), low: rows.map((row) => row.low), close: rows.map((row) => row.close), increasing: { line: { color: "#159a88" } }, decreasing: { line: { color: "#d65d63" } }, name: "价格", xaxis: "x", yaxis: "y", hoverinfo: "none" },
-    { type: "bar", x: dates, y: rows.map((row) => row.volume), marker: { color: colors }, opacity: .62, name: "成交量", xaxis: "x", yaxis: "y2", hoverinfo: "none" },
+    { type: "candlestick", x: dates, open: rows.map((row) => row.open), high: rows.map((row) => row.high), low: rows.map((row) => row.low), close: rows.map((row) => row.close), increasing: { line: { color: "#159a88" } }, decreasing: { line: { color: "#d65d63" } }, name: "Price", xaxis: "x", yaxis: "y", hoverinfo: "none" },
+    { type: "bar", x: dates, y: rows.map((row) => row.volume), marker: { color: colors }, opacity: .62, name: "Volume", xaxis: "x", yaxis: "y2", hoverinfo: "none" },
   ], {
     margin: { l: 52, r: 15, t: 15, b: 40 }, paper_bgcolor: "#fff", plot_bgcolor: "#fff",
     showlegend: false, hovermode: false, dragmode: "pan",
     xaxis: { type: "category", showgrid: true, gridcolor: "#edf1f6", rangeslider: { visible: false }, tickmode: "array", tickvals: ticks["xaxis.tickvals"], ticktext: ticks["xaxis.ticktext"] },
-    yaxis: { domain: [.29, 1], showgrid: true, gridcolor: "#edf1f6", title: { text: "价格" }, tickfont: { color: "#687a90" } },
-    yaxis2: { domain: [0, .21], range: [0, Math.max(1, ...rows.map((row) => row.volume)) * 1.18], fixedrange: true, showgrid: true, gridcolor: "#edf1f6", title: { text: "成交量" }, tickfont: { color: "#687a90" } },
+    yaxis: { domain: [.29, 1], showgrid: true, gridcolor: "#edf1f6", title: { text: "Price" }, tickfont: { color: "#687a90" } },
+    yaxis2: { domain: [0, .21], range: [0, Math.max(1, ...rows.map((row) => row.volume)) * 1.18], fixedrange: true, showgrid: true, gridcolor: "#edf1f6", title: { text: "Volume" }, tickfont: { color: "#687a90" } },
   }, { responsive: true, displaylogo: false, scrollZoom: true, modeBarButtonsToRemove: ["lasso2d", "select2d"] }).then(() => {
     if (drawId !== chartDrawId) return;
     if (relayoutHandler) chart.removeListener("plotly_relayout", relayoutHandler);
@@ -216,15 +216,15 @@ function renderSymbol() {
   const name = overview.universe.find((row) => row.symbol === selected)?.name || asset.name || "";
   $("chart-title").textContent = `${selected} · ${name}`;
   setDefinition("details", [
-    ["公司名称", asset.name || name || "—"], ["交易所", asset.exchange || "—"],
-    ["资产类型", asset.asset_class === "us_equity" ? "美股权益" : asset.asset_class || "—"],
-    ["交易状态", asset.status === "active" ? "活跃" : asset.status || "—"],
+    ["Company name", asset.name || name || "—"], ["Exchange", asset.exchange || "—"],
+    ["Asset class", asset.asset_class === "us_equity" ? "US equity" : asset.asset_class || "—"],
+    ["Trading status", asset.status === "active" ? "Active" : asset.status || "—"],
   ]);
   const bars = symbolData.bars;
   setDefinition("coverage", [
-    ["日线记录", number.format(bars.length)], ["最早日期", bars[0]?.date || "—"],
-    ["最近日期", bars.at(-1)?.date || "—"],
-    ["研究警告", number.format(overview.issues.filter((issue) => issue.symbol === selected).length)],
+    ["Daily records", number.format(bars.length)], ["First date", bars[0]?.date || "—"],
+    ["Last date", bars.at(-1)?.date || "—"],
+    ["Research warnings", number.format(overview.issues.filter((issue) => issue.symbol === selected).length)],
   ]);
   drawChart();
   renderIssues();
@@ -237,7 +237,7 @@ function renderIssues() {
   const rows = overview.issues.filter((issue) =>
     (kind === "all" || issue.code === kind) && (scope === "all" || issue.symbol === selected)
   );
-  $("issue-count").textContent = `共 ${number.format(rows.length)} 条`;
+  $("issue-count").textContent = `${number.format(rows.length)} issues`;
   $("issues").innerHTML = rows.slice(0, visibleIssueLimit).map((issue) => `<tr>
     <td>${escapeHtml(issue.symbol || "")}</td><td>${escapeHtml(issue.date || "")}</td>
     <td>${escapeHtml(labels[issue.code] || issue.code)}</td>
@@ -249,17 +249,17 @@ async function selectSymbol(symbol) {
   if (!overview) return;
   const normalized = symbol.trim().toUpperCase();
   if (!overview.universe.some((row) => row.symbol === normalized)) {
-    notice(`股票池中找不到 ${normalized || "该代码"}。`, true);
+    notice(`Symbol ${normalized || "not provided"} was not found in the universe.`, true);
     return;
   }
   selected = normalized;
   $("symbol").value = normalized;
   try {
     symbolData = await get(`/api/symbol?symbol=${encodeURIComponent(normalized)}`);
-    notice(overview.report_stale ? "数据库比校验报告更新，请运行每日更新任务后刷新。" : "");
+    notice(overview.report_stale ? "The database is newer than the validation report. Run the daily update, then refresh." : "");
     renderSymbol();
   } catch (error) {
-    notice(`读取 ${normalized} 失败：${error.message}`, true);
+    notice(`Could not load ${normalized}: ${error.message}`, true);
   }
 }
 
@@ -271,8 +271,8 @@ async function refresh() {
     updateSuggestions();
     await selectSymbol(overview.universe.some((row) => row.symbol === selected) ? selected : overview.universe[0]?.symbol || "AAPL");
   } catch (error) {
-    notice("无法连接本机数据服务。请在这台电脑上启动 Stock Radar 本地服务，并允许浏览器访问本地网络。", true);
-    $("asof").textContent = "本机数据未连接";
+    notice("Cannot connect to the local data service. Start Stock Radar on this computer and allow browser access to the local network.", true);
+    $("asof").textContent = "Local data disconnected";
   } finally {
     $("refresh").disabled = false;
   }

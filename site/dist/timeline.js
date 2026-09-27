@@ -10,14 +10,14 @@ const timelineController = {
     this.active=true;this.batch=batch;this.runs=[];this.frames=[];this.cursors=[0,0,0];
     this.shown=-1;this.paused=false;this.seeking=false;
     $("timeline-controls").hidden=false;
-    $("timeline-pause").textContent="暂停画面";
-    $("equity-title").textContent="三阶段逐日收益曲线";
-    $("timeline-phase").textContent="训练期 · 等待交易日";
-    $("timeline-day").textContent="正在逐日计算";
+    $("timeline-pause").textContent="Pause display";
+    $("equity-title").textContent="Daily Return Across Three Stages";
+    $("timeline-phase").textContent="Training · Waiting for sessions";
+    $("timeline-day").textContent="Calculating day by day";
     $("timeline-seek").value=0;$("timeline-seek").max=0;$("timeline-seek").disabled=true;
-    $("run-title").textContent="三阶段逐日回测";
-    $("run-subtitle").textContent="训练 → 验证 → 测试，按交易日计算并显示";
-    $("run-status").textContent="运行中";$("run-status").className="status running";
+    $("run-title").textContent="Three-stage daily backtest";
+    $("run-subtitle").textContent="Training → Validation → Test, calculated and shown one session at a time";
+    $("run-status").textContent="Running";$("run-status").className="status running";
     state.active=batch.run_ids[0];state.drawnSignature=null;
     localStorage.setItem(this.storageKey,JSON.stringify(batch));
     this.drawing=this.emptyCharts();
@@ -29,7 +29,7 @@ const timelineController = {
   detach(clear=true){
     if(this.timer)clearInterval(this.timer);
     this.timer=null;this.active=false;this.batch=null;this.busy=false;
-    $("timeline-controls").hidden=true;$("equity-title").textContent="权益曲线";
+    $("timeline-controls").hidden=true;$("equity-title").textContent="Equity curve";
     state.drawnSignature=null;
     if(clear){localStorage.removeItem(this.storageKey);this.declinedAuto=true}
   },
@@ -75,7 +75,7 @@ const timelineController = {
       this.drawing=this.drawing.then(()=>Promise.all([
         Plotly.relayout($("equity-chart"),{"xaxis.range":range}),
         Plotly.relayout($("drawdown-chart"),{"xaxis.range":range})
-      ])).catch(error=>notice(`设置图表时间轴失败：${error.message}`));
+      ])).catch(error=>notice(`Could not set up the chart timeline: ${error.message}`));
     }
     this.poll();
   },
@@ -100,7 +100,7 @@ const timelineController = {
         this.shown=this.frames.length-1;seek.value=this.shown;
         this.queueRender(this.shown,true);
       }
-    }catch(error){notice(`读取逐日记录失败：${error.message}`)}
+    }catch(error){notice(`Could not load daily records: ${error.message}`)}
     finally{this.busy=false}
   },
   tick(){
@@ -111,7 +111,7 @@ const timelineController = {
     if(this.shown+1>=this.frames.length)this.poll();
   },
   queueRender(index,rebuild){
-    this.drawing=this.drawing.then(()=>this.render(index,rebuild)).catch(error=>notice(`逐日图表更新失败：${error.message}`));
+    this.drawing=this.drawing.then(()=>this.render(index,rebuild)).catch(error=>notice(`Could not update the daily chart: ${error.message}`));
   },
   async render(index,rebuild){
     if(!this.active||!this.frames[index])return;
@@ -140,11 +140,11 @@ const timelineController = {
       }
     }
     const positions=frame.open_positions||[];
-    $("run-title").textContent=run?.metadata?.strategy_name||"三阶段逐日回测";
-    $("run-subtitle").textContent=`${human[this.stages[stage]]} · ${day(frame.date)} · 收盘信号次日开盘成交`;
+    $("run-title").textContent=run?.metadata?.strategy_name||"Three-stage daily backtest";
+    $("run-subtitle").textContent=`${human[this.stages[stage]]} · ${day(frame.date)} · Close signal → next-session open fill`;
     $("timeline-phase").textContent=`${human[this.stages[stage]]} ${frame.completed_sessions} / ${frame.total_sessions}`;
-    $("timeline-day").textContent=`${day(frame.date)} · 已计算 ${this.frames.length} 个交易日`;
-    $("chart-caption").textContent=`${day(frame.date)} · 阶段收益归零重算`;
+    $("timeline-day").textContent=`${day(frame.date)} · Calculated ${this.frames.length} sessions`;
+    $("chart-caption").textContent=`${day(frame.date)} · Stage return restarts from zero`;
     const status=run?.status||"running";
     $("run-status").textContent=statusLabel[status]||status;
     $("run-status").className=`status ${status}`;
@@ -156,21 +156,21 @@ const timelineController = {
     setMetric("m-cash",pct(Number(frame.cash)/Number(frame.equity)));
     setMetric("m-positions",String(positions.length));
     setMetric("m-trades",String(frame.closed_trades||0));
-    $("position-count").textContent=`${positions.length} 个 · ${day(frame.date)}`;
-    $("positions-body").innerHTML=positions.map(x=>`<tr><td>${safe(x.symbol)}</td><td>${money(x.quantity)}</td><td>${money(x.cost_basis??x.entry_execution)}</td><td>${money(x.last_close)}</td></tr>`).join("")||"<tr><td colspan='4'>当日收盘无持仓</td></tr>";
-    $("run-meta").innerHTML=`<dt>执行口径</dt><dd>收盘信号 → 次交易日开盘成交</dd><dt>资金与持仓</dt><dd>每阶段独立重置</dd><dt>阶段</dt><dd>${safe(human[this.stages[stage]])}</dd><dt>交易日</dt><dd>${safe(day(frame.date))}</dd><dt>运行 ID</dt><dd>${safe(this.batch.run_ids[stage].slice(0,8))}</dd>`;
-    $("trade-count").textContent=`${frame.closed_trades||0} 条（截至当日）`;
+    $("position-count").textContent=`${positions.length} · ${day(frame.date)}`;
+    $("positions-body").innerHTML=positions.map(x=>`<tr><td>${safe(x.symbol)}</td><td>${money(x.quantity)}</td><td>${money(x.cost_basis??x.entry_execution)}</td><td>${money(x.last_close)}</td></tr>`).join("")||"<tr><td colspan='4'>No positions at today's close</td></tr>";
+    $("run-meta").innerHTML=`<dt>Execution</dt><dd>Close signal → next-session open fill</dd><dt>Capital and positions</dt><dd>Reset at each stage</dd><dt>Stage</dt><dd>${safe(human[this.stages[stage]])}</dd><dt>Session</dt><dd>${safe(day(frame.date))}</dd><dt>Run ID</dt><dd>${safe(this.batch.run_ids[stage].slice(0,8))}</dd>`;
+    $("trade-count").textContent=`${frame.closed_trades||0} trades through this day`;
     const trades=this.frames.slice(0,index+1).filter(f=>f.stage===stage).flatMap(f=>f.new_trades||[]).slice(-8).reverse();
-    $("trades-body").innerHTML=trades.map(t=>`<tr><td>${safe(day(t.exit_date))}</td><td>${safe(t.symbol)}</td><td class="${t.net_pnl>=0?"positive":"negative"}">${money(t.net_pnl)}</td><td>${pct(t.net_return)}</td><td>${safe(t.exit_reason)}</td></tr>`).join("")||"<tr><td colspan='5'>截至当日无已完成交易</td></tr>";
-    $("event-count").textContent=`${frame.completed_sessions} 个交易日`;
-    $("events").textContent=`${day(frame.date)} · 当日新增成交 ${(frame.new_orders||[]).length} 笔，平仓 ${(frame.new_trades||[]).length} 笔。`;
+    $("trades-body").innerHTML=trades.map(t=>`<tr><td>${safe(day(t.exit_date))}</td><td>${safe(t.symbol)}</td><td class="${t.net_pnl>=0?"positive":"negative"}">${money(t.net_pnl)}</td><td>${pct(t.net_return)}</td><td>${safe(t.exit_reason)}</td></tr>`).join("")||"<tr><td colspan='5'>No closed trades as of today</td></tr>";
+    $("event-count").textContent=`${frame.completed_sessions} sessions`;
+    $("events").textContent=`${day(frame.date)} · New orders today: ${(frame.new_orders||[]).length}; closed trades: ${(frame.new_trades||[]).length}.`;
   }
 };
 window.timelineController=timelineController;
 $("run-timeline").onclick=async()=>{
   const id=state.focused;
   const strategy=state.strategies.find(s=>s.id===id);
-  if(!strategy){notice("请先选择一个策略。");return}
+  if(!strategy){notice("Select a strategy first.");return}
   const button=$("run-timeline");button.disabled=true;
   try{
     const pace_ms=Number($("timeline-pace").value);
@@ -178,13 +178,13 @@ $("run-timeline").onclick=async()=>{
       config:state.config[id]||strategy.config,slippage_bps:Number($("slippage").value),pace_ms});
     timelineController.activate({...result,pace_ms});
     showPage("lab");await refresh();
-  }catch(error){notice(`无法启动逐日回测：${error.message}`)}
+  }catch(error){notice(`Could not start daily backtest: ${error.message}`)}
   finally{button.disabled=false}
 };
 $("timeline-pause").onclick=()=>{
   timelineController.paused=!timelineController.paused;
   timelineController.seeking=false;
-  $("timeline-pause").textContent=timelineController.paused?"继续逐日显示":"暂停画面";
+  $("timeline-pause").textContent=timelineController.paused?"Resume daily display":"Pause display";
 };
 $("timeline-seek").oninput=event=>{
   const index=Number(event.target.value);
