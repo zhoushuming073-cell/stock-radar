@@ -1,17 +1,164 @@
-# Stock Radar
+<p align="center">
+  <strong>English</strong> · <a href="./README.zh-CN.md">简体中文</a>
+</p>
 
-<p align="center"><strong>English</strong> · <a href="./README.zh-CN.md">简体中文</a></p>
-<p align="center"><img src="./docs/repo-banner.png" alt="Stock Radar repository banner" width="100%"></p>
+<h1 align="center">📡 Stock Radar</h1>
 
-A broad US-equity research and screening project using Alpaca market data. Phase 1
-builds the data foundation: asset master, daily OHLCV bars in DuckDB, incremental
-updates, validation, and universe export.
+<p align="center">
+  <img src="./docs/repo-banner.webp" alt="Stock Radar repository banner" width="100%">
+</p>
 
-It is research software only. **Nothing in this repository places orders** — no
-trading or order endpoint is called anywhere in the package. The Phase 2
-features, historical backtest engine, a simplified baseline, and an initial
-seven-stage Strategy 2 candidate are implemented. Neither backtest establishes
-a deployable trading edge.
+<p align="center">
+  <strong>A local-first quantitative stock radar for turning discretionary trading ideas into measurable, testable candidate selection.</strong><br>
+  Market data · pattern quantification · candidate ranking · historical validation · reproducible research
+</p>
+
+<p align="center">
+  <img alt="Python 3.11+" src="https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white">
+  <img alt="Alpaca" src="https://img.shields.io/badge/Data-Alpaca-FFCC00">
+  <img alt="DuckDB" src="https://img.shields.io/badge/Storage-DuckDB-FFF000?logo=duckdb&logoColor=black">
+  <img alt="Streamlit" src="https://img.shields.io/badge/UI-Streamlit-FF4B4B?logo=streamlit&logoColor=white">
+  <img alt="pluggy" src="https://img.shields.io/badge/Plugins-pluggy-6C5CE7">
+  <img alt="No order execution" src="https://img.shields.io/badge/Orders-Disabled-success">
+</p>
+
+<p align="center">
+  <sub>Research-only · Local-first · Reproducible · No broker execution</sub>
+</p>
+
+> [!IMPORTANT]
+> Stock Radar is research software only. **Nothing in this repository places broker orders.** The project is being refocused from a general-purpose backtesting platform toward a personal quantitative stock-selection research system. The primary question is not how high a historical portfolio return can be, but whether subjective setup language can be translated into causal, reproducible market features that consistently enrich favorable forward outcomes. Existing backtest results do **not** establish a deployable trading edge; the previously viewed Test slice is exploratory rather than fresh out-of-sample evidence.
+
+<p align="center">
+  <a href="#overview">Overview</a> ·
+  <a href="#project-status">Status</a> ·
+  <a href="#dashboard-preview">Preview</a> ·
+  <a href="#architecture">Architecture</a> ·
+  <a href="#setup">Setup</a> ·
+  <a href="#local-research-scanner-and-strategy-lab">Research Lab</a> ·
+  <a href="#conventions-and-limitations">Limitations</a>
+</p>
+
+## Overview
+
+Stock Radar is a personal US-equity quantitative research system built around a practical workflow: reduce thousands of stocks to a small daily watchlist whose price structure matches a defined trading setup, then leave contextual judgment—news, catalysts, fundamentals, premarket behavior and other non-price information—to a later research stage.
+
+The design remains deliberately **local-first**: Alpaca credentials, DuckDB market data, strategy plugins, run metadata, and detailed research artifacts stay on the machine running Stock Radar. The private browser dashboard talks only to a loopback API on that machine.
+
+## Research direction
+
+Stock Radar is being refocused around **pattern quantification** rather than maximizing a historical equity curve.
+
+The practical workflow is:
+
+```text
+Full US-equity universe
+→ causal quantitative screening
+→ a small ranked candidate list
+→ later GPT-assisted review of news, catalysts, fundamentals and premarket context
+→ optional intraday confirmation
+```
+
+The research questions are now:
+
+1. Can discretionary chart language such as *strong before the pullback, fell hard, stopped deteriorating, showed support, and may be ready for upside expansion* be translated into measurable features?
+2. Does the quantitative scanner actually retrieve the kinds of charts a human would label as matching that setup?
+3. Are those candidates enriched for favorable forward outcomes over a fixed horizon, even before any news or fundamental filter is applied?
+4. Does a later contextual review add incremental value over the quantitative candidate list alone?
+
+Backtesting therefore remains important, but increasingly as a **validation instrument**. The next research phase will emphasize candidate-quality metrics such as:
+
+- Precision@5 / Precision@10 / Precision@20
+- Lift@K versus the eligible-market base rate
+- calibrated probability of reaching +3%, +5%, +8% or +10% within a fixed horizon
+- forward MFE / MAE and time-to-target
+- false falling-knife / post-signal new-low rate
+- stability across years, bull/bear regimes and volatility environments
+
+Planned research branches:
+
+- **Quant** — structured features, interpretable pattern scores and probability models.
+- **Vision** — a separate future path using standardized candlestick/volume images to test whether visual representations capture structure missed by hand-crafted features.
+- **Fusion** — compare Quant-only, Vision-only and agreement between the two.
+- **Intraday** — candidate-only minute data for support, reversal and execution-confirmation research rather than full-market minute data as the starting point.
+
+The long-term goal is not to reproduce a universal institutional trading stack. It is to build a reproducible **personal quantitative stock radar** that turns a discretionary selection process into something measurable, falsifiable and useful as the first stage of a human/GPT research workflow.
+### What it includes
+
+| Layer | Current implementation |
+| --- | --- |
+| **Phase 1 · Data foundation** | Asset master, split-adjusted daily OHLCV, incremental sync, validation, universe export, DuckDB provenance checks |
+| **Phase 2 · Research engine** | Historical backtest engine, frozen simplified baseline, initial seven-stage Strategy 2 candidate, verification and local reports |
+| **Phase 3 · Strategy Lab** | Plugin interface v1, trusted ZIP import, persistent run queue, live equity/drawdown, run comparison, parameter grids, ablations and walk-forward folds |
+| **Dashboards** | Read-only market-data dashboard plus private Sites / Streamlit Strategy Lab interfaces |
+| **Automation** | Windows scheduled market refresh and local API startup |
+| **Execution boundary** | No broker-order path; research runs and dashboards do not place trades |
+
+## Project status
+
+- [x] Asset master and eligible-universe export
+- [x] Incremental Alpaca SIP daily-bar ingestion
+- [x] DuckDB storage with provider/feed/adjustment provenance
+- [x] Non-destructive market-data validation
+- [x] Local Streamlit market dashboard
+- [x] Historical backtest engine and frozen baseline
+- [x] Initial seven-stage Strategy 2 research candidate
+- [x] Strategy plugin interface v1 and ZIP-ready template
+- [x] Persistent local Strategy Lab and run queue
+- [x] Parameter-grid, stage-ablation, and rolling walk-forward experiments
+- [x] Private Sites integration and unattended local updates
+- [ ] Human-labelled chart-snapshot dataset for pattern ground truth
+- [ ] Pattern-match evaluation with Precision@K / Recall / Lift@K
+- [ ] Fixed-horizon target-hit probability research and calibration
+- [ ] Market-regime conditioning
+- [ ] Candidate-only intraday data for support / reversal / execution studies
+- [ ] Quant vs Vision vs Fusion research branch
+- [ ] Point-in-time candidate/context log for future GPT-assisted second-stage review
+- [ ] Fresh untouched out-of-sample period for validating claimed strategy improvement
+- [ ] Broker execution / live trading — intentionally not implemented
+
+## Dashboard preview
+
+<table>
+  <tr>
+    <td width="50%" align="center"><strong>Market overview</strong></td>
+    <td width="50%" align="center"><strong>Validation diagnostics</strong></td>
+  </tr>
+  <tr>
+    <td><img src="./docs/dashboard-preview.png" alt="Stock Radar market-data dashboard overview"></td>
+    <td><img src="./docs/dashboard-warnings.png" alt="Stock Radar validation diagnostics"></td>
+  </tr>
+</table>
+
+<p align="center"><sub>Read-only visualization over the local research database. Strategy Lab runs and research artifacts remain local as well.</sub></p>
+
+## Architecture
+
+```mermaid
+flowchart LR
+    A[Alpaca Market Data] --> B[Sync + Validation]
+    B --> C[(Market DuckDB)]
+    B --> D[Universe + JSON Reports]
+
+    C --> E[Market Dashboard]
+    C --> F[Historical Backtest Engine]
+
+    G[Strategy Plugins] --> H[Strategy Lab]
+    H --> F
+    H --> I[(Run Metadata SQLite)]
+    F --> J[Equity / Orders / Trades / Reports]
+
+    C --> K[Loopback API<br/>127.0.0.1:8765]
+    D --> K
+    I --> K
+    J --> K
+    K --> L[Private Sites Dashboard]
+
+    M[Windows Scheduled Tasks] --> B
+    M --> K
+```
+
+The market database remains read-only to research workers. Strategy Lab stores reproducibility metadata separately in local SQLite WAL, and queued runs fail on source/data hash mismatches instead of silently executing changed inputs.
 
 ## Setup
 
