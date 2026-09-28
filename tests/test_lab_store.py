@@ -124,13 +124,13 @@ def test_completed_run_immutable_even_via_direct_sql(tmp_path):
                                (run_id, other_id))
 
 
-def test_schema_v1_migrates_to_v5(tmp_path):
+def test_schema_v1_migrates_to_v6(tmp_path):
     path = tmp_path / "runs.sqlite"
     with closing(sqlite3.connect(path)) as connection:
         RunStore._migrate_v1(connection)
     RunStore(path)
     with closing(sqlite3.connect(path)) as connection:
-        assert connection.execute("PRAGMA user_version").fetchone()[0] == 5
+        assert connection.execute("PRAGMA user_version").fetchone()[0] == 6
 
 
 def test_cancellation_and_required_metadata(tmp_path):

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 import pandas as pd
 import pytest
@@ -63,6 +64,8 @@ def test_semantic_schema_has_core_advanced_and_explicit_paths():
     assert by_path["strategy.min_pullback"]["level"] == "core"
     assert by_path["strategy.selection.max_candidates"]["nullable"] is True
     assert by_path["evaluation.top_k_values"]["modes"] == ["scanner"]
+    assert by_path["evaluation.primary_adverse_target"]["modes"] == ["scanner"]
+    assert by_path["execution.liquidity.max_adv_participation"]["min"] > 0
     assert by_path["execution.exit.stop_loss"]["modes"] == ["backtest"]
     assert all({"path", "label", "description", "namespace", "type", "unit", "default",
                 "min", "max", "step", "nullable", "level", "modes", "searchable"} <= set(item)
@@ -86,6 +89,35 @@ def test_target_before_adverse_and_same_session_ambiguity():
     label = label_candidate(pd.Timestamp("2025-01-01"), 9.5, future, settings)
     assert label[name] is None
     assert label["ambiguous_same_session"] is True
+
+
+def test_primary_adverse_pair_is_explicit_and_hashed():
+    settings = evaluation_settings({"primary_target": .07,
+                                    "upside_targets": [.05, .07],
+                                    "primary_adverse_target": -.05,
+                                    "success_rule": "target_before_adverse"})
+    metrics = candidate_metrics(pd.DataFrame({"label": [], "rank": []}),
+                                pd.DataFrame({"label": []}), settings)
+    assert metrics["primary_outcome"] == before_adverse_name(.07, -.05, 10)
+    assert metrics["primary_outcome"] != before_adverse_name(.07, -.08, 10)
+    other = evaluation_settings({**settings, "primary_adverse_target": -.08})
+    original = _resolved().values
+    assert research_hash({**original, "evaluation": settings}) != research_hash(
+        {**original, "evaluation": other})
+    for override in ({"primary_adverse_target": -.07},
+                     {"primary_adverse_target": .05},
+                     {"downside_targets": [-.03], "primary_adverse_target": -.05}):
+        with pytest.raises(ValueError, match="primary_adverse_target"):
+            evaluation_settings(override)
+    with pytest.raises(ValueError, match="primary_target"):
+        evaluation_settings({"primary_target": .07})
+
+
+def test_current_plugin_spec_uses_scanner_v2():
+    spec = (Path(__file__).parents[1] / "docs" / "STRATEGY_PLUGIN_SPEC.md").read_text(
+        encoding="utf-8")
+    assert "scanner-forward-v2" in spec
+    assert "scanner-forward-v1" not in spec
 
 
 def test_event_cooldown_preserves_observations():

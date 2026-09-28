@@ -7,8 +7,9 @@ from typing import Any, Mapping
 
 import pandas as pd
 import pytest
+import duckdb
 
-from radar.lab.data import _market_context
+from radar.lab.data import _market_context, load_strategy_segment, MARKET_FEATURES
 from radar.lab.scanner import (LABEL_VERSION, build_labels, candidate_metrics,
                                evaluation_settings, label_candidate, target_name)
 from radar.lab.scanner_worker import scan_frames
@@ -17,6 +18,7 @@ from radar.lab.universe import LocalSecurityMaster
 from radar.strategy.base import StrategyPlugin
 from radar.strategy.context import StrategyContext
 from radar.strategy.validation import is_future_feature
+from radar.research.pipeline import FEATURE_VERSION
 
 
 class ManyCandidates(StrategyPlugin):
@@ -63,6 +65,65 @@ def test_golden_forward_labels_and_incomplete_horizon():
     labels = build_labels(signal, bars, sessions, settings)["label"].tolist()
     assert labels[0] == label
     assert labels[1] is None
+
+
+def test_forward_label_censoring_reasons_and_denominators():
+    sessions = pd.bdate_range("2025-01-02", periods=11)
+    bars = pd.DataFrame([{"date": day, "symbol": symbol, "open": 10.,
+                          "high": 10.6, "low": 9.9}
+                         for day in sessions for symbol in ("OK", "GAP", "END")
+                         if not (symbol == "GAP" and day == sessions[3])
+                         and not (symbol == "END" and day > sessions[2])])
+    signals = pd.DataFrame({"signal_date": [sessions[0]] * 4 + [sessions[1]],
+                            "symbol": ["OK", "GAP", "END", "ABSENT", "OK"]})
+    labels = build_labels(signals, bars, sessions, evaluation_settings(None),
+                          {"END": sessions[2]})
+    assert labels["label_status"].tolist() == ["labeled", "censored", "censored",
+                                                "censored", "censored"]
+    assert labels["label_reason"].tolist() == [None, "missing_symbol_bar",
+        "security_no_longer_eligible", "missing_symbol_bar", "insufficient_future_sessions"]
+    candidate = signals.iloc[:3].copy()
+    for field in labels:
+        candidate[field] = labels.iloc[:3][field].to_list()
+    candidate["rank"] = [1, 2, 3]
+    metrics = candidate_metrics(candidate, candidate, evaluation_settings(None), sessions)
+    assert (metrics["candidate_observation_count"], metrics["labeled_candidate_count"],
+            metrics["censored_candidate_count"]) == (3, 1, 2)
+    assert metrics["candidate_censoring_rate"] == pytest.approx(2 / 3)
+    assert (metrics["background_count"], metrics["labeled_background_count"],
+            metrics["censored_background_count"]) == (3, 1, 2)
+    assert metrics["background_censoring_rate"] == pytest.approx(2 / 3)
+    assert (metrics["unique_signal_event_count"], metrics["labeled_signal_event_count"],
+            metrics["censored_signal_event_count"]) == (3, 1, 2)
+    assert metrics["signal_event_censoring_rate"] == pytest.approx(2 / 3)
+    bad = bars.copy()
+    bad.loc[(bad.symbol == "OK") & (bad.date == sessions[4]), "high"] = None
+    assert build_labels(signals.iloc[[0]], bad, sessions, evaluation_settings(None)).iloc[0][
+        "label_reason"] == "missing_price_data"
+
+
+def test_lightweight_background_primary_outcome_matches_full_label():
+    sessions = pd.bdate_range("2025-01-02", periods=3)
+    bars = pd.DataFrame({"date": sessions, "symbol": "AAA", "open": 10.,
+                         "high": [10., 10.6, 10.], "low": [9.9, 9.4, 9.9]})
+    signals = pd.DataFrame({"signal_date": [sessions[0]], "symbol": ["AAA"]})
+    for rule in ("target_touch", "target_before_adverse"):
+        settings = evaluation_settings({"horizon_sessions": 2, "success_rule": rule})
+        full = build_labels(signals, bars, sessions, settings).iloc[0]
+        light = build_labels(signals, bars, sessions, settings, primary_only=True).iloc[0]
+        assert light.label == full.label["hit_5pct_2d" if rule == "target_touch"
+                                                else "up_5pct_before_down_5pct_2d"]
+        assert light.label_status == full.label_status
+        assert light.label_reason == full.label_reason
+        candidate = signals.copy()
+        candidate["rank"] = 1
+        candidate["label"] = [full.label]
+        background = signals.copy()
+        background["label"] = [light.label]
+        background["label_status"] = [light.label_status]
+        metrics = candidate_metrics(candidate, background, settings, sessions)
+        assert metrics["labeled_background_count"] == (1 if rule == "target_touch" else 0)
+        assert metrics["censored_background_count"] == (0 if rule == "target_touch" else 1)
 
 
 def test_precision_and_lift_use_full_eligible_background():
@@ -125,6 +186,27 @@ def test_scanner_more_than_three_candidates_without_portfolio(maximum):
     assert metrics["p_hit_5pct_10d_calibration_bins"][0]["count"] == 21
 
 
+def test_evaluation_top_k_does_not_truncate_persisted_candidates():
+    sessions = pd.bdate_range("2025-01-02", periods=11)
+    symbols = [f"S{i:02d}" for i in range(12)]
+    features = pd.DataFrame({"date": sessions[0], "symbol": symbols,
+                             "security_name": symbols, "close": 10.,
+                             "ret_1": list(range(12)), "tradability_pass": True})
+    bars = pd.DataFrame([{"date": day, "symbol": symbol, "open": 10.,
+                          "high": 10.6, "low": 9.9}
+                         for day in sessions for symbol in symbols])
+    rows_by_k = []
+    for top_k in ([5], [10]):
+        rows, metrics = scan_frames(
+            ManyCandidates(), {"selection": {"max_candidates": None}},
+            features.set_index(["date", "symbol"], drop=False), bars, sessions,
+            sessions[0], sessions[0], evaluation_settings({"top_k_values": top_k}))
+        rows_by_k.append(rows)
+        assert metrics["candidate_count"] == 12
+    assert [row["symbol"] for row in rows_by_k[0]] == [
+        row["symbol"] for row in rows_by_k[1]]
+
+
 def test_filter_funnel_and_exclusion_reasons_are_causal():
     class FilterCandidates(ManyCandidates):
         def hard_filter(self, context, config):
@@ -183,6 +265,7 @@ def test_pit_forward_label_follows_security_identity_across_ticker_change(tmp_pa
                                 universe_provider=provider)
     assert rows[0]["security_id"] == "ID-1"
     assert rows[0]["label"]["hit_5pct_1d"] is True
+    assert rows[0]["label_status"] == "labeled"
     assert metrics["base_rate"] == 1.0
 
 
@@ -198,6 +281,34 @@ def test_market_context_uses_history_through_signal_date_only():
     columns = ["spy_trend", "qqq_trend", "spy_drawdown", "qqq_drawdown",
                "market_realized_volatility", "market_breadth"]
     pd.testing.assert_series_equal(first.loc[65, columns], second.loc[65, columns])
+
+
+def test_train_market_context_warmup_is_null_not_whole_window_error(tmp_path):
+    sessions = pd.bdate_range("2025-01-02", periods=70)
+    bars = pd.DataFrame([{"date": day, "symbol": symbol, "open": 100.,
+                          "close": 100. + index}
+                         for index, day in enumerate(sessions)
+                         for symbol in ("AAA", "SPY", "QQQ")])
+    features = pd.DataFrame([{"date": day, "symbol": "AAA",
+                              "feature_version": FEATURE_VERSION,
+                              "avg_dollar_volume_20": 1e9,
+                              "elasticity_score": 90., "drawdown_20": -.1,
+                              "ret_1": .01, "close_location": .8,
+                              "tradability_pass": True, "dist_ma_20": .1}
+                             for day in sessions])
+    assets = pd.DataFrame({"symbol": ["AAA"], "name": ["AAA Inc"]})
+    database = tmp_path / "market.duckdb"
+    with duckdb.connect(str(database)) as connection:
+        connection.register("bars_input", bars)
+        connection.register("features_input", features)
+        connection.register("assets_input", assets)
+        connection.execute("CREATE TABLE daily_bars AS SELECT * FROM bars_input")
+        connection.execute("CREATE TABLE daily_features AS SELECT * FROM features_input")
+        connection.execute("CREATE TABLE assets AS SELECT * FROM assets_input")
+    frame = load_strategy_segment(database, sessions[0], sessions[-1], set(MARKET_FEATURES))
+    assert len(frame) == len(sessions)
+    assert pd.isna(frame.iloc[0]["spy_trend"])
+    assert pd.notna(frame.iloc[-1]["spy_trend"])
 
 
 def test_market_regime_uses_primary_outcome_not_target_touch():
@@ -243,9 +354,12 @@ def test_completed_scanner_snapshot_is_immutable(tmp_path):
     store.finish_scanner_run(run_id, [{"signal_date": "2025-01-02", "symbol": "AAA",
         "security_name": "A", "rank": 1, "strategy_score": 1.0, "selected": True,
         "diagnostics": {"x_score": 2.0}, "probabilities": {}, "label": None,
+        "label_status": "censored", "label_reason": "missing_symbol_bar",
         "market_context": {}, "features": {"close": 10.0}}], {"candidate_count": 1})
     assert len(store.get_scanner_candidates(run_id)) == 1
     assert store.get_scanner_candidates(run_id)[0]["features"] == {"close": 10.0}
+    assert store.get_scanner_candidates(run_id)[0]["label_reason"] == "missing_symbol_bar"
+    assert store.get_scanner_run(run_id)["artifact_hashes"]["format"] == "scanner-candidates-v4"
     assert store.get_scanner_run(run_id)["artifact_hashes"]["candidates_sha256"]
     assert store.get_scanner_run(run_id)["artifact_hashes"]["candidates_sha256"] == hashlib.sha256(
         _json(store.get_scanner_candidates(run_id)).encode("utf-8")).hexdigest()

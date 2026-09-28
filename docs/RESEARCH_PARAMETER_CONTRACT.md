@@ -33,8 +33,8 @@ new run before a worker starts. Validation rejects unknown override paths.
 | `take_profit`, `stop_loss`, `max_holding_sessions`, strategy `exit.*` | execution | `execution.exit.*`; nullable, host-executed |
 | `initial_capital`, entry-gap limits, allocator, sizing fractions, ADV participation, slippage, market guard, execution timing | execution | `execution.*` |
 | Fee profile and cost schedule | execution / integrity lock | Host-owned fee schedule identified by version/hash; plugins cannot bypass it |
-| Scanner horizon, upside targets, falling-knife threshold | evaluation | `evaluation.*` |
-| Downside targets, success rule, event cooldown | evaluation | Explicitly resolved, never passed to plugin context |
+| Scanner horizon, upside targets, downside targets, explicit primary target and primary adverse target, falling-knife threshold | evaluation | `evaluation.*` |
+| Success rule, Top-K, event cooldown | evaluation | Explicitly resolved, never passed to plugin context |
 | Train/Validation/Test, signal/evaluation dates, versions, database snapshot | dataset | `dataset.*` |
 | Universe membership and dated symbol map | dataset | `dataset.universe_mode` and provider fingerprint |
 | Daily playback delay and UI Top-K selector | view | `view.*`; never changes research hash |
@@ -51,12 +51,23 @@ Scanner storage or labels. Legacy `max_new`, `max_new_candidates`, and Scanner
 compatibility warnings where they are accepted.
 
 Scanner reports both observation Precision/Lift and event Precision/Lift at
-each configured `evaluation.top_k_values` rank. Event metrics retain the same
-eligible-market base rate but count only the first signal for a security within
-`evaluation.event_cooldown_sessions`; observations remain stored. In PIT mode,
-the cooldown follows stable `security_id` across ticker changes. Market-regime
-success rates use the configured `primary_outcome`, including
-target-before-adverse when selected, and omit ambiguous labels.
+each configured `evaluation.top_k_values` rank. The primary path-dependent
+outcome uses the exact configured `evaluation.primary_target` and
+`evaluation.primary_adverse_target` pair; no nearest-threshold inference occurs.
+Event metrics take raw daily rank ≤ K, then remove cooldown-repeat signals,
+without refilling Top-K. They divide by the same eligible-market observation
+base rate. Observations remain stored. In PIT mode, cooldown follows stable
+`security_id` across ticker changes. Market-regime success rates use the
+configured `primary_outcome`, including target-before-adverse when selected,
+and omit ambiguous outcomes. Candidate, background, and event censoring counts
+and rates expose unavailable outcomes. PIT membership plus these diagnostics
+does not substitute for a proper delisting-return/terminal-value data policy.
+
+New research backtests default to `execution.timing: next_open`: a close-based
+exit trigger executes at the next session Open. The explicit `legacy_close`
+compatibility mode executes such exits at that session's Close, while entries
+still follow the engine's next-session Open rule. Historical metadata without
+a timing field retains its compatibility fallback.
 
 Experiments can grid-search declared strategy fields and Scanner evaluation
 fields on Train/Validation. Scanner ablations are supported; rolling-window

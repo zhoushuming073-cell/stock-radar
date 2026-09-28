@@ -17,6 +17,7 @@ DEFAULT_EVALUATION = {
     "upside_targets": [0.03, 0.05, 0.08, 0.10],
     "downside_targets": [-0.03, -0.05, -0.08, -0.10],
     "primary_target": 0.05,
+    "primary_adverse_target": -0.05,
     "top_k_values": [5, 10, 20],
     "success_rule": "target_touch",
     "event_cooldown_sessions": 5,
@@ -51,8 +52,13 @@ def evaluation_settings(raw: Mapping[str, Any] | None) -> dict[str, Any]:
             len(set(downs)) != len(downs)):
         raise ValueError("downside_targets must be unique negative fractions above -1")
     primary = value["primary_target"]
-    if primary not in targets:
+    if (isinstance(primary, bool) or not isinstance(primary, (int, float)) or
+            not math.isfinite(primary) or primary not in targets):
         raise ValueError("primary_target must be an upside target")
+    adverse = value["primary_adverse_target"]
+    if (isinstance(adverse, bool) or not isinstance(adverse, (int, float)) or
+            not math.isfinite(adverse) or adverse >= 0 or adverse not in downs):
+        raise ValueError("primary_adverse_target must be a negative downside target")
     top_k = value["top_k_values"]
     if (not isinstance(top_k, list) or not top_k or
             any(isinstance(x, bool) or not isinstance(x, int) or not 1 <= x <= 1000
@@ -92,6 +98,14 @@ def downside_name(target: float, horizon: int) -> str:
 def before_adverse_name(upside: float, downside: float, horizon: int) -> str:
     return (f"up_{_percent_token(upside)}pct_before_down_"
             f"{_percent_token(abs(downside))}pct_{horizon}d")
+
+
+def primary_outcome_name(settings: Mapping[str, Any]) -> str:
+    if settings["success_rule"] == "target_before_adverse":
+        return before_adverse_name(settings["primary_target"],
+                                   settings["primary_adverse_target"],
+                                   settings["horizon_sessions"])
+    return target_name(settings["primary_target"], settings["horizon_sessions"])
 
 
 def label_candidate(signal_date: pd.Timestamp, signal_low: float,
@@ -146,6 +160,22 @@ def _label_values(signal_low: float, columns: np.ndarray,
     return output
 
 
+def _primary_label_values(columns: np.ndarray, settings: Mapping[str, Any]) -> bool | None:
+    """The base-rate universe needs only the primary outcome, not every excursion."""
+    entry = float(columns[0, 0])
+    highs, lows = columns[:, 1], columns[:, 2]
+    upside = np.flatnonzero(highs >= entry * (1 + settings["primary_target"]))
+    if settings["success_rule"] == "target_touch":
+        outcome = bool(len(upside))
+    else:
+        downside = np.flatnonzero(lows <= entry * (1 + settings["primary_adverse_target"]))
+        if len(upside) and len(downside) and upside[0] == downside[0]:
+            outcome = None
+        else:
+            outcome = bool(len(upside) and (not len(downside) or upside[0] < downside[0]))
+    return outcome
+
+
 def signal_event_flags(candidates: pd.DataFrame, cooldown: int,
                        sessions: Sequence[pd.Timestamp] | None = None) -> list[bool]:
     """Preserve raw observations while identifying independent symbol events."""
@@ -177,7 +207,9 @@ def signal_event_flags(candidates: pd.DataFrame, cooldown: int,
 
 def build_labels(signal_rows: pd.DataFrame, bars: pd.DataFrame,
                  sessions: Sequence[pd.Timestamp],
-                 settings: Mapping[str, Any]) -> pd.DataFrame:
+                 settings: Mapping[str, Any],
+                 security_end_dates: Mapping[str, pd.Timestamp] | None = None,
+                 *, primary_only: bool = False) -> pd.DataFrame:
     """Compute labels after selection from host bars, never from plugin context."""
     session_index = {pd.Timestamp(day).normalize(): i for i, day in enumerate(sessions)}
     by_symbol: dict[str, np.ndarray] = {}
@@ -189,17 +221,44 @@ def build_labels(signal_rows: pd.DataFrame, bars: pd.DataFrame,
                 array[position] = [row.open, row.high, row.low]
         by_symbol[symbol] = array
     horizon = int(settings["horizon_sessions"])
-    labels = []
+    outcome = primary_outcome_name(settings)
+    labels, statuses, reasons = [], [], []
     for row in signal_rows.itertuples(index=False):
         day = pd.Timestamp(row.signal_date).normalize()
         position = session_index.get(day)
         symbol_bars = by_symbol.get(row.symbol)
-        result = None
-        if position is not None and position + horizon < len(sessions) and symbol_bars is not None:
-            result = _label_values(float(symbol_bars[position, 2]),
-                                   symbol_bars[position + 1:position + horizon + 1], settings)
+        result, reason = None, None
+        if position is None or position + horizon >= len(sessions):
+            reason = "insufficient_future_sessions"
+        elif symbol_bars is None:
+            reason = "missing_symbol_bar"
+        else:
+            future = symbol_bars[position + 1:position + horizon + 1]
+            missing = np.isnan(future).all(axis=1)
+            if missing.any():
+                first_missing = int(np.flatnonzero(missing)[0])
+                missing_day = pd.Timestamp(sessions[position + 1 + first_missing]).normalize()
+                known_end = (security_end_dates or {}).get(str(row.symbol))
+                reason = ("security_no_longer_eligible" if known_end is not None and
+                          missing_day > pd.Timestamp(known_end).normalize()
+                          else "missing_symbol_bar")
+            elif (not np.isfinite(future).all() or (future <= 0).any() or
+                  not math.isfinite(float(symbol_bars[position, 2])) or
+                  symbol_bars[position, 2] <= 0):
+                reason = "missing_price_data"
+            else:
+                result = (_primary_label_values(future, settings) if primary_only else
+                          _label_values(float(symbol_bars[position, 2]), future, settings))
+                if result is None:
+                    reason = "ambiguous_same_session" if primary_only else "missing_price_data"
+                elif not primary_only and result.get(outcome) is None:
+                    reason = "ambiguous_same_session"
         labels.append(result)
-    return pd.DataFrame({"label": labels})
+        statuses.append("censored" if reason else "labeled")
+        reasons.append(reason)
+    return pd.DataFrame({"label": pd.Series(labels, dtype=object),
+                         "label_status": statuses,
+                         "label_reason": pd.Series(reasons, dtype=object)})
 
 
 def candidate_metrics(candidates: pd.DataFrame, background: pd.DataFrame,
@@ -209,24 +268,39 @@ def candidate_metrics(candidates: pd.DataFrame, background: pd.DataFrame,
     horizon = settings["horizon_sessions"]
     target = settings["primary_target"]
     hit = target_name(target, horizon)
-    outcome = hit
-    if settings["success_rule"] == "target_before_adverse":
-        downside = min(settings["downside_targets"], key=lambda x: abs(x + target))
-        outcome = before_adverse_name(target, downside, horizon)
-    labeled_base = background[background["label"].notna()].copy()
-    labeled_candidates = candidates[candidates["label"].notna()].copy()
-    base_values = [row.get(outcome) for row in labeled_base["label"]]
-    base_values = [value for value in base_values if value is not None]
+    outcome = primary_outcome_name(settings)
+    def valid_outcome(frame: pd.DataFrame, *, allow_scalar: bool = False) -> pd.Series:
+        valid = frame["label"].map(
+            lambda label: (isinstance(label, Mapping) and label.get(outcome) is not None) or
+            (allow_scalar and isinstance(label, (bool, np.bool_)))
+        ).astype(bool)
+        if "label_status" in frame:
+            valid &= frame["label_status"].eq("labeled")
+        return valid
+    labeled_base = background[valid_outcome(background, allow_scalar=True)].copy()
+    labeled_primary = candidates[valid_outcome(candidates)].copy()
+    full_labels = candidates[candidates["label"].notna()].copy()
+    base_values = [row[outcome] if isinstance(row, Mapping) else row
+                   for row in labeled_base["label"]]
     base_rate = float(np.mean(base_values)) if base_values else None
     flags = signal_event_flags(candidates, settings["event_cooldown_sessions"], sessions)
     event_candidates = candidates.loc[flags].copy()
+    labeled_events = event_candidates[valid_outcome(event_candidates)]
+    candidate_count, background_count, event_count = len(candidates), len(background), len(event_candidates)
     metrics: dict[str, Any] = {
-        "candidate_count": int(len(candidates)),
-        "candidate_observation_count": int(len(candidates)),
-        "unique_signal_event_count": int(sum(flags)),
-        "labeled_signal_event_count": int(event_candidates["label"].notna().sum()),
-        "labeled_candidate_count": int(len(labeled_candidates)),
-        "background_count": int(len(labeled_base)),
+        "candidate_count": int(candidate_count),
+        "candidate_observation_count": int(candidate_count),
+        "labeled_candidate_count": int(len(labeled_primary)),
+        "censored_candidate_count": int(candidate_count - len(labeled_primary)),
+        "candidate_censoring_rate": float((candidate_count - len(labeled_primary)) / candidate_count) if candidate_count else None,
+        "background_count": int(background_count),
+        "labeled_background_count": int(len(labeled_base)),
+        "censored_background_count": int(background_count - len(labeled_base)),
+        "background_censoring_rate": float((background_count - len(labeled_base)) / background_count) if background_count else None,
+        "unique_signal_event_count": int(event_count),
+        "labeled_signal_event_count": int(len(labeled_events)),
+        "censored_signal_event_count": int(event_count - len(labeled_events)),
+        "signal_event_censoring_rate": float((event_count - len(labeled_events)) / event_count) if event_count else None,
         "primary_target": hit,
         "primary_outcome": outcome,
         "success_rule": settings["success_rule"],
@@ -234,8 +308,7 @@ def candidate_metrics(candidates: pd.DataFrame, background: pd.DataFrame,
         "label_version": LABEL_VERSION,
     }
     for k in settings["top_k_values"]:
-        top = labeled_candidates[labeled_candidates["rank"] <= k]
-        valid = top[top["label"].map(lambda row: row.get(outcome) is not None)]
+        valid = labeled_primary[labeled_primary["rank"] <= k]
         precision = float(np.mean([row[outcome] for row in valid["label"]])) if len(valid) else None
         metrics[f"precision_at_{k}"] = precision
         metrics[f"pooled_precision_at_{k}"] = precision
@@ -248,9 +321,8 @@ def candidate_metrics(candidates: pd.DataFrame, background: pd.DataFrame,
             daily = []
         metrics[f"mean_daily_precision_at_{k}"] = float(np.mean(daily)) if daily else None
         metrics[f"median_daily_precision_at_{k}"] = float(np.median(daily)) if daily else None
-        event_top = event_candidates[event_candidates["rank"] <= k]
-        event_valid = event_top[event_top["label"].map(
-            lambda row: row is not None and row.get(outcome) is not None)]
+        # Raw daily rank is fixed before cooldown; repeats are removed without refilling Top-K.
+        event_valid = labeled_events[labeled_events["rank"] <= k]
         event_precision = (float(np.mean([row[outcome] for row in event_valid["label"]]))
                            if len(event_valid) else None)
         metrics[f"event_top_{k}_count"] = int(len(event_valid))
@@ -258,19 +330,19 @@ def candidate_metrics(candidates: pd.DataFrame, background: pd.DataFrame,
         metrics[f"event_lift_at_{k}"] = (event_precision / base_rate
                                            if event_precision is not None and base_rate else None)
     for name in (f"mfe_{horizon}", f"mae_{horizon}"):
-        values = [row[name] for row in labeled_candidates["label"]]
+        values = [row[name] for row in full_labels["label"]]
         metrics[f"average_{name}"] = float(np.mean(values)) if values else None
         metrics[f"median_{name}"] = float(np.median(values)) if values else None
-    knife = [row["false_falling_knife"] for row in labeled_candidates["label"]
+    knife = [row["false_falling_knife"] for row in full_labels["label"]
              if row["false_falling_knife"] is not None]
     metrics["false_falling_knife_rate"] = float(np.mean(knife)) if knife else None
     for threshold in settings["upside_targets"]:
         name = target_name(threshold, horizon)
-        values = [row[name] for row in labeled_candidates["label"]]
+        values = [row[name] for row in full_labels["label"]]
         metrics[f"{name}_rate"] = float(np.mean(values)) if values else None
         probability = f"p_{name}"
-        if probability in labeled_candidates:
-            calibrated = labeled_candidates[labeled_candidates[probability].notna()]
+        if probability in full_labels:
+            calibrated = full_labels[full_labels[probability].notna()]
             if len(calibrated):
                 predicted = calibrated[probability].to_numpy(dtype=float)
                 observed = np.array([float(row[name]) for row in calibrated["label"]])

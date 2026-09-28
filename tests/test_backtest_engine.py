@@ -14,6 +14,10 @@ FEES = load_fee_config(Path(__file__).parents[1] / "config" / "research.yaml")
 RULES = CandidateRules(80, -.10, 3)
 
 
+def test_new_engine_default_is_next_open():
+    assert BacktestConfig().execution_timing == "next_open"
+
+
 def market(entry_close=100, next_open=100, next_close=100, after_open=100,
            after_close=100, n=12):
     days = list(pd.bdate_range("2025-01-01", periods=n))
@@ -31,7 +35,8 @@ def market(entry_close=100, next_open=100, next_close=100, after_open=100,
 
 def run(days, frame, *, slippage=0):
     cfg = BacktestConfig(slippage_bps=slippage, max_position_fraction=1.0,
-                         max_order_to_avg_dollar_volume=1.0)
+                         max_order_to_avg_dollar_volume=1.0,
+                         execution_timing="legacy_close")
     return run_backtest(frame, days, signal_start=days[0], signal_end=days[0],
                         evaluation_end=days[10], rules=RULES,
                         fee_config=FEES, config=cfg)
@@ -183,7 +188,8 @@ def test_progress_observer_does_not_change_fills_or_equity():
         frame, days, signal_start=days[0], signal_end=days[0],
         evaluation_end=days[10], rules=RULES, fee_config=FEES,
         config=BacktestConfig(slippage_bps=0, max_position_fraction=1.0,
-                              max_order_to_avg_dollar_volume=1.0),
+                              max_order_to_avg_dollar_volume=1.0,
+                              execution_timing="legacy_close"),
         progress_callback=snapshots.append,
     )
     baseline = run(days, frame)

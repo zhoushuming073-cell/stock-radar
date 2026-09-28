@@ -80,6 +80,20 @@ def test_scanner_grid_can_vary_evaluation_namespace() -> None:
     )
     assert nested.calls[1][1]["evaluation_overrides"] == {
         "false_falling_knife": {"max_drawdown_threshold": -.10}}
+    adverse = FakeManager()
+    result = experiments.queue_experiment(
+        adverse, kind="grid", run_type="scanner", strategy_id="full_strategy2_v1",
+        grid={"evaluation.primary_adverse_target": [-.05, -.08]},
+    )
+    assert result["count"] == 2
+    assert [call[1]["evaluation_overrides"]["primary_adverse_target"]
+            for call in adverse.calls] == [-.05, -.08]
+    with pytest.raises(ValueError, match="primary_adverse_target"):
+        experiments.queue_experiment(
+            FakeManager(), kind="grid", run_type="scanner",
+            strategy_id="full_strategy2_v1",
+            grid={"evaluation.primary_adverse_target": [-.05, -.07]},
+        )
     with pytest.raises(ValueError, match="invalid grid parameter"):
         experiments.queue_experiment(
             FakeManager(), kind="grid", run_type="backtest",

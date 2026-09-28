@@ -96,6 +96,7 @@ def test_queue_metadata_and_new_config_create_new_run(manager):
     assert first != second
     a, b = manager.store.get_run(first), manager.store.get_run(second)
     assert a["status"] == b["status"] == "queued"
+    assert a["metadata"]["execution_policy"]["execution_timing"] == "next_open"
     assert a["metadata"]["config_hash"] != b["metadata"]["config_hash"]
     assert a["metadata"]["config"]["selection"]["max_candidates"] == 3
     assert b["metadata"]["config"]["selection"]["max_candidates"] == 1

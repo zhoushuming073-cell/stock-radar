@@ -78,10 +78,9 @@ def load_strategy_segment(
     frame["date"] = pd.to_datetime(frame["date"])
     if context is not None:
         frame = frame.merge(context, on="date", how="left", validate="many_to_one")
-        missing_context = sorted(name for name in required_features & MARKET_FEATURES
-                                 if frame[name].isna().any())
-        if missing_context:
-            raise ValueError(f"market context unavailable: {missing_context}")
+        # Rolling market context is naturally unavailable during warm-up or
+        # on dates without benchmark bars. Keep those rows; daily candidate
+        # selection excludes non-finite *required* features causally.
     if frame.duplicated(["date", "symbol"]).any():
         raise ValueError("duplicate market feature for one symbol/session")
     result = frame.set_index(["date", "symbol"], drop=False).sort_index()

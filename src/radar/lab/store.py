@@ -22,7 +22,7 @@ from typing import Any, Iterator, Mapping
 import pandas as pd
 
 
-SCHEMA_VERSION = 5
+SCHEMA_VERSION = 6
 _TERMINAL = frozenset({"completed", "failed", "cancelled"})
 _STATUSES = frozenset({"queued", "running", "cancel_requested", *_TERMINAL})
 _REQUIRED_METADATA = frozenset({
@@ -109,6 +109,9 @@ class RunStore:
                 version = 4
             if version == 4:
                 self._migrate_v5(connection)
+                version = 5
+            if version == 5:
+                self._migrate_v6(connection)
 
     @contextmanager
     def _connect(self) -> Iterator[sqlite3.Connection]:
@@ -325,6 +328,21 @@ class RunStore:
                 connection.execute("ROLLBACK")
             raise
 
+    @staticmethod
+    def _migrate_v6(connection: sqlite3.Connection) -> None:
+        try:
+            connection.executescript("""
+                BEGIN IMMEDIATE;
+                ALTER TABLE scanner_candidates ADD COLUMN label_status TEXT;
+                ALTER TABLE scanner_candidates ADD COLUMN label_reason TEXT;
+                PRAGMA user_version=6;
+                COMMIT;
+            """)
+        except Exception:
+            if connection.in_transaction:
+                connection.execute("ROLLBACK")
+            raise
+
     def create_scanner_run(self, metadata: Mapping[str, Any]) -> str:
         required = {"strategy_id", "strategy_version", "plugin_interface_version", "config",
                     "selection", "evaluation", "feature_version", "market_feature_version",
@@ -370,6 +388,8 @@ class RunStore:
             "diagnostics": row.get("diagnostics", {}),
             "probabilities": row.get("probabilities", {}),
             "label": row.get("label"),
+            "label_status": row.get("label_status"),
+            "label_reason": row.get("label_reason"),
             "market_context": row.get("market_context", {}),
             "features": row.get("features", {}),
             "security_id": row.get("security_id"),
@@ -377,7 +397,7 @@ class RunStore:
         } for row in source_rows), key=lambda row: (row["signal_date"], row["rank"], row["symbol"]))
         canonical = _json(rows).encode("utf-8")
         metrics_json = _json(metrics)
-        hashes = {"format": "scanner-candidates-v3",
+        hashes = {"format": "scanner-candidates-v4",
                   "candidates_sha256": hashlib.sha256(canonical).hexdigest(),
                   "metrics_sha256": hashlib.sha256(metrics_json.encode("utf-8")).hexdigest()}
         with self._connect() as connection:
@@ -391,15 +411,16 @@ class RunStore:
                     INSERT INTO scanner_candidates
                     (run_id,signal_date,symbol,security_name,rank,strategy_score,selected,
                      diagnostics_json,probabilities_json,labels_json,market_context_json,features_json,
-                     security_id,signal_event)
-                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                     security_id,signal_event,label_status,label_reason)
+                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """, ((run_id, row["signal_date"], row["symbol"],
                        row["security_name"], row["rank"], row["strategy_score"],
                        int(row["selected"]), _json(row["diagnostics"]),
                        _json(row["probabilities"]),
                        _json(row["label"]) if row.get("label") is not None else None,
                        _json(row["market_context"]), _json(row["features"]),
-                       row["security_id"], int(row["signal_event"])) for row in rows))
+                       row["security_id"], int(row["signal_event"]),
+                       row["label_status"], row["label_reason"]) for row in rows))
                 now = _now()
                 connection.execute("UPDATE scanner_runs SET status='completed',metrics_json=?,"
                                    "artifact_hashes_json=?,finished_at=?,updated_at=? WHERE run_id=?",
@@ -470,6 +491,7 @@ class RunStore:
                  "diagnostics": json.loads(row["diagnostics_json"]),
                  "probabilities": json.loads(row["probabilities_json"]),
                  "label": json.loads(row["labels_json"]) if row["labels_json"] else None,
+                 "label_status": row["label_status"], "label_reason": row["label_reason"],
                  "market_context": json.loads(row["market_context_json"]),
                  "features": json.loads(row["features_json"]),
                  "security_id": row["security_id"],
@@ -485,7 +507,10 @@ class RunStore:
         rows = self.get_scanner_candidates(run_id, limit=max(1, count))
         if len(rows) != count:
             return False
-        if expected.get("format") != "scanner-candidates-v3":
+        if expected.get("format") != "scanner-candidates-v4":
+            rows = [{key: value for key, value in row.items()
+                     if key not in {"label_status", "label_reason"}} for row in rows]
+        if expected.get("format") not in {"scanner-candidates-v3", "scanner-candidates-v4"}:
             rows = [{key: value for key, value in row.items()
                      if key not in {"security_id", "signal_event"}} for row in rows]
         candidates_hash = hashlib.sha256(_json(rows).encode("utf-8")).hexdigest()

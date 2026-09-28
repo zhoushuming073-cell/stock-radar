@@ -32,7 +32,7 @@ class BacktestConfig:
     allocator: str = "equal_cash"
     candidate_variant: str = "combined_rank"
     market_guard: str = "none"
-    execution_timing: str = "legacy_close"
+    execution_timing: str = "next_open"
     fail_on_missing_marks: bool = False
 
     def __post_init__(self) -> None:

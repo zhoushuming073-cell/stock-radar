@@ -40,10 +40,13 @@ async function drawScanner(){
   const m=run.metrics||{};
   const horizon=run.metadata?.evaluation?.horizon_sessions||10;
   const target=run.metadata?.evaluation?.primary_target||0.05;
-  $("scanner-quality-caption").textContent=`Primary outcome: ${m.primary_outcome||`+${(target*100).toFixed(1)}% within ${horizon} sessions`}; compared with the same-day eligible universe`;
+  $("scanner-quality-caption").textContent=`Primary outcome: ${m.primary_outcome||`+${(target*100).toFixed(1)}% within ${horizon} sessions`}; base rate uses labeled same-day eligible observations. Event metrics keep raw daily Top-K rank, then remove cooldown repeats without refilling.`;
   $("scanner-metrics").innerHTML=[
     ["Candidate observations",m.candidate_observation_count??m.candidate_count??"—"],["Unique signal events",m.unique_signal_event_count??"—"],
     ["Labeled candidates",m.labeled_candidate_count??"—"],
+    ["Censored candidates",m.censored_candidate_count??"—"],["Candidate censoring",pct(m.candidate_censoring_rate)],
+    ["Background censoring",pct(m.background_censoring_rate)],
+    ["Censored signal events",m.censored_signal_event_count??"—"],
     ["Market baseline",pct(m.base_rate)],["Average MFE",pct(m[`average_mfe_${horizon}`])],
     ["Average MAE",pct(m[`average_mae_${horizon}`])],["False falling-knife rate",pct(m.false_falling_knife_rate)],
     ["Success rule",m.success_rule??"—"],["Primary outcome",m.primary_outcome??"—"]
@@ -53,7 +56,7 @@ async function drawScanner(){
   $("scanner-topk").innerHTML=topKs.map(k=>`<option value="${k}">Top ${k}</option>`).join("");
   if(topKs.some(k=>String(k)===oldTopK))$("scanner-topk").value=oldTopK;
   else if(topKs.includes(10))$("scanner-topk").value="10";
-  $("scanner-quality").innerHTML=scannerTable(["Top-K","Observations","Observation precision","Observation lift","Labeled events","Event precision","Event lift"],
+  $("scanner-quality").innerHTML=scannerTable(["Raw Top-K","Labeled observations","Observation precision","Observation lift","Labeled cooldown events","Raw Top-K event precision","Raw Top-K event lift"],
     topKs.map(k=>[`Top ${k}`,m[`top_${k}_count`]??"—",pct(m[`pooled_precision_at_${k}`]??m[`precision_at_${k}`]),scannerRatio(m[`lift_at_${k}`]),m[`event_top_${k}_count`]??"—",pct(m[`event_precision_at_${k}`]),scannerRatio(m[`event_lift_at_${k}`])]));
   $("scanner-funnel").innerHTML=scannerTable(["Session","Eligible","Tradable","Feature complete","Prior strength","Pullback","Exhaustion","Support","Early reversal","Ranked"],
     (m.funnel_by_day||[]).slice(-30).reverse().map(row=>[row.date,row.eligible_universe,row.tradable,row.feature_complete,row.prior_strength,row.pullback,row.exhaustion,row.support_absorption,row.early_reversal,row.final_ranked_candidate]));
@@ -76,10 +79,10 @@ function drawScannerCandidates(){
   const run=scannerState.runs.find(item=>item.run_id===$("scanner-run").value);
   const hit=(run?.metrics||{}).primary_outcome||(run?.metrics||{}).primary_target,horizon=run?.metadata?.evaluation?.horizon_sessions||10;
   $("scanner-candidates").innerHTML=scannerTable(
-    ["Rank","Symbol","Name","Strategy score","Selected","Signal event",...diagnostics,...probabilities,"Primary success","MFE","MAE","New low","Further decline"],
+    ["Rank","Symbol","Name","Strategy score","Selected","Signal event",...diagnostics,...probabilities,"Primary success / censor reason","MFE","MAE","New low","Further decline"],
     rows.map(row=>[row.rank,row.symbol,row.security_name,Number(row.strategy_score).toFixed(3),
       row.selected?"Yes":"No",row.signal_event==null?"—":row.signal_event?"New":"Cooldown",...diagnostics.map(key=>row.diagnostics?.[key]?.toFixed?.(3)??"—"),
-      ...probabilities.map(key=>pct(row.probabilities?.[key])),row.label?.[hit]==null?"—":row.label[hit]?"Yes":"No",
+      ...probabilities.map(key=>pct(row.probabilities?.[key])),row.label?.[hit]==null?(row.label_reason||"Unlabeled (legacy run)"):row.label[hit]?"Yes":"No",
       pct(row.label?.[`mfe_${horizon}`]),pct(row.label?.[`mae_${horizon}`]),row.label?.new_low_after_signal?"Yes":"No",
       row.label?.false_falling_knife?"Yes":"No"]));
   const previous=$("scanner-inspect").value;
@@ -91,7 +94,8 @@ function drawScannerFeatureDetails(){
   const row=scannerState.candidates.find(item=>item.signal_date===$("scanner-day").value&&
     item.symbol===$("scanner-inspect").value);
   $("scanner-feature-details").textContent=row?JSON.stringify({causal_features:row.features,
-    diagnostic_scores:row.diagnostics,market_context:row.market_context},null,2):"No candidates";
+    diagnostic_scores:row.diagnostics,market_context:row.market_context,
+    label_status:row.label_status,label_reason:row.label_reason},null,2):"No candidates";
 }
 function drawScannerParameters(){
   const id=$("scanner-strategy").value.split("@")[0];

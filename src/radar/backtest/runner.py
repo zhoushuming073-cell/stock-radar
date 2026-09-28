@@ -123,6 +123,7 @@ def _engine_config(raw: dict, *, variant: str, allocator: str,
         max_order_to_avg_dollar_volume=float(raw["max_order_to_avg_dollar_volume"]),
         slippage_bps=float(slippage_bps), allocator=allocator,
         candidate_variant=variant, market_guard=market_guard,
+        execution_timing="legacy_close",  # Preserve the frozen Phase 2 runner contract.
     )
 
 

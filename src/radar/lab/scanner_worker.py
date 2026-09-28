@@ -93,6 +93,7 @@ def scan_frames(plugin, config: dict, feature_frame: pd.DataFrame, bars: pd.Data
         columns=["signal_date", "symbol"])
     label_bars = bars
     label_background = background
+    known_ends: dict[str, pd.Timestamp] = {}
     if universe_provider is not None and not background.empty:
         # Forward outcomes follow stable identity across dated ticker mappings.
         # This also prevents a reused ticker from inheriting another entity's bars.
@@ -100,27 +101,34 @@ def scan_frames(plugin, config: dict, feature_frame: pd.DataFrame, bars: pd.Data
         label_bars["symbol"] = label_bars["security_id"]
         label_background = background.copy()
         label_background["symbol"] = label_background["security_id"]
+        for security_id, mappings in universe_provider.frame.groupby("security_id"):
+            eligible = mappings[mappings["eligible"]]
+            if eligible.empty:
+                continue
+            ends = [row.delisting_date if pd.notna(row.delisting_date) else row.valid_to
+                    for row in eligible.itertuples(index=False)]
+            if all(pd.notna(end) for end in ends):
+                known_ends[str(security_id)] = max(pd.Timestamp(end) for end in ends)
     if not background.empty:
-        background["label"] = build_labels(label_background, label_bars, sessions, evaluation)["label"]
+        labels = build_labels(label_background, label_bars, sessions, evaluation,
+                              known_ends, primary_only=True)
+        for field in ("label", "label_status", "label_reason"):
+            background[field] = labels[field]
     else:
         background["label"] = []
+        background["label_status"] = []
+        background["label_reason"] = []
     if not candidates.empty:
-        label_lookup = {(row.signal_date, row.symbol): row.label for row in background.itertuples()}
-        candidates["label"] = [label_lookup.get((row.signal_date, row.symbol))
-                               for row in candidates.itertuples()]
-        # A strategy may select a symbol outside the base universe; label it,
-        # but keep the base-rate denominator strictly tradable and feature-complete.
-        outside = candidates["label"].isna()
-        if outside.any():
-            outside_rows = candidates.loc[outside, ["signal_date", "symbol", *(
-                ["security_id"] if universe_provider is not None else [])]].copy()
-            if universe_provider is not None:
-                outside_rows["symbol"] = outside_rows["security_id"]
-            candidates.loc[outside, "label"] = build_labels(
-                outside_rows[["signal_date", "symbol"]], label_bars, sessions, evaluation,
-            )["label"].to_list()
+        label_candidates = candidates[["signal_date", "symbol"]].copy()
+        if universe_provider is not None:
+            label_candidates["symbol"] = candidates["security_id"]
+        labels = build_labels(label_candidates, label_bars, sessions, evaluation, known_ends)
+        for field in ("label", "label_status", "label_reason"):
+            candidates[field] = labels[field]
     else:
         candidates["label"] = []
+        candidates["label_status"] = []
+        candidates["label_reason"] = []
     metrics = candidate_metrics(candidates, background, evaluation, sessions)
     metrics["funnel_by_day"] = funnel_by_day
     metrics["near_misses"] = near_misses
@@ -138,6 +146,7 @@ def scan_frames(plugin, config: dict, feature_frame: pd.DataFrame, bars: pd.Data
                      "strategy_score": float(row["strategy_score"]),
                      "selected": bool(row["selected"]), "diagnostics": diagnostics,
                      "probabilities": probabilities, "label": row["label"],
+                     "label_status": row["label_status"], "label_reason": row["label_reason"],
                      "security_id": row.get("security_id"),
                      "signal_event": event_flags[index],
                      "features": {name: row.get(name) for name in sorted(required | {"close"})},
