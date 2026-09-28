@@ -9,6 +9,8 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+from radar.lab.terminal import TerminalEventProvider, TERMINAL_LABEL_VERSION
+
 
 LABEL_VERSION = "scanner-forward-v2"
 DEFAULT_EVALUATION = {
@@ -176,6 +178,38 @@ def _primary_label_values(columns: np.ndarray, settings: Mapping[str, Any]) -> b
     return outcome
 
 
+def _terminal_cash_label(observed: np.ndarray, cash: float,
+                         settings: Mapping[str, Any], *, primary_only: bool) -> dict[str, Any] | bool | None:
+    """Observed OHLC plus a source-attested cash payment, never an invented bar."""
+    if not len(observed) or not np.isfinite(observed).all() or (observed <= 0).any():
+        return None
+    entry = float(observed[0, 0])
+    highs, lows = observed[:, 1], observed[:, 2]
+    result: dict[str, Any] = {"entry_reference_price": entry,
+                              "terminal_cash_per_share": cash,
+                              "terminal_return": cash / entry - 1,
+                              "terminal_policy": "terminal-cash-v1"}
+    ups: dict[float, int | None] = {}
+    downs: dict[float, int | None] = {}
+    for target in settings["upside_targets"]:
+        hits = np.flatnonzero(highs >= entry * (1 + target))
+        ups[target] = int(hits[0]) if len(hits) else len(observed) if cash >= entry * (1 + target) else None
+        result[target_name(target, settings["horizon_sessions"])] = ups[target] is not None
+    for target in settings["downside_targets"]:
+        hits = np.flatnonzero(lows <= entry * (1 + target))
+        downs[target] = int(hits[0]) if len(hits) else len(observed) if cash <= entry * (1 + target) else None
+        result[downside_name(target, settings["horizon_sessions"])] = downs[target] is not None
+    for upside, up in ups.items():
+        for downside, down in downs.items():
+            key = before_adverse_name(upside, downside, settings["horizon_sessions"])
+            result[key] = (None if up is not None and up == down and up < len(observed)
+                           else bool(up is not None and (down is None or up < down)))
+    primary = primary_outcome_name(settings)
+    if result[primary] is None:
+        return None
+    return bool(result[primary]) if primary_only else result
+
+
 def signal_event_flags(candidates: pd.DataFrame, cooldown: int,
                        sessions: Sequence[pd.Timestamp] | None = None) -> list[bool]:
     """Preserve raw observations while identifying independent symbol events."""
@@ -209,7 +243,8 @@ def build_labels(signal_rows: pd.DataFrame, bars: pd.DataFrame,
                  sessions: Sequence[pd.Timestamp],
                  settings: Mapping[str, Any],
                  security_end_dates: Mapping[str, pd.Timestamp] | None = None,
-                 *, primary_only: bool = False) -> pd.DataFrame:
+                 *, primary_only: bool = False,
+                 terminal_provider: TerminalEventProvider | None = None) -> pd.DataFrame:
     """Compute labels after selection from host bars, never from plugin context."""
     session_index = {pd.Timestamp(day).normalize(): i for i, day in enumerate(sessions)}
     by_symbol: dict[str, np.ndarray] = {}
@@ -239,9 +274,22 @@ def build_labels(signal_rows: pd.DataFrame, bars: pd.DataFrame,
                 first_missing = int(np.flatnonzero(missing)[0])
                 missing_day = pd.Timestamp(sessions[position + 1 + first_missing]).normalize()
                 known_end = (security_end_dates or {}).get(str(row.symbol))
-                reason = ("security_no_longer_eligible" if known_end is not None and
-                          missing_day > pd.Timestamp(known_end).normalize()
-                          else "missing_symbol_bar")
+                event = (terminal_provider.event_between(str(row.symbol),
+                         pd.Timestamp(sessions[position + first_missing]).normalize() +
+                         pd.Timedelta(days=1), missing_day)
+                         if terminal_provider is not None else None)
+                if event is not None:
+                    if event.settlement is None:
+                        reason = "terminal_event_without_valued_outcome"
+                    else:
+                        result = _terminal_cash_label(future[:first_missing], event.settlement,
+                                                      settings, primary_only=primary_only)
+                        if result is None:
+                            reason = "missing_price_data" if first_missing == 0 else "ambiguous_same_session"
+                else:
+                    reason = ("security_no_longer_eligible" if known_end is not None and
+                              missing_day > pd.Timestamp(known_end).normalize()
+                              else "missing_symbol_bar")
             elif (not np.isfinite(future).all() or (future <= 0).any() or
                   not math.isfinite(float(symbol_bars[position, 2])) or
                   symbol_bars[position, 2] <= 0):
@@ -279,7 +327,7 @@ def candidate_metrics(candidates: pd.DataFrame, background: pd.DataFrame,
         return valid
     labeled_base = background[valid_outcome(background, allow_scalar=True)].copy()
     labeled_primary = candidates[valid_outcome(candidates)].copy()
-    full_labels = candidates[candidates["label"].notna()].copy()
+    full_labels = candidates[valid_outcome(candidates)].copy()
     base_values = [row[outcome] if isinstance(row, Mapping) else row
                    for row in labeled_base["label"]]
     base_rate = float(np.mean(base_values)) if base_values else None
@@ -330,20 +378,24 @@ def candidate_metrics(candidates: pd.DataFrame, background: pd.DataFrame,
         metrics[f"event_lift_at_{k}"] = (event_precision / base_rate
                                            if event_precision is not None and base_rate else None)
     for name in (f"mfe_{horizon}", f"mae_{horizon}"):
-        values = [row[name] for row in full_labels["label"]]
+        values = [row[name] for row in full_labels["label"] if name in row]
         metrics[f"average_{name}"] = float(np.mean(values)) if values else None
         metrics[f"median_{name}"] = float(np.median(values)) if values else None
     knife = [row["false_falling_knife"] for row in full_labels["label"]
-             if row["false_falling_knife"] is not None]
+             if row.get("false_falling_knife") is not None]
     metrics["false_falling_knife_rate"] = float(np.mean(knife)) if knife else None
     for threshold in settings["upside_targets"]:
         name = target_name(threshold, horizon)
-        values = [row[name] for row in full_labels["label"]]
+        values = [row[name] for row in full_labels["label"] if name in row]
         metrics[f"{name}_rate"] = float(np.mean(values)) if values else None
         probability = f"p_{name}"
         if probability in full_labels:
             calibrated = full_labels[full_labels[probability].notna()]
             if len(calibrated):
+                predicted = calibrated[probability].to_numpy(dtype=float)
+                calibrated = calibrated[calibrated["label"].map(lambda row: name in row)]
+                if calibrated.empty:
+                    continue
                 predicted = calibrated[probability].to_numpy(dtype=float)
                 observed = np.array([float(row[name]) for row in calibrated["label"]])
                 metrics[f"{probability}_brier"] = float(np.mean((predicted - observed) ** 2))

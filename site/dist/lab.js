@@ -345,6 +345,17 @@ api("/api/lab/universe-status").then(status=>{
   $("universe-pit-status").textContent=status.point_in_time_available?`PIT import: ${status.point_in_time.provider}, ${status.point_in_time.coverage_start} to ${status.point_in_time.coverage_end}`:"PIT import: unavailable. Historical studies may omit delisted or renamed securities.";
   $("universe-mode").querySelector('option[value="point_in_time"]').disabled=!status.point_in_time_available;
 }).catch(error=>{$("universe-status").textContent=`Universe status unavailable: ${error.message}`});
+api("/api/lab/pit-readiness?split=validation").then(report=>{
+  $("pit-readiness").textContent=JSON.stringify({
+    formal_pit_ready:report.formal_pit_ready,research_validity:report.research_validity,
+    security_master:report.security_master,historical_bar_coverage:report.historical_bar_coverage,
+    terminal_events:report.terminal_events,known_terminal_events:report.known_terminal_events,
+    valued_terminal_events:report.valued_terminal_events,
+    unvalued_terminal_events:report.unvalued_terminal_events,
+    scanner_censoring_audit:report.scanner_censoring_audit,reasons:report.reasons,
+    source_attested_completeness:report.source_attested_completeness,
+    system_verified_structural_validity:report.system_verified_structural_validity},null,2);
+}).catch(error=>{$("pit-readiness").textContent=`PIT readiness unavailable: ${error.message}`});
 api("/api/data/status").then(data=>{
   $("system-config").textContent=JSON.stringify(data.settings,null,2);
 }).catch(error=>{$("system-config").textContent=`Configuration unavailable: ${error.message}`});

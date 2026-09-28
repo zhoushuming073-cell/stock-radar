@@ -50,6 +50,7 @@ def manager(tmp_path, monkeypatch):
         "src/radar/strategy/full_strategy2.py",
         "src/radar/lab/worker.py", "src/radar/lab/data.py",
         "src/radar/lab/parameters.py", "src/radar/lab/universe.py",
+        "src/radar/lab/terminal.py", "src/radar/lab/readiness.py",
         "src/radar/backtest/runner.py", "src/radar/research/pipeline.py",
         "src/radar/strategy/context.py", "src/radar/strategy/validation.py",
         "src/radar/strategy/loader.py",

@@ -18,6 +18,7 @@ from radar.lab.scanner import (LABEL_VERSION, build_labels, candidate_metrics,
                                signal_event_flags)
 from radar.lab.store import RunStore
 from radar.lab.universe import load_universe
+from radar.lab.terminal import load_terminal_events, TERMINAL_LABEL_VERSION
 from radar.lab.worker import sha256_file
 from radar.research.pipeline import FEATURE_VERSION
 from radar.strategy.adapter import evaluate_filter_diagnostics, evaluate_selection
@@ -27,7 +28,7 @@ from radar.strategy.loader import load_strategy_directory
 def scan_frames(plugin, config: dict, feature_frame: pd.DataFrame, bars: pd.DataFrame,
                 sessions: pd.DatetimeIndex, signal_start: pd.Timestamp,
                 signal_end: pd.Timestamp, evaluation: dict,
-                progress=None, universe_provider=None) -> tuple[list[dict], dict]:
+                progress=None, universe_provider=None, terminal_provider=None) -> tuple[list[dict], dict]:
     """One causal selection pass; forward OHLC is used only after it returns."""
     required = set(plugin.required_features())
     candidate_parts: list[pd.DataFrame] = []
@@ -111,7 +112,8 @@ def scan_frames(plugin, config: dict, feature_frame: pd.DataFrame, bars: pd.Data
                 known_ends[str(security_id)] = max(pd.Timestamp(end) for end in ends)
     if not background.empty:
         labels = build_labels(label_background, label_bars, sessions, evaluation,
-                              known_ends, primary_only=True)
+                              known_ends, primary_only=True,
+                              terminal_provider=terminal_provider)
         for field in ("label", "label_status", "label_reason"):
             background[field] = labels[field]
     else:
@@ -122,7 +124,8 @@ def scan_frames(plugin, config: dict, feature_frame: pd.DataFrame, bars: pd.Data
         label_candidates = candidates[["signal_date", "symbol"]].copy()
         if universe_provider is not None:
             label_candidates["symbol"] = candidates["security_id"]
-        labels = build_labels(label_candidates, label_bars, sessions, evaluation, known_ends)
+        labels = build_labels(label_candidates, label_bars, sessions, evaluation, known_ends,
+                              terminal_provider=terminal_provider)
         for field in ("label", "label_status", "label_reason"):
             candidates[field] = labels[field]
     else:
@@ -130,6 +133,8 @@ def scan_frames(plugin, config: dict, feature_frame: pd.DataFrame, bars: pd.Data
         candidates["label_status"] = []
         candidates["label_reason"] = []
     metrics = candidate_metrics(candidates, background, evaluation, sessions)
+    if terminal_provider is not None:
+        metrics["label_version"] = TERMINAL_LABEL_VERSION
     metrics["funnel_by_day"] = funnel_by_day
     metrics["near_misses"] = near_misses
     rows = []
@@ -195,7 +200,7 @@ def execute_scanner_run(root: Path, store_path: Path, run_id: str) -> dict:
                 raise ValueError(f"scanner host source changed after queuing: {relative}")
         if (metadata["feature_version"] != FEATURE_VERSION or
                 metadata["market_feature_version"] != MARKET_FEATURE_VERSION or
-                metadata["label_version"] != LABEL_VERSION or
+                metadata["label_version"] not in {LABEL_VERSION, TERMINAL_LABEL_VERSION} or
                 source_watermark(database) != metadata["source_watermark"]):
             raise ValueError("scanner data or label version changed after queuing")
         registration = load_strategy_directory(
@@ -213,6 +218,14 @@ def execute_scanner_run(root: Path, store_path: Path, run_id: str) -> dict:
         covered_sessions = sessions[(sessions >= start) & (sessions <= coverage_end)]
         provider, provenance = load_universe(
             root, metadata.get("universe_mode", "current_snapshot"), covered_sessions)
+        terminal = (load_terminal_events(root) if provider is not None and
+                    metadata["label_version"] == TERMINAL_LABEL_VERSION else None)
+        if (terminal.fingerprint if terminal else None) != (
+                metadata.get("resolved_config") or {}).get("values", {}).get(
+                    "dataset", {}).get("terminal_fingerprint"):
+            raise ValueError("queued terminal event source changed")
+        if terminal is not None:
+            terminal.validate_coverage(covered_sessions)
         if metadata.get("resolved_config") and (
                 provenance.fingerprint != metadata["resolved_config"]["values"]["dataset"][
                     "universe_fingerprint"]):
@@ -226,7 +239,7 @@ def execute_scanner_run(root: Path, store_path: Path, run_id: str) -> dict:
         rows, metrics = scan_frames(registration.plugin, metadata["config"], frame, bars,
                                     sessions, start, end, metadata["evaluation"],
                                     progress=lambda value: store.scanner_progress(run_id, value),
-                                    universe_provider=provider)
+                                    universe_provider=provider, terminal_provider=terminal)
         store.finish_scanner_run(run_id, rows, metrics)
         return metrics
     except Exception as error:

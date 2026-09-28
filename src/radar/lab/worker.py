@@ -21,6 +21,7 @@ from radar.lab.execution import resolve_exit_policy
 from radar.lab.parameters import engine_legacy_fields, research_hash
 from radar.lab.store import RunStore
 from radar.lab.universe import load_universe
+from radar.lab.terminal import load_terminal_events
 from radar.research.pipeline import FEATURE_VERSION
 from radar.strategy.adapter import make_candidate_selector
 from radar.strategy.loader import load_strategy_directory
@@ -110,6 +111,13 @@ def execute_run(root: Path, store_path: Path, run_id: str) -> dict:
                             if dates[0] <= day <= dates[2]]
         universe_provider, provenance = load_universe(
             root, metadata.get("universe_mode", "current_snapshot"), covered_sessions)
+        terminal = load_terminal_events(root) if universe_provider is not None else None
+        if (terminal.fingerprint if terminal else None) != (
+                metadata.get("resolved_config") or {}).get("values", {}).get(
+                    "dataset", {}).get("terminal_fingerprint"):
+            raise ValueError("queued terminal event source changed")
+        if terminal is not None:
+            terminal.validate_coverage(covered_sessions)
         if metadata.get("resolved_config") and (
                 provenance.fingerprint != values["dataset"]["universe_fingerprint"]):
             raise ValueError("queued PIT security master changed")
@@ -180,6 +188,7 @@ def execute_run(root: Path, store_path: Path, run_id: str) -> dict:
                        if raw.get("market_guard", "none") == "spy_ma200" else None),
             progress_callback=report_progress,
             cancel_requested=lambda: store.get_run(run_id)["cancel_requested"],
+            terminal_provider=terminal,
         )
         metrics = summarize_backtest(result.equity, result.trades,
                                      config.initial_capital)

@@ -105,6 +105,31 @@ def lab_universe_status() -> dict:
     return base
 
 
+def lab_pit_readiness(split: str) -> dict:
+    from radar.backtest.runner import split_dates
+    from radar.lab.readiness import local_readiness
+    if split not in {"train", "validation", "test"}:
+        raise ValueError("PIT readiness split must be train, validation or test")
+    dates = split_dates(DATA / "phase2-research.duckdb", ROOT / "config/research.yaml")
+    start, _, end = dates[split]
+    sessions = [day for day in dates["sessions"] if start <= day <= end]
+    report = local_readiness(ROOT, "point_in_time", sessions)
+    report["split"] = split
+    report["requested_coverage"] = {"start": str(start.date()), "end": str(end.date())}
+    runs = lab_manager().store.list_scanner_runs(limit=1000)
+    relevant = [run for run in runs if run["status"] == "completed" and
+                run["metadata"].get("split") == split and
+                run["metadata"].get("universe_mode") == "point_in_time"]
+    report["scanner_censoring_audit"] = {
+        "completed_pit_runs": len(relevant),
+        "censored_candidates": sum(int((run.get("metrics") or {}).get("censored_candidate_count") or 0)
+                                   for run in relevant),
+        "censored_background": sum(int((run.get("metrics") or {}).get("censored_background_count") or 0)
+                                  for run in relevant),
+    }
+    return report
+
+
 def lab_spy(start: str, end: str) -> list[dict]:
     if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", start) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", end):
         raise ValueError("dates must use YYYY-MM-DD")
@@ -287,6 +312,8 @@ def make_handler(allowed_origins: set[str]):
                     payload = lab_parameter_schema(strategy_id)
                 elif target.path == "/api/lab/universe-status":
                     payload = lab_universe_status()
+                elif target.path == "/api/lab/pit-readiness":
+                    payload = lab_pit_readiness(parse_qs(target.query).get("split", ["validation"])[0])
                 elif target.path == "/api/lab/runs":
                     payload = lab_runs()
                 elif target.path == "/api/lab/scanner/runs":

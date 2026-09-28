@@ -15,6 +15,7 @@ import pandas as pd
 from radar.backtest.costs import FeeConfig, buy_cost, sell_cost
 from radar.backtest.metrics import TRADE_COLUMNS
 from radar.strategy.ranking import CandidateRules, rank_candidates
+from radar.lab.terminal import TerminalEventProvider
 
 
 @dataclass(frozen=True)
@@ -76,6 +77,7 @@ class Position:
     drawdown_20: float
     entry_gap: float
     last_close: float
+    security_id: str | None = None
 
     @property
     def cost_basis(self) -> float:
@@ -128,6 +130,7 @@ def run_backtest(
     candidate_selector: Callable[[pd.DataFrame, set[str]], pd.DataFrame] | None = None,
     progress_callback: Callable[[dict], None] | None = None,
     cancel_requested: Callable[[], bool] | None = None,
+    terminal_provider: TerminalEventProvider | None = None,
 ) -> BacktestResult:
     """Run one chronological segment from its first signal date through exits.
 
@@ -164,11 +167,11 @@ def run_backtest(
     peak_equity = float(config.initial_capital)
 
     def exit_position(position: Position, day: pd.Timestamp, reference: float,
-                      reason: str, holding_sessions: int) -> None:
+                      reason: str, holding_sessions: int, *, cash_settlement: bool = False) -> None:
         nonlocal cash
-        execution = reference * (1 - slip)
-        fees = sell_cost(execution, position.quantity, fee_config)
-        proceeds = position.quantity * execution - fees.total
+        execution = reference if cash_settlement else reference * (1 - slip)
+        fees = None if cash_settlement else sell_cost(execution, position.quantity, fee_config)
+        proceeds = position.quantity * execution - (fees.total if fees else 0)
         cash += proceeds
         gross_pnl = position.quantity * (reference - position.entry_reference)
         sell_slippage = position.quantity * (reference - execution)
@@ -186,12 +189,12 @@ def run_backtest(
             "drawdown_20": position.drawdown_20,
             "entry_total": position.entry_total, "exit_proceeds": proceeds,
             "gross_pnl": gross_pnl, "buy_fee_total": position.buy_fee_total,
-            "sell_fee_total": fees.total,
-            "commission": position.buy_commission + fees.commission,
-            "platform": position.buy_platform + fees.platform,
-            "settlement": position.buy_settlement + fees.settlement,
-            "sec": fees.sec, "finra": fees.finra,
-            "cat": position.buy_cat + fees.cat,
+            "sell_fee_total": fees.total if fees else 0,
+            "commission": position.buy_commission + (fees.commission if fees else 0),
+            "platform": position.buy_platform + (fees.platform if fees else 0),
+            "settlement": position.buy_settlement + (fees.settlement if fees else 0),
+            "sec": fees.sec if fees else 0, "finra": fees.finra if fees else 0,
+            "cat": position.buy_cat + (fees.cat if fees else 0),
             "slippage_cost": slippage_cost, "net_pnl": net_pnl,
             "net_return": net_pnl / position.entry_total,
             "holding_sessions": holding_sessions, "exit_reason": reason,
@@ -220,8 +223,21 @@ def run_backtest(
             return row
 
         if config.fail_on_missing_marks:
-            missing = [symbol for symbol in positions
-                       if row_for(symbol) is None or _price(row_for(symbol), "close") is None]
+            missing = []
+            for symbol, position in list(positions.items()):
+                if row_for(symbol) is not None and _price(row_for(symbol), "close") is not None:
+                    continue
+                event = (terminal_provider.event_between(
+                    position.security_id, sessions[idx - 1] + pd.Timedelta(days=1), day)
+                    if terminal_provider is not None and position.security_id and idx > start_idx else None)
+                if event is not None:
+                    if event.settlement is None:
+                        raise ValueError(f"unresolved-terminal-position: {symbol} on {day.date()} ({event.event_type})")
+                    exit_position(position, day, event.settlement, "terminal_cash_settlement",
+                                  idx - position.entry_index + 1, cash_settlement=True)
+                    pending_exits.pop(symbol, None)
+                else:
+                    missing.append(symbol)
             if missing:
                 raise ValueError(
                     f"open PIT position has no eligible price on {day.date()}: {missing}; "
@@ -302,6 +318,8 @@ def run_backtest(
                     elasticity_score=candidate["elasticity_score"],
                     drawdown_20=candidate["drawdown_20"], entry_gap=candidate["entry_gap"],
                     last_close=_price(row_for(symbol), "close") or reference,
+                    security_id=(str(row_for(symbol).get("security_id"))
+                                 if pd.notna(row_for(symbol).get("security_id")) else None),
                 )
                 order_rows.append({"date": day, "symbol": symbol, "status": "entered",
                                    "gap": candidate["entry_gap"], "quantity": quantity,

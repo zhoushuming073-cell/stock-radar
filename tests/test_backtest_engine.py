@@ -7,6 +7,7 @@ import pytest
 from radar.backtest.costs import load_fee_config
 from radar.backtest.engine import BacktestCancelled, BacktestConfig, run_backtest
 from radar.lab.execution import resolve_exit_policy
+from radar.lab.terminal import TerminalEvent
 from radar.strategy.ranking import CandidateRules
 
 
@@ -16,6 +17,39 @@ RULES = CandidateRules(80, -.10, 3)
 
 def test_new_engine_default_is_next_open():
     assert BacktestConfig().execution_timing == "next_open"
+
+
+def test_pit_cash_terminal_settlement_and_unvalued_failure():
+    days, frame = market(n=12)
+    frame["security_id"] = "S1"
+    frame = frame[frame["date"] != days[2]]
+    config = BacktestConfig(take_profit=None, stop_loss=None,
+                            max_holding_sessions=None, fail_on_missing_marks=True,
+                            slippage_bps=0, max_position_fraction=1.0,
+                            max_order_to_avg_dollar_volume=1.0)
+
+    class Provider:
+        def __init__(self, value): self.value = value
+        def event_between(self, identity, first, last):
+            if identity == "S1" and first <= days[2] <= last:
+                return TerminalEvent("S1", days[2], "cash_acquisition" if self.value else "delisting",
+                                     "cash_per_share" if self.value else "unvalued", self.value,
+                                     None, "synthetic-fixture", "1", currency="USD")
+            return None
+
+    def execute(provider):
+        return run_backtest(frame, days, signal_start=days[0], signal_end=days[0],
+                            evaluation_end=days[10], rules=RULES, fee_config=FEES,
+                            config=config, terminal_provider=provider)
+
+    trade = execute(Provider(120)).trades.iloc[0]
+    assert trade.exit_reason == "terminal_cash_settlement"
+    assert trade.exit_reference == 120
+    assert trade.sell_fee_total == 0
+    with pytest.raises(ValueError, match="unresolved-terminal-position"):
+        execute(Provider(None))
+    with pytest.raises(ValueError, match="no eligible price"):
+        execute(None)
 
 
 def market(entry_close=100, next_open=100, next_close=100, after_open=100,

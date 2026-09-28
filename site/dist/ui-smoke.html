@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Scanner UI Browser Smoke</title>
+<style>body{font:14px system-ui;margin:24px;color:#14243b;background:#f4f7fb}h1{margin:0 0 8px}#summary{font-weight:700;font-size:20px;margin:12px 0}li{padding:4px 0}.pass{color:#087d4c}.fail{color:#bd2736}iframe{width:100%;height:520px;border:1px solid #ccd7e5;border-radius:8px;background:white}code{font-size:12px}pre{white-space:pre-wrap}</style></head>
+<body><h1>Scanner UI Browser Smoke</h1><p>Live local API and production Scanner page. Refresh to repeat.</p>
+<div id="summary">Running…</div><ol id="checks"></ol><pre id="errors"></pre>
+<iframe id="app" title="Production Stock Radar Scanner" src="./lab.html?smoke=1#scanner"></iframe>
+<script>
+const results=[],ownErrors=[];
+window.onerror=message=>ownErrors.push(String(message));
+window.onunhandledrejection=event=>ownErrors.push(String(event.reason));
+function check(name,condition,detail=""){
+  results.push({name,ok:!!condition,detail});
+  const item=document.createElement("li");item.className=condition?"pass":"fail";
+  item.textContent=`${condition?"PASS":"FAIL"}  ${name}${detail?` · ${detail}`:""}`;
+  document.getElementById("checks").append(item);
+}
+function finish(){
+  const passed=results.filter(item=>item.ok).length;
+  document.getElementById("summary").textContent=`${passed===results.length?"PASS":"FAIL"} ${passed} / ${results.length}`;
+  const errors=[...ownErrors,...(document.getElementById("app").contentWindow.__scannerSmokeErrors||[])];
+  document.getElementById("errors").textContent=errors.length?errors.join("\n"):"No captured runtime errors";
+}
+function waitLoad(frame){return new Promise(resolve=>frame.addEventListener("load",resolve,{once:true}))}
+async function run(){
+  const frame=document.getElementById("app");await waitLoad(frame);
+  const win=frame.contentWindow,doc=frame.contentDocument;
+  check("Web UI document loaded",!!doc.querySelector("#scanner"));
+  check("Scanner JS loaded",typeof win.refreshScanner==="function"&&typeof win.drawScannerCandidates==="function");
+  let health,strategies,runs;
+  try{health=await win.api("/health")}catch(error){ownErrors.push(`API: ${error.message}`)}
+  check("Local API reachable",health?.ok===true);
+  try{strategies=await win.api("/api/lab/strategies")}catch(error){ownErrors.push(`strategies: ${error.message}`)}
+  check("Strategies endpoint reachable",Array.isArray(strategies));
+  try{runs=await win.api("/api/lab/scanner/runs")}catch(error){ownErrors.push(`runs: ${error.message}`)}
+  check("Scanner runs endpoint reachable",Array.isArray(runs));
+  const complete=(runs||[]).filter(item=>item.status==="completed"&&item.metrics);
+  let selected=complete[0],candidates=[];
+  for(const run of complete){
+    const top=Math.max(...(run.metadata?.evaluation?.top_k_values||[5,10,20]));
+    try{const rows=await win.api(`/api/lab/scanner/candidates?id=${encodeURIComponent(run.run_id)}&top=${top}`);
+      if(!selected||rows.some(row=>row.label_status==="censored"&&row.label_reason)){selected=run;candidates=rows;break}
+    }catch(error){ownErrors.push(`candidates: ${error.message}`)}
+  }
+  if(selected){
+    await win.refreshScanner();
+    const select=doc.getElementById("scanner-run");select.value=selected.run_id;
+    await win.drawScanner();
+    if(!candidates.length){const top=Math.max(...(selected.metadata?.evaluation?.top_k_values||[5,10,20]));
+      candidates=await win.api(`/api/lab/scanner/candidates?id=${encodeURIComponent(selected.run_id)}&top=${top}`)}
+    const censored=candidates.find(row=>row.label_status==="censored"&&row.label_reason);
+    if(censored){doc.getElementById("scanner-day").value=censored.signal_date;
+      const topKs=selected.metadata?.evaluation?.top_k_values||[5,10,20];
+      doc.getElementById("scanner-topk").value=String(topKs.find(k=>k>=censored.rank)||topKs.at(-1));
+      win.drawScannerCandidates()}
+  }
+  const txt=id=>doc.getElementById(id)?.textContent||"";
+  const metric=txt("scanner-metrics"),quality=txt("scanner-quality"),audit=txt("scanner-audit");
+  check("Scanner run can be selected",!!selected&&doc.getElementById("scanner-run").value===selected.run_id);
+  check("Scanner metrics rendered",metric.includes("Candidate observations")&&metric.includes("Primary outcome"));
+  check("Primary adverse target visible in audit",audit.includes("primary_adverse_target")&&audit.includes("success_rule")&&audit.includes("horizon_sessions"));
+  check("Censoring metrics rendered",["Labeled candidates","Censored candidates","Candidate censoring","Background censoring"].every(s=>metric.includes(s)));
+  check("Candidate rows rendered",!!doc.querySelector("#scanner-candidates tbody tr td")&&Array.isArray(candidates)&&candidates.length>0);
+  const censored=candidates.find(row=>row.label_status==="censored"&&row.label_reason);
+  check("Censored candidate reason rendered when present",!censored||txt("scanner-candidates").includes(censored.label_reason),censored?.label_reason||"no censored candidate in this run");
+  check("Observation Precision/Lift rendered",quality.includes("Observation precision")&&quality.includes("Observation lift"));
+  check("Event Precision/Lift rendered",quality.includes("event precision")&&quality.includes("event lift")&&txt("scanner-quality-caption").includes("without refilling"));
+  check("Filter Funnel rendered",txt("scanner-funnel").includes("Eligible")&&!!selected?.metrics?.funnel_by_day?.length);
+  check("Market Regime rendered",txt("scanner-regime").includes("SPY regime")&&txt("scanner-regime").includes("Primary success rate"));
+  await new Promise(resolve=>setTimeout(resolve,300));
+  check("No uncaught JavaScript error",ownErrors.length===0&&!(win.__scannerSmokeErrors||[]).some(Boolean));
+  check("No unhandled Promise rejection",ownErrors.length===0&&!(win.__scannerSmokeErrors||[]).some(Boolean));
+  finish();
+}
+run().catch(error=>{ownErrors.push(`${error.stack||error}`);check("Smoke harness completed",false,String(error));finish()});
+</script></body></html>

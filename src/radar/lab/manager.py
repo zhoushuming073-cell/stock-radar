@@ -23,6 +23,8 @@ from radar.lab.parameters import (engine_legacy_fields, execution_defaults_from_
                                   research_hash, resolve_config, ResolvedRunConfig,
                                   validate_execution)
 from radar.lab.scanner import LABEL_VERSION, evaluation_settings
+from radar.lab.readiness import local_readiness
+from radar.lab.terminal import TERMINAL_LABEL_VERSION, load_terminal_events, TERMINAL_POLICY
 from radar.lab.store import RunStore
 from radar.lab.universe import load_universe
 from radar.lab.worker import sha256_file
@@ -117,13 +119,18 @@ class RunManager:
             sessions = [day for day in windows.get("sessions", dates)
                         if dates[0] <= day <= dates[2]]
             _, provenance = load_universe(self.root, universe_mode, sessions)
+            readiness = local_readiness(self.root, universe_mode, sessions)
+            terminal = load_terminal_events(self.root) if universe_mode == "point_in_time" else None
+            label_version = TERMINAL_LABEL_VERSION if terminal is not None else LABEL_VERSION
             dataset = {
                 "split": split, "signal_start": str(dates[0].date()),
                 "signal_end": str(dates[1].date()),
                 "evaluation_end": str(dates[2].date()),
                 "feature_version": FEATURE_VERSION,
                 "market_feature_version": MARKET_FEATURE_VERSION,
-                "label_version": LABEL_VERSION,
+                "label_version": label_version,
+                "terminal_fingerprint": terminal.fingerprint if terminal else None,
+                "terminal_policy": TERMINAL_POLICY if terminal else None,
                 "data_snapshot": self._data_snapshot(),
                 "universe_mode": universe_mode,
                 "universe_fingerprint": provenance.fingerprint,
@@ -160,6 +167,7 @@ class RunManager:
                         "src/radar/strategy/full_strategy2.py",
                         "src/radar/backtest/runner.py", "src/radar/research/pipeline.py",
                         "src/radar/lab/universe.py", "src/radar/lab/parameters.py",
+                        "src/radar/lab/terminal.py", "src/radar/lab/readiness.py",
                     )
                 },
                 "config": config,
@@ -171,6 +179,8 @@ class RunManager:
                 "universe_mode": universe_mode,
                 "survivorship_bias_risk": provenance.bias_risk,
                 "universe_provenance": provenance.metadata(),
+                "research_validity": readiness["research_validity"],
+                "pit_readiness": readiness,
                 "deprecation_warnings": warnings,
                 "feature_version": FEATURE_VERSION,
                 "market_feature_version": MARKET_FEATURE_VERSION,
@@ -180,7 +190,7 @@ class RunManager:
                 "git_dirty": self._git_dirty(),
                 "signal_start": str(dates[0].date()),
                 "signal_end": str(dates[1].date()),
-                "label_version": LABEL_VERSION,
+                "label_version": label_version,
                 "split": split,
             }
             if experiment:
@@ -304,6 +314,8 @@ class RunManager:
                 universe_sessions = [day for day in dates.get("sessions", dates[split])
                                      if pd.Timestamp(window[0]) <= day <= pd.Timestamp(window[2])]
                 _, provenance = load_universe(self.root, universe_mode, universe_sessions)
+                readiness = local_readiness(self.root, universe_mode, universe_sessions)
+                terminal = load_terminal_events(self.root) if universe_mode == "point_in_time" else None
                 if source_scanner_run_id:
                     scanner = self.store.get_scanner_run(source_scanner_run_id)
                     study = scanner["metadata"]
@@ -332,6 +344,8 @@ class RunManager:
                     "universe_version": provenance.source_version,
                     "universe_coverage_start": provenance.coverage_start,
                     "universe_coverage_end": provenance.coverage_end,
+                    "terminal_fingerprint": terminal.fingerprint if terminal else None,
+                    "terminal_policy": TERMINAL_POLICY if terminal else None,
                     "source_scanner_run_id": source_scanner_run_id,
                 }
                 defaults = execution_defaults_from_legacy(
@@ -358,6 +372,7 @@ class RunManager:
                         name: sha256_file(self.root / name) for name in (
                             "src/radar/lab/worker.py", "src/radar/lab/data.py",
                             "src/radar/lab/parameters.py", "src/radar/lab/universe.py",
+                            "src/radar/lab/terminal.py", "src/radar/lab/readiness.py",
                             "src/radar/backtest/runner.py", "src/radar/research/pipeline.py",
                             "src/radar/strategy/context.py", "src/radar/strategy/validation.py",
                             "src/radar/strategy/loader.py",
@@ -381,6 +396,8 @@ class RunManager:
                     "universe_mode": universe_mode,
                     "survivorship_bias_risk": provenance.bias_risk,
                     "universe_provenance": provenance.metadata(),
+                    "research_validity": readiness["research_validity"],
+                    "pit_readiness": readiness,
                     "source_scanner_run_id": source_scanner_run_id,
                     "split": split,
                     "window": window,
