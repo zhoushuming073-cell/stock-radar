@@ -345,4 +345,7 @@ api("/api/lab/universe-status").then(status=>{
   $("universe-pit-status").textContent=status.point_in_time_available?`PIT import: ${status.point_in_time.provider}, ${status.point_in_time.coverage_start} to ${status.point_in_time.coverage_end}`:"PIT import: unavailable. Historical studies may omit delisted or renamed securities.";
   $("universe-mode").querySelector('option[value="point_in_time"]').disabled=!status.point_in_time_available;
 }).catch(error=>{$("universe-status").textContent=`Universe status unavailable: ${error.message}`});
+api("/api/data/status").then(data=>{
+  $("system-config").textContent=JSON.stringify(data.settings,null,2);
+}).catch(error=>{$("system-config").textContent=`Configuration unavailable: ${error.message}`});
 refresh();setInterval(()=>{if(document.visibilityState==="visible")refresh()},6000);

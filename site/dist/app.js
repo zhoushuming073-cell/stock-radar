@@ -270,6 +270,7 @@ async function refresh() {
     renderOverview();
     updateSuggestions();
     await selectSymbol(overview.universe.some((row) => row.symbol === selected) ? selected : overview.universe[0]?.symbol || "AAPL");
+    await refreshDataStatus();
   } catch (error) {
     notice("Cannot connect to the local data service. Start Stock Radar on this computer and allow browser access to the local network.", true);
     $("asof").textContent = "Local data disconnected";
@@ -277,6 +278,49 @@ async function refresh() {
     $("refresh").disabled = false;
   }
 }
+
+async function refreshDataStatus() {
+  try {
+    const data = await get("/api/data/status");
+    const sync = data.sync || {};
+    $("sync-status").textContent = sync.state
+      ? `Last sync: ${sync.state} · Target: ${sync.target_date || "—"} · Finished: ${sync.finished_at || "—"}${sync.error ? ` · ${sync.error}` : ""}`
+      : "No background sync recorded yet.";
+    const body = $("exchange-coverage");
+    body.replaceChildren();
+    for (const item of data.coverage || []) {
+      const row = document.createElement("tr");
+      for (const value of [item.exchange || "—", number.format(item.total || 0),
+                           number.format(item.daily || 0), item.last_update || "—"]) {
+        const cell = document.createElement("td");
+        cell.textContent = value;
+        row.append(cell);
+      }
+      body.append(row);
+    }
+  } catch (error) {
+    $("sync-status").textContent = `Sync status unavailable: ${error.message}`;
+  }
+}
+
+$("sync-data").addEventListener("click", async () => {
+  const button = $("sync-data");
+  button.disabled = true;
+  try {
+    const response = await fetch(`${API}/api/data/sync`, {
+      method: "POST", headers: {"Content-Type": "application/json"}, body: "{}",
+      cache: "no-store", mode: "cors", targetAddressSpace: "loopback",
+      signal: AbortSignal.timeout(20000),
+    });
+    const result = await response.json();
+    if (!response.ok) throw Error(result.error || `Request failed (${response.status})`);
+    $("sync-status").textContent = "Background update started. Refresh after it completes.";
+  } catch (error) {
+    $("sync-status").textContent = `Sync could not start: ${error.message}`;
+  } finally {
+    button.disabled = false;
+  }
+});
 
 $("refresh").addEventListener("click", refresh);
 $("symbol").addEventListener("input", updateSuggestions);

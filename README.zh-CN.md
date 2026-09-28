@@ -17,7 +17,7 @@
   <img alt="Python 3.11+" src="https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white">
   <img alt="Alpaca" src="https://img.shields.io/badge/Data-Alpaca-FFCC00">
   <img alt="DuckDB" src="https://img.shields.io/badge/Storage-DuckDB-FFF000?logo=duckdb&logoColor=black">
-  <img alt="Streamlit" src="https://img.shields.io/badge/UI-Streamlit-FF4B4B?logo=streamlit&logoColor=white">
+  <img alt="Web UI" src="https://img.shields.io/badge/UI-Local_Web-2563EB">
   <img alt="pluggy" src="https://img.shields.io/badge/Plugins-pluggy-6C5CE7">
   <img alt="No order execution" src="https://img.shields.io/badge/Orders-Disabled-success">
 </p>
@@ -32,7 +32,6 @@
 <p align="center">
   <a href="#项目简介">项目简介</a> ·
   <a href="#当前进度">当前进度</a> ·
-  <a href="#dashboard-预览">界面预览</a> ·
   <a href="#系统架构">系统架构</a> ·
   <a href="#快速开始">快速开始</a> ·
   <a href="#本地-strategy-labphase-3">Strategy Lab</a> ·
@@ -90,7 +89,7 @@ Stock Radar 正在从“追求漂亮历史净值曲线”重新聚焦到 **形�
 | **Phase 1 · 数据基础** | 资产主表、拆股调整日线 OHLCV、增量同步、数据校验、股票池导出、DuckDB 来源一致性检查 |
 | **Phase 2 · 研究引擎** | 历史回测引擎、冻结版简化基线、首个七阶段 Strategy 2 候选、结果验证与本地报告 |
 | **Phase 3 · Strategy Lab** | 插件接口 v1、可信 ZIP 导入、持久化 Run 队列、实时权益/回撤、Run 对比、参数网格、阶段消融与 walk-forward |
-| **可视化** | 只读市场数据 Dashboard，以及私有 Sites / Streamlit Strategy Lab 界面 |
+| **可视化** | 单一 Web 界面涵盖市场数据、Scanner、回测、策略与实验；本地 API 使用 8765 端口 |
 | **自动化** | Windows 计划任务负责市场数据日更与本地 API 自启动 |
 | **执行边界** | 不存在券商下单路径；研究 Run 和 Dashboard 不执行真实交易 |
 
@@ -100,7 +99,7 @@ Stock Radar 正在从“追求漂亮历史净值曲线”重新聚焦到 **形�
 - [x] Alpaca SIP 日线增量采集
 - [x] 带 provider/feed/adjustment 来源约束的 DuckDB 存储
 - [x] 非破坏性市场数据校验
-- [x] 本地 Streamlit 市场 Dashboard
+- [x] 本地 Web 市场概览与研究实验室
 - [x] 历史回测引擎与冻结版 baseline
 - [x] 首个七阶段 Strategy 2 研究候选
 - [x] Strategy plugin interface v1 与 ZIP 模板
@@ -117,21 +116,6 @@ Stock Radar 正在从“追求漂亮历史净值曲线”重新聚焦到 **形�
 - [ ] 为未来 GPT 二筛保存 point-in-time 候选与上下文研究日志
 - [ ] 使用全新、未查看过的样本外区间验证策略改进
 - [ ] 券商执行 / 实盘交易——有意不实现
-
-## Dashboard 预览
-
-<table>
-  <tr>
-    <td width="50%" align="center"><strong>市场概览</strong></td>
-    <td width="50%" align="center"><strong>校验诊断</strong></td>
-  </tr>
-  <tr>
-    <td><img src="./docs/dashboard-preview.png" alt="Stock Radar 市场数据 Dashboard"></td>
-    <td><img src="./docs/dashboard-warnings.png" alt="Stock Radar 数据校验诊断"></td>
-  </tr>
-</table>
-
-<p align="center"><sub>基于本地研究数据库的只读可视化；Strategy Lab 的 Run 与研究产物同样保留在本机。</sub></p>
 
 ## 系统架构
 
@@ -237,22 +221,13 @@ python -m radar validate --end 2026-09-24 --lookback 5 --max-symbols 20
 
 每个命令都会向 stdout 输出一行 JSON 结果。
 
-## 本地 Streamlit Dashboard
+## 本地 Web 看板
 
-安装可视化可选依赖并启动只读 Dashboard：
-
-```powershell
-uv pip install --python .\.venv\Scripts\python.exe -e ".[viz]"
-& .\.venv\Scripts\python.exe -m streamlit run src/radar/dashboard.py --server.address 127.0.0.1 --server.port 8501
-```
-
-浏览器打开 `http://127.0.0.1:8501`。
-
-Dashboard 读取现有 DuckDB、股票池 CSV 和校验报告，可查看数据覆盖、校验警告以及可搜索的单股 OHLCV 图表。它**不会**调用 Alpaca、修改数据、提供实时行情或执行交易。
-
-如果输出文件还不存在，请先执行 `sync` 和 `validate`；文件变化后可点击 **刷新数据**。
-
-界面使用开源的 [Streamlit](https://github.com/streamlit/streamlit) 和 [Plotly.py](https://github.com/plotly/plotly.py)。
+在项目根目录双击 `启动本地看板.cmd`。启动器会启动或复用本地 Web 页面
+`http://127.0.0.1:4174` 和本地 API `http://127.0.0.1:8765`，只打开一个 Scanner 页面。
+**Market Overview** 可查看股票池和日线数量、校验警告、标的覆盖信息，以及单股历史 OHLCV 图表。
+页面提供只读行情和校验信息；点击 **Sync from Alpaca** 会触发已有的后台计划任务，页面显示最近同步状态与交易所覆盖率。页面不提供实时行情，也不执行交易。
+如果输出文件尚不存在，先运行 `sync` 和 `validate`；文件更新后刷新浏览器。**System** 页面显示只读研究默认配置。
 
 ## 本地 Scanner Research（v1.5）
 
@@ -262,19 +237,14 @@ Scanner Research 是当前主要研究入口。它按交易日保存完整候选
 
 当前默认股票池来自现时资产快照，历史研究存在幸存者偏差风险。项目提供本地 PIT Security Master 的导入边界和覆盖检查，但**没有内置真实历史 Security Master**；仅导入当前 Alpaca 股票列表不能消除此风险。格式和限制见 [PIT 导入说明](docs/PIT_SECURITY_MASTER.md)。
 
-在项目根目录双击 `启动本地看板.cmd`，即可打开 `127.0.0.1:8502` 的 Streamlit 实验室和 `127.0.0.1:4174/lab.html` 的本地网页，同时启动或复用 `127.0.0.1:8765` 数据接口。两个入口均可查看三阶段逐日时间线。本地修改 `site/dist/` 后无需部署 Sites；行情数据库、策略文件、凭据和研究结果均留在本机。标签公式、合格股票池和复现规则见 [策略插件规范](docs/STRATEGY_PLUGIN_SPEC.md)。
+在项目根目录双击 `启动本地看板.cmd`，即可打开唯一维护的本地网页 `http://127.0.0.1:4174/lab.html#scanner`，并启动或复用 `http://127.0.0.1:8765` 数据接口。网页可查看三阶段逐日时间线。本地修改 `site/dist/` 后无需部署 Sites；行情数据库、策略文件、凭据和研究结果均留在本机。标签公式、合格股票池和复现规则见 [策略插件规范](docs/STRATEGY_PLUGIN_SPEC.md)。
 
 ## 本地 Strategy Lab（Phase 3）
 
-Strategy Lab 已集成到现有私有 Sites Dashboard 的
-[`/lab.html`](https://stock-radar-local.zhoushuming.chatgpt.site/lab.html)，同时也提供独立的本地 Streamlit 页面。它可以导入可信来源的策略 ZIP、排队运行多个回测、在独立标签页中查看每个 Run 的实时权益与回撤，并对已完成 Run 进行比较。市场数据与 Run 结果仍保留在本机；Lab 不会向券商发送订单。
+Strategy Lab 使用上述本地 Web 页面，发布版本也集成到现有 Sites Dashboard 的
+[`/lab.html`](https://stock-radar-local.zhoushuming.chatgpt.site/lab.html)。网页可以导入可信来源的策略 ZIP、排队运行多个回测、逐日查看权益与回撤，并比较已完成的 Run。市场数据与 Run 结果仍保留在本机；Lab 不会向券商发送订单。
 
-```powershell
-uv pip install --python .\.venv\Scripts\python.exe -e ".[viz,dev]"
-& .\.venv\Scripts\python.exe -m streamlit run src/radar/strategy_lab_ui.py --server.address 127.0.0.1 --server.port 8502
-```
-
-浏览器打开 `http://127.0.0.1:8502`。当前 `full_strategy2_v1` 插件安装在 `strategies/` 下。独立的编写指南和可直接打包为 ZIP 的示例位于 [Strategy Plugin specification](docs/STRATEGY_PLUGIN_SPEC.md) 与 `templates/strategy_plugin_template/`。
+当前 `full_strategy2_v1` 插件安装在 `strategies/` 下。独立的编写指南和可直接打包为 ZIP 的示例位于 [Strategy Plugin specification](docs/STRATEGY_PLUGIN_SPEC.md) 与 `templates/strategy_plugin_template/`。
 
 只应导入你信任作者提供的 Python 策略代码：结构检查、AST 检查与测试有助于验证插件，但它们并不是操作系统级 sandbox。
 

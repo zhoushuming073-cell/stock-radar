@@ -8,6 +8,7 @@
   <title>Stock Radar · Market Overview</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23142a47'/%3E%3Cpath d='M9 41h11l8-20 9 17 7-10h11' fill='none' stroke='%2359c7b0' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="./styles.css">
+  <style>.data-operations{margin-top:22px}.data-operations h3{font-size:16px;margin:18px 0 12px}.data-operations .table-wrap{height:auto;max-height:290px}.data-operations .footnote{margin:12px 0 0}</style>
   <script defer src="./vendor/plotly.min.js"></script>
   <script defer src="./app.js"></script>
 </head>
@@ -85,6 +86,12 @@
         <div class="table-wrap"><table><thead><tr><th>Symbol</th><th>Date</th><th>Type</th><th>Details</th></tr></thead><tbody id="issues"></tbody></table></div>
         <button id="show-more" class="show-more" type="button" hidden>Show more</button>
       </article>
+    </section>
+    <section class="panel data-operations" aria-label="Data operations">
+      <div class="panel-head"><div><h2>Local data operations</h2><p>Daily updates run silently in the background.</p></div><button id="sync-data" class="refresh" type="button">Sync from Alpaca</button></div>
+      <p id="sync-status" class="footnote">Loading latest sync status…</p>
+      <h3>Coverage by exchange</h3>
+      <div class="table-wrap"><table><thead><tr><th>Exchange</th><th>Tradable symbols</th><th>With daily bars</th><th>Last update</th></tr></thead><tbody id="exchange-coverage"></tbody></table></div>
     </section>
     <footer>Market data and Alpaca keys remain local. This website can be opened locally or through Sites.</footer>
   </main>

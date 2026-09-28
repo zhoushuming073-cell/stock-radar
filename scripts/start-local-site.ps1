@@ -2,8 +2,7 @@ $ErrorActionPreference = 'Stop'
 $root = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $pythonw = Join-Path $root '.venv\Scripts\pythonw.exe'
 $apiUrl = 'http://127.0.0.1:8765'
-$siteUrl = 'http://localhost:4174'
-$streamlitUrl = 'http://127.0.0.1:8502'
+$siteUrl = 'http://127.0.0.1:4174'
 $taskName = 'StockRadar-LocalApi'
 
 if (-not (Test-Path -LiteralPath $pythonw)) {
@@ -14,7 +13,7 @@ function Test-LocalApi {
     try {
         $response = Invoke-WebRequest -Uri "$apiUrl/health" -UseBasicParsing -TimeoutSec 2
         $body = $response.Content | ConvertFrom-Json
-        return $response.StatusCode -eq 200 -and $body.ok -eq $true
+        return $response.StatusCode -eq 200 -and $body.ok -eq $true -and $body.service -eq 'stock-radar-api'
     } catch {
         return $false
     }
@@ -34,67 +33,61 @@ function Test-ApiOrigin {
 
 function Test-LocalSite {
     try {
-        $response = Invoke-WebRequest -Uri "$siteUrl/lab.html" -UseBasicParsing -TimeoutSec 2
-        return $response.StatusCode -eq 200 -and $response.Content.Contains('Stock Radar')
+        $health = Invoke-WebRequest -Uri "$siteUrl/health" -UseBasicParsing -TimeoutSec 2
+        $body = $health.Content | ConvertFrom-Json
+        if ($health.StatusCode -ne 200 -or $body.ok -ne $true -or $body.service -ne 'stock-radar-web') {
+            return $false
+        }
+        $page = Invoke-WebRequest -Uri "$siteUrl/lab.html" -UseBasicParsing -TimeoutSec 2
+        return $page.StatusCode -eq 200 -and $page.Content.Contains('Stock Radar')
     } catch {
         return $false
     }
 }
 
-function Test-Streamlit {
-    try {
-        $response = Invoke-WebRequest -Uri "$streamlitUrl/_stcore/health" -UseBasicParsing -TimeoutSec 2
-        return $response.StatusCode -eq 200 -and $response.Content.Trim() -eq 'ok'
-    } catch {
-        return $false
+function Get-ListenerPids([int]$port) {
+    @(
+        Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue |
+            Select-Object -ExpandProperty OwningProcess -Unique
+    )
+}
+
+function Assert-PortFree([int]$port) {
+    $owners = @(Get-ListenerPids $port)
+    if ($owners.Count -gt 0) {
+        throw "Port $port is occupied by PID(s) $($owners -join ', '), but the Stock Radar service is not healthy. Inspect those processes and free the port before retrying."
     }
 }
 
 if (-not (Test-LocalApi) -or -not (Test-ApiOrigin)) {
+    Assert-PortFree 8765
     $task = Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue
     if ($task) {
         if ($task.State -eq 'Running') {
             Stop-ScheduledTask -TaskName $taskName
-            Start-Sleep -Milliseconds 500
         }
         Start-ScheduledTask -TaskName $taskName
-    } elseif (Test-LocalApi) {
-        throw 'The running API does not allow the local site. Close it, then run this launcher again.'
     } else {
         Start-Process -FilePath $pythonw -ArgumentList '-m', 'radar.local_api', '--port', '8765' -WorkingDirectory $root -WindowStyle Hidden
     }
-
     for ($attempt = 0; $attempt -lt 30 -and (-not (Test-LocalApi) -or -not (Test-ApiOrigin)); $attempt++) {
         Start-Sleep -Milliseconds 500
     }
 }
-
 if (-not (Test-LocalApi) -or -not (Test-ApiOrigin)) {
-    throw 'The local API did not start on port 8765.'
+    throw 'The Stock Radar API did not become healthy on port 8765. Check the scheduled task or local API process.'
 }
 
 if (-not (Test-LocalSite)) {
+    Assert-PortFree 4174
     $siteScript = Join-Path $root 'scripts\serve-local-site.py'
     Start-Process -FilePath $pythonw -ArgumentList "`"$siteScript`"" -WorkingDirectory $root -WindowStyle Hidden
     for ($attempt = 0; $attempt -lt 30 -and -not (Test-LocalSite); $attempt++) {
         Start-Sleep -Milliseconds 500
     }
 }
-
 if (-not (Test-LocalSite)) {
-    throw 'The local site did not start. Check whether port 4174 is occupied.'
+    throw 'The Stock Radar Web UI did not become healthy on port 4174.'
 }
 
-if (-not (Test-Streamlit)) {
-    Start-Process -FilePath $pythonw -ArgumentList '-m', 'streamlit', 'run', 'src/radar/strategy_lab_ui.py', '--server.port', '8502', '--server.address', '127.0.0.1', '--server.headless', 'true' -WorkingDirectory $root -WindowStyle Hidden
-    for ($attempt = 0; $attempt -lt 40 -and -not (Test-Streamlit); $attempt++) {
-        Start-Sleep -Milliseconds 500
-    }
-}
-
-if (-not (Test-Streamlit)) {
-    throw 'The Streamlit Lab did not start on port 8502.'
-}
-
-Start-Process "$streamlitUrl/"
 Start-Process "$siteUrl/lab.html#scanner"

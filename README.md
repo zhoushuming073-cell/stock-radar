@@ -17,7 +17,7 @@
   <img alt="Python 3.11+" src="https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white">
   <img alt="Alpaca" src="https://img.shields.io/badge/Data-Alpaca-FFCC00">
   <img alt="DuckDB" src="https://img.shields.io/badge/Storage-DuckDB-FFF000?logo=duckdb&logoColor=black">
-  <img alt="Streamlit" src="https://img.shields.io/badge/UI-Streamlit-FF4B4B?logo=streamlit&logoColor=white">
+  <img alt="Web UI" src="https://img.shields.io/badge/UI-Local_Web-2563EB">
   <img alt="pluggy" src="https://img.shields.io/badge/Plugins-pluggy-6C5CE7">
   <img alt="No order execution" src="https://img.shields.io/badge/Orders-Disabled-success">
 </p>
@@ -32,7 +32,6 @@
 <p align="center">
   <a href="#overview">Overview</a> ·
   <a href="#project-status">Status</a> ·
-  <a href="#dashboard-preview">Preview</a> ·
   <a href="#architecture">Architecture</a> ·
   <a href="#setup">Setup</a> ·
   <a href="#local-research-scanner-and-strategy-lab">Research Lab</a> ·
@@ -90,7 +89,7 @@ The long-term goal is not to reproduce a universal institutional trading stack. 
 | **Phase 1 · Data foundation** | Asset master, split-adjusted daily OHLCV, incremental sync, validation, universe export, DuckDB provenance checks |
 | **Phase 2 · Research engine** | Historical backtest engine, frozen simplified baseline, initial seven-stage Strategy 2 candidate, verification and local reports |
 | **Phase 3 · Strategy Lab** | Plugin interface v1, trusted ZIP import, persistent run queue, live equity/drawdown, run comparison, parameter grids, ablations and walk-forward folds |
-| **Dashboards** | Read-only market-data dashboard plus private Sites / Streamlit Strategy Lab interfaces |
+| **Web UI** | One maintained browser frontend for market data, Scanner, Backtest, strategies and experiments; local API on port 8765 |
 | **Automation** | Windows scheduled market refresh and local API startup |
 | **Execution boundary** | No broker-order path; research runs and dashboards do not place trades |
 
@@ -100,7 +99,7 @@ The long-term goal is not to reproduce a universal institutional trading stack. 
 - [x] Incremental Alpaca SIP daily-bar ingestion
 - [x] DuckDB storage with provider/feed/adjustment provenance
 - [x] Non-destructive market-data validation
-- [x] Local Streamlit market dashboard
+- [x] Local Web market overview and research lab
 - [x] Historical backtest engine and frozen baseline
 - [x] Initial seven-stage Strategy 2 research candidate
 - [x] Strategy plugin interface v1 and ZIP-ready template
@@ -117,21 +116,6 @@ The long-term goal is not to reproduce a universal institutional trading stack. 
 - [ ] Point-in-time candidate/context log for future GPT-assisted second-stage review
 - [ ] Fresh untouched out-of-sample period for validating claimed strategy improvement
 - [ ] Broker execution / live trading — intentionally not implemented
-
-## Dashboard preview
-
-<table>
-  <tr>
-    <td width="50%" align="center"><strong>Market overview</strong></td>
-    <td width="50%" align="center"><strong>Validation diagnostics</strong></td>
-  </tr>
-  <tr>
-    <td><img src="./docs/dashboard-preview.png" alt="Stock Radar market-data dashboard overview"></td>
-    <td><img src="./docs/dashboard-warnings.png" alt="Stock Radar validation diagnostics"></td>
-  </tr>
-</table>
-
-<p align="center"><sub>Read-only visualization over the local research database. Strategy Lab runs and research artifacts remain local as well.</sub></p>
 
 ## Architecture
 
@@ -237,29 +221,21 @@ Each command prints a one-line JSON result to stdout.
 
 ## Local data dashboard
 
-Install the optional visualization packages, then start the read-only local site:
-
-```powershell
-uv pip install --python .\.venv\Scripts\python.exe -e ".[viz]"
-& .\.venv\Scripts\python.exe -m streamlit run src/radar/dashboard.py --server.address 127.0.0.1 --server.port 8501
-```
-
-Open `http://127.0.0.1:8501` in your browser. The dashboard reads the existing
-DuckDB database, universe CSV and validation report. It shows coverage, validation
-warnings and searchable single-symbol OHLCV charts. It does not call Alpaca,
-modify data, provide real-time quotes or place orders. Run `sync` and `validate`
-first if the output files are missing; use **刷新数据** after those files change.
-The interface uses the open-source [Streamlit](https://github.com/streamlit/streamlit)
-and [Plotly.py](https://github.com/plotly/plotly.py) components.
-
-Preview: [overview](docs/dashboard-preview.png) · [warning details](docs/dashboard-warnings.png).
+On Windows, double-click `启动本地看板.cmd` in the project root. The launcher
+starts or reuses the local Web UI at `http://127.0.0.1:4174` and the local API
+at `http://127.0.0.1:8765`, then opens the Scanner page. Use **Market Overview**
+to inspect universe and daily-bar counts, validation warnings, symbol coverage,
+and historical OHLCV charts. The page reads local data and does not call Alpaca,
+provide real-time quotes or place orders. **Sync from Alpaca** triggers the existing
+silent scheduled update; the page shows its latest status and exchange coverage.
+Run `sync` and `validate` first if the output files are missing, then refresh the
+browser after they change. **System** shows read-only research defaults.
 
 ## Local Research Scanner and Strategy Lab
 
-On Windows, double-click `启动本地看板.cmd` in the project root to open both
-the Streamlit Strategy Lab on port 8502 and the local web dashboard on port 4174.
-It starts or reuses the loopback API on port 8765. Both Lab views show the
-three-stage trading-day timeline. The Data navigation link opens the market dashboard.
+The Web UI at `http://127.0.0.1:4174/lab.html#scanner` is the single maintained
+research interface. It uses the loopback API on port 8765 and shows the
+three-stage trading-day timeline. The Market navigation link opens the data dashboard.
 Local changes to `site/dist/` appear without a Sites
 deployment; deploy Sites only when a release is ready.
 
@@ -280,21 +256,15 @@ The plugin interface stays at version 1; see
 [the v1.5 scanner specification](docs/STRATEGY_PLUGIN_SPEC.md) for exact label
 formulas, eligibility and reproducibility rules.
 
-The Scanner and Strategy Lab are available inside the existing private Sites dashboard at
+The Scanner and Strategy Lab are also available inside the existing Sites dashboard at
 [`/lab.html`](https://stock-radar-local.zhoushuming.chatgpt.site/lab.html).
 Local source changes are visible on port 4174; the hosted Sites copy changes only
 after an explicit release deployment.
-The same research interface also has a separate local Streamlit page. It
-imports trusted strategy ZIPs, queues several backtests, shows each Run's live
-equity/drawdown in its own tab, and compares completed Runs. Market data and
-Run results remain on this computer. Nothing in the Lab places broker orders.
+The Web UI imports trusted strategy ZIPs, queues backtests, shows live
+equity/drawdown, and compares completed runs. Market data and run results remain
+on this computer. Nothing in the Lab places broker orders.
 
-```powershell
-uv pip install --python .\.venv\Scripts\python.exe -e ".[viz,dev]"
-& .\.venv\Scripts\python.exe -m streamlit run src/radar/strategy_lab_ui.py --server.address 127.0.0.1 --server.port 8502
-```
-
-Open `http://127.0.0.1:8502`. The current `full_strategy2_v1` plugin is
+The current `full_strategy2_v1` plugin is
 installed under `strategies/`. A standalone authoring guide and ZIP-ready
 example are in [the Strategy Plugin specification](docs/STRATEGY_PLUGIN_SPEC.md)
 and `templates/strategy_plugin_template/`. Only import Python strategy code

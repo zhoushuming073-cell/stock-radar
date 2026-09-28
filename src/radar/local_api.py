@@ -1,4 +1,4 @@
-"""Loopback API for the private Sites dashboard and local Strategy Lab.
+"""Loopback API for the Stock Radar Web UI and published Sites frontend.
 
 The database and credentials remain on this computer. Only an explicitly allowed
 browser origin can read responses, and the server listens on 127.0.0.1 only.
@@ -9,7 +9,9 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import os
 import re
+import subprocess
 from collections import Counter
 from functools import lru_cache
 from http import HTTPStatus
@@ -21,6 +23,7 @@ from urllib.parse import parse_qs, urlsplit
 from uuid import uuid4
 
 import duckdb
+import yaml
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -147,6 +150,59 @@ def overview() -> dict[str, object]:
     }
 
 
+def data_status() -> dict[str, object]:
+    """Read the former data/settings panels without exposing credentials."""
+    status_path = DATA / "daily-update-status.json"
+    try:
+        raw_status = json.loads(status_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        raw_status = {}
+    if not isinstance(raw_status, dict):
+        raw_status = {}
+    sync = {key: raw_status.get(key) for key in ("state", "target_date", "finished_at", "error")}
+    with duckdb.connect(str(DB), read_only=True) as connection:
+        rows = connection.execute("""
+            SELECT a.exchange, COUNT(*) AS total, COUNT(b.symbol) AS daily,
+                   MAX(b.last_date) AS last_update
+            FROM assets a
+            LEFT JOIN (SELECT symbol, MAX(date) AS last_date FROM daily_bars GROUP BY symbol) b
+              ON a.symbol=b.symbol
+            WHERE a.status='active' AND a.tradable
+            GROUP BY a.exchange ORDER BY total DESC
+        """).fetchall()
+    coverage = [{"exchange": exchange, "total": total, "daily": daily,
+                 "last_update": str(last_update) if last_update else None}
+                for exchange, total, daily, last_update in rows]
+    try:
+        backtest = yaml.safe_load((ROOT / "config" / "backtest.yaml").read_text(encoding="utf-8")) or {}
+        research = yaml.safe_load((ROOT / "config" / "research.yaml").read_text(encoding="utf-8")) or {}
+    except (OSError, yaml.YAMLError):
+        backtest, research = {}, {}
+    costs = research.get("illustrative_costs", {}) if isinstance(research, dict) else {}
+    return {"sync": sync, "coverage": coverage, "settings": {
+        "provider": "Alpaca",
+        "backtest": {key: backtest.get(key) for key in (
+            "initial_capital", "max_new_candidates", "take_profit", "stop_loss",
+            "max_holding_sessions", "max_position_fraction", "base_slippage_bps")},
+        "illustrative_costs": {key: costs.get(key) for key in (
+            "profile", "commission_per_share", "platform_per_share")},
+    }}
+
+
+def start_daily_sync() -> None:
+    """Trigger the existing quiet Windows task; it owns update concurrency."""
+    if os.name != "nt":
+        raise OSError("local background sync is configured only on Windows")
+    result = subprocess.run(
+        ["powershell.exe", "-NoProfile", "-Command",
+         "Start-ScheduledTask -TaskName 'StockRadar-DailyUpdate'"],
+        capture_output=True, text=True, timeout=15, check=False,
+        creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+    )
+    if result.returncode:
+        raise OSError(result.stderr.strip() or "daily update task could not start")
+
+
 def symbol_data(symbol: str) -> dict[str, object]:
     if not SYMBOL.fullmatch(symbol):
         raise ValueError("invalid symbol")
@@ -216,9 +272,11 @@ def make_handler(allowed_origins: set[str]):
             target = urlsplit(self.path)
             try:
                 if target.path == "/health":
-                    payload = {"ok": True, "database_present": DB.is_file()}
+                    payload = {"ok": True, "service": "stock-radar-api", "database_present": DB.is_file()}
                 elif target.path == "/api/overview":
                     payload = overview()
+                elif target.path == "/api/data/status":
+                    payload = data_status()
                 elif target.path == "/api/symbol":
                     symbol = parse_qs(target.query).get("symbol", [""])[0].upper()
                     payload = symbol_data(symbol)
@@ -284,7 +342,7 @@ def make_handler(allowed_origins: set[str]):
                 self._json(HTTPStatus.FORBIDDEN, {"error": "origin is not allowed for writes"})
                 return
             target = urlsplit(self.path).path
-            if target not in {"/api/lab/import", "/api/lab/run", "/api/lab/timeline", "/api/lab/cancel",
+            if target not in {"/api/data/sync", "/api/lab/import", "/api/lab/run", "/api/lab/timeline", "/api/lab/cancel",
                               "/api/lab/uninstall",
                               "/api/lab/experiment", "/api/lab/scanner/run"}:
                 self._json(HTTPStatus.NOT_FOUND, {"error": "not found"})
@@ -295,8 +353,15 @@ def make_handler(allowed_origins: set[str]):
                 if not 0 < length <= maximum:
                     raise ValueError("invalid request size")
                 body = self.rfile.read(length)
-                manager = lab_manager()
-                if target.endswith("/import"):
+                if target == "/api/data/sync":
+                    if self.headers.get("Content-Type", "").split(";", 1)[0] != "application/json":
+                        raise ValueError("request must be JSON")
+                    if not isinstance(json.loads(body), dict):
+                        raise ValueError("request must be an object")
+                    start_daily_sync()
+                    payload = {"ok": True}
+                elif target.endswith("/import"):
+                    manager = lab_manager()
                     if self.headers.get("Content-Type", "").split(";", 1)[0] != "application/zip":
                         raise ValueError("strategy upload must be a ZIP")
                     with TemporaryDirectory(prefix="stock-radar-upload-") as directory:
@@ -307,6 +372,7 @@ def make_handler(allowed_origins: set[str]):
                                "version": registration.manifest.version,
                                "name": registration.manifest.name}
                 else:
+                    manager = lab_manager()
                     if self.headers.get("Content-Type", "").split(";", 1)[0] != "application/json":
                         raise ValueError("request must be JSON")
                     data = json.loads(body)
@@ -431,11 +497,10 @@ def main() -> None:
     parser.add_argument("--allow-origin", action="append", default=[])
     args = parser.parse_args()
     for origin in args.allow_origin:
-        if not origin.startswith(("https://", "http://127.0.0.1:", "http://localhost:")):
+        if not origin.startswith(("https://", "http://127.0.0.1:")):
             parser.error("allowed origins must be HTTPS or local development origins")
     allowed_origins = set(args.allow_origin)
     allowed_origins.add("http://127.0.0.1:4174")
-    allowed_origins.add("http://localhost:4174")
     server = ThreadingHTTPServer(("127.0.0.1", args.port), make_handler(allowed_origins))
     dispatcher_stop = start_lab_dispatcher()
     import sys
