@@ -6,7 +6,7 @@ import pandas as pd
 import pytest
 
 from radar.lab.readiness import assess_readiness
-from radar.lab.scanner import build_labels, evaluation_settings, primary_outcome_name
+from radar.lab.scanner import build_labels, candidate_metrics, evaluation_settings, primary_outcome_name
 from radar.lab.terminal import EVENT_TYPES, LocalTerminalEvents
 from radar.lab.universe import LocalSecurityMaster
 
@@ -60,6 +60,11 @@ def test_scanner_terminal_cash_unknown_and_missing(tmp_path):
     assert result.iloc[0].label_status == "labeled"
     assert result.iloc[0].label[primary_outcome_name(settings)] is True
     assert result.iloc[0].label["terminal_return"] == pytest.approx(0.2)
+    candidate = signals.assign(rank=1, label=result["label"],
+                               label_status=result["label_status"],
+                               label_reason=result["label_reason"])
+    background = signals.assign(label=True, label_status="labeled")
+    assert candidate_metrics(candidate, background, settings, sessions)["labeled_candidate_count"] == 1
     assert build_labels(signals, bars, sessions, settings).iloc[0].label_status == "censored"
     _, unknown = sources(tmp_path, event_type="delisting", cash="")
     result = build_labels(signals, bars, sessions, settings, terminal_provider=unknown)
