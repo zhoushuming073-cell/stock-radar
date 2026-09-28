@@ -20,7 +20,14 @@ function finish(){
   const errors=[...ownErrors,...(document.getElementById("app").contentWindow.__scannerSmokeErrors||[])];
   document.getElementById("errors").textContent=errors.length?errors.join("\n"):"No captured runtime errors";
 }
-function waitLoad(frame){return frame.contentDocument?.readyState==="complete"?Promise.resolve():new Promise(resolve=>frame.addEventListener("load",resolve,{once:true}))}
+function waitLoad(frame){
+  const loaded=()=>frame.contentDocument?.URL.includes("/lab.html")&&frame.contentDocument.readyState==="complete";
+  if(loaded())return Promise.resolve();
+  return new Promise(resolve=>{
+    const onLoad=()=>{if(loaded()){frame.removeEventListener("load",onLoad);resolve()}};
+    frame.addEventListener("load",onLoad);
+  });
+}
 async function run(){
   const frame=document.getElementById("app");await waitLoad(frame);
   const win=frame.contentWindow,doc=frame.contentDocument;
