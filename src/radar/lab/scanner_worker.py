@@ -150,9 +150,11 @@ def scan_frames(plugin, config: dict, feature_frame: pd.DataFrame, bars: pd.Data
             subset = regime[regime["market_context"].map(
                 lambda x: "spy_trend" in x and condition(x["spy_trend"]))]
             metrics[f"{label}_candidate_count"] = int(len(subset))
-            hit = metrics["primary_target"]
-            labeled = [item[hit] for item in subset["label"] if item is not None]
-            metrics[f"{label}_hit_rate"] = float(np.mean(labeled)) if labeled else None
+            outcome = metrics["primary_outcome"]
+            labeled = [item[outcome] for item in subset["label"]
+                       if item is not None and item.get(outcome) is not None]
+            metrics[f"{label}_labeled_count"] = len(labeled)
+            metrics[f"{label}_success_rate"] = float(np.mean(labeled)) if labeled else None
     return rows, metrics
 
 

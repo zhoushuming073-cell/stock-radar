@@ -14,7 +14,10 @@ from radar.lab.experiments import queue_experiment, summarize_experiments
 KINDS = {"Grid Search": "grid", "Ablation": "ablation", "Walk-forward": "walk_forward"}
 
 
-def _example_grid(config: Mapping) -> str:
+def _example_grid(config: Mapping, run_type: str) -> str:
+    if run_type == "scanner":
+        return json.dumps({"evaluation.event_cooldown_sessions": [0, 5]},
+                          ensure_ascii=False, indent=2)
     for name, value in config.items():
         if isinstance(value, (int, float, str)) and not isinstance(value, bool):
             return json.dumps({name: [value]}, ensure_ascii=False, indent=2)
@@ -27,8 +30,11 @@ def _new_experiment(manager, registrations: list) -> None:
             st.info("请先导入策略，再创建实验。")
             return
         by_id = {item.manifest.id: item for item in registrations}
+        run_type = st.selectbox("运行类型", ["scanner", "backtest"],
+                                format_func=lambda value: "Scanner" if value == "scanner" else "Backtest")
         with st.form("experiment_create"):
-            kind_label = st.selectbox("实验类型", list(KINDS))
+            kind_label = st.selectbox("实验类型", ["Grid Search", "Ablation"]
+                                      if run_type == "scanner" else list(KINDS))
             strategy_id = st.selectbox(
                 "策略", list(by_id), format_func=lambda key: by_id[key].manifest.name,
             )
@@ -36,14 +42,16 @@ def _new_experiment(manager, registrations: list) -> None:
                 "研究时段", ["validation", "train"],
                 format_func=lambda key: "验证期" if key == "validation" else "训练期",
             )
-            slippage = st.number_input(
-                "单边滑点（基点）", min_value=0.0, max_value=100.0,
-                value=10.0, step=1.0,
-            )
+            slippage = (st.number_input("单边滑点（基点）", min_value=0.0,
+                                        max_value=100.0, value=10.0, step=1.0)
+                        if run_type == "backtest" else 10.0)
             grid_text = st.text_area(
-                "参数网格（JSON，仅 Grid Search 使用）",
-                value=_example_grid(by_id[strategy_id].config), height=100,
+                "参数网格（JSON，支持 strategy.* / evaluation.*）",
+                value=_example_grid(by_id[strategy_id].config, run_type), height=100,
             )
+            evaluation_text = (st.text_area(
+                "Scanner 基础 Evaluation 覆盖（JSON，可留空）", value="{}", height=80)
+                if run_type == "scanner" else "{}")
             submitted = st.form_submit_button("Queue Experiment", type="primary")
         if not submitted:
             return
@@ -60,9 +68,17 @@ def _new_experiment(manager, registrations: list) -> None:
                 st.error(f"参数网格无效：{exc}")
                 return
         try:
+            evaluation = json.loads(evaluation_text)
+            if not isinstance(evaluation, dict):
+                raise ValueError("Evaluation 必须是 JSON 对象")
+        except ValueError as exc:
+            st.error(f"Evaluation 无效：{exc}")
+            return
+        try:
             result = queue_experiment(
                 manager, kind=kind, strategy_id=strategy_id, split=split,
-                grid=grid, slippage_bps=float(slippage),
+                grid=grid, slippage_bps=float(slippage), run_type=run_type,
+                evaluation_overrides=evaluation,
             )
         except Exception as exc:
             st.error(f"无法创建实验：{exc}")
@@ -91,13 +107,15 @@ def render_experiments(manager) -> None:
     registrations = manager.list_strategies()
     _new_experiment(manager, registrations)
     names = {item.manifest.id: item.manifest.name for item in registrations}
+    manager.launch_queued_scanners()
     runs = manager.store.list_runs(limit=1000)
-    summaries = summarize_experiments(runs)
+    scanner_runs = manager.store.list_scanner_runs(limit=1000)
+    summaries = summarize_experiments(runs, scanner_runs)
     if not summaries:
         st.info("还没有实验。可使用上方 New Experiment 创建。")
         return
     grouped: dict[str, list[dict]] = {}
-    for run in runs:
+    for run in [*runs, *scanner_runs]:
         experiment = (run.get("metadata") or {}).get("experiment") or {}
         if experiment.get("id"):
             grouped.setdefault(experiment["id"], []).append(run)
@@ -118,6 +136,7 @@ def render_experiments(manager) -> None:
             "Name": summary["id"][:8],
             "Type": next((label for label, kind in KINDS.items()
                           if kind == summary["kind"]), summary["kind"]),
+            "Run type": summary["run_type"],
             "Strategy": names.get(summary["strategy_id"], summary["strategy_id"]),
             "Status": status,
             "Variants": summary["total"],
@@ -129,13 +148,16 @@ def render_experiments(manager) -> None:
     st.dataframe(pd.DataFrame(rows), hide_index=True, width="stretch")
     by_id = {summary["id"]: summary for summary in summaries}
     chosen = st.selectbox("查看实验", list(by_id), format_func=lambda key: key[:8])
-    st.caption("每个变体均由正式回测引擎独立执行；测试期不用于参数实验。")
+    st.caption("Scanner 展示独立信号事件的 Precision/Lift；Backtest 展示收益与回撤。测试期不用于参数实验。")
     details = pd.DataFrame(by_id[chosen]["runs"])
     if not details.empty:
         details["run_id"] = details["run_id"].str[:8]
-        for column in ("total_return", "max_drawdown"):
+        for column in ("total_return", "max_drawdown", "precision"):
             if column in details:
                 details[column] = details[column].map(
                     lambda value: f"{float(value):+.2%}" if value is not None else "—"
                 )
+        if "lift" in details:
+            details["lift"] = details["lift"].map(
+                lambda value: f"{float(value):.2f}×" if value is not None else "—")
     st.dataframe(details, hide_index=True, width="stretch")

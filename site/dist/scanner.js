@@ -33,13 +33,14 @@ async function drawScanner(){
     return;
   }
   if(scannerState.loadedId!==run.run_id){
-    scannerState.candidates=await api(`/api/lab/scanner/candidates?id=${encodeURIComponent(run.run_id)}`);
+    const highest=Math.max(...(run.metadata?.evaluation?.top_k_values||[5,10,20]));
+    scannerState.candidates=await api(`/api/lab/scanner/candidates?id=${encodeURIComponent(run.run_id)}&top=${highest}`);
     scannerState.loadedId=run.run_id;
   }
   const m=run.metrics||{};
   const horizon=run.metadata?.evaluation?.horizon_sessions||10;
   const target=run.metadata?.evaluation?.primary_target||0.05;
-  $("scanner-quality-caption").textContent=`Primary target: +${(target*100).toFixed(1)}% within ${horizon} sessions; compared with the same-day eligible universe`;
+  $("scanner-quality-caption").textContent=`Primary outcome: ${m.primary_outcome||`+${(target*100).toFixed(1)}% within ${horizon} sessions`}; compared with the same-day eligible universe`;
   $("scanner-metrics").innerHTML=[
     ["Candidate observations",m.candidate_observation_count??m.candidate_count??"—"],["Unique signal events",m.unique_signal_event_count??"—"],
     ["Labeled candidates",m.labeled_candidate_count??"—"],
@@ -48,15 +49,19 @@ async function drawScanner(){
     ["Success rule",m.success_rule??"—"],["Primary outcome",m.primary_outcome??"—"]
   ].map(([label,value])=>`<div><span>${safe(label)}</span><strong>${safe(value)}</strong></div>`).join("");
   const topKs=run.metadata?.evaluation?.top_k_values||[5,10,20];
-  $("scanner-quality").innerHTML=scannerTable(["Top-K","Labeled","Pooled precision","Mean daily","Median daily","Lift"],
-    topKs.map(k=>[`Top ${k}`,m[`top_${k}_count`]??"—",pct(m[`pooled_precision_at_${k}`]??m[`precision_at_${k}`]),pct(m[`mean_daily_precision_at_${k}`]),pct(m[`median_daily_precision_at_${k}`]),scannerRatio(m[`lift_at_${k}`])]));
+  const oldTopK=$("scanner-topk").value;
+  $("scanner-topk").innerHTML=topKs.map(k=>`<option value="${k}">Top ${k}</option>`).join("");
+  if(topKs.some(k=>String(k)===oldTopK))$("scanner-topk").value=oldTopK;
+  else if(topKs.includes(10))$("scanner-topk").value="10";
+  $("scanner-quality").innerHTML=scannerTable(["Top-K","Observations","Observation precision","Observation lift","Labeled events","Event precision","Event lift"],
+    topKs.map(k=>[`Top ${k}`,m[`top_${k}_count`]??"—",pct(m[`pooled_precision_at_${k}`]??m[`precision_at_${k}`]),scannerRatio(m[`lift_at_${k}`]),m[`event_top_${k}_count`]??"—",pct(m[`event_precision_at_${k}`]),scannerRatio(m[`event_lift_at_${k}`])]));
   $("scanner-funnel").innerHTML=scannerTable(["Session","Eligible","Tradable","Feature complete","Prior strength","Pullback","Exhaustion","Support","Early reversal","Ranked"],
     (m.funnel_by_day||[]).slice(-30).reverse().map(row=>[row.date,row.eligible_universe,row.tradable,row.feature_complete,row.prior_strength,row.pullback,row.exhaustion,row.support_absorption,row.early_reversal,row.final_ranked_candidate]));
   $("scanner-near-misses").innerHTML=scannerTable(["Session","Symbol","Failed stages"],
     (m.near_misses||[]).slice(0,100).map(row=>[row.date,row.symbol,Object.entries(row.stages||{}).filter(([,passed])=>!passed).map(([name])=>name).join(", ")]));
-  $("scanner-regime").innerHTML=scannerTable(["SPY regime","Candidates","Target hit rate"],
-    [["Above 20-day average",m.spy_above_ma20_candidate_count??"—",pct(m.spy_above_ma20_hit_rate)],
-     ["Below 20-day average",m.spy_below_ma20_candidate_count??"—",pct(m.spy_below_ma20_hit_rate)]]);
+  $("scanner-regime").innerHTML=scannerTable(["SPY regime","Candidates","Labeled","Primary success rate"],
+    [["Above 20-day average",m.spy_above_ma20_candidate_count??"—",m.spy_above_ma20_labeled_count??"—",pct(m.spy_above_ma20_success_rate??m.spy_above_ma20_hit_rate)],
+     ["Below 20-day average",m.spy_below_ma20_candidate_count??"—",m.spy_below_ma20_labeled_count??"—",pct(m.spy_below_ma20_success_rate??m.spy_below_ma20_hit_rate)]]);
   const days=[...new Set(scannerState.candidates.map(row=>row.signal_date))].sort().reverse();
   const oldDay=$("scanner-day").value;
   $("scanner-day").innerHTML=days.map(value=>`<option value="${safe(value)}">${safe(value)}</option>`).join("");
@@ -69,12 +74,12 @@ function drawScannerCandidates(){
   const diagnostics=[...new Set(rows.flatMap(row=>Object.keys(row.diagnostics||{})))].sort();
   const probabilities=[...new Set(rows.flatMap(row=>Object.keys(row.probabilities||{})))].sort();
   const run=scannerState.runs.find(item=>item.run_id===$("scanner-run").value);
-  const hit=(run?.metrics||{}).primary_target,horizon=run?.metadata?.evaluation?.horizon_sessions||10;
+  const hit=(run?.metrics||{}).primary_outcome||(run?.metrics||{}).primary_target,horizon=run?.metadata?.evaluation?.horizon_sessions||10;
   $("scanner-candidates").innerHTML=scannerTable(
-    ["Rank","Symbol","Name","Strategy score","Selected",...diagnostics,...probabilities,"Target hit","MFE","MAE","New low","Further decline"],
+    ["Rank","Symbol","Name","Strategy score","Selected","Signal event",...diagnostics,...probabilities,"Primary success","MFE","MAE","New low","Further decline"],
     rows.map(row=>[row.rank,row.symbol,row.security_name,Number(row.strategy_score).toFixed(3),
-      row.selected?"Yes":"No",...diagnostics.map(key=>row.diagnostics?.[key]?.toFixed?.(3)??"—"),
-      ...probabilities.map(key=>pct(row.probabilities?.[key])),row.label?.[hit]===undefined?"—":row.label[hit]?"Yes":"No",
+      row.selected?"Yes":"No",row.signal_event==null?"—":row.signal_event?"New":"Cooldown",...diagnostics.map(key=>row.diagnostics?.[key]?.toFixed?.(3)??"—"),
+      ...probabilities.map(key=>pct(row.probabilities?.[key])),row.label?.[hit]==null?"—":row.label[hit]?"Yes":"No",
       pct(row.label?.[`mfe_${horizon}`]),pct(row.label?.[`mae_${horizon}`]),row.label?.new_low_after_signal?"Yes":"No",
       row.label?.false_falling_knife?"Yes":"No"]));
   const previous=$("scanner-inspect").value;

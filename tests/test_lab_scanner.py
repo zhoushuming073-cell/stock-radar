@@ -200,6 +200,28 @@ def test_market_context_uses_history_through_signal_date_only():
     pd.testing.assert_series_equal(first.loc[65, columns], second.loc[65, columns])
 
 
+def test_market_regime_uses_primary_outcome_not_target_touch():
+    sessions = pd.bdate_range("2025-01-02", periods=11)
+    features = pd.DataFrame({"date": [sessions[0]], "symbol": ["AAA"],
+                             "security_name": ["Example"], "close": [10.0],
+                             "ret_1": [.2], "tradability_pass": [True],
+                             "spy_trend": [.1]})
+    bars = pd.DataFrame({"date": sessions, "symbol": "AAA", "open": 10.0,
+                         "high": [10.0] * 11, "low": [9.9] * 11,
+                         "close": [10.0] * 11})
+    bars.loc[1, "low"] = 9.4
+    bars.loc[2, "high"] = 10.6
+    settings = evaluation_settings({"success_rule": "target_before_adverse"})
+    rows, metrics = scan_frames(
+        ManyCandidates(), {"selection": {"max_candidates": None}},
+        features.set_index(["date", "symbol"], drop=False), bars, sessions,
+        sessions[0], sessions[0], settings)
+    assert rows[0]["label"][metrics["primary_target"]] is True
+    assert rows[0]["label"][metrics["primary_outcome"]] is False
+    assert metrics["spy_above_ma20_labeled_count"] == 1
+    assert metrics["spy_above_ma20_success_rate"] == 0.0
+
+
 def test_scanner_outcomes_are_prohibited_plugin_inputs():
     for name in ("hit_5pct_10d", "time_to_5pct", "mfe_10", "mae_10",
                  "entry_reference_price", "new_low_after_signal", "false_falling_knife"):

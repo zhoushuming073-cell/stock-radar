@@ -175,7 +175,7 @@ $("run-timeline").onclick=async()=>{
   try{
     const pace_ms=Number($("timeline-pace").value);
     const result=await post("/api/lab/timeline",{strategy_id:id,
-      config:state.config[id]||strategy.config,slippage_bps:Number($("slippage").value),
+      config:state.config[id]||strategy.config,slippage_bps:slippageFor(id),
       execution:state.execution[id]||{},universe_mode:$("universe-mode").value,pace_ms});
     timelineController.activate({...result,pace_ms});
     showPage("lab");await refresh();

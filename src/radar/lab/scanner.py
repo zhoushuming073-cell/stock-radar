@@ -26,6 +26,11 @@ DEFAULT_EVALUATION = {
 
 def evaluation_settings(raw: Mapping[str, Any] | None) -> dict[str, Any]:
     value = {**DEFAULT_EVALUATION, **dict(raw or {})}
+    if isinstance(value.get("false_falling_knife"), Mapping):
+        value["false_falling_knife"] = {
+            **DEFAULT_EVALUATION["false_falling_knife"],
+            **value["false_falling_knife"],
+        }
     if set(value) - set(DEFAULT_EVALUATION):
         raise ValueError(f"unknown evaluation fields: {sorted(set(value) - set(DEFAULT_EVALUATION))}")
     if value["entry_reference"] != "next_session_open":
@@ -160,11 +165,13 @@ def signal_event_flags(candidates: pd.DataFrame, cooldown: int,
         index = indices.get(pd.Timestamp(row["signal_date"]).normalize())
         if index is None:
             raise ValueError("signal date absent from trading sessions")
-        previous = last.get(str(row["symbol"]))
+        identity = row.get("security_id") if "security_id" in ordered else None
+        key = str(identity) if pd.notna(identity) else str(row["symbol"])
+        previous = last.get(key)
         event = previous is None or index - previous >= max(1, cooldown)
         flags[int(row["_position"])] = event
         if event:
-            last[str(row["symbol"])] = index
+            last[key] = index
     return flags
 
 
@@ -212,10 +219,12 @@ def candidate_metrics(candidates: pd.DataFrame, background: pd.DataFrame,
     base_values = [value for value in base_values if value is not None]
     base_rate = float(np.mean(base_values)) if base_values else None
     flags = signal_event_flags(candidates, settings["event_cooldown_sessions"], sessions)
+    event_candidates = candidates.loc[flags].copy()
     metrics: dict[str, Any] = {
         "candidate_count": int(len(candidates)),
         "candidate_observation_count": int(len(candidates)),
         "unique_signal_event_count": int(sum(flags)),
+        "labeled_signal_event_count": int(event_candidates["label"].notna().sum()),
         "labeled_candidate_count": int(len(labeled_candidates)),
         "background_count": int(len(labeled_base)),
         "primary_target": hit,
@@ -239,6 +248,15 @@ def candidate_metrics(candidates: pd.DataFrame, background: pd.DataFrame,
             daily = []
         metrics[f"mean_daily_precision_at_{k}"] = float(np.mean(daily)) if daily else None
         metrics[f"median_daily_precision_at_{k}"] = float(np.median(daily)) if daily else None
+        event_top = event_candidates[event_candidates["rank"] <= k]
+        event_valid = event_top[event_top["label"].map(
+            lambda row: row is not None and row.get(outcome) is not None)]
+        event_precision = (float(np.mean([row[outcome] for row in event_valid["label"]]))
+                           if len(event_valid) else None)
+        metrics[f"event_top_{k}_count"] = int(len(event_valid))
+        metrics[f"event_precision_at_{k}"] = event_precision
+        metrics[f"event_lift_at_{k}"] = (event_precision / base_rate
+                                           if event_precision is not None and base_rate else None)
     for name in (f"mfe_{horizon}", f"mae_{horizon}"):
         values = [row[name] for row in labeled_candidates["label"]]
         metrics[f"average_{name}"] = float(np.mean(values)) if values else None

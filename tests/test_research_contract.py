@@ -102,6 +102,31 @@ def test_event_cooldown_preserves_observations():
     metrics = candidate_metrics(candidates, candidates, settings, dates)
     assert metrics["candidate_observation_count"] == 4
     assert metrics["unique_signal_event_count"] == 2
+    assert metrics["event_top_5_count"] == 2
+    assert metrics["event_precision_at_5"] == 1.0
+
+
+def test_event_precision_and_lift_exclude_cooldown_repeats():
+    dates = pd.bdate_range("2025-01-02", periods=6)
+    hit = {"hit_5pct_10d": True, "mfe_10": .1, "mae_10": -.01,
+           "false_falling_knife": False,
+           **{f"hit_{n}pct_10d": True for n in (3, 8, 10)}}
+    miss = {**hit, "hit_5pct_10d": False}
+    candidates = pd.DataFrame({
+        "signal_date": [dates[0], dates[1], dates[1]],
+        "symbol": ["AAA", "AAA", "BBB"], "rank": [1, 1, 2],
+        "label": [miss, hit, hit],
+    })
+    settings = evaluation_settings({"event_cooldown_sessions": 5})
+    metrics = candidate_metrics(candidates, candidates, settings, dates)
+    assert metrics["precision_at_5"] == pytest.approx(2 / 3)
+    assert metrics["event_top_5_count"] == 2
+    assert metrics["event_precision_at_5"] == pytest.approx(.5)
+    assert metrics["event_lift_at_5"] == pytest.approx(.75)
+    renamed = candidates.iloc[:2].copy()
+    renamed["symbol"] = ["OLD", "NEW"]
+    renamed["security_id"] = ["ID-1", "ID-1"]
+    assert signal_event_flags(renamed, 5, dates) == [True, False]
 
 
 def test_pit_listing_delisting_ticker_change_reuse_and_gap(tmp_path):

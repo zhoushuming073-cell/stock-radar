@@ -85,7 +85,8 @@ class RunManager:
                       max_candidates: int | None | object = _UNSET,
                       config_override: dict | None = None,
                       evaluation_overrides: dict | None = None,
-                      universe_mode: str = "current_snapshot") -> str:
+                      universe_mode: str = "current_snapshot",
+                      experiment: dict | None = None) -> str:
         if split not in {"train", "validation", "test"}:
             raise ValueError("scanner split must be train, validation or test")
         if max_candidates is not _UNSET and max_candidates is not None and (
@@ -182,6 +183,8 @@ class RunManager:
                 "label_version": LABEL_VERSION,
                 "split": split,
             }
+            if experiment:
+                metadata["experiment"] = experiment
             return self.store.create_scanner_run(metadata)
 
     def import_zip(self, path: Path) -> StrategyRegistration:

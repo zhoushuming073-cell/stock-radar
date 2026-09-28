@@ -50,6 +50,19 @@ Scanner storage or labels. Legacy `max_new`, `max_new_candidates`, and Scanner
 `max_candidates` remain readable in old runs; new requests issue explicit
 compatibility warnings where they are accepted.
 
+Scanner reports both observation Precision/Lift and event Precision/Lift at
+each configured `evaluation.top_k_values` rank. Event metrics retain the same
+eligible-market base rate but count only the first signal for a security within
+`evaluation.event_cooldown_sessions`; observations remain stored. In PIT mode,
+the cooldown follows stable `security_id` across ticker changes. Market-regime
+success rates use the configured `primary_outcome`, including
+target-before-adverse when selected, and omit ambiguous labels.
+
+Experiments can grid-search declared strategy fields and Scanner evaluation
+fields on Train/Validation. Scanner ablations are supported; rolling-window
+experiments currently execute backtests only. Test remains excluded from
+parameter search.
+
 `current_snapshot` is the baseline universe mode. It means historical
 membership may be missing delisted, renamed, or bankrupt securities.
 Its runs must show **Survivorship Bias Risk: Present**. Point-in-time mode

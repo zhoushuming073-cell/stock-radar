@@ -6,6 +6,9 @@ const pct = n => n!==null&&n!==undefined&&Number.isFinite(Number(n)) ? `${(Numbe
 const day = s => s ? String(s).slice(0,10) : "—";
 const statusLabel = {queued:"Queued",running:"Running",cancel_requested:"Stopping",completed:"Completed",failed:"Failed",cancelled:"Stopped"};
 const human = {train:"Training",validation:"Validation",test:"Test"};
+function slippageFor(id){
+  return Number(state.execution[id]?.slippage_bps??state.schemas[id]?.find(spec=>spec.path==="execution.slippage_bps")?.default??10);
+}
 function showPage(id){
   document.querySelectorAll(".page").forEach(page=>page.classList.toggle("active",page.id===id));
   document.querySelectorAll(".nav-link[data-page]").forEach(button=>button.classList.toggle("active",button.dataset.page===id));
@@ -13,7 +16,6 @@ function showPage(id){
   window.scrollTo({top:0,behavior:"smooth"});
   if(id==="compare"&&window.Plotly)requestAnimationFrame(()=>{if($("comparison-chart").data)Plotly.Plots.resize($("comparison-chart"))});
 }
-$("lab").appendChild($("runs"));
 document.querySelectorAll(".nav-link[data-page]").forEach(button=>button.onclick=()=>showPage(button.dataset.page));
 document.querySelectorAll("[data-open-page]").forEach(button=>button.onclick=()=>showPage(button.dataset.openPage));
 if(["scanner","lab","strategies-page","experiments","compare","settings"].includes(location.hash.slice(1)))showPage(location.hash.slice(1));
@@ -79,7 +81,6 @@ function fieldValue(id,spec){
   if(override!==undefined)return override;
   if(spec.namespace==="execution"&&path.startsWith("exit."))return pathGet(state.config[id],path);
   if(spec.path==="execution.max_new_positions_per_day")return state.config[id]?.max_new??spec.default;
-  if(spec.path==="execution.slippage_bps")return Number($("slippage").value);
   return spec.default;
 }
 function schemaField(id,spec){
@@ -123,7 +124,6 @@ function renderSchema(container,id,mode){
       const path=spec.path.split(".").slice(1).join(".");
       const target=spec.namespace==="strategy"?state.config[id]:(spec.namespace==="evaluation"?(state.evaluation[id]??={}):(state.execution[id]??={}));
       pathSet(target,path,value);
-      if(spec.path==="execution.slippage_bps")$("slippage").value=value;
       input.closest(".schema-field").querySelector("small").textContent="Run override";
       drawConfigDiff();
     };
@@ -137,7 +137,7 @@ function drawParameters(force=false){
   if(!state.config[id])state.config[id]=structuredClone(strategy.config);
   state.parameterFor=id;
   renderSchema("parameter-fields",id,"backtest");
-  $("grid-param").innerHTML=(state.schemas[id]||[]).filter(spec=>spec.namespace==="strategy"&&spec.searchable&&["number","integer","percentage"].includes(spec.type)).map(spec=>`<option value="${safe(spec.path.slice(9))}">${safe(spec.label)}</option>`).join("");
+  drawExperimentControls();
   drawConfigDiff();
 }
 function drawConfigDiff(){
@@ -225,7 +225,7 @@ async function drawCompare(){
   const signature=[...state.compare].sort().join(",")+"|"+runs.map(r=>`${r.run_id}:${r.status}:${r.updated_at||""}`).join(",");
   if(state.compareSignature===signature)return;
   state.compareSignature=signature;
-  $("comparison-body").innerHTML=runs.map(r=>`<tr><td>${safe(r.metadata?.strategy_name||r.metadata?.strategy_id)} #${r.run_id.slice(0,8)}</td><td>${safe(human[r.metadata?.split]||r.metadata?.split)}</td><td class="${r.metrics?.total_return>=0?"positive":"negative"}">${pct(r.metrics?.total_return)}</td><td>${pct(r.metrics?.max_drawdown)}</td><td>${safe(r.metrics?.sharpe?.toFixed?.(2)||"—")}</td><td>${money(r.metrics?.trade_count)}</td></tr>`).join("")||"<tr><td colspan='6'>Select completed runs from Run History</td></tr>";
+  $("comparison-body").innerHTML=runs.map(r=>`<tr><td>${safe(r.metadata?.strategy_name||r.metadata?.strategy_id)} #${r.run_id.slice(0,8)}</td><td>${safe(human[r.metadata?.split]||r.metadata?.split)}</td><td class="${r.metrics?.total_return>=0?"positive":"negative"}">${pct(r.metrics?.total_return)}</td><td>${pct(r.metrics?.max_drawdown)}</td><td>${safe(r.metrics?.sharpe?.toFixed?.(2)||"—")}</td><td>${money(r.metrics?.trade_count)}</td></tr>`).join("")||"<tr><td colspan='6'>Select completed runs from Backtest history</td></tr>";
   $("compare-preview").innerHTML=(runs.length?runs:state.runs.filter(r=>r.status==="completed").slice(0,3)).map(r=>`<div class="preview-row"><span>${safe(r.metadata?.strategy_name||r.metadata?.strategy_id||"Strategy")}</span><strong class="${(r.metrics?.total_return||0)>=0?"positive":"negative"}">${pct(r.metrics?.total_return)}</strong></div>`).join("")||"No completed runs";
   if(!runs.length){const chartEl=$("comparison-chart");if(window.Plotly&&chartEl.data)Plotly.purge(chartEl);return}
   try{
@@ -252,7 +252,7 @@ async function refresh(){
     if(!state.focused&&strategies.length)state.focused=[...state.selected][0];
     if(!state.active&&runs.length){const focusedRun=runs.find(r=>r.metadata?.strategy_id===state.focused);state.active=(focusedRun||runs[0]).run_id;}
     $("connection").innerHTML="<span class='green-dot'></span> Connected locally";
-    drawStrategies();drawParameters();drawScannerSources();drawRuns();if(state.active&&!window.timelineController?.active)await drawActive();await drawCompare();await drawExperiments();notice("");
+    drawStrategies();drawParameters();drawScannerSources();drawExperimentControls();drawRuns();if(state.active&&!window.timelineController?.active)await drawActive();await drawCompare();await drawExperiments();notice("");
   }catch(error){$("connection").textContent="Local service disconnected";notice(`Cannot connect to the local Strategy Lab: ${error.message}. Start the local Stock Radar service.`)}
   finally{state.loading=false}
 }
@@ -261,7 +261,7 @@ $("run-selected").onclick=async()=>{
   if(!state.selected.size){notice("Select at least one strategy.");return}
   const selected=[...state.selected];
   if($("source-scanner-run").value&&selected.length!==1){notice("A source Scanner run can be used with one matching strategy at a time.");return}
-  try{const result=await post("/api/lab/run",{strategy_ids:selected,split:$("split").value,slippage_bps:Number($("slippage").value),execution:state.execution[state.focused]||{},universe_mode:$("universe-mode").value,source_scanner_run_id:$("source-scanner-run").value||null,configs_by_strategy:Object.fromEntries(selected.map(id=>[id,state.config[id]||state.strategies.find(s=>s.id===id).config]))});state.active=result.run_ids[0];await refresh();showPage("lab");}
+  try{const result=await post("/api/lab/run",{strategy_ids:selected,split:$("split").value,slippage_bps:slippageFor(state.focused),execution:state.execution[state.focused]||{},universe_mode:$("universe-mode").value,source_scanner_run_id:$("source-scanner-run").value||null,configs_by_strategy:Object.fromEntries(selected.map(id=>[id,state.config[id]||state.strategies.find(s=>s.id===id).config]))});state.active=result.run_ids[0];await refresh();showPage("lab");}
   catch(error){notice(`Could not start run: ${error.message}`)}
 };
 async function importStrategy(event){
@@ -271,7 +271,7 @@ async function importStrategy(event){
 }
 $("strategy-plugin-file").onchange=importStrategy;
 $("cancel-run").onclick=async()=>{if(!state.active)return;try{await post("/api/lab/cancel",{run_id:state.active});await refresh()}catch(error){notice(`Could not stop run: ${error.message}`)}};
-$("reset-config").onclick=()=>{const id=state.focused,s=state.strategies.find(x=>x.id===id);if(s){state.config[id]=structuredClone(s.config);delete state.evaluation[id];delete state.execution[id];$("slippage").value=10;drawParameters(true);scannerState.parameterFor=null;drawScannerParameters()}};
+$("reset-config").onclick=()=>{const id=state.focused,s=state.strategies.find(x=>x.id===id);if(s){state.config[id]=structuredClone(s.config);delete state.evaluation[id];delete state.execution[id];drawParameters(true);scannerState.parameterFor=null;drawScannerParameters()}};
 $("clone-run").onclick=()=>{
   const run=state.runs.find(r=>r.run_id===state.active),id=run?.metadata?.strategy_id;
   if(!run||!state.strategies.some(s=>s.id===id)){notice("The strategy for this run is unavailable, so it cannot be cloned.");return}
@@ -282,19 +282,60 @@ $("clone-run").onclick=()=>{
 $("refresh").onclick=refresh;
 $("split").onchange=drawScannerSources;
 const experimentName={grid:"Parameter grid",ablation:"Ablation",walk_forward:"Rolling window"};
+function drawExperimentControls(){
+  const strategy=$("experiment-strategy"),previous=strategy.value;
+  strategy.innerHTML=state.strategies.map(item=>`<option value="${safe(item.id)}">${safe(item.name)}</option>`).join("");
+  strategy.value=state.strategies.some(item=>item.id===previous)?previous:state.focused||"";
+  const scanner=$("experiment-run-type").value==="scanner";
+  $("experiment-kind").querySelector('option[value="walk_forward"]').disabled=scanner;
+  if(scanner&&$("experiment-kind").value==="walk_forward")$("experiment-kind").value="grid";
+  const grid=$("experiment-kind").value==="grid";
+  $("grid-param").parentElement.hidden=!grid;
+  $("grid-values").parentElement.hidden=!grid;
+  const id=strategy.value,oldParam=$("grid-param").value;
+  const fields=(state.schemas[id]||[]).filter(spec=>spec.searchable&&
+    (spec.namespace==="strategy"||scanner&&spec.namespace==="evaluation")&&
+    ["number","integer","percentage","choice","boolean","integer_list","number_list"].includes(spec.type));
+  $("grid-param").innerHTML=fields.map(spec=>`<option value="${safe(spec.path)}">${safe(spec.namespace)} · ${safe(spec.label)}</option>`).join("");
+  if(fields.some(spec=>spec.path===oldParam))$("grid-param").value=oldParam;
+  const chosen=fields.find(spec=>spec.path===$("grid-param").value);
+  $("grid-values").placeholder=["integer_list","number_list"].includes(chosen?.type)?"[[5,10],[10,20]]":"e.g. 0.15, 0.20, 0.25";
+}
 async function drawExperiments(){
   const summaries=await api("/api/lab/experiments");
-  $("experiment-list").innerHTML=summaries.map(e=>`<article class="experiment-card"><h4>${safe(experimentName[e.kind]||e.kind)} · ${safe(e.strategy_id)} <small>#${e.id.slice(0,8)}</small></h4><div class="experiment-stats"><span>Completed ${e.completed}/${e.total}</span><span>Positive returns ${e.positive}</span><span>Median return ${pct(e.median_return)}</span><span>Average return ${pct(e.mean_return)}</span><span>Worst ${pct(e.worst_return)}</span><span>Best ${pct(e.best_return)}</span><span>Median drawdown ${pct(e.median_drawdown)}</span></div><div class="table-wrap experiment-variants"><table><thead><tr><th>Variant / out-of-sample period</th><th>Status</th><th>Return</th><th>Drawdown</th><th>Run</th></tr></thead><tbody>${e.runs.map(r=>`<tr><td>${safe(typeof r.variant==="object"?JSON.stringify(r.variant):r.variant)}</td><td>${safe(statusLabel[r.status]||r.status)}</td><td>${pct(r.total_return)}</td><td>${pct(r.max_drawdown)}</td><td><button class="text-button" data-run="${safe(r.run_id)}">View</button></td></tr>`).join("")}</tbody></table></div></article>`).join("")||"<p class='helper'>No experiments yet</p>";
-  document.querySelectorAll("#experiment-list [data-run]").forEach(button=>button.onclick=()=>{window.timelineController?.detach();state.active=button.dataset.run;drawActive();showPage("lab")});
+  $("experiment-list").innerHTML=summaries.map(e=>{
+    const scanner=e.run_type==="scanner";
+    const stats=scanner?(e.top_k==null?"<span>Top-K varies by variant; compare rows separately</span>":`<span>Event Precision@${e.top_k}: ${pct(e.median_precision)} median</span><span>Mean ${pct(e.mean_precision)}</span>`):
+      `<span>Positive returns ${e.positive}</span><span>Median return ${pct(e.median_return)}</span><span>Average return ${pct(e.mean_return)}</span><span>Worst ${pct(e.worst_return)}</span><span>Best ${pct(e.best_return)}</span><span>Median drawdown ${pct(e.median_drawdown)}</span>`;
+    const columns=scanner?"<th>K</th><th>Event Precision</th><th>Event Lift</th><th>Labeled events</th>":"<th>Return</th><th>Drawdown</th>";
+    const rows=e.runs.map(r=>`<tr><td>${safe(typeof r.variant==="object"?JSON.stringify(r.variant):r.variant)}</td><td>${safe(statusLabel[r.status]||r.status)}</td>${scanner?`<td>${safe(r.top_k)}</td><td>${pct(r.precision)}</td><td>${r.lift==null?"—":`${Number(r.lift).toFixed(2)}×`}</td><td>${safe(r.events??"—")}</td>`:`<td>${pct(r.total_return)}</td><td>${pct(r.max_drawdown)}</td>`}<td><button class="text-button" data-run="${safe(r.run_id)}" data-run-type="${scanner?"scanner":"backtest"}">View</button></td></tr>`).join("");
+    return `<article class="experiment-card"><h4>${safe(experimentName[e.kind]||e.kind)} · ${scanner?"Scanner":"Backtest"} · ${safe(e.strategy_id)} <small>#${e.id.slice(0,8)}</small></h4><div class="experiment-stats"><span>Completed ${e.completed}/${e.total}</span>${stats}</div><div class="table-wrap experiment-variants"><table><thead><tr><th>Variant / out-of-sample period</th><th>Status</th>${columns}<th>Run</th></tr></thead><tbody>${rows}</tbody></table></div></article>`;
+  }).join("")||"<p class='helper'>No experiments yet</p>";
+  document.querySelectorAll("#experiment-list [data-run]").forEach(button=>button.onclick=async()=>{
+    if(button.dataset.runType==="scanner"){
+      showPage("scanner");await refreshScanner();$("scanner-run").value=button.dataset.run;await drawScanner();
+    }else{window.timelineController?.detach();state.active=button.dataset.run;drawActive();showPage("lab")}
+  });
 }
-$("experiment-kind").onchange=()=>{const grid=$("experiment-kind").value==="grid";$("grid-param").parentElement.hidden=!grid;$("grid-values").parentElement.hidden=!grid};
+$("experiment-run-type").onchange=drawExperimentControls;
+$("experiment-strategy").onchange=drawExperimentControls;
+$("experiment-kind").onchange=drawExperimentControls;
+$("grid-param").onchange=drawExperimentControls;
 $("start-experiment").onclick=async()=>{
-  const strategy_id=state.focused;if(!strategy_id){notice("Select a strategy first.");return}
-  const kind=$("experiment-kind").value;
-  const payload={kind,strategy_id,split:$("experiment-split").value,slippage_bps:Number($("slippage").value)};
+  const strategy_id=$("experiment-strategy").value;if(!strategy_id){notice("Select a strategy first.");return}
+  const kind=$("experiment-kind").value,run_type=$("experiment-run-type").value;
+  const payload={kind,strategy_id,run_type,split:$("experiment-split").value,
+    config:state.config[strategy_id]||state.strategies.find(item=>item.id===strategy_id)?.config,
+    evaluation:run_type==="scanner"?state.evaluation[strategy_id]||{}:undefined,
+    execution:run_type==="backtest"?state.execution[strategy_id]||{}:undefined,
+    slippage_bps:slippageFor(strategy_id),universe_mode:$("universe-mode").value};
   if(kind==="grid"){
-    const key=$("grid-param").value,values=$("grid-values").value.split(",").map(x=>x.trim()).filter(Boolean).map(Number);
-    if(!key||!values.length||values.some(x=>!Number.isFinite(x))){notice("Enter valid candidate values separated by commas.");return}
+    const key=$("grid-param").value,spec=(state.schemas[strategy_id]||[]).find(item=>item.path===key);
+    let values;
+    try{values=["integer_list","number_list"].includes(spec?.type)?JSON.parse($("grid-values").value):$("grid-values").value.split(",").map(x=>x.trim()).filter(Boolean).map(value=>spec?.type==="boolean"?value==="true"?true:value==="false"?false:null:["number","integer","percentage"].includes(spec?.type)?Number(value):value)}
+    catch{notice("List parameters need a JSON array of lists.");return}
+    const list=["integer_list","number_list"].includes(spec?.type);
+    if(!key||!Array.isArray(values)||!values.length||values.some(value=>list?(!Array.isArray(value)||!value.length||value.some(item=>!Number.isFinite(item)||spec.type==="integer_list"&&!Number.isInteger(item))):(value===null||typeof value==="number"&&!Number.isFinite(value)||spec?.type==="integer"&&!Number.isInteger(value)))){notice("Enter valid candidate values.");return}
     payload.grid={[key]:values};
   }
   try{const result=await post("/api/lab/experiment",payload);notice(`Created ${result.count} runs. They will be queued in the background.`);await refresh();document.getElementById("experiments").scrollIntoView({behavior:"smooth"})}catch(error){notice(`Could not create experiment: ${error.message}`)}

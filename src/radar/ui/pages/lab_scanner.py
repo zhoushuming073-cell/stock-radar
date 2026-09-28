@@ -10,12 +10,10 @@ import streamlit as st
 def render_scanner(manager, strategy_ref: str, draft: dict) -> None:
     st.subheader("Scanner Research · 候选股研究")
     st.caption("按交易日筛选与排序；未来结果由主程序事后标注，不创建持仓或模拟交易。")
-    a, b, c = st.columns([1.4, 1.3, 1])
+    a, c = st.columns([1.4, 1])
     split = a.selectbox("研究时段", ["validation", "train", "test"],
                         format_func=lambda x: {"validation": "验证期", "train": "训练期",
                                                "test": "历史测试期"}[x], key="scanner_split")
-    display_k = b.selectbox("显示候选数（仅视图）", [5, 10, 20],
-                            index=1, key="scanner_display_k")
     if c.button("运行 Scanner", type="primary", width="stretch"):
         try:
             run_id = manager.queue_scanner(strategy_ref, split=split,
@@ -39,6 +37,10 @@ def render_scanner(manager, strategy_ref: str, draft: dict) -> None:
                               f"{item['created_at'][:16]} · {item['status']} · {run_id[:8]}"
                               for item in runs if item["run_id"] == run_id))
     run = manager.store.get_scanner_run(chosen)
+    top_k_values = run["metadata"].get("evaluation", {}).get("top_k_values", [5, 10, 20])
+    display_k = st.selectbox("显示候选数（仅视图）", top_k_values,
+                             index=top_k_values.index(10) if 10 in top_k_values else 0,
+                             key=f"scanner_display_k_{chosen}")
     status = run["status"]
     progress = run.get("progress") or {}
     if run["metadata"].get("universe_mode") != "point_in_time":
@@ -60,7 +62,12 @@ def render_scanner(manager, strategy_ref: str, draft: dict) -> None:
     boxes[3].metric(f"Lift@{k}", _ratio(metrics.get(f"lift_at_{k}")))
     boxes[4].metric("平均 MFE", _pct(metrics.get(f"average_mfe_{horizon}")))
     boxes[5].metric("平均 MAE", _pct(metrics.get(f"average_mae_{horizon}")))
-    st.caption(f"背景命中率 {_pct(metrics.get('base_rate'))} · "
+    event_boxes = st.columns(3)
+    event_boxes[0].metric(f"有效事件@{k}", metrics.get(f"event_top_{k}_count", "—"))
+    event_boxes[1].metric(f"Event Precision@{k}", _pct(metrics.get(f"event_precision_at_{k}")))
+    event_boxes[2].metric(f"Event Lift@{k}", _ratio(metrics.get(f"event_lift_at_{k}")))
+    st.caption(f"主要结果 {metrics.get('primary_outcome', '—')} · "
+               f"背景命中率 {_pct(metrics.get('base_rate'))} · "
                f"下跌延伸率 {_pct(metrics.get('false_falling_knife_rate'))} · "
                f"有效标签 {metrics.get('labeled_candidate_count', 0)} / "
                f"{metrics.get('candidate_count', 0)}；窗口末尾不足 {horizon} 日的候选不参与命中率。")
@@ -76,11 +83,14 @@ def render_scanner(manager, strategy_ref: str, draft: dict) -> None:
     if hit_rows:
         st.dataframe(hit_rows, hide_index=True, width="stretch")
     regime = [{"市场状态": label, "候选数": metrics.get(f"{label}_candidate_count"),
-               "目标命中率": _pct(metrics.get(f"{label}_hit_rate"))}
+               "有效标签": metrics.get(f"{label}_labeled_count"),
+               "主要结果成功率": _pct(metrics.get(f"{label}_success_rate",
+                                         metrics.get(f"{label}_hit_rate")))}
               for label in ("spy_above_ma20", "spy_below_ma20")]
     st.markdown("#### 市场状态拆分")
     st.dataframe(regime, hide_index=True, width="stretch")
-    candidates = manager.store.get_scanner_candidates(chosen, max_rank=20, limit=100000)
+    candidates = manager.store.get_scanner_candidates(
+        chosen, max_rank=max(top_k_values), limit=100000)
     if candidates:
         days = sorted({item["signal_date"] for item in candidates}, reverse=True)
         day = st.selectbox("信号日", days, key="scanner_signal_day")
@@ -89,7 +99,9 @@ def render_scanner(manager, strategy_ref: str, draft: dict) -> None:
             if item["signal_date"] == day and item["rank"] <= k:
                 rows.append({"排名": item["rank"], "代码": item["symbol"],
                              "名称": item["security_name"], "策略分": item["strategy_score"],
-                             "入选": item["selected"], **item["diagnostics"],
+                             "入选": item["selected"],
+                             "独立信号事件": item.get("signal_event"),
+                             **item["diagnostics"],
                              **item["probabilities"], **(item["label"] or {})})
         st.markdown("#### 每日 Top-K 候选与事后标签")
         st.dataframe(pd.DataFrame(rows), hide_index=True, width="stretch")

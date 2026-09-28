@@ -409,7 +409,7 @@ stock-radar/
 ├── data/        # 本地生成数据（gitignored）
 ├── docs/        # 截图与文档资源
 ├── scripts/     # 本地自动化辅助脚本
-├── site/        # 私有静态 Dashboard 资源
+├── site/        # 静态 Dashboard 资源（行情数据仍在本机）
 ├── src/         # Python 包
 ├── tests/       # 离线测试
 ├── .env.example

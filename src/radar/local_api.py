@@ -246,7 +246,8 @@ def make_handler(allowed_origins: set[str]):
                                    limit=100000))
                 elif target.path == "/api/lab/experiments":
                     from radar.lab.experiments import summarize_experiments
-                    payload = summarize_experiments(lab_runs())
+                    payload = summarize_experiments(
+                        lab_runs(), lab_manager().store.list_scanner_runs(limit=1000))
                 elif target.path in {"/api/lab/run", "/api/lab/equity", "/api/lab/trades",
                                      "/api/lab/events", "/api/lab/days"}:
                     run_id = parse_qs(target.query).get("id", [""])[0]
@@ -319,6 +320,11 @@ def make_handler(allowed_origins: set[str]):
                             split=str(data.get("split", "validation")),
                             grid=data.get("grid"),
                             slippage_bps=float(data.get("slippage_bps", 10)),
+                            run_type=str(data.get("run_type", "backtest")),
+                            config_override=data.get("config"),
+                            evaluation_overrides=data.get("evaluation"),
+                            execution_overrides=data.get("execution"),
+                            universe_mode=str(data.get("universe_mode", "current_snapshot")),
                         )
                     elif target == "/api/lab/scanner/run":
                         strategy_id = data.get("strategy_id")

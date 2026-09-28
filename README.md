@@ -266,13 +266,16 @@ deployment; deploy Sites only when a release is ready.
 Scanner Research is the primary workflow: it saves daily candidate rankings,
 generic diagnostic scores, host-generated forward labels, configurable Precision/Lift
 at Top-K, pooled and daily precision, target-before-adverse outcomes, unique
-signal-event counts, daily filter funnels, MFE/MAE and market-regime breakdowns without opening simulated
+signal-event counts and event-level Precision/Lift, daily filter funnels, MFE/MAE
+and market-regime breakdowns under the selected primary outcome without opening simulated
 positions. Strategy Backtest remains available for portfolio diagnostics, with
 per-strategy exits (including `null` to turn each automatic exit off).
 New runs persist the resolved `strategy/evaluation/execution/dataset` configuration
 and the source of each value. The browser uses an explicit core/advanced parameter
 schema. [Research parameter contract](docs/RESEARCH_PARAMETER_CONTRACT.md) explains
 the meaning and compatibility of these fields.
+Experiments can run Scanner grids over strategy and evaluation parameters on
+Train/Validation; the Test period remains outside parameter search.
 The plugin interface stays at version 1; see
 [the v1.5 scanner specification](docs/STRATEGY_PLUGIN_SPEC.md) for exact label
 formulas, eligibility and reproducibility rules.
