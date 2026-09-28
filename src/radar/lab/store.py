@@ -497,6 +497,20 @@ class RunStore:
                  "security_id": row["security_id"],
                  "signal_event": bool(row["signal_event"])} for row in rows]
 
+    def scanner_censor_reasons(self, run_ids: list[str]) -> dict[str, int]:
+        """Aggregate persisted candidate censoring without loading full rows."""
+        if not run_ids:
+            return {}
+        if len(run_ids) > 1000:
+            raise RunStoreError("too many Scanner runs for censoring audit")
+        placeholders = ",".join("?" for _ in run_ids)
+        with self._connect() as connection:
+            rows = connection.execute(
+                f"SELECT label_reason, COUNT(*) AS count FROM scanner_candidates "
+                f"WHERE run_id IN ({placeholders}) AND label_status='censored' "
+                "GROUP BY label_reason", run_ids).fetchall()
+        return {str(row["label_reason"] or "unknown"): int(row["count"]) for row in rows}
+
     def verify_scanner_artifacts(self, run_id: str) -> bool:
         """Recompute saved hashes, including the two early v1.5 snapshot formats."""
         run = self.get_scanner_run(run_id)

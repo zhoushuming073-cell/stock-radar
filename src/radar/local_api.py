@@ -116,16 +116,23 @@ def lab_pit_readiness(split: str) -> dict:
     report = local_readiness(ROOT, "point_in_time", sessions)
     report["split"] = split
     report["requested_coverage"] = {"start": str(start.date()), "end": str(end.date())}
-    runs = lab_manager().store.list_scanner_runs(limit=1000)
+    store = lab_manager().store
+    runs = store.list_scanner_runs(limit=1000)
     relevant = [run for run in runs if run["status"] == "completed" and
                 run["metadata"].get("split") == split and
                 run["metadata"].get("universe_mode") == "point_in_time"]
+    reasons = store.scanner_censor_reasons([run["run_id"] for run in relevant])
     report["scanner_censoring_audit"] = {
         "completed_pit_runs": len(relevant),
         "censored_candidates": sum(int((run.get("metrics") or {}).get("censored_candidate_count") or 0)
                                    for run in relevant),
         "censored_background": sum(int((run.get("metrics") or {}).get("censored_background_count") or 0)
                                   for run in relevant),
+        "candidate_reasons": reasons,
+        "terminal_outcome_censored": reasons.get("terminal_event_without_valued_outcome", 0),
+        "missing_outcome_censored": sum(count for reason, count in reasons.items()
+                                        if reason in {"missing_symbol_bar", "missing_price_data",
+                                                      "security_no_longer_eligible", "insufficient_future_sessions"}),
     }
     return report
 

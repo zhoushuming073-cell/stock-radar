@@ -359,6 +359,8 @@ def test_completed_scanner_snapshot_is_immutable(tmp_path):
     assert len(store.get_scanner_candidates(run_id)) == 1
     assert store.get_scanner_candidates(run_id)[0]["features"] == {"close": 10.0}
     assert store.get_scanner_candidates(run_id)[0]["label_reason"] == "missing_symbol_bar"
+    assert store.scanner_censor_reasons([run_id]) == {"missing_symbol_bar": 1}
+    assert store.scanner_censor_reasons([]) == {}
     assert store.get_scanner_run(run_id)["artifact_hashes"]["format"] == "scanner-candidates-v4"
     assert store.get_scanner_run(run_id)["artifact_hashes"]["candidates_sha256"]
     assert store.get_scanner_run(run_id)["artifact_hashes"]["candidates_sha256"] == hashlib.sha256(
