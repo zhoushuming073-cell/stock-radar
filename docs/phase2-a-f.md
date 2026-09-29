@@ -80,6 +80,7 @@ allocation, overlapping holdings, and cash drag are not modeled yet.
 The current active asset list has survivorship bias. `us_equity` contains ETFs
 and other securities; name matching can flag some, but is not a dependable
 common-stock classifier. This work keeps the coarse universe and labels the
-limitation. Backfill rejects provider bars with invalid VWAP rather than
-silently accepting them. Event rows overlap in time and should not be treated
-as independent trials. Test-period performance has not been examined.
+limitation. Provider VWAP=0 is stored as NULL on an otherwise valid OHLCV bar;
+positive-volume cases generate a dated data-quality warning. Other invalid
+provider bars remain rejected. Event rows overlap in time and should not be
+treated as independent trials. Test-period performance has not been examined.

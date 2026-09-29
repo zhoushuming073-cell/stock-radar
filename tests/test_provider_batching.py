@@ -136,3 +136,20 @@ def test_zero_volume_zero_vwap_is_retained_as_missing_vwap() -> None:
     assert batch.bars[0].volume == 0
     assert batch.bars[0].vwap is None
     assert batch.issues == []
+
+
+def test_positive_volume_zero_vwap_retains_ohlcv_with_warning() -> None:
+    raw = SimpleNamespace(
+        timestamp=datetime(2024, 1, 6, 0, tzinfo=UTC),
+        open=10.0, high=11.0, low=9.0, close=10.5,
+        volume=1000.0, vwap=0.0, trade_count=100.0,
+    )
+    adapter, _, _ = make_provider(FakeData({"AAPL": [raw]}))
+    batch = list(adapter.get_daily_bars(["AAPL"], date(2024, 1, 5),
+                                        date(2024, 1, 5), "sip"))[0]
+    assert len(batch.bars) == 1
+    assert batch.bars[0].close == 10.5
+    assert batch.bars[0].vwap is None
+    assert len(batch.issues) == 1
+    assert batch.issues[0].code == "invalid_provider_vwap"
+    assert batch.issues[0].date == date(2024, 1, 5)

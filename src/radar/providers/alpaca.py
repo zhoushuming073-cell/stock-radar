@@ -238,10 +238,17 @@ class AlpacaProvider:
                     session = timestamp.astimezone(NEW_YORK).date()
                     if not start <= session <= end:
                         raise ValueError("provider bar session is outside requested range")
-                    # With zero trades Alpaca can report VWAP=0. It is
-                    # mathematically undefined, so store NULL rather than
-                    # reject an otherwise valid zero-volume daily bar.
-                    vwap = None if raw.volume == 0 and raw.vwap == 0 else raw.vwap
+                    # VWAP=0 is not a usable price. Keep independently valid
+                    # OHLCV for research, store NULL, and flag positive-volume
+                    # cases for data-quality review instead of losing the bar.
+                    vwap = None if raw.vwap == 0 else raw.vwap
+                    if raw.vwap == 0 and raw.volume > 0:
+                        issues.append(ValidationIssue(
+                            code="invalid_provider_vwap", severity="warning",
+                            message="provider VWAP is zero despite positive volume; stored as NULL",
+                            symbol=symbol, date=session,
+                            details={"volume": raw.volume},
+                        ))
                     bars.append(
                         DailyBar(
                             symbol=symbol,
