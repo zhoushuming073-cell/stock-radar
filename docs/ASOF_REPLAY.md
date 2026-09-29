@@ -23,8 +23,9 @@ the strict and fast engines on the specified historical dates. Sample dates
 should include Train and Validation, with at least one random date. A Test date
 may be checked for implementation parity without examining performance.
 
-The v3 table is built separately from the v2 table. Until its full-cohort
-backfill and validation finish, the application continues to use v2. A
+The v3 table was built separately from the v2 table and promoted after
+full-cohort backfill and three real-date strict replay checks. The frozen v2
+database is retained in `data/phase2-research-v2-frozen.duckdb`. A
 `--max-symbols` build is incomplete and cannot be promoted. The daily Alpaca
 task updates `market.duckdb`; research data is refreshed through a separately
 recorded backfill/build, preserving the data snapshot used by earlier runs.

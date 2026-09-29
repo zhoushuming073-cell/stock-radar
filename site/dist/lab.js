@@ -227,6 +227,7 @@ async function drawCompare(){
   state.compareSignature=signature;
   const basis=[
     ["feature version",r=>r.metadata?.feature_version],
+    ["market feature version",r=>r.metadata?.market_feature_version],
     ["label version",r=>r.metadata?.label_version],
     ["data snapshot",r=>r.metadata?.data_snapshot],
     ["universe mode",r=>r.metadata?.universe_mode],

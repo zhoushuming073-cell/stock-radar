@@ -15,7 +15,7 @@ ENGINE_FEATURES = frozenset({
     "avg_dollar_volume_20", "elasticity_score", "drawdown_20",
     "ret_1", "close_location", "tradability_pass",
 })
-MARKET_FEATURE_VERSION = "causal-market-v1"
+MARKET_FEATURE_VERSION = "causal-market-v2-asof"
 MARKET_FEATURES = frozenset({
     "spy_trend", "qqq_trend", "spy_drawdown", "qqq_drawdown",
     "market_realized_volatility", "market_breadth",

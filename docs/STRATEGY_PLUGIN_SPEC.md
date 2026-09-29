@@ -135,7 +135,7 @@ Examples of existing causal feature names (the available list is checked against
 | Volatility and liquidity | `atr_pct_20`, `realized_vol_20`, `avg_dollar_volume_20`, `body_pct` |
 | Causal market context | `spy_trend`, `qqq_trend`, `spy_drawdown`, `qqq_drawdown`, `market_realized_volatility`, `market_breadth` |
 
-Market context version `causal-market-v1` is host-computed through signal day `t`: `spy_trend` and `qqq_trend` are close / trailing 20-session mean close − 1; drawdowns are close / trailing 60-session maximum close − 1; realized volatility is the trailing 20 SPY close-to-close return standard deviation × √252; breadth is the fraction of same-day tradable, non-null-feature symbols with `dist_ma_20 > 0`. Rolling windows have no future rows. Plugins receive only market fields declared in `required_features()`.
+Market context version `causal-market-v2-asof` is host-computed through signal day `t`: `spy_trend` and `qqq_trend` are close / trailing 20-session mean close − 1; drawdowns are close / trailing 60-session maximum close − 1; realized volatility is the trailing 20 SPY close-to-close return standard deviation × √252; breadth is the fraction of same-day tradable, non-null-feature symbols with `dist_ma_20 > 0`. Rolling windows have no future rows. Plugins receive only market fields declared in `required_features()`.
 
 Declare every feature used in code in both places. If a feature such as `support_reclaim` is unavailable, the loader rejects the plugin with a missing-feature message. Do not compute a substitute from future data or bypass the context. To request a genuinely new causal feature, add it to the host feature pipeline as a separate, reviewed change.
 

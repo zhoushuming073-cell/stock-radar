@@ -20,10 +20,8 @@ from radar.labels.forward import compute_forward_labels
 from radar.schema import RESEARCH_COLUMNS, ensure_research_schema
 
 
-# Keep the currently served, frozen research table active while v3 is built in
-# a separate database. Switch this only after the new database is validated.
-FEATURE_VERSION = "phase2a_f_v2"
 BUILD_FEATURE_VERSION = "phase2a_f_v3_asof"
+FEATURE_VERSION = BUILD_FEATURE_VERSION
 LABEL_VERSION = "open_close_v1"
 
 
