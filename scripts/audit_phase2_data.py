@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 import duckdb
+from radar.research.pipeline import FEATURE_VERSION
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -14,13 +15,15 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--database", type=Path, default=ROOT / "data" / "phase2-research.duckdb")
     parser.add_argument("--output", type=Path, default=ROOT / "reports" / "phase2" / "data_audit.json")
+    parser.add_argument("--feature-version", default=FEATURE_VERSION)
     args = parser.parse_args()
     conn = duckdb.connect(str(args.database), read_only=True)
     try:
         bars = conn.execute("""
             SELECT COUNT(*), COUNT(DISTINCT symbol), COUNT(DISTINCT date), MIN(date), MAX(date),
                    COUNT(*) FILTER (WHERE open IS NULL OR high IS NULL OR low IS NULL OR close IS NULL OR volume IS NULL),
-                   COUNT(*) FILTER (WHERE open <= 0 OR high < low OR close <= 0 OR volume < 0)
+                   COUNT(*) FILTER (WHERE open <= 0 OR high < low OR close <= 0 OR volume < 0),
+                   COUNT(*) FILTER (WHERE vwap IS NULL AND volume > 0)
             FROM daily_bars
         """).fetchone()
         provenance = conn.execute("""
@@ -50,34 +53,36 @@ def main() -> None:
         selected = conn.execute("""
             WITH selected AS (
                 SELECT DISTINCT symbol FROM daily_features
-                WHERE feature_version='phase2a_f_v2'
+                WHERE feature_version=?
             )
             SELECT COUNT(*),
                    COUNT(*) FILTER (WHERE upper(a.name) LIKE '%ETF%'),
                    COUNT(*) FILTER (WHERE upper(a.name) LIKE '%ETN%'),
                    COUNT(*) FILTER (WHERE upper(a.name) LIKE '%TRUST%')
             FROM selected s JOIN assets a ON s.symbol=a.symbol
-        """).fetchone()
+        """, [args.feature_version]).fetchone()
         tables = {name: conn.execute(f"SELECT COUNT(*) FROM {name}").fetchone()[0]
                   for name in ("daily_features", "forward_labels", "research_runs")}
         max_label_date = conn.execute("SELECT MAX(signal_date) FROM forward_labels").fetchone()[0]
         scored = conn.execute("""
             SELECT COUNT(*) FILTER (WHERE elasticity_score IS NOT NULL), COUNT(*)
-            FROM daily_features WHERE feature_version='phase2a_f_v2'
-        """).fetchone()
+            FROM daily_features WHERE feature_version=?
+        """, [args.feature_version]).fetchone()
         current_labels = conn.execute("""
             SELECT COUNT(*) FROM forward_labels l
             JOIN (SELECT DISTINCT symbol FROM daily_features
-                  WHERE feature_version='phase2a_f_v2') f USING (symbol)
+                  WHERE feature_version=?) f USING (symbol)
             WHERE l.label_version='open_close_v1'
-        """).fetchone()[0]
+        """, [args.feature_version]).fetchone()[0]
     finally:
         conn.close()
     result = {
         "database": str(args.database),
+        "feature_version": args.feature_version,
         "daily_bars": {"rows": bars[0], "symbols": bars[1], "sessions": bars[2],
                        "start": str(bars[3]), "end": str(bars[4]),
-                       "null_ohlcv_rows": bars[5], "invalid_price_volume_rows": bars[6]},
+                       "null_ohlcv_rows": bars[5], "invalid_price_volume_rows": bars[6],
+                       "null_vwap_positive_volume_rows": bars[7]},
         "provenance": [{"provider": a, "feed": b, "adjustment": c, "rows": n}
                        for a, b, c, n in provenance],
         "benchmarks": [{"symbol": a, "sessions": n, "start": str(start), "end": str(end)}
