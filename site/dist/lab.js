@@ -225,6 +225,18 @@ async function drawCompare(){
   const signature=[...state.compare].sort().join(",")+"|"+runs.map(r=>`${r.run_id}:${r.status}:${r.updated_at||""}`).join(",");
   if(state.compareSignature===signature)return;
   state.compareSignature=signature;
+  const basis=[
+    ["feature version",r=>r.metadata?.feature_version],
+    ["label version",r=>r.metadata?.label_version],
+    ["data snapshot",r=>r.metadata?.data_snapshot],
+    ["universe mode",r=>r.metadata?.universe_mode],
+    ["research period",r=>[r.metadata?.split,r.metadata?.start_date,r.metadata?.evaluation_end]],
+    ["execution settings",r=>[r.metadata?.fee_profile,r.metadata?.slippage_bps,r.metadata?.execution_policy]],
+  ];
+  const differences=runs.length<2?[]:basis.filter(([,value])=>new Set(runs.map(r=>JSON.stringify(value(r)))).size>1).map(([label])=>label);
+  const warning=$("compare-compatibility");
+  warning.hidden=!differences.length;
+  warning.textContent=differences.length?`These runs differ in ${differences.join(", ")}. Compare their curves as separate experiments; headline metrics are not like-for-like.`:"";
   $("comparison-body").innerHTML=runs.map(r=>`<tr><td>${safe(r.metadata?.strategy_name||r.metadata?.strategy_id)} #${r.run_id.slice(0,8)}</td><td>${safe(human[r.metadata?.split]||r.metadata?.split)}</td><td class="${r.metrics?.total_return>=0?"positive":"negative"}">${pct(r.metrics?.total_return)}</td><td>${pct(r.metrics?.max_drawdown)}</td><td>${safe(r.metrics?.sharpe?.toFixed?.(2)||"—")}</td><td>${money(r.metrics?.trade_count)}</td></tr>`).join("")||"<tr><td colspan='6'>Select completed runs from Backtest history</td></tr>";
   $("compare-preview").innerHTML=(runs.length?runs:state.runs.filter(r=>r.status==="completed").slice(0,3)).map(r=>`<div class="preview-row"><span>${safe(r.metadata?.strategy_name||r.metadata?.strategy_id||"Strategy")}</span><strong class="${(r.metrics?.total_return||0)>=0?"positive":"negative"}">${pct(r.metrics?.total_return)}</strong></div>`).join("")||"No completed runs";
   if(!runs.length){const chartEl=$("comparison-chart");if(window.Plotly&&chartEl.data)Plotly.purge(chartEl);return}
