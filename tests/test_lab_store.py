@@ -124,13 +124,39 @@ def test_completed_run_immutable_even_via_direct_sql(tmp_path):
                                (run_id, other_id))
 
 
-def test_schema_v1_migrates_to_v6(tmp_path):
+def test_schema_v1_migrates_to_v7(tmp_path):
     path = tmp_path / "runs.sqlite"
     with closing(sqlite3.connect(path)) as connection:
         RunStore._migrate_v1(connection)
     RunStore(path)
     with closing(sqlite3.connect(path)) as connection:
-        assert connection.execute("PRAGMA user_version").fetchone()[0] == 6
+        assert connection.execute("PRAGMA user_version").fetchone()[0] == 7
+
+
+def test_run_rename_and_reversible_delete_preserve_completed_evidence(tmp_path):
+    store = RunStore(tmp_path / "runs.sqlite")
+    run_id = store.create_run(_metadata())
+    store.start_run(run_id, 42)
+    store.finish_run(run_id, {"equity": [{"date": "2025-01-02", "equity": 10.0}],
+                              "trades": [], "orders": []}, {"final_equity": 10.0})
+    before = store.get_run(run_id)
+    with pytest.raises(RunStoreError, match="1–80"):
+        store.rename_run(run_id, " ")
+    renamed = store.rename_run(run_id, "  v3 validation  ")
+    assert renamed["display_name"] == "v3 validation"
+    assert store.list_runs(status="completed")[0]["display_name"] == "v3 validation"
+    archived = store.set_run_archived(run_id, True)
+    assert archived["archived_at"]
+    assert archived["metrics"] == before["metrics"]
+    assert archived["metadata"] == before["metadata"]
+    assert archived["updated_at"] == before["updated_at"]
+    assert store.get_equity(run_id).iloc[0]["equity"] == 10.0
+    restored = RunStore(store.path).set_run_archived(run_id, False)
+    assert restored["archived_at"] is None
+    assert restored["display_name"] == "v3 validation"
+    active_id = store.create_run(_metadata())
+    with pytest.raises(RunStoreError, match="finished"):
+        store.set_run_archived(active_id, True)
 
 
 def test_cancellation_and_required_metadata(tmp_path):

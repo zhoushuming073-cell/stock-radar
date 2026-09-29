@@ -1,11 +1,13 @@
 const API = "http://127.0.0.1:8765";
 const $ = id => document.getElementById(id);
-const state = {strategies:[], runs:[], scannerRuns:[], selected:new Set(), closed:new Set(), focused:null, parameterFor:null, active:null, config:{}, schemas:{}, evaluation:{}, execution:{}, compare:new Set(), exportSelected:new Set(), exportInitialized:false, exportResult:null, exportName:"Three strategy v3 study", loading:false};
+const state = {strategies:[], runs:[], scannerRuns:[], selected:new Set(), closed:new Set(), focused:null, parameterFor:null, active:null, config:{}, schemas:{}, evaluation:{}, execution:{}, compare:new Set(), showDeletedRuns:false, exportSelected:new Set(), exportInitialized:false, exportResult:null, exportName:"Three strategy v3 study", loading:false};
 const money = n => n!==null&&n!==undefined&&Number.isFinite(Number(n)) ? new Intl.NumberFormat("en-US",{maximumFractionDigits:0}).format(Number(n)) : "—";
 const pct = n => n!==null&&n!==undefined&&Number.isFinite(Number(n)) ? `${(Number(n)*100).toFixed(2)}%` : "—";
 const day = s => s ? String(s).slice(0,10) : "—";
 const statusLabel = {queued:"Queued",running:"Running",cancel_requested:"Stopping",completed:"Completed",failed:"Failed",cancelled:"Stopped"};
 const human = {train:"Training",validation:"Validation",test:"Test"};
+const runName = run => run.display_name||run.metadata?.strategy_name||run.metadata?.strategy_id||"Strategy";
+const visibleRuns = () => state.runs.filter(run=>!run.archived_at);
 function slippageFor(id){
   return Number(state.execution[id]?.slippage_bps??state.schemas[id]?.find(spec=>spec.path==="execution.slippage_bps")?.default??10);
 }
@@ -29,7 +31,7 @@ async function api(path, options={}){
 async function post(path, body){return api(path,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});}
 function focusRun(id){
   window.timelineController?.detach();
-  const run=state.runs.find(r=>r.metadata?.strategy_id===id);
+  const run=visibleRuns().find(r=>r.metadata?.strategy_id===id);
   if(run){if(state.active!==run.run_id){state.active=run.run_id;drawActive();}}
   else notice(`'${state.strategies.find(x=>x.id===id)?.name||id}' has no run history.`);
 }
@@ -156,15 +158,17 @@ function drawScannerSources(){
   if(options.some(run=>run.run_id===previous))select.value=previous;
 }
 function drawRuns(){
-  const batches=[...new Map(state.runs.filter(r=>r.metadata?.batch_id).map(r=>[r.metadata.batch_id,r])).keys()];
+  const displayed=state.runs.filter(r=>Boolean(r.archived_at)===state.showDeletedRuns);
+  const batches=[...new Map(displayed.filter(r=>r.metadata?.batch_id).map(r=>[r.metadata.batch_id,r])).keys()];
   const batchRows=batches.map(id=>{
-    const members=state.runs.filter(r=>r.metadata?.batch_id===id);
+    const members=displayed.filter(r=>r.metadata?.batch_id===id);
     if(members.length!==3)return "";
     const phase=members.find(r=>r.status==="running")?.metadata?.split;
     const label=phase?`${human[phase]} in progress`:members.every(r=>r.status==="completed")?"Completed":"Queued or stopped";
-    return `<div class="run-item"><button data-timeline-batch="${safe(id)}">Three-stage timeline · ${safe(members[0].metadata?.strategy_name||members[0].metadata?.strategy_id)}</button><span>${safe(label)}</span><span>${safe(day(members[0].created_at))}</span></div>`;
+    return `<div class="run-item"><button data-timeline-batch="${safe(id)}">Three-stage timeline · ${safe(members[0].metadata?.strategy_name||members[0].metadata?.strategy_id)}</button><span>${safe(label)}</span><span>${safe(day(members[0].created_at))}</span>${!state.showDeletedRuns&&members.every(r=>r.status==="completed")?`<button data-compare-batch="${safe(id)}" class="run-action">Compare all 3</button>`:""}</div>`;
   }).join("");
-  $("run-list").innerHTML=batchRows+state.runs.map(r=>`<div class="run-item"><button data-run="${safe(r.run_id)}">${safe(r.metadata?.strategy_name||r.metadata?.strategy_id||"Strategy")} · ${safe(human[r.metadata?.split]||r.metadata?.split||"")}</button><span>${safe(statusLabel[r.status]||r.status)}</span><span>${safe(day(r.created_at))}</span><label><input type="checkbox" data-compare="${safe(r.run_id)}" ${state.compare.has(r.run_id)?"checked":""} ${r.status!=="completed"?"disabled":""}> Compare</label></div>`).join("")||"<span class='helper'>No run history</span>";
+  $("show-deleted-runs").textContent=state.showDeletedRuns?"Back to history":`Recently deleted (${state.runs.length-visibleRuns().length})`;
+  $("run-list").innerHTML=batchRows+displayed.map(r=>`<div class="run-item"><button data-run="${safe(r.run_id)}" title="Run #${safe(r.run_id)}">${safe(runName(r))} · ${safe(human[r.metadata?.split]||r.metadata?.split||"")} <small>#${safe(r.run_id.slice(0,8))}</small></button><span>${safe(statusLabel[r.status]||r.status)}</span><span>${safe(day(r.created_at))}</span><span class="run-actions"><button class="run-action" data-rename-run="${safe(r.run_id)}">Rename</button>${state.showDeletedRuns?`<button class="run-action" data-restore-run="${safe(r.run_id)}">Restore</button>`:`<label><input type="checkbox" data-compare="${safe(r.run_id)}" ${state.compare.has(r.run_id)?"checked":""} ${r.status!=="completed"?"disabled":""}> Compare</label>${["completed","failed","cancelled"].includes(r.status)?`<button class="run-action run-delete" data-archive-run="${safe(r.run_id)}">Delete</button>`:""}`}</span></div>`).join("")||`<span class='helper'>${state.showDeletedRuns?"No deleted runs":"No run history"}</span>`;
   document.querySelectorAll("[data-timeline-batch]").forEach(b=>b.onclick=()=>{
     const members=state.runs.filter(r=>r.metadata?.batch_id===b.dataset.timelineBatch);
     const ids=["train","validation","test"].map(split=>members.find(r=>r.metadata?.split===split)?.run_id);
@@ -174,15 +178,59 @@ function drawRuns(){
     showPage("lab");
   });
   document.querySelectorAll("#run-list [data-run]").forEach(b=>b.onclick=()=>{window.timelineController?.detach();state.active=b.dataset.run;drawActive();showPage("lab")});
-  document.querySelectorAll("[data-compare]").forEach(b=>b.onchange=()=>{if(b.checked)state.compare.add(b.dataset.compare);else state.compare.delete(b.dataset.compare);drawCompare();});
+  document.querySelectorAll("#run-list [data-compare]").forEach(b=>b.onchange=()=>changeCompare(b.dataset.compare,b.checked));
+  document.querySelectorAll("[data-compare-batch]").forEach(b=>b.onclick=()=>{
+    const members=visibleRuns().filter(r=>r.metadata?.batch_id===b.dataset.compareBatch&&r.status==="completed");
+    if(members.length!==3||new Set([...state.compare,...members.map(r=>r.run_id)]).size>6){notice("A comparison supports up to six completed runs.");return}
+    members.forEach(r=>state.compare.add(r.run_id));drawRuns();drawCompareOptions();drawCompare();showPage("compare");
+  });
+  document.querySelectorAll("[data-rename-run]").forEach(b=>b.onclick=()=>openRenameRun(b.dataset.renameRun));
+  document.querySelectorAll("[data-archive-run]").forEach(b=>b.onclick=()=>manageRun(b.dataset.archiveRun,"archive"));
+  document.querySelectorAll("[data-restore-run]").forEach(b=>b.onclick=()=>manageRun(b.dataset.restoreRun,"restore"));
+  drawCompareOptions();
 }
+function changeCompare(id,checked){
+  const run=visibleRuns().find(r=>r.run_id===id&&r.status==="completed");
+  if(checked&&(!run||state.compare.size>=6)){notice("Select up to six completed runs.");drawRuns();return}
+  if(checked)state.compare.add(id);else state.compare.delete(id);
+  drawRuns();drawCompare();
+}
+function drawCompareOptions(){
+  const runs=visibleRuns().filter(r=>r.status==="completed");
+  $("compare-selection-count").textContent=`${state.compare.size} / 6 selected`;
+  $("compare-run-list").innerHTML=runs.map(r=>`<label class="compare-option"><input type="checkbox" data-compare-option="${safe(r.run_id)}" ${state.compare.has(r.run_id)?"checked":""}><span><strong>${safe(runName(r))}</strong> · ${safe(human[r.metadata?.split]||r.metadata?.split||"—")} · ${safe(day(r.created_at))} · #${safe(r.run_id.slice(0,8))}</span><span class="${r.metrics?.total_return>=0?"positive":"negative"}">${pct(r.metrics?.total_return)}</span></label>`).join("")||"<p class='helper'>No completed runs available for comparison.</p>";
+  document.querySelectorAll("[data-compare-option]").forEach(b=>b.onchange=()=>changeCompare(b.dataset.compareOption,b.checked));
+}
+function openRenameRun(id){
+  const run=state.runs.find(r=>r.run_id===id);if(!run)return;
+  $("rename-run-form").dataset.runId=id;$("rename-run-name").value=run.display_name||runName(run);
+  $("rename-run-dialog").showModal();$("rename-run-name").select();
+}
+async function manageRun(id,action){
+  try{
+    await post(`/api/lab/run/${action}`,{run_id:id});
+    if(action==="archive"){
+      state.compare.delete(id);state.exportSelected.delete(id);
+      if(state.active===id){state.active=null;state.drawnSignature=null}
+    }
+    state.compareSignature=null;await refresh();
+    notice(action==="archive"?"Run moved to Recently deleted. You can restore it there.":"Run restored to history.");
+  }catch(error){notice(`Could not ${action} run: ${error.message}`)}
+}
+$("show-deleted-runs").onclick=()=>{state.showDeletedRuns=!state.showDeletedRuns;drawRuns()};
+$("cancel-rename-run").onclick=()=>$("rename-run-dialog").close();
+$("rename-run-form").onsubmit=async event=>{
+  event.preventDefault();const id=event.currentTarget.dataset.runId,name=$("rename-run-name").value.trim();
+  try{await post("/api/lab/run/rename",{run_id:id,name});$("rename-run-dialog").close();state.compareSignature=null;await refresh();notice("Run renamed.")}
+  catch(error){notice(`Could not rename run: ${error.message}`)}
+};
 function setMetric(id,value,kind=""){const e=$(id);e.textContent=value;e.classList.remove("positive","negative");if(kind&&Number.isFinite(kind))e.classList.add(kind>0?"positive":"negative");}
 function chart(element,traces,layout={}){if(!window.Plotly)return;return Plotly.react(element,traces,{margin:{l:52,r:12,t:8,b:32},paper_bgcolor:"#fff",plot_bgcolor:"#fff",font:{family:'Inter,"Segoe UI",sans-serif',size:10,color:"#768aa7"},xaxis:{showgrid:true,gridcolor:"#edf1f6",...layout.xaxis},yaxis:{showgrid:true,gridcolor:"#edf1f6",...layout.yaxis},showlegend:false,hovermode:"x unified",...layout},{displayModeBar:false,responsive:true});}
 async function drawActive(){
   if(window.timelineController?.active)return;
   const run=state.runs.find(r=>r.run_id===state.active);
   if(!run)return;
-  $("run-title").textContent=run.metadata?.strategy_name||run.metadata?.strategy_id||"Strategy run";
+  $("run-title").textContent=runName(run);
   $("run-subtitle").textContent=`${human[run.metadata?.split]||run.metadata?.split||""} · ${day(run.metadata?.start_date)} to ${day(run.metadata?.evaluation_end)} · ${run.run_id.slice(0,8)}`;
   $("run-status").textContent=statusLabel[run.status]||run.status;$("run-status").className=`status ${run.status}`;
   $("cancel-run").hidden=!(["queued","running"].includes(run.status));
@@ -221,8 +269,8 @@ async function drawActive(){
   }catch(error){notice(`Failed to load run details: ${error.message}`)}
 }
 async function drawCompare(){
-  const runs=state.runs.filter(r=>state.compare.has(r.run_id)&&r.status==="completed").slice(0,6);
-  const signature=[...state.compare].sort().join(",")+"|"+runs.map(r=>`${r.run_id}:${r.status}:${r.updated_at||""}`).join(",");
+  const runs=visibleRuns().filter(r=>state.compare.has(r.run_id)&&r.status==="completed").slice(0,6);
+  const signature=[...state.compare].sort().join(",")+"|"+runs.map(r=>`${r.run_id}:${r.status}:${r.updated_at||""}:${r.display_name||""}`).join(",");
   if(state.compareSignature===signature)return;
   state.compareSignature=signature;
   const basis=[
@@ -245,13 +293,13 @@ async function drawCompare(){
   const warning=$("compare-compatibility");
   warning.hidden=!differences.length;
   warning.textContent=differences.length?`These runs differ in ${differences.join(", ")}. Compare their curves as separate experiments; headline metrics are not like-for-like.`:"";
-  $("comparison-body").innerHTML=runs.map(r=>`<tr><td>${safe(r.metadata?.strategy_name||r.metadata?.strategy_id)} #${r.run_id.slice(0,8)}</td><td>${safe(human[r.metadata?.split]||r.metadata?.split)}</td><td class="${r.metrics?.total_return>=0?"positive":"negative"}">${pct(r.metrics?.total_return)}</td><td>${pct(r.metrics?.max_drawdown)}</td><td>${safe(r.metrics?.sharpe?.toFixed?.(2)||"—")}</td><td>${money(r.metrics?.trade_count)}</td></tr>`).join("")||"<tr><td colspan='6'>Select completed runs from Backtest history</td></tr>";
-  $("compare-preview").innerHTML=(runs.length?runs:state.runs.filter(r=>r.status==="completed").slice(0,3)).map(r=>`<div class="preview-row"><span>${safe(r.metadata?.strategy_name||r.metadata?.strategy_id||"Strategy")}</span><strong class="${(r.metrics?.total_return||0)>=0?"positive":"negative"}">${pct(r.metrics?.total_return)}</strong></div>`).join("")||"No completed runs";
+  $("comparison-body").innerHTML=runs.map(r=>`<tr><td>${safe(runName(r))} #${r.run_id.slice(0,8)}</td><td>${safe(human[r.metadata?.split]||r.metadata?.split)}</td><td class="${r.metrics?.total_return>=0?"positive":"negative"}">${pct(r.metrics?.total_return)}</td><td>${pct(r.metrics?.max_drawdown)}</td><td>${safe(r.metrics?.sharpe?.toFixed?.(2)||"—")}</td><td>${money(r.metrics?.trade_count)}</td></tr>`).join("")||"<tr><td colspan='6'>Select completed runs above</td></tr>";
+  $("compare-preview").innerHTML=(runs.length?runs:visibleRuns().filter(r=>r.status==="completed").slice(0,3)).map(r=>`<div class="preview-row"><span>${safe(runName(r))}</span><strong class="${(r.metrics?.total_return||0)>=0?"positive":"negative"}">${pct(r.metrics?.total_return)}</strong></div>`).join("")||"No completed runs";
   if(!runs.length){const chartEl=$("comparison-chart");if(window.Plotly&&chartEl.data)Plotly.purge(chartEl);return}
   try{
     const rows=await Promise.all(runs.map(r=>api(`/api/lab/equity?id=${r.run_id}`)));
     const colors=["#1769ed","#17a673","#ed9840","#8b63d9","#e2546b","#35a4c4"];
-    const traces=rows.map((series,i)=>({x:series.map(x=>day(x.date)),y:series.map(x=>100*(x.equity/series[0].equity-1)),type:"scatter",mode:"lines",name:`${runs[i].metadata?.strategy_name||runs[i].metadata?.strategy_id} #${runs[i].run_id.slice(0,4)}`,line:{color:colors[i],width:2}}));
+    const traces=rows.map((series,i)=>({x:series.map(x=>day(x.date)),y:series.map(x=>100*(x.equity/series[0].equity-1)),type:"scatter",mode:"lines",name:`${runName(runs[i])} #${runs[i].run_id.slice(0,4)}`,line:{color:colors[i],width:2}}));
     const first=runs[0],spy=await api(`/api/lab/spy?start=${first.metadata.start_date}&end=${first.metadata.evaluation_end}`);
     if(spy.length)traces.push({x:spy.map(x=>day(x.date)),y:spy.map(x=>100*(x.close/spy[0].close-1)),type:"scatter",mode:"lines",name:"SPY reference",line:{color:"#7a879b",dash:"dot"}});
     if(rows[0].length)traces.push({x:[day(rows[0][0].date),day(rows[0].at(-1).date)],y:[0,0],type:"scatter",mode:"lines",name:"Cash baseline",line:{color:"#bec7d5",dash:"dash"}});
@@ -263,14 +311,15 @@ async function refresh(){
   try{
     const [strategies,runs,scannerRuns]=await Promise.all([api("/api/lab/strategies"),api("/api/lab/runs"),api("/api/lab/scanner/runs")]);
     state.strategies=strategies;state.runs=runs;state.scannerRuns=scannerRuns;
+    state.compare=new Set([...state.compare].filter(id=>runs.some(r=>r.run_id===id&&!r.archived_at&&r.status==="completed")));
     await Promise.all(strategies.filter(item=>!state.schemas[item.id]).map(async item=>{
       state.schemas[item.id]=await api(`/api/lab/parameter-schema?strategy_id=${encodeURIComponent(item.id)}`).catch(()=>[]);
     }));
-    window.timelineController?.autoAttach(runs);
-    window.timelineController?.sync(runs);
+    window.timelineController?.autoAttach(visibleRuns());
+    window.timelineController?.sync(visibleRuns());
     if(!state.selected.size&&strategies.length)state.selected.add(strategies[0].id);
     if(!state.focused&&strategies.length)state.focused=[...state.selected][0];
-    if(!state.active&&runs.length){const focusedRun=runs.find(r=>r.metadata?.strategy_id===state.focused);state.active=(focusedRun||runs[0]).run_id;}
+    if(!state.active&&visibleRuns().length){const focusedRun=visibleRuns().find(r=>r.metadata?.strategy_id===state.focused);state.active=(focusedRun||visibleRuns()[0]).run_id;}
     $("connection").innerHTML="<span class='green-dot'></span> Connected locally";
     drawStrategies();drawParameters();drawScannerSources();drawExperimentControls();drawRuns();if(state.active&&!window.timelineController?.active)await drawActive();await drawCompare();await drawExperiments();notice("");
   }catch(error){$("connection").textContent="Local service disconnected";notice(`Cannot connect to the local Strategy Lab: ${error.message}. Start the local Stock Radar service.`)}
@@ -339,17 +388,17 @@ async function drawExperiments(){
   });
   document.querySelectorAll("[data-export-experiment]").forEach(button=>button.onclick=()=>{
     const entry=summaries.find(item=>item.id===button.dataset.exportExperiment);
-    if(entry){state.exportSelected=new Set(entry.runs.map(run=>run.run_id));state.exportName=`${entry.strategy_id} ${entry.kind} experiment`;drawResearchExport();$("research-export").scrollIntoView({behavior:"smooth",block:"center"})}
+    if(entry){state.exportSelected=new Set(entry.runs.map(run=>run.run_id).filter(id=>!state.runs.some(run=>run.run_id===id&&run.archived_at)));state.exportName=`${entry.strategy_id} ${entry.kind} experiment`;drawResearchExport();$("research-export").scrollIntoView({behavior:"smooth",block:"center"})}
   });
 }
 function drawResearchExport(){
   let panel=$("research-export");
   if(!panel){panel=document.createElement("article");panel.id="research-export";panel.className="card section-card";$("experiment-list").parentElement.before(panel)}
-  const all=[...state.scannerRuns.map(run=>({...run,runType:"Scanner"})),...state.runs.map(run=>({...run,runType:"Backtest"}))]
+  const all=[...state.scannerRuns.map(run=>({...run,runType:"Scanner"})),...visibleRuns().map(run=>({...run,runType:"Backtest"}))]
     .sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)));
   if(!state.exportInitialized){
     const groups=new Map();
-    state.runs.filter(run=>run.status==="completed"&&run.metadata?.feature_version==="phase2a_f_v3_asof")
+    visibleRuns().filter(run=>run.status==="completed"&&run.metadata?.feature_version==="phase2a_f_v3_asof")
       .forEach(run=>{const m=run.metadata,id=JSON.stringify([m.strategy_id,m.strategy_version,m.data_snapshot,m.config_hash,m.git_revision,m.market_feature_version,m.execution_policy,m.fee_profile,m.slippage_bps]);if(!groups.has(id))groups.set(id,[]);groups.get(id).push(run)});
     const latest=[...groups.values()].filter(rows=>["train","validation","test"].every(split=>rows.some(run=>run.metadata.split===split)))
       .sort((a,b)=>String(b[0].created_at).localeCompare(String(a[0].created_at))).slice(0,3);

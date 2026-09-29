@@ -402,7 +402,7 @@ def make_handler(allowed_origins: set[str]):
                 return
             target = urlsplit(self.path).path
             if target not in {"/api/data/sync", "/api/lab/import", "/api/lab/run", "/api/lab/timeline", "/api/lab/cancel",
-                              "/api/lab/uninstall",
+                              "/api/lab/uninstall", "/api/lab/run/rename", "/api/lab/run/archive", "/api/lab/run/restore",
                               "/api/lab/experiment", "/api/lab/scanner/run", "/api/lab/export"}:
                 self._json(HTTPStatus.NOT_FOUND, {"error": "not found"})
                 return
@@ -442,6 +442,14 @@ def make_handler(allowed_origins: set[str]):
                         payload = build_research_bundle(
                             manager.store, data.get("run_ids"),
                             DATA / "research-exports", name=data.get("name", "Research export"))
+                    elif target in {"/api/lab/run/rename", "/api/lab/run/archive", "/api/lab/run/restore"}:
+                        run_id = data.get("run_id")
+                        if not isinstance(run_id, str) or not re.fullmatch(r"[0-9a-f-]{36}", run_id):
+                            raise ValueError("invalid run ID")
+                        if target.endswith("/rename"):
+                            payload = manager.store.rename_run(run_id, data.get("name"))
+                        else:
+                            payload = manager.store.set_run_archived(run_id, target.endswith("/archive"))
                     elif target.endswith("/experiment"):
                         from radar.lab.experiments import queue_experiment
                         payload = queue_experiment(

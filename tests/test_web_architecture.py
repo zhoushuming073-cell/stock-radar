@@ -22,6 +22,8 @@ def api(monkeypatch):
         store=SimpleNamespace(
             list_scanner_runs=lambda limit: [{"run_id": "scanner-id"}],
             get_run=lambda run_id: {"run_id": run_id, "status": "completed"},
+            rename_run=lambda run_id, name: {"run_id": run_id, "display_name": name},
+            set_run_archived=lambda run_id, archived: {"run_id": run_id, "archived_at": "now" if archived else None},
         ),
         launch_queued_scanners=lambda: None,
         queue_scanner=lambda *args, **kwargs: "queued-scanner",
@@ -71,6 +73,20 @@ def test_research_and_strategy_routes_remain_available(api):
                    content_type="application/json")[2] == {"run_id": "queued-scanner"}
     assert request(api, "/api/lab/import", method="POST", data=b"sample ZIP",
                    content_type="application/zip")[2]["id"] == "sample"
+
+
+def test_run_presentation_routes(api):
+    run_id = "00000000-0000-0000-0000-000000000001"
+    for action, body, key, expected in (
+        ("rename", {"name": "My validation"}, "display_name", "My validation"),
+        ("archive", {}, "archived_at", "now"),
+        ("restore", {}, "archived_at", None),
+    ):
+        payload = json.dumps({"run_id": run_id, **body}).encode()
+        result = request(api, f"/api/lab/run/{action}", method="POST", data=payload,
+                         content_type="application/json")[2]
+        assert result["run_id"] == run_id
+        assert result[key] == expected
 
 
 def test_data_panel_routes(api, monkeypatch):

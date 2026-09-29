@@ -22,7 +22,7 @@ from typing import Any, Iterator, Mapping
 import pandas as pd
 
 
-SCHEMA_VERSION = 6
+SCHEMA_VERSION = 7
 _TERMINAL = frozenset({"completed", "failed", "cancelled"})
 _STATUSES = frozenset({"queued", "running", "cancel_requested", *_TERMINAL})
 _REQUIRED_METADATA = frozenset({
@@ -112,6 +112,9 @@ class RunStore:
                 version = 5
             if version == 5:
                 self._migrate_v6(connection)
+                version = 6
+            if version == 6:
+                self._migrate_v7(connection)
 
     @contextmanager
     def _connect(self) -> Iterator[sqlite3.Connection]:
@@ -336,6 +339,26 @@ class RunStore:
                 ALTER TABLE scanner_candidates ADD COLUMN label_status TEXT;
                 ALTER TABLE scanner_candidates ADD COLUMN label_reason TEXT;
                 PRAGMA user_version=6;
+                COMMIT;
+            """)
+        except Exception:
+            if connection.in_transaction:
+                connection.execute("ROLLBACK")
+            raise
+
+    @staticmethod
+    def _migrate_v7(connection: sqlite3.Connection) -> None:
+        """Mutable presentation fields live apart from immutable research evidence."""
+        try:
+            connection.executescript("""
+                BEGIN IMMEDIATE;
+                CREATE TABLE run_presentation (
+                    run_id TEXT PRIMARY KEY REFERENCES backtest_runs(run_id),
+                    display_name TEXT,
+                    archived_at TEXT,
+                    updated_at TEXT NOT NULL
+                );
+                PRAGMA user_version=7;
                 COMMIT;
             """)
         except Exception:
@@ -767,11 +790,50 @@ class RunStore:
     def get_run(self, run_id: str) -> dict[str, Any]:
         with self._connect() as connection:
             row = connection.execute(
-                "SELECT * FROM backtest_runs WHERE run_id=?", (run_id,)
+                "SELECT r.*, p.display_name, p.archived_at FROM backtest_runs r "
+                "LEFT JOIN run_presentation p ON p.run_id=r.run_id WHERE r.run_id=?", (run_id,)
             ).fetchone()
             if row is None:
                 raise RunStoreError(f"unknown run_id: {run_id}")
             return self._run_dict(row)
+
+    def rename_run(self, run_id: str, name: str) -> dict[str, Any]:
+        if not isinstance(name, str) or not 1 <= len(name.strip()) <= 80 or any(ord(char) < 32 for char in name):
+            raise RunStoreError("run name must be 1–80 characters without control characters")
+        with self._connect() as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            try:
+                self._status(connection, run_id)
+                connection.execute(
+                    "INSERT INTO run_presentation(run_id,display_name,updated_at) VALUES (?,?,?) "
+                    "ON CONFLICT(run_id) DO UPDATE SET display_name=excluded.display_name, "
+                    "updated_at=excluded.updated_at", (run_id, name.strip(), _now()),
+                )
+                connection.execute("COMMIT")
+            except Exception:
+                connection.execute("ROLLBACK")
+                raise
+        return self.get_run(run_id)
+
+    def set_run_archived(self, run_id: str, archived: bool) -> dict[str, Any]:
+        if not isinstance(archived, bool):
+            raise RunStoreError("archived must be a boolean")
+        with self._connect() as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            try:
+                if self._status(connection, run_id) not in _TERMINAL:
+                    raise RunStoreError("only finished runs can be deleted")
+                now = _now()
+                connection.execute(
+                    "INSERT INTO run_presentation(run_id,archived_at,updated_at) VALUES (?,?,?) "
+                    "ON CONFLICT(run_id) DO UPDATE SET archived_at=excluded.archived_at, "
+                    "updated_at=excluded.updated_at", (run_id, now if archived else None, now),
+                )
+                connection.execute("COMMIT")
+            except Exception:
+                connection.execute("ROLLBACK")
+                raise
+        return self.get_run(run_id)
 
     def get_daily_snapshots(self, run_id: str, *, after_event_id: int = 0,
                             limit: int = 200) -> list[dict[str, Any]]:
@@ -798,13 +860,16 @@ class RunStore:
         with self._connect() as connection:
             if status is None:
                 rows = connection.execute(
-                    "SELECT * FROM backtest_runs ORDER BY created_at DESC, run_id DESC LIMIT ?",
+                    "SELECT r.*, p.display_name, p.archived_at FROM backtest_runs r "
+                    "LEFT JOIN run_presentation p ON p.run_id=r.run_id "
+                    "ORDER BY r.created_at DESC, r.run_id DESC LIMIT ?",
                     (limit,),
                 ).fetchall()
             else:
                 rows = connection.execute(
-                    "SELECT * FROM backtest_runs WHERE status=? "
-                    "ORDER BY created_at DESC, run_id DESC LIMIT ?", (status, limit),
+                    "SELECT r.*, p.display_name, p.archived_at FROM backtest_runs r "
+                    "LEFT JOIN run_presentation p ON p.run_id=r.run_id WHERE r.status=? "
+                    "ORDER BY r.created_at DESC, r.run_id DESC LIMIT ?", (status, limit),
                 ).fetchall()
             return [self._run_dict(row) for row in rows]
 
