@@ -19,7 +19,10 @@ from radar.labels.forward import compute_forward_labels
 from radar.schema import RESEARCH_COLUMNS, ensure_research_schema
 
 
+# Keep the currently served, frozen research table active while v3 is built in
+# a separate database. Switch this only after the new database is validated.
 FEATURE_VERSION = "phase2a_f_v2"
+BUILD_FEATURE_VERSION = "phase2a_f_v3_asof"
 LABEL_VERSION = "open_close_v1"
 
 
@@ -84,28 +87,26 @@ def build_research_tables(
         embargo = int(research_cfg["embargo_sessions"])
         if embargo < int(research_cfg["max_forward_sessions"]):
             raise ValueError("embargo must cover the longest forward label")
+        # The current survivor cohort is an acknowledged limitation. Never
+        # select its historical members using end-of-sample liquidity.
         symbols = [r[0] for r in connection.execute("""
-            WITH recent AS (
-                SELECT symbol, AVG(close * volume) AS dollar_volume
-                FROM daily_bars
-                WHERE date >= (SELECT MAX(date) FROM daily_bars) - INTERVAL 35 DAY
-                GROUP BY symbol
-            )
             SELECT a.symbol FROM assets a
-            JOIN recent r ON a.symbol=r.symbol
             WHERE a.symbol NOT IN ('SPY','QQQ')
               AND upper(trim(a.asset_class))='US_EQUITY'
               AND upper(trim(a.status))='ACTIVE'
-              AND a.tradable
-              AND upper(trim(a.exchange)) IN ('NASDAQ','NYSE','AMEX','ARCA','BATS')
-            ORDER BY r.dollar_volume DESC NULLS LAST, a.symbol
+              AND EXISTS (SELECT 1 FROM daily_bars b WHERE b.symbol=a.symbol)
+            ORDER BY a.symbol
         """).fetchall()]
+        cohort_total = len(symbols)
         if max_symbols:
             symbols = symbols[:max_symbols]
-        assets = {row[0]: (row[1], row[2]) for row in connection.execute(
-            "SELECT symbol, tradable, exchange FROM assets"
-        ).fetchall()}
-        counts = {"symbols": 0, "feature_rows": 0, "label_rows": 0, "scored_rows": 0}
+        # A retry must not mix this cohort with v3 rows from an incomplete
+        # earlier build. v2 remains available to existing readers throughout.
+        connection.execute("DELETE FROM daily_features WHERE feature_version=?",
+                           [BUILD_FEATURE_VERSION])
+        counts = {"symbols": 0, "feature_rows": 0, "label_rows": 0,
+                  "scored_rows": 0, "cohort_total": cohort_total,
+                  "cohort_complete": max_symbols is None or max_symbols >= cohort_total}
         for symbol in symbols:
             bars = _read_bars(connection, symbol, sessions)
             base = compute_base_features(bars)
@@ -115,19 +116,17 @@ def build_research_tables(
             feature["elasticity_atr_raw"] = feature["atr_pct_20"]
             feature["symbol"] = symbol
             feature["date"] = sessions.date
-            feature["feature_version"] = FEATURE_VERSION
+            feature["feature_version"] = BUILD_FEATURE_VERSION
             feature["computed_at"] = datetime.now(timezone.utc)
             observed = bars["close"].notna()
-            tradable, exchange = assets.get(symbol, (False, None))
             gate_input = pd.DataFrame({
                 "close": bars["close"],
                 "avg_dollar_volume_20": feature["avg_dollar_volume_20"],
                 "history_sessions": observed.cumsum(),
-                "tradable": tradable, "exchange": exchange,
             }, index=sessions)
             feature["tradability_pass"] = tradability_gate(gate_input, cfg)
             feature = feature.loc[observed]
-            _replace_symbol_rows(connection, "daily_features", symbol, FEATURE_VERSION, feature)
+            _replace_symbol_rows(connection, "daily_features", symbol, BUILD_FEATURE_VERSION, feature)
             counts["feature_rows"] += len(feature)
 
             # The final test slice is never passed to the label engine.
@@ -144,26 +143,34 @@ def build_research_tables(
         # Do the normalization after all selected symbols are present. Exclude
         # stale versions and future dates from the same-date percentile ranks.
         if symbols:
-            placeholders = ",".join("?" for _ in symbols)
-            raw = connection.execute(f"""
-                SELECT symbol, date, elasticity_beta_raw, elasticity_atr_raw,
-                       elasticity_idio_raw, elasticity_burst_raw, elasticity_hit_raw
-                FROM daily_features WHERE feature_version=? AND symbol IN ({placeholders})
-            """, [FEATURE_VERSION, *symbols]).df()
             from radar.features.scoring import COMPONENT_NAMES, score_elasticity
-            scored = score_elasticity(raw, cfg)
             score_cols = ["symbol", "date", *[f"elasticity_{COMPONENT_NAMES[name]}_component" for name in cfg.weights], "elasticity_score"]
-            connection.register("phase2_scores", scored[score_cols])
-            try:
-                assignments = ", ".join(f"{name}=s.{name}" for name in score_cols[2:])
-                connection.execute(f"""
-                    UPDATE daily_features AS f SET {assignments}
-                    FROM phase2_scores AS s
-                    WHERE f.symbol=s.symbol AND f.date=s.date AND f.feature_version=?
-                """, [FEATURE_VERSION])
-            finally:
-                connection.unregister("phase2_scores")
-            counts["scored_rows"] = int(scored["elasticity_score"].notna().sum())
+            assignments = ", ".join(f"{name}=s.{name}" for name in score_cols[2:])
+            # A full cohort can contain millions of rows. Month-sized chunks
+            # preserve same-day ranks without a multi-GB DataFrame.
+            for offset in range(0, len(sessions), 20):
+                first = sessions[offset].date()
+                last = sessions[min(offset + 20, len(sessions)) - 1].date()
+                raw = connection.execute("""
+                    SELECT symbol, date, elasticity_beta_raw, elasticity_atr_raw,
+                           elasticity_idio_raw, elasticity_burst_raw, elasticity_hit_raw
+                    FROM daily_features WHERE feature_version=? AND tradability_pass
+                      AND date BETWEEN ? AND ?
+                """, [BUILD_FEATURE_VERSION, first, last]).df()
+                if raw.empty:
+                    continue
+                scored = score_elasticity(raw, cfg)
+                connection.register("phase2_scores", scored[score_cols])
+                try:
+                    connection.execute(f"""
+                        UPDATE daily_features AS f SET {assignments}
+                        FROM phase2_scores AS s
+                        WHERE f.symbol=s.symbol AND f.date=s.date AND f.feature_version=?
+                          AND f.date BETWEEN ? AND ?
+                    """, [BUILD_FEATURE_VERSION, first, last])
+                finally:
+                    connection.unregister("phase2_scores")
+                counts["scored_rows"] += int(scored["elasticity_score"].notna().sum())
         git_root = config_path.resolve().parents[1]
         commit_result = subprocess.run(["git", "rev-parse", "HEAD"], cwd=git_root,
                                        capture_output=True, text=True, check=False)
@@ -179,12 +186,12 @@ def build_research_tables(
                 ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, [
             run_id, datetime.now(timezone.utc), git_commit, snapshot,
-            FEATURE_VERSION, LABEL_VERSION,
+            BUILD_FEATURE_VERSION, LABEL_VERSION,
             hashlib.sha256(config_bytes).hexdigest(),
             sessions[0].date(), sessions[train_end - 1].date(),
             sessions[train_end].date(), sessions[validation_end - 1].date(),
             sessions[validation_end].date(), sessions[-1].date(),
-            f"built_a_f_{len(symbols)}_symbols",
+            f"built_asof_{len(symbols)}_of_{cohort_total}_symbols",
         ])
         counts["run_id"] = run_id
         counts["database"] = str(database)

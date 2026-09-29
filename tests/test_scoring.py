@@ -22,6 +22,12 @@ def test_score_uses_only_same_date_cross_section_and_requires_all_components():
 
 def test_tradability_is_separate_from_elasticity():
     frame = pd.DataFrame({"close": [3, 1.9], "avg_dollar_volume_20": [2e6, 2e6],
-                          "history_sessions": [126, 126], "tradable": [True, True],
-                          "exchange": ["NASDAQ", "NASDAQ"]})
+                          "history_sessions": [126, 126]})
     assert tradability_gate(frame, config()).tolist() == [True, False]
+
+
+def test_historical_gate_ignores_mutable_current_asset_metadata():
+    frame = pd.DataFrame({"close": [3, 3], "avg_dollar_volume_20": [2e6, 2e6],
+                          "history_sessions": [126, 126],
+                          "tradable": [False, True], "exchange": ["OTC", "NYSE"]})
+    assert tradability_gate(frame, config()).tolist() == [True, True]

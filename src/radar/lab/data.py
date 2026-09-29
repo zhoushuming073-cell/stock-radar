@@ -35,6 +35,7 @@ def load_strategy_segment(
     database: Path, start: pd.Timestamp, end: pd.Timestamp,
     required_features: set[str],
     universe_provider: PointInTimeUniverseProvider | None = None,
+    *, feature_version: str = FEATURE_VERSION,
 ) -> pd.DataFrame:
     """Load only current/past feature columns; never join forward_labels."""
     fields = ENGINE_FEATURES | (required_features - MARKET_FEATURES)
@@ -57,7 +58,7 @@ def load_strategy_segment(
             JOIN daily_bars AS b ON f.date=b.date AND f.symbol=b.symbol
             {asset_join}
             WHERE f.feature_version=? AND f.date BETWEEN ? AND ?
-        """, [FEATURE_VERSION, pd.Timestamp(start).date(), pd.Timestamp(end).date()]).df()
+        """, [feature_version, pd.Timestamp(start).date(), pd.Timestamp(end).date()]).df()
         context = None
         if required_features & MARKET_FEATURES:
             benchmark = connection.execute("""
@@ -69,7 +70,7 @@ def load_strategy_segment(
                 FROM daily_features WHERE feature_version=? AND date BETWEEN ? AND ?
                   AND dist_ma_20 IS NOT NULL AND tradability_pass
                 GROUP BY date
-            """, [FEATURE_VERSION, pd.Timestamp(start).date(), pd.Timestamp(end).date()]).df()
+            """, [feature_version, pd.Timestamp(start).date(), pd.Timestamp(end).date()]).df()
             context = _market_context(benchmark, breadth)
     finally:
         connection.close()

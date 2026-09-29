@@ -54,19 +54,10 @@ def main() -> int:
     connection = get_connection(database)
     try:
         eligible = [row[0] for row in connection.execute("""
-            WITH recent AS (
-                SELECT symbol, AVG(close * volume) AS dollar_volume
-                FROM daily_bars
-                WHERE date >= (SELECT MAX(date) FROM daily_bars) - INTERVAL 35 DAY
-                GROUP BY symbol
-            )
             SELECT a.symbol FROM assets a
-            LEFT JOIN recent r ON a.symbol = r.symbol
             WHERE upper(trim(a.asset_class)) = 'US_EQUITY'
               AND upper(trim(a.status)) = 'ACTIVE'
-              AND a.tradable
-              AND upper(trim(a.exchange)) IN ('NASDAQ', 'NYSE', 'AMEX', 'ARCA', 'BATS')
-            ORDER BY r.dollar_volume DESC NULLS LAST, a.symbol
+            ORDER BY a.symbol
         """).fetchall()]
         selected = eligible[:args.max_symbols] if args.max_symbols else eligible
         selected = sorted(set(selected) | {"SPY", "QQQ"})
@@ -81,6 +72,7 @@ def main() -> int:
         "session_end": sessions[-1].isoformat(), "sessions": len(sessions),
         "symbols": len(selected), "provider": "alpaca", "feed": settings.feed,
         "adjustment": settings.adjustment, "inserted": result.inserted_rows,
+        "cohort_total": len(eligible), "cohort_complete": args.max_symbols is None,
         "updated": result.updated_rows, "rejected": result.rejected_rows,
         "batches": result.batch_count, "failed_symbols": result.failed_symbols,
         "issue_counts": {severity: sum(i.severity == severity for i in result.issues)

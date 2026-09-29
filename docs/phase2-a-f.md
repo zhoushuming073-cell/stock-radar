@@ -12,17 +12,20 @@ script copies the live database on first run and refuses the live path as its
 output. Both database files stay local and are excluded by `.gitignore`.
 
 ```powershell
-.\.venv\Scripts\python.exe scripts\backfill_research.py --max-symbols 2000 --start 2021-09-01 --end 2026-09-24
-.\.venv\Scripts\python.exe scripts\build_research.py --max-symbols 2000
+.\.venv\Scripts\python.exe scripts\backfill_research.py --start 2021-09-01 --end 2026-09-28
+.\.venv\Scripts\python.exe scripts\build_research.py
 .\.venv\Scripts\python.exe scripts\factor_study.py
 .\.venv\Scripts\python.exe scripts\audit_phase2_data.py
 .\.venv\Scripts\python.exe -m pytest -q
 ```
 
 The backfill uses the existing Alpaca SIP, split-adjusted daily-bar provider and
-ingestion code. Symbols are selected by recent dollar volume from the current
-asset snapshot; this is a practical research subset, **not** a point-in-time
-historical universe. SPY and QQQ are benchmarks even though they are ETFs.
+ingestion code. The current active US-equity snapshot defines a survivor cohort;
+each historical trading day then applies its own price, ADV20, observed bar, and
+history-length gate. No end-of-sample liquidity ranking selects historical
+symbols. This is still **not** a point-in-time historical universe. `--max-symbols`
+is only for development smoke tests: it produces an incomplete cohort and must
+not be used for a research result. SPY and QQQ remain benchmarks.
 
 The frozen local source snapshot is
 `data/phase2-source-snapshot.duckdb`. Its SHA-256 is recorded in
@@ -42,8 +45,12 @@ and `assets` are the frozen source inputs for this run.
   diagnostic MFE/MAE labels.
 - No final-test bars are passed to the forward-label engine. The event study
   reads Train and Validation only, with a ten-session embargo at boundaries.
-- Same-date Elasticity percentiles use the selected current-snapshot universe.
-  Their rank depends on this cohort and should be rebuilt if it changes.
+- Same-date Elasticity percentiles use only that day's historically eligible
+  `U_t` within the frozen survivor cohort. Market breadth uses the same `U_t`.
+  Scores and breadth must be rebuilt if the cohort or raw bars change.
+- `radar.research.asof.strict_asof_day` physically truncates bars to a signal
+  date and serves as a slow correctness reference. The future-mutation test
+  compares it to the fast materialized feature table.
 
 ## Research outputs
 

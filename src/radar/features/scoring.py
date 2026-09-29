@@ -60,14 +60,16 @@ def score_elasticity(features: pd.DataFrame, config: ResearchConfig) -> pd.DataF
 def tradability_gate(
     features: pd.DataFrame, config: ResearchConfig,
 ) -> pd.Series:
-    """Current-bar, asset-snapshot gate; does not alter the Elasticity score."""
-    needed = {"close", "avg_dollar_volume_20", "history_sessions", "tradable", "exchange"}
+    """Historical OHLCV-only eligibility at the signal close.
+
+    The current asset snapshot defines a survivor cohort elsewhere; its mutable
+    tradable and exchange fields must not be projected onto historical dates.
+    """
+    needed = {"close", "avg_dollar_volume_20", "history_sessions"}
     if not needed.issubset(features):
         raise ValueError(f"missing gate columns: {sorted(needed - set(features))}")
     return (
         features["close"].ge(config.min_price)
         & features["avg_dollar_volume_20"].ge(config.min_avg_dollar_volume_20)
         & features["history_sessions"].ge(config.min_history_sessions)
-        & features["tradable"].eq(True)
-        & features["exchange"].astype("string").str.upper().isin(("NYSE", "NASDAQ", "AMEX", "ARCA", "BATS"))
     ).fillna(False)
