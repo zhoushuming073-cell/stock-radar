@@ -73,6 +73,10 @@ def build_research_tables(
     )
     connection = duckdb.connect(str(database))
     try:
+        # Keep the long full-cohort build within a desktop memory budget;
+        # DuckDB spills large joins/sorts into its database temp directory.
+        connection.execute("SET memory_limit='2GB'")
+        connection.execute("SET threads=2")
         ensure_research_schema(connection)
         spy = connection.execute("SELECT date, close FROM daily_bars WHERE symbol='SPY' ORDER BY date").df()
         qqq = connection.execute("SELECT date, close FROM daily_bars WHERE symbol='QQQ' ORDER BY date").df()
