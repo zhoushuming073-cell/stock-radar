@@ -7,6 +7,7 @@ The live market.duckdb is copied once and is never opened for writing here.
 from __future__ import annotations
 
 import argparse
+from collections import Counter
 import json
 import shutil
 from datetime import date, datetime, timezone
@@ -77,6 +78,7 @@ def main() -> int:
         "batches": result.batch_count, "failed_symbols": result.failed_symbols,
         "issue_counts": {severity: sum(i.severity == severity for i in result.issues)
                          for severity in ("warning", "error")},
+        "issue_code_counts": dict(Counter(issue.code for issue in result.issues)),
         "errors": [issue.model_dump(mode="json") for issue in result.issues
                    if issue.severity == "error"],
         "warning_examples": [issue.model_dump(mode="json") for issue in result.issues

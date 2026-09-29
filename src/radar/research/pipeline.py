@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 import hashlib
 from pathlib import Path
 import subprocess
+from typing import Callable
 from uuid import uuid4
 
 import duckdb
@@ -58,6 +59,7 @@ def _replace_symbol_rows(connection: duckdb.DuckDBPyConnection, table: str,
 
 def build_research_tables(
     database: Path, config_path: Path, *, max_symbols: int | None = None,
+    progress: Callable[[dict], None] | None = None,
 ) -> dict[str, int | str]:
     """Build all selected symbols; dates are aligned to the SPY session calendar."""
     cfg = load_research_config(config_path)
@@ -139,6 +141,10 @@ def build_research_tables(
             _replace_symbol_rows(connection, "forward_labels", symbol, LABEL_VERSION, labels)
             counts["label_rows"] += len(labels)
             counts["symbols"] += 1
+            if progress and (counts["symbols"] % 250 == 0 or
+                             counts["symbols"] == len(symbols)):
+                progress({"phase": "features", "completed": counts["symbols"],
+                          "total": len(symbols)})
 
         # Do the normalization after all selected symbols are present. Exclude
         # stale versions and future dates from the same-date percentile ranks.
@@ -171,6 +177,9 @@ def build_research_tables(
                 finally:
                     connection.unregister("phase2_scores")
                 counts["scored_rows"] += int(scored["elasticity_score"].notna().sum())
+                if progress:
+                    progress({"phase": "scores", "completed_sessions": min(offset + 20, len(sessions)),
+                              "total_sessions": len(sessions)})
         git_root = config_path.resolve().parents[1]
         commit_result = subprocess.run(["git", "rev-parse", "HEAD"], cwd=git_root,
                                        capture_output=True, text=True, check=False)
