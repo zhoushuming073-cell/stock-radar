@@ -34,7 +34,6 @@ STRATEGY2_FIELDS = [
     _field("strategy.min_close_location", "Close location", "Required close position within the daily range.", "percentage", "advanced", _BOTH, unit="fraction", minimum=0, maximum=1, step=.01),
     _field("strategy.min_wick_ratio", "Wick ratio", "Minimum lower wick share.", "percentage", "advanced", _BOTH, unit="fraction", minimum=0, maximum=1, step=.01),
     _field("strategy.max_volume_contraction", "Volume contraction", "Maximum volume contraction threshold.", "percentage", "advanced", _BOTH, unit="fraction", minimum=0, maximum=1, step=.01),
-    _field("strategy.exclude_explicit_funds", "Exclude named funds", "Reject explicitly named ETF/ETN securities.", "boolean", "advanced", _BOTH),
     _field("strategy.selection.max_candidates", "Strategy candidate cap", "Optional strategy output cap; blank keeps every eligible candidate.", "integer", "advanced", _BOTH, minimum=1, maximum=10000, step=1, nullable=True),
     _field("evaluation.horizon_sessions", "Outcome horizon", "Trading sessions after the signal used for forward labels.", "integer", "core", _SCANNER, unit="sessions", minimum=1, maximum=60, step=1),
     _field("evaluation.primary_target", "Primary upside target", "Target used for Scanner hit rate.", "percentage", "core", _SCANNER, unit="fraction", minimum=.01, maximum=.99, step=.01),

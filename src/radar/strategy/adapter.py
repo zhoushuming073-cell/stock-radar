@@ -39,8 +39,12 @@ def evaluate_selection(plugin: StrategyPlugin, config: Mapping[str, Any],
     if "date" not in daily.columns or daily["date"].nunique() != 1:
         raise ValueError("strategy selector requires one signal date")
     columns = ["symbol", "security_name", "close", *sorted(required - BASE_COLUMNS)]
-    context = StrategyContext(pd.Timestamp(daily["date"].iloc[0]),
-                              daily[columns].reset_index(drop=True))
+    causal_frame = daily[columns].reset_index(drop=True).copy()
+    # Legacy plugins still expect this field. Give them a date-row ticker
+    # placeholder so present-day asset renames cannot alter past decisions.
+    # Restore the current name only after every plugin decision is complete.
+    causal_frame["security_name"] = causal_frame["symbol"]
+    context = StrategyContext(pd.Timestamp(daily["date"].iloc[0]), causal_frame)
     frame = context.frame
     eligible = plugin.hard_filter(context, config)
     scores = plugin.score(context, config)
@@ -93,6 +97,8 @@ def evaluate_selection(plugin: StrategyPlugin, config: Mapping[str, Any],
             else:
                 ranked[name] = mapped
         ranked.attrs["diagnostic_columns"] = list(extra.columns)
+    display_names = daily.drop_duplicates("symbol").set_index("symbol")["security_name"]
+    ranked["security_name"] = ranked["symbol"].map(display_names).fillna(ranked["symbol"])
     return ranked, selected
 
 
@@ -109,8 +115,9 @@ def evaluate_filter_diagnostics(plugin: StrategyPlugin, config: Mapping[str, Any
     missing = set(columns) - set(daily)
     if missing:
         raise ValueError(f"filter diagnostics missing causal features: {sorted(missing)}")
-    context = StrategyContext(pd.Timestamp(daily["date"].iloc[0]),
-                              daily[columns].reset_index(drop=True))
+    causal_frame = daily[columns].reset_index(drop=True).copy()
+    causal_frame["security_name"] = causal_frame["symbol"]
+    context = StrategyContext(pd.Timestamp(daily["date"].iloc[0]), causal_frame)
     result = method(context, config)
     if not isinstance(result, pd.DataFrame) or not result.index.equals(context.frame.index):
         raise ValueError("filter_diagnostics must return an aligned DataFrame")

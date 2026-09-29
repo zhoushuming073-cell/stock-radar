@@ -13,7 +13,7 @@ max_distance_from_ma5: 0.15
 min_close_location: 0.50
 min_wick_ratio: 0.25
 max_volume_contraction: 0.80
-exclude_explicit_funds: true
+exclude_explicit_funds: false
 exit:
   take_profit: 0.05
   stop_loss: -0.10

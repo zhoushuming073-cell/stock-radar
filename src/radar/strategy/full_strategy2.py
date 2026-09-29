@@ -15,7 +15,7 @@ import pandas as pd
 
 
 REQUIRED = frozenset({
-    "symbol", "security_name", "tradability_pass", "elasticity_score",
+    "symbol", "tradability_pass", "elasticity_score",
     "ret_60", "drawdown_60", "drawdown_20", "pullback_days_20",
     "decline_speed_prev_3", "decline_acceleration", "red_body_avg_3",
     "red_body_avg_5", "range_contraction", "volume_contraction",
@@ -29,8 +29,8 @@ REQUIRED = frozenset({
 @dataclass(frozen=True)
 class FullStrategy2Rules:
     max_new: int = 3
-    min_elasticity: float = 76.21433772581146  # Train top 20% threshold
-    min_prior_peak_gain: float = 0.13230715023626216  # Train top 40%
+    min_elasticity: float = 76.21433772581146  # Frozen pre-v3 Train threshold
+    min_prior_peak_gain: float = 0.13230715023626216  # Frozen pre-v3 Train threshold
     min_pullback: float = 0.08
     max_pullback: float = 0.40
     max_new_low_frequency_5: float = 0.20
@@ -40,7 +40,7 @@ class FullStrategy2Rules:
     min_close_location: float = 0.50
     min_wick_ratio: float = 0.25
     max_volume_contraction: float = 0.80
-    exclude_explicit_funds: bool = True
+    exclude_explicit_funds: bool = False
     disabled_stages: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
@@ -48,6 +48,8 @@ class FullStrategy2Rules:
             raise ValueError("invalid Strategy 2 candidate limits")
         if not 0 <= self.max_new_low_frequency_5 <= 1:
             raise ValueError("invalid new-low limit")
+        if self.exclude_explicit_funds:
+            raise ValueError("current security names cannot filter historical candidates")
         known = {"prior_strength", "pullback_quality", "exhaustion",
                  "support_absorption", "new_low_stop", "early_reversal",
                  "not_extended", "elasticity"}
@@ -183,12 +185,6 @@ def score_full_strategy2(daily: pd.DataFrame, rules: FullStrategy2Rules) -> pd.D
         for name, mask in stages.items():
             if name not in disabled:
                 eligible &= mask
-    fund_ok = pd.Series(True, index=frame.index)
-    if rules.exclude_explicit_funds:
-        fund = frame["security_name"].astype("string").str.contains(
-            r"\bETF\b|\bETN\b|exchange.traded", case=False, regex=True, na=False)
-        fund_ok = ~fund
-        eligible &= ~fund
     stages = {
         "tradable": liquid,
         "elasticity": elastic,
@@ -199,7 +195,6 @@ def score_full_strategy2(daily: pd.DataFrame, rules: FullStrategy2Rules) -> pd.D
         "new_low_stop": stopped_lows,
         "early_reversal": early_up,
         "not_extended": not_extended,
-        "fund_filter": fund_ok,
     }
     for name, mask in stages.items():
         active = name not in disabled or name in {"tradable", "fund_filter"}

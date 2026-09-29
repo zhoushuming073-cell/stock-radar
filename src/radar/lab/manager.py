@@ -53,7 +53,7 @@ _UNSET = object()
 class RunManager:
     """Keeps the browser responsive and preserves runs across UI refreshes."""
 
-    def __init__(self, root: Path, *, max_workers: int = 2,
+    def __init__(self, root: Path, *, max_workers: int = 1,
                  store_path: Path | None = None) -> None:
         self.root = Path(root).resolve()
         self.database = self.root / "data" / "phase2-research.duckdb"
@@ -338,6 +338,7 @@ class RunManager:
                 dataset = {
                     "split": split, "signal_start": window[0], "signal_end": window[1],
                     "evaluation_end": window[2], "feature_version": FEATURE_VERSION,
+                    "market_feature_version": MARKET_FEATURE_VERSION,
                     "data_snapshot": snapshot, "universe_mode": universe_mode,
                     "universe_fingerprint": provenance.fingerprint,
                     "universe_provider": provenance.provider,
@@ -383,6 +384,7 @@ class RunManager:
                     "git_revision": commit,
                     "git_dirty": self._git_dirty(),
                     "feature_version": FEATURE_VERSION,
+                    "market_feature_version": MARKET_FEATURE_VERSION,
                     "data_snapshot": snapshot,
                     "source_watermark": watermark,
                     "fee_profile": fee_profile,
@@ -469,6 +471,12 @@ class RunManager:
             runs = self.store.list_runs(limit=10_000)
             by_id = {run["run_id"]: run for run in runs}
             active = sum(run["status"] in {"running", "cancel_requested"} for run in runs)
+            scanners = self.store.list_scanner_runs(limit=10000)
+            active += sum(run["status"] == "running" for run in scanners)
+            active += sum(bool(run["status"] == "queued" and (
+                (self._scanner_processes.get(run["run_id"]) is not None and
+                 self._scanner_processes[run["run_id"]].poll() is None) or
+                self._scanner_worker_pid(run["run_id"]))) for run in scanners)
             queued_active: set[str] = set()
             for run in runs:
                 if run["status"] != "queued":
@@ -536,6 +544,13 @@ class RunManager:
                     self._scanner_processes.pop(run_id, None)
             active = sum(run["status"] == "running" for run in
                          self.store.list_scanner_runs(limit=10000))
+            backtests = self.store.list_runs(limit=10000)
+            active += sum(run["status"] in {"running", "cancel_requested"}
+                          for run in backtests)
+            active += sum(bool(run["status"] == "queued" and (
+                (self._processes.get(run["run_id"]) is not None and
+                 self._processes[run["run_id"]].poll() is None) or
+                self._worker_pid(run["run_id"]))) for run in backtests)
             for run in runs:
                 if active >= self.max_workers:
                     break

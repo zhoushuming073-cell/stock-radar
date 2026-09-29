@@ -25,6 +25,16 @@ from radar.strategy.adapter import evaluate_filter_diagnostics, evaluate_selecti
 from radar.strategy.loader import load_strategy_directory
 
 
+def signal_session_coverage(feature_frame: pd.DataFrame, sessions: pd.DatetimeIndex,
+                            signal_start: pd.Timestamp, signal_end: pd.Timestamp) -> dict:
+    expected = pd.DatetimeIndex(sessions[(sessions >= signal_start) & (sessions <= signal_end)]).normalize()
+    observed = pd.DatetimeIndex(feature_frame.index.get_level_values("date").unique()).normalize()
+    missing = expected.difference(observed)
+    return {"expected_signal_sessions": len(expected),
+            "observed_signal_sessions": len(expected) - len(missing),
+            "missing_signal_sessions": [str(day.date()) for day in missing]}
+
+
 def scan_frames(plugin, config: dict, feature_frame: pd.DataFrame, bars: pd.DataFrame,
                 sessions: pd.DatetimeIndex, signal_start: pd.Timestamp,
                 signal_end: pd.Timestamp, evaluation: dict,
@@ -37,11 +47,12 @@ def scan_frames(plugin, config: dict, feature_frame: pd.DataFrame, bars: pd.Data
     funnel_by_day: list[dict] = []
     near_misses: list[dict] = []
     signal_days = sessions[(sessions >= signal_start) & (sessions <= signal_end)]
+    coverage = signal_session_coverage(feature_frame, sessions, signal_start, signal_end)
+    if coverage["missing_signal_sessions"]:
+        raise ValueError("Scanner feature coverage missing full signal sessions: " +
+                         ", ".join(coverage["missing_signal_sessions"][:20]))
     for ordinal, day in enumerate(signal_days, 1):
-        try:
-            daily = feature_frame.xs(day, level="date", drop_level=False).copy()
-        except KeyError:
-            continue
+        daily = feature_frame.xs(day, level="date", drop_level=False).copy()
         funnel = {"date": str(pd.Timestamp(day).date()),
                   "eligible_universe": int(len(daily))}
         tradable = daily["tradability_pass"].fillna(False).astype(bool)
@@ -137,6 +148,7 @@ def scan_frames(plugin, config: dict, feature_frame: pd.DataFrame, bars: pd.Data
         metrics["label_version"] = TERMINAL_LABEL_VERSION
     metrics["funnel_by_day"] = funnel_by_day
     metrics["near_misses"] = near_misses
+    metrics["coverage"] = coverage
     rows = []
     event_flags = signal_event_flags(
         candidates, evaluation["event_cooldown_sessions"], sessions)
@@ -233,6 +245,11 @@ def execute_scanner_run(root: Path, store_path: Path, run_id: str) -> dict:
         load_args = (database, start, end, set(manifest.required_features) | MARKET_FEATURES)
         frame = load_strategy_segment(*load_args, provider) if provider else (
             load_strategy_segment(*load_args))
+        coverage = signal_session_coverage(frame, sessions, start, end)
+        store.scanner_progress(run_id, {"coverage": coverage})
+        if coverage["missing_signal_sessions"]:
+            raise ValueError("Scanner feature coverage missing full signal sessions: " +
+                             ", ".join(coverage["missing_signal_sessions"][:20]))
         last = sessions.searchsorted(end, side="right") + metadata["evaluation"]["horizon_sessions"]
         bar_end = sessions[min(last, len(sessions)) - 1]
         bars = load_forward_bars(database, start, bar_end)

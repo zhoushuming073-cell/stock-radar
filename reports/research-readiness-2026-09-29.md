@@ -1,0 +1,60 @@
+# Research readiness acceptance — 2026-09-29
+
+This records implementation evidence for `journey-2026-09-29-bug-backlog.md`.
+It is not a performance recommendation.
+
+## Correctness repairs
+
+- Research feature rebuilds use a staging DuckDB, full-cohort gates, an atomic
+  replacement and a retained previous database. A partial or interrupted
+  build leaves the active store untouched.
+- Train, Validation and the already viewed historical Test use dated,
+  versioned boundaries. Later sessions are placed in Fresh OOS.
+- Scanner checks every expected SPY signal session, persists coverage and
+  fails a Run if a full feature session is absent.
+- All plugins receive a date-row ticker placeholder for `security_name` during
+  historical decisions; current names are attached only after ranking for
+  display. Formal Strategy 2 name-based ETF/ETN filtering is disabled until
+  dated classification is available. Prior completed Runs retain their
+  original provenance.
+- Factor event study uses dated `tradability_pass`, and the frozen split
+  windows, not mutable current `assets.tradable` or `assets.exchange`.
+- New Backtest Runs persist and validate `market_feature_version`; Compare
+  identifies missing version provenance on legacy Runs.
+- Scanner and Backtest launches share one worker budget. The default is one
+  worker on this 16 GB desktop after a concurrent full-history run exhausted
+  memory. An explicit higher cap remains possible.
+- Scanner experiment Event Precision summaries are grouped by compatible
+  evaluation signatures. Mixed definitions have no headline mean or median.
+
+## Validation
+
+- Full pytest: **241 passed** (one third-party deprecation warning).
+- Final-code real active-v3 Scanner, `bottom_base_green_candle_v1`:
+  - Train `a0226aa2-1e15-4bff-aeeb-06c58f4c7d11`: completed; 753/753
+    expected sessions, zero missing, 250 candidates, artifact hash verified.
+  - Validation `1ce359c7-9125-40ec-af7f-c27ab1a07386`: completed;
+    235/235 expected sessions, zero missing, 146 candidates, artifact hash
+    verified.
+- Final-code real active-v3 Backtest, same strategy:
+  - Train `b6c48a62-6e7f-472a-a560-edae09ce28bd`: completed.
+  - Validation `ffd923d8-ad60-4b25-966e-e04aa11ab2fa`: completed.
+  - Both persist `market_feature_version=causal-market-v2-asof`.
+  - An earlier concurrent Train attempt exhausted memory and is retained as
+    a failed Run. The solo retry completed, informing the default cap of one.
+- Latest three historical v3 strategy groups (nine Runs) exported as a local
+  Research Bundle; all 78 hashed evidence files verified, zero mismatches.
+- The four final-code Train/Validation acceptance Runs were exported together;
+  all file hashes matched and real Scanner CSV/Parquet row counts matched the
+  immutable source: 250 Train and 146 Validation candidates.
+- In a real Chrome session, the existing Experiments page loaded, selected
+  nine v3 Runs, exported a ZIP, downloaded it, and displayed its saved local
+  history without console errors. Compare warned about a legacy Run with
+  unknown market-feature provenance.
+
+## Limits
+
+The current-snapshot universe still has survivorship bias. Historical Test
+has already been viewed and is exploratory. The old v3 Runs used a dirty
+checkout. The export preserves these warnings and separates incompatible
+execution settings instead of manufacturing one combined performance result.

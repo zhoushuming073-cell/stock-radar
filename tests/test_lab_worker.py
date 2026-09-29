@@ -114,6 +114,7 @@ def worker_setup(tmp_path, monkeypatch):
             "config": {"selection": {"max_candidates": 3}},
             "config_hash": "config-hash", "git_revision": "revision",
             "feature_version": worker_module.FEATURE_VERSION,
+            "market_feature_version": worker_module.MARKET_FEATURE_VERSION,
             "data_snapshot": worker_module.sha256_file(root / "data/phase2-research.duckdb"),
             "source_watermark": "watermark", "fee_profile": "test",
             "slippage_bps": 10.0,
@@ -126,6 +127,16 @@ def worker_setup(tmp_path, monkeypatch):
         }
 
     return root, store, metadata
+
+
+def test_worker_rejects_changed_market_feature_version(worker_setup):
+    root, store, metadata = worker_setup
+    details = metadata()
+    details["market_feature_version"] = "future-market-context"
+    run_id = store.create_run(details)
+    with pytest.raises(ValueError, match="feature version changed"):
+        worker_module.execute_run(root, store.path, run_id)
+    assert store.get_run(run_id)["status"] == "failed"
 
 
 def test_two_identical_worker_runs_persist_identical_results(worker_setup, monkeypatch):

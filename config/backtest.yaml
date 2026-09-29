@@ -8,7 +8,7 @@ entry_gap_min: -0.10
 entry_gap_max: 0.05
 elasticity_min: 80.0
 drawdown_20_max: -0.10
-exclude_explicit_etf_etn_names: true
+exclude_explicit_etf_etn_names: false
 max_position_fraction: 0.3333333333
 minimum_position_fraction: 0.01
 max_order_to_avg_dollar_volume: 0.02

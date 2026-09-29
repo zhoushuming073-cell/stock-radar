@@ -17,6 +17,7 @@ from radar.backtest.costs import load_fee_config
 from radar.backtest.engine import BacktestConfig, BacktestResult, run_backtest
 from radar.backtest.metrics import summarize_backtest
 from radar.research.pipeline import FEATURE_VERSION
+from radar.research.splits import resolve_split_windows
 from radar.strategy.ranking import CandidateRules
 
 
@@ -36,20 +37,7 @@ def split_dates(database: Path, research_config: Path) -> dict:
         ).fetchall()]
     finally:
         conn.close()
-    n = len(sessions)
-    train_end = int(n * cfg["train_fraction"])
-    validation_end = int(n * (cfg["train_fraction"] + cfg["validation_fraction"]))
-    embargo = int(cfg["embargo_sessions"])
-    if embargo < int(cfg["max_forward_sessions"]) or validation_end + embargo >= n:
-        raise ValueError("invalid split or embargo")
-    return {
-        "sessions": sessions,
-        "train": (sessions[0], sessions[train_end - embargo - 1], sessions[train_end - 1]),
-        "validation": (sessions[train_end + embargo],
-                       sessions[validation_end - embargo - 1], sessions[validation_end - 1]),
-        "test": (sessions[validation_end], sessions[n - embargo - 1], sessions[-1]),
-        "test_start": sessions[validation_end],
-    }
+    return resolve_split_windows(pd.DatetimeIndex(sessions), cfg)
 
 
 def load_segment(database: Path, start: pd.Timestamp, end: pd.Timestamp) -> pd.DataFrame:

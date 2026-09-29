@@ -9,6 +9,7 @@ import duckdb
 import numpy as np
 import pandas as pd
 import pytest
+import yaml
 
 from radar.lab.data import load_strategy_segment
 from radar.research.asof import RAW_COLUMNS, strict_asof_day, strict_strategy_day
@@ -100,7 +101,14 @@ def _assert_same(first: pd.DataFrame, second: pd.DataFrame) -> None:
 def test_strict_replay_matches_fast_and_ignores_future_mutations(tmp_path):
     database = tmp_path / "research.duckdb"
     changed = tmp_path / "mutated.duckdb"
-    config = Path(__file__).resolve().parents[1] / "config/research.yaml"
+    source_config = Path(__file__).resolve().parents[1] / "config/research.yaml"
+    settings = yaml.safe_load(source_config.read_text(encoding="utf-8"))
+    settings["research"].pop("frozen_splits")
+    settings["research"].pop("split_version")
+    settings["research"].update({"allow_fractional_fixture_splits": True,
+                                 "train_fraction": .60, "validation_fraction": .20})
+    config = tmp_path / "research.yaml"
+    config.write_text(yaml.safe_dump(settings), encoding="utf-8")
     sessions = _fixture_database(database)
     day = sessions[140]
     build_research_tables(database, config)

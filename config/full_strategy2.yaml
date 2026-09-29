@@ -14,7 +14,7 @@ max_distance_from_ma5: 0.15
 min_close_location: 0.50
 min_wick_ratio: 0.25
 max_volume_contraction: 0.80
-exclude_explicit_funds: true
+exclude_explicit_funds: false
 allocator: equal_cash
 base_slippage_bps: 10
 slippage_sensitivity_bps: [0, 5, 10, 20]

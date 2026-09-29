@@ -17,7 +17,7 @@ CONFIG = {
     "min_close_location": 0.50,
     "min_wick_ratio": 0.25,
     "max_volume_contraction": 0.80,
-    "exclude_explicit_funds": True,
+    "exclude_explicit_funds": False,
 }
 
 
@@ -42,7 +42,10 @@ def test_official_plugin_preserves_phase2_ranking():
     context = StrategyContext(pd.Timestamp("2025-01-02"), frame)
     mask = PLUGIN.hard_filter(context, CONFIG)
     scores = PLUGIN.score(context, CONFIG)
-    assert mask.tolist() == [True, True, True, False]
+    assert mask.tolist() == [True, True, True, True]
+    renamed = frame.assign(security_name="Future ETF")
+    assert PLUGIN.hard_filter(StrategyContext(pd.Timestamp("2025-01-02"), renamed),
+                              CONFIG).tolist() == mask.tolist()
     candidates = frame.loc[mask].copy()
     candidates["strategy_score"] = scores.loc[mask]
     assert PLUGIN.select(candidates, CONFIG)["symbol"].tolist() == ["A", "B", "C"]

@@ -16,8 +16,12 @@ tradability:
   min_avg_dollar_volume_20: 1000000.0
   min_history_sessions: 126
 research:
-  train_fraction: 0.60
-  validation_fraction: 0.20
+  split_version: research-splits-v1
+  frozen_splits:
+    train: ["2021-09-01", "2024-08-29", "2024-09-13"]
+    validation: ["2024-09-30", "2025-09-08", "2025-09-22"]
+    test: ["2025-09-23", "2026-09-14", "2026-09-28"]
+    fresh_oos_after: "2026-09-28"
   embargo_sessions: 10
   max_forward_sessions: 10
 illustrative_costs:

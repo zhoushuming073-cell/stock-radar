@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from itertools import product
 from statistics import median
 from typing import Any
@@ -175,26 +176,55 @@ def summarize_experiments(runs: list[dict], scanner_runs: list[dict] | None = No
             common_k = set.intersection(*top_k_sets)
             display_k = (10 if 10 in common_k else min(common_k)) if common_k else None
             scanner_rows = []
+            comparison_groups: dict[str, dict] = {}
             for run in group:
                 choices = run["metadata"].get("evaluation", {}).get("top_k_values", [10])
                 k = display_k if display_k is not None else (10 if 10 in choices else choices[0])
                 metrics = run.get("metrics") or {}
+                metadata = run["metadata"]
+                evaluation = metadata.get("evaluation", {})
+                signature = {key: evaluation.get(key) for key in (
+                    "horizon_sessions", "success_rule", "primary_target",
+                    "primary_adverse_target", "event_cooldown_sessions")}
+                signature.update({"top_k": k, "label_version": metadata.get("label_version"),
+                                  "feature_version": metadata.get("feature_version"),
+                                  "market_feature_version": metadata.get("market_feature_version"),
+                                  "data_snapshot": metadata.get("data_snapshot"),
+                                  "universe_mode": metadata.get("universe_mode", "current_snapshot")})
+                signature_key = json.dumps(signature, sort_keys=True)
+                comparison_groups.setdefault(signature_key, {"signature": signature,
+                                                             "run_ids": [], "precisions": []})
+                comparison_groups[signature_key]["run_ids"].append(run["run_id"])
+                precision = metrics.get(f"event_precision_at_{k}")
+                if run["status"] == "completed" and precision is not None:
+                    comparison_groups[signature_key]["precisions"].append(precision)
                 scanner_rows.append({
                     "run_id": run["run_id"], "status": run["status"],
                     "variant": run["metadata"]["experiment"]["variant"],
-                    "top_k": k, "precision": metrics.get(f"event_precision_at_{k}"),
+                    "top_k": k, "precision": precision,
                     "lift": metrics.get(f"event_lift_at_{k}"),
                     "events": metrics.get(f"event_top_{k}_count"),
+                    "evaluation_signature": signature,
                 })
             precisions = [row["precision"] for row in scanner_rows
                           if row["status"] == "completed" and row["precision"] is not None]
+            comparable = len(comparison_groups) == 1
             summaries.append({
                 "id": experiment_id, "kind": group[0]["metadata"]["experiment"]["kind"],
                 "run_type": run_type, "strategy_id": group[0]["metadata"]["strategy_id"],
-                "top_k": display_k, "total": len(group), "completed": len(completed),
-                "median_precision": median(precisions) if display_k is not None and precisions else None,
+                "top_k": display_k if comparable else None,
+                "total": len(group), "completed": len(completed),
+                "compatible": comparable,
+                "comparison_groups": [{"signature": item["signature"],
+                                       "run_ids": item["run_ids"],
+                                       "median_precision": median(item["precisions"])
+                                       if item["precisions"] else None,
+                                       "mean_precision": sum(item["precisions"]) / len(item["precisions"])
+                                       if item["precisions"] else None}
+                                      for item in comparison_groups.values()],
+                "median_precision": median(precisions) if comparable and precisions else None,
                 "mean_precision": (sum(precisions) / len(precisions)
-                                   if display_k is not None and precisions else None),
+                                   if comparable and precisions else None),
                 "runs": scanner_rows,
             })
             continue

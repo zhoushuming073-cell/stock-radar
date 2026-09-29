@@ -13,6 +13,7 @@ from radar.lab.data import _market_context, load_strategy_segment, MARKET_FEATUR
 from radar.lab.scanner import (LABEL_VERSION, build_labels, candidate_metrics,
                                evaluation_settings, label_candidate, target_name)
 from radar.lab.scanner_worker import scan_frames
+from radar.lab.scanner_worker import signal_session_coverage
 from radar.lab.store import RunStore, _json
 from radar.lab.universe import LocalSecurityMaster
 from radar.strategy.base import StrategyPlugin
@@ -42,6 +43,22 @@ class ManyCandidates(StrategyPlugin):
     def diagnostic_scores(self, context: StrategyContext, config: Mapping[str, Any]) -> pd.DataFrame:
         return pd.DataFrame({"support_evidence": context.frame["ret_1"] * 2,
                              "p_hit_5pct_10d": 0.5}, index=context.frame.index)
+
+
+def test_missing_full_signal_session_fails_but_weekend_is_not_expected():
+    sessions = pd.DatetimeIndex(["2025-01-03", "2025-01-06", "2025-01-07"])
+    frame = pd.DataFrame({"date": [sessions[0], sessions[2]],
+                          "symbol": ["AAA", "AAA"], "security_name": ["AAA", "AAA"],
+                          "close": [10., 10.], "ret_1": [.1, .1],
+                          "tradability_pass": [True, True]}).set_index(["date", "symbol"], drop=False)
+    coverage = signal_session_coverage(frame, sessions, sessions[0], sessions[-1])
+    assert coverage == {"expected_signal_sessions": 3, "observed_signal_sessions": 2,
+                        "missing_signal_sessions": ["2025-01-06"]}
+    with pytest.raises(ValueError, match="2025-01-06"):
+        scan_frames(ManyCandidates(), {"selection": {"max_candidates": None}},
+                    frame, pd.DataFrame(), sessions, sessions[0], sessions[-1],
+                    evaluation_settings(None))
+    assert "2025-01-04" not in coverage["missing_signal_sessions"]
 
 
 def test_golden_forward_labels_and_incomplete_horizon():

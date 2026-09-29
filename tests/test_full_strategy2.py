@@ -40,7 +40,12 @@ def test_complete_lifecycle_requires_strength_reversal_and_no_extension():
     frame = pd.DataFrame(rows)
     scored = score_full_strategy2(frame, FullStrategy2Rules())
     assert scored.loc[scored.symbol == "PASS", "strategy2_eligible"].iloc[0]
-    assert set(scored.loc[scored.strategy2_eligible, "symbol"]) == {"PASS"}
+    assert set(scored.loc[scored.strategy2_eligible, "symbol"]) == {"PASS", "FUND"}
+    renamed = frame.copy()
+    renamed["security_name"] = "Future ETF name"
+    replay = score_full_strategy2(renamed, FullStrategy2Rules())
+    assert replay["strategy2_eligible"].tolist() == scored["strategy2_eligible"].tolist()
+    assert replay["strategy2_score"].tolist() == scored["strategy2_score"].tolist()
     assert scored.loc[0, "prior_peak_gain_60"] > .13
     assert frame.columns.isin(["strategy2_score"]).sum() == 0
 

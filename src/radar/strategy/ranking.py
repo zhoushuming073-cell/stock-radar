@@ -13,7 +13,7 @@ class CandidateRules:
     elasticity_min: float
     drawdown_20_max: float
     max_new: int
-    exclude_explicit_etf_etn_names: bool = True
+    exclude_explicit_etf_etn_names: bool = False
     trend_elasticity_min: float = 60.0
     trend_ret_60_min: float = 0.037
     trend_drawdown_20_min: float = -0.20
@@ -32,11 +32,13 @@ def rank_candidates(
     No outcome column is read here.
     """
     needed = {"symbol", "elasticity_score", "drawdown_20", "ret_1",
-              "close_location", "tradability_pass", "security_name"}
+              "close_location", "tradability_pass"}
     if not needed.issubset(daily):
         raise ValueError(f"missing signal inputs: {sorted(needed - set(daily))}")
     if rules.max_new < 1:
         raise ValueError("max_new must be positive")
+    if rules.exclude_explicit_etf_etn_names:
+        raise ValueError("current security names cannot filter historical candidates")
     if variant == "trend_reversal":
         if "ret_60" not in daily:
             raise ValueError("trend_reversal requires ret_60")
@@ -52,10 +54,6 @@ def rank_candidates(
                     & daily["elasticity_score"].ge(rules.elasticity_min)
                     & daily["drawdown_20"].le(rules.drawdown_20_max))
     frame = daily.loc[eligible].copy()
-    if rules.exclude_explicit_etf_etn_names:
-        obvious_fund = frame["security_name"].astype("string").str.contains(
-            r"\bETF\b|\bETN\b|exchange.traded", case=False, regex=True, na=False)
-        frame = frame.loc[~obvious_fund]
     if already_held:
         frame = frame.loc[~frame["symbol"].isin(already_held)]
     if variant == "reversal_confirmed":

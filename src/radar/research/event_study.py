@@ -12,6 +12,7 @@ import yaml
 from radar.research.pipeline import FEATURE_VERSION, LABEL_VERSION
 from radar.features.scoring import load_research_config
 from radar.research.cost_sensitivity import illustrative_net_returns
+from radar.research.splits import resolve_split_windows
 
 
 FACTORS = (
@@ -29,16 +30,13 @@ ELASTICITY_RAW = (
 )
 
 
-def _boundaries(sessions: list, cfg: dict) -> tuple[int, int, int]:
-    n = len(sessions)
-    train_end = int(n * cfg["train_fraction"])
-    validation_end = int(n * (cfg["train_fraction"] + cfg["validation_fraction"]))
-    embargo = int(cfg["embargo_sessions"])
-    if embargo < int(cfg["max_forward_sessions"]):
-        raise ValueError("embargo must cover the longest forward label")
-    if train_end <= embargo or validation_end - train_end <= 2 * embargo:
-        raise ValueError("not enough sessions for purged chronological study")
-    return train_end, validation_end, embargo
+def causal_liquid(frame: pd.DataFrame, gate) -> pd.DataFrame:
+    """Use dated research-store eligibility, never mutable asset status."""
+    return frame.loc[
+        frame["close"].ge(gate.min_price)
+        & frame["avg_dollar_volume_20"].ge(gate.min_avg_dollar_volume_20)
+        & frame["tradability_pass"].eq(True)
+    ].copy()
 
 
 def _summary(group: pd.DataFrame, cost_config: dict) -> dict:
@@ -93,7 +91,9 @@ def run_factor_event_study(database: Path, config_path: Path, output_dir: Path) 
         sessions = [r[0] for r in conn.execute(
             "SELECT date FROM daily_bars WHERE symbol='SPY' ORDER BY date"
         ).fetchall()]
-        train_end, validation_end, embargo = _boundaries(sessions, config)
+        splits = resolve_split_windows(pd.DatetimeIndex(sessions), config)
+        train_start, train_signal_end, train_eval_end = splits["train"]
+        validation_start, validation_signal_end, validation_eval_end = splits["validation"]
         selected = [*FACTORS, *OUTCOMES,
                     "exec_hit_tp_5d", "exec_hit_tp_10d", "exec_hit_sl_5d", "exec_hit_sl_10d",
                     "simulated_gross_return", "entry_open", "simulated_exit_price"]
@@ -101,30 +101,24 @@ def run_factor_event_study(database: Path, config_path: Path, output_dir: Path) 
         label_cols = ", ".join(f"l.{name}" for name in selected if name not in FACTORS)
         data = conn.execute(f"""
             SELECT f.symbol, f.date, b.close, f.avg_dollar_volume_20,
-                   a.tradable, a.exchange, a.name AS security_name, {feature_cols}, {label_cols}
+                   a.name AS security_name, f.tradability_pass, {feature_cols}, {label_cols}
             FROM daily_features f
             JOIN forward_labels l ON f.symbol=l.symbol AND f.date=l.signal_date
             JOIN daily_bars b ON f.symbol=b.symbol AND f.date=b.date
             JOIN assets a ON f.symbol=a.symbol
             WHERE f.feature_version=? AND l.label_version=? AND f.date<=?
               AND f.symbol NOT IN ('SPY','QQQ')
-        """, [FEATURE_VERSION, LABEL_VERSION, sessions[validation_end - embargo - 1]]).df()
+        """, [FEATURE_VERSION, LABEL_VERSION, validation_signal_end]).df()
     finally:
         conn.close()
     dates = pd.to_datetime(data["date"]).dt.date
-    train = data.loc[dates <= sessions[train_end - embargo - 1]].copy()
-    validation = data.loc[(dates >= sessions[train_end + embargo]) &
-                          (dates <= sessions[validation_end - embargo - 1])].copy()
-    # Current asset metadata creates survivorship bias, so both sets are
-    # described as current-snapshot universe rather than point-in-time.
-    def liquid(frame: pd.DataFrame) -> pd.DataFrame:
-        return frame.loc[
-            frame["close"].ge(gate.min_price)
-            & frame["avg_dollar_volume_20"].ge(gate.min_avg_dollar_volume_20)
-            & frame["tradable"].eq(True)
-            & frame["exchange"].astype("string").str.upper().isin(("NYSE", "NASDAQ", "AMEX", "ARCA", "BATS"))
-        ].copy()
-    train, validation = liquid(train), liquid(validation)
+    train = data.loc[(dates >= train_start.date()) &
+                     (dates <= train_signal_end.date())].copy()
+    validation = data.loc[(dates >= validation_start.date()) &
+                          (dates <= validation_signal_end.date())].copy()
+    # Dated feature gates are causal, while universe membership still has
+    # current-snapshot survivor bias until a PIT security master is supplied.
+    train, validation = causal_liquid(train, gate), causal_liquid(validation, gate)
     rows: list[dict] = []
     for factor in FACTORS:
         train_values = train[factor].dropna()
@@ -206,11 +200,13 @@ def run_factor_event_study(database: Path, config_path: Path, output_dir: Path) 
     corr_path = output_dir / "factor_spearman_train.csv"
     train[list(FACTORS)].corr(method="spearman").to_csv(corr_path)
     metadata = {
-        "sessions": len(sessions), "train_start": str(sessions[0]),
-        "train_end_usable": str(sessions[train_end - embargo - 1]),
-        "validation_start_usable": str(sessions[train_end + embargo]),
-        "validation_end_usable": str(sessions[validation_end - embargo - 1]),
-        "test_start": str(sessions[validation_end]), "test_end": str(sessions[-1]),
+        "sessions": len(sessions), "split_version": splits["split_version"],
+        "train_start": str(train_start.date()),
+        "train_end_usable": str(train_signal_end.date()),
+        "validation_start_usable": str(validation_start.date()),
+        "validation_end_usable": str(validation_signal_end.date()),
+        "test_start": str(splits["test"][0].date()),
+        "test_end": str(splits["test"][2].date()),
         "train_rows_after_gate": len(train), "validation_rows_after_gate": len(validation),
         "factors_studied": int(result["factor"].nunique()) if not result.empty else 0,
         "output": str(path), "interaction_output": str(interaction_path),
@@ -222,6 +218,7 @@ def run_factor_event_study(database: Path, config_path: Path, output_dir: Path) 
         "illustrative_order_notional_usd": cost_config["order_notional_usd"],
         "limitations": [
             "current-snapshot assets introduce survivorship bias",
+            "historical exchange/security-type filtering is unavailable without dated metadata",
             "ETF/ETN exclusion by name is an incomplete classification proxy",
             "factor events overlap in time and are descriptive, not independent observations",
             "execution labels are gross; separate cost columns model fees and slippage",

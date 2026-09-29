@@ -4,7 +4,9 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 import hashlib
+import os
 from pathlib import Path
+import shutil
 import subprocess
 from typing import Callable
 from uuid import uuid4
@@ -18,6 +20,7 @@ from radar.features.scoring import load_research_config, tradability_gate
 from radar.features.strategy2 import compute_strategy2_features
 from radar.labels.forward import compute_forward_labels
 from radar.schema import RESEARCH_COLUMNS, ensure_research_schema
+from radar.research.splits import resolve_split_windows
 
 
 BUILD_FEATURE_VERSION = "phase2a_f_v3_asof"
@@ -55,7 +58,7 @@ def _replace_symbol_rows(connection: duckdb.DuckDBPyConnection, table: str,
         connection.unregister("phase2_payload")
 
 
-def build_research_tables(
+def _build_research_tables_in_place(
     database: Path, config_path: Path, *, max_symbols: int | None = None,
     progress: Callable[[dict], None] | None = None,
 ) -> dict[str, int | str]:
@@ -86,11 +89,8 @@ def build_research_tables(
         qqq_close = qqq.set_index("date")["close"].astype(float)
         sessions = spy_close.index
         research_cfg = all_settings["research"]
-        train_end = int(len(sessions) * research_cfg["train_fraction"])
-        validation_end = int(len(sessions) * (research_cfg["train_fraction"] + research_cfg["validation_fraction"]))
-        embargo = int(research_cfg["embargo_sessions"])
-        if embargo < int(research_cfg["max_forward_sessions"]):
-            raise ValueError("embargo must cover the longest forward label")
+        windows = resolve_split_windows(sessions, research_cfg)
+        validation_end = sessions.get_loc(windows["validation"][2]) + 1
         # The current survivor cohort is an acknowledged limitation. Never
         # select its historical members using end-of-sample liquidity.
         symbols = [r[0] for r in connection.execute("""
@@ -104,10 +104,12 @@ def build_research_tables(
         cohort_total = len(symbols)
         if max_symbols:
             symbols = symbols[:max_symbols]
-        # A retry must not mix this cohort with v3 rows from an incomplete
-        # earlier build. v2 remains available to existing readers throughout.
+        # This connection is to a private staging DB. Clear prior same-version
+        # rows there so changing cohorts cannot leave stale features or labels.
         connection.execute("DELETE FROM daily_features WHERE feature_version=?",
                            [BUILD_FEATURE_VERSION])
+        connection.execute("DELETE FROM forward_labels WHERE label_version=?",
+                           [LABEL_VERSION])
         counts = {"symbols": 0, "feature_rows": 0, "label_rows": 0,
                   "scored_rows": 0, "cohort_total": cohort_total,
                   "cohort_complete": max_symbols is None or max_symbols >= cohort_total}
@@ -139,7 +141,7 @@ def build_research_tables(
             labels["signal_date"] = sessions[:validation_end].date
             labels["label_version"] = LABEL_VERSION
             labels = labels.loc[observed.iloc[:validation_end] &
-                                (labels.index <= sessions[validation_end - embargo - 1])]
+                                (labels.index <= windows["validation"][1])]
             _replace_symbol_rows(connection, "forward_labels", symbol, LABEL_VERSION, labels)
             counts["label_rows"] += len(labels)
             counts["symbols"] += 1
@@ -199,9 +201,9 @@ def build_research_tables(
             run_id, datetime.now(timezone.utc), git_commit, snapshot,
             BUILD_FEATURE_VERSION, LABEL_VERSION,
             hashlib.sha256(config_bytes).hexdigest(),
-            sessions[0].date(), sessions[train_end - 1].date(),
-            sessions[train_end].date(), sessions[validation_end - 1].date(),
-            sessions[validation_end].date(), sessions[-1].date(),
+            windows["train"][0].date(), windows["train"][2].date(),
+            windows["validation"][0].date(), windows["validation"][2].date(),
+            windows["test"][0].date(), windows["test"][2].date(),
             f"built_asof_{len(symbols)}_of_{cohort_total}_symbols",
         ])
         counts["run_id"] = run_id
@@ -209,3 +211,92 @@ def build_research_tables(
         return counts
     finally:
         connection.close()
+
+
+def _validate_staging_store(database: Path, counts: dict, version: str) -> None:
+    """Cheap full-cohort gates before the file can become the active store."""
+    if not counts["cohort_complete"] or counts["symbols"] != counts["cohort_total"]:
+        raise ValueError("partial research build cannot be promoted")
+    with duckdb.connect(str(database), read_only=True) as connection:
+        feature_count, symbol_count = connection.execute("""
+            SELECT COUNT(*), COUNT(DISTINCT symbol) FROM daily_features
+            WHERE feature_version=?
+        """, [version]).fetchone()
+        if feature_count != counts["feature_rows"] or symbol_count != counts["cohort_total"]:
+            raise ValueError("staging feature rows do not match the completed cohort")
+        label_count = connection.execute("""
+            SELECT COUNT(*) FROM forward_labels WHERE label_version=?
+        """, [LABEL_VERSION]).fetchone()[0]
+        if label_count != counts["label_rows"]:
+            raise ValueError("staging label rows do not match the completed build")
+        missing = connection.execute("""
+            SELECT COUNT(*) FROM daily_bars AS spy
+            WHERE spy.symbol='SPY' AND NOT EXISTS (
+                SELECT 1 FROM daily_features AS f
+                WHERE f.feature_version=? AND f.date=spy.date)
+        """, [version]).fetchone()[0]
+        if missing:
+            raise ValueError(f"staging store has {missing} uncovered SPY sessions")
+        status = connection.execute("""
+            SELECT status FROM research_runs WHERE run_id=? AND feature_version=?
+        """, [counts["run_id"], version]).fetchone()
+        expected = f"built_asof_{counts['cohort_total']}_of_{counts['cohort_total']}_symbols"
+        if status is None or status[0] != expected:
+            raise ValueError("staging store lacks a completed full-cohort build record")
+
+
+def build_research_tables(
+    database: Path, config_path: Path, *, max_symbols: int | None = None,
+    progress: Callable[[dict], None] | None = None,
+) -> dict[str, int | str]:
+    """Build in a separate DB; publish the validated file with one atomic replace.
+
+    A partial build is discarded. An interrupted build never touches the active
+    database. A complete previous database is copied to research-backups before
+    the replace, so a failed promotion leaves the original active file intact.
+    """
+    database = Path(database).resolve()
+    if not database.is_file():
+        raise FileNotFoundError(database)
+    if max_symbols is not None and max_symbols < 1:
+        raise ValueError("max_symbols must be positive")
+    stage = database.with_name(f".{database.stem}.{uuid4().hex}.staging.duckdb")
+    source_stat = database.stat()
+    config_hash = hashlib.sha256(config_path.read_bytes()).hexdigest()
+    keep_stage = False
+    try:
+        if progress:
+            progress({"phase": "staging_copy", "source": str(database)})
+        shutil.copy2(database, stage)
+        counts = _build_research_tables_in_place(
+            stage, config_path, max_symbols=max_symbols, progress=progress)
+        counts["database"] = str(database)
+        if not counts["cohort_complete"]:
+            counts["promoted"] = False
+            return counts
+        _validate_staging_store(stage, counts, BUILD_FEATURE_VERSION)
+        current_stat = database.stat()
+        if (current_stat.st_size, current_stat.st_mtime_ns) != (
+                source_stat.st_size, source_stat.st_mtime_ns):
+            raise ValueError("active research store changed during staged build")
+        if hashlib.sha256(config_path.read_bytes()).hexdigest() != config_hash:
+            raise ValueError("research config changed during staged build")
+        backup_dir = database.parent / "research-backups"
+        backup_dir.mkdir(exist_ok=True)
+        backup = backup_dir / f"{database.stem}.{datetime.now(timezone.utc):%Y%m%dT%H%M%SZ}.{uuid4().hex[:8]}.duckdb"
+        shutil.copy2(database, backup)
+        try:
+            os.replace(stage, database)
+        except OSError:
+            keep_stage = True
+            raise RuntimeError(f"promotion failed; active store is unchanged; validated staging DB: {stage}") from None
+        counts["promoted"] = True
+        counts["backup_database"] = str(backup)
+        return counts
+    finally:
+        if stage.exists() and not keep_stage:
+            # The temporary filename is created next to the explicitly named
+            # database; never remove any path outside that directory.
+            if stage.resolve().parent != database.resolve().parent:
+                raise RuntimeError("staging cleanup path escaped the database directory")
+            stage.unlink()

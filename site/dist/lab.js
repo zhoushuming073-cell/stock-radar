@@ -1,6 +1,6 @@
 const API = "http://127.0.0.1:8765";
 const $ = id => document.getElementById(id);
-const state = {strategies:[], runs:[], scannerRuns:[], selected:new Set(), closed:new Set(), focused:null, parameterFor:null, active:null, config:{}, schemas:{}, evaluation:{}, execution:{}, compare:new Set(), loading:false};
+const state = {strategies:[], runs:[], scannerRuns:[], selected:new Set(), closed:new Set(), focused:null, parameterFor:null, active:null, config:{}, schemas:{}, evaluation:{}, execution:{}, compare:new Set(), exportSelected:new Set(), exportInitialized:false, exportResult:null, exportName:"Three strategy v3 study", loading:false};
 const money = n => n!==null&&n!==undefined&&Number.isFinite(Number(n)) ? new Intl.NumberFormat("en-US",{maximumFractionDigits:0}).format(Number(n)) : "—";
 const pct = n => n!==null&&n!==undefined&&Number.isFinite(Number(n)) ? `${(Number(n)*100).toFixed(2)}%` : "—";
 const day = s => s ? String(s).slice(0,10) : "—";
@@ -228,6 +228,8 @@ async function drawCompare(){
   const basis=[
     ["feature version",r=>r.metadata?.feature_version],
     ["market feature version",r=>r.metadata?.market_feature_version],
+    ["host adapter implementation",r=>r.metadata?.adapter_code_hash],
+    ["backtest engine implementation",r=>r.metadata?.engine_code_hash],
     ["label version",r=>r.metadata?.label_version],
     ["data snapshot",r=>r.metadata?.data_snapshot],
     ["universe mode",r=>r.metadata?.universe_mode],
@@ -235,6 +237,11 @@ async function drawCompare(){
     ["execution settings",r=>[r.metadata?.fee_profile,r.metadata?.slippage_bps,r.metadata?.execution_policy]],
   ];
   const differences=runs.length<2?[]:basis.filter(([,value])=>new Set(runs.map(r=>JSON.stringify(value(r)))).size>1).map(([label])=>label);
+  if(runs.some(r=>!r.metadata?.market_feature_version)){
+    const index=differences.indexOf("market feature version");
+    if(index>=0)differences[index]="market feature version (legacy provenance unavailable)";
+    else differences.push("market feature version unavailable for legacy runs");
+  }
   const warning=$("compare-compatibility");
   warning.hidden=!differences.length;
   warning.textContent=differences.length?`These runs differ in ${differences.join(", ")}. Compare their curves as separate experiments; headline metrics are not like-for-like.`:"";
@@ -316,19 +323,53 @@ function drawExperimentControls(){
 }
 async function drawExperiments(){
   const summaries=await api("/api/lab/experiments");
+  drawResearchExport();
   $("experiment-list").innerHTML=summaries.map(e=>{
     const scanner=e.run_type==="scanner";
-    const stats=scanner?(e.top_k==null?"<span>Top-K varies by variant; compare rows separately</span>":`<span>Event Precision@${e.top_k}: ${pct(e.median_precision)} median</span><span>Mean ${pct(e.mean_precision)}</span>`):
+    const stats=scanner?(!e.compatible?`<span>Different evaluation definitions: ${e.comparison_groups?.length||0} comparison groups. No combined precision.</span>`:`<span>Event Precision@${e.top_k}: ${pct(e.median_precision)} median</span><span>Mean ${pct(e.mean_precision)}</span>`):
       `<span>Positive returns ${e.positive}</span><span>Median return ${pct(e.median_return)}</span><span>Average return ${pct(e.mean_return)}</span><span>Worst ${pct(e.worst_return)}</span><span>Best ${pct(e.best_return)}</span><span>Median drawdown ${pct(e.median_drawdown)}</span>`;
     const columns=scanner?"<th>K</th><th>Event Precision</th><th>Event Lift</th><th>Labeled events</th>":"<th>Return</th><th>Drawdown</th>";
     const rows=e.runs.map(r=>`<tr><td>${safe(typeof r.variant==="object"?JSON.stringify(r.variant):r.variant)}</td><td>${safe(statusLabel[r.status]||r.status)}</td>${scanner?`<td>${safe(r.top_k)}</td><td>${pct(r.precision)}</td><td>${r.lift==null?"—":`${Number(r.lift).toFixed(2)}×`}</td><td>${safe(r.events??"—")}</td>`:`<td>${pct(r.total_return)}</td><td>${pct(r.max_drawdown)}</td>`}<td><button class="text-button" data-run="${safe(r.run_id)}" data-run-type="${scanner?"scanner":"backtest"}">View</button></td></tr>`).join("");
-    return `<article class="experiment-card"><h4>${safe(experimentName[e.kind]||e.kind)} · ${scanner?"Scanner":"Backtest"} · ${safe(e.strategy_id)} <small>#${e.id.slice(0,8)}</small></h4><div class="experiment-stats"><span>Completed ${e.completed}/${e.total}</span>${stats}</div><div class="table-wrap experiment-variants"><table><thead><tr><th>Variant / out-of-sample period</th><th>Status</th>${columns}<th>Run</th></tr></thead><tbody>${rows}</tbody></table></div></article>`;
+    return `<article class="experiment-card"><h4>${safe(experimentName[e.kind]||e.kind)} · ${scanner?"Scanner":"Backtest"} · ${safe(e.strategy_id)} <small>#${e.id.slice(0,8)}</small></h4><div class="experiment-stats"><span>Completed ${e.completed}/${e.total}</span>${stats}</div>${scanner&&!e.compatible?`<details><summary>Evaluation groups</summary><pre>${safe(JSON.stringify(e.comparison_groups,null,2))}</pre></details>`:""}<div class="table-wrap experiment-variants"><table><thead><tr><th>Variant / out-of-sample period</th><th>Status</th>${columns}<th>Run</th></tr></thead><tbody>${rows}</tbody></table></div><button class="text-button" data-export-experiment="${safe(e.id)}">Export all experiment runs</button></article>`;
   }).join("")||"<p class='helper'>No experiments yet</p>";
   document.querySelectorAll("#experiment-list [data-run]").forEach(button=>button.onclick=async()=>{
     if(button.dataset.runType==="scanner"){
       showPage("scanner");await refreshScanner();$("scanner-run").value=button.dataset.run;await drawScanner();
     }else{window.timelineController?.detach();state.active=button.dataset.run;drawActive();showPage("lab")}
   });
+  document.querySelectorAll("[data-export-experiment]").forEach(button=>button.onclick=()=>{
+    const entry=summaries.find(item=>item.id===button.dataset.exportExperiment);
+    if(entry){state.exportSelected=new Set(entry.runs.map(run=>run.run_id));state.exportName=`${entry.strategy_id} ${entry.kind} experiment`;drawResearchExport();$("research-export").scrollIntoView({behavior:"smooth",block:"center"})}
+  });
+}
+function drawResearchExport(){
+  let panel=$("research-export");
+  if(!panel){panel=document.createElement("article");panel.id="research-export";panel.className="card section-card";$("experiment-list").parentElement.before(panel)}
+  const all=[...state.scannerRuns.map(run=>({...run,runType:"Scanner"})),...state.runs.map(run=>({...run,runType:"Backtest"}))]
+    .sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)));
+  if(!state.exportInitialized){
+    const groups=new Map();
+    state.runs.filter(run=>run.status==="completed"&&run.metadata?.feature_version==="phase2a_f_v3_asof")
+      .forEach(run=>{const m=run.metadata,id=JSON.stringify([m.strategy_id,m.strategy_version,m.data_snapshot,m.config_hash,m.git_revision,m.market_feature_version,m.execution_policy,m.fee_profile,m.slippage_bps]);if(!groups.has(id))groups.set(id,[]);groups.get(id).push(run)});
+    const latest=[...groups.values()].filter(rows=>["train","validation","test"].every(split=>rows.some(run=>run.metadata.split===split)))
+      .sort((a,b)=>String(b[0].created_at).localeCompare(String(a[0].created_at))).slice(0,3);
+    latest.forEach(rows=>["train","validation","test"].forEach(split=>state.exportSelected.add(rows.find(run=>run.metadata.split===split).run_id)));
+    state.exportInitialized=true;
+  }
+  const visible=all.slice(0,80);
+  panel.innerHTML=`<div class="card-head"><h3>Research Export Bundle</h3><span>Local evidence package · CSV, Parquet, JSON and SHA-256</span></div><p class="helper">Select up to 64 runs. Different evaluation and execution definitions stay in separate comparison groups. Historical Test results are marked exploratory.</p><div class="research-export-list">${visible.map(run=>`<label><input type="checkbox" data-export-run="${safe(run.run_id)}" ${state.exportSelected.has(run.run_id)?"checked":""}><span>${safe(run.runType)} · ${safe(run.metadata?.strategy_id)} · ${safe(human[run.metadata?.split]||run.metadata?.split||"—")} · ${safe(statusLabel[run.status]||run.status)} · #${run.run_id.slice(0,8)}</span></label>`).join("")}</div><div class="experiment-controls"><label>Bundle name<input id="research-export-name" value="Three strategy v3 study"></label><button id="research-export-button" class="primary" type="button">Export selected runs</button></div><p id="research-export-status" class="helper">${state.exportResult?`Ready: <a href="${API}/api/lab/export/download?id=${safe(state.exportResult.bundle_id)}">Download ${safe(state.exportResult.filename)}</a> · ${state.exportResult.run_count} runs · ${state.exportResult.warnings?.length||0} audit warnings`:"The ZIP stays on this computer until you download it."}</p>`;
+  $("research-export-name").value=state.exportName;
+  const history=document.createElement("div");history.id="research-export-history";history.className="helper";$("research-export-status").after(history);
+  api("/api/lab/exports").then(items=>{const target=$("research-export-history");if(target)target.innerHTML=items.length?`<strong>Saved local bundles</strong><ul>${items.slice(0,10).map(item=>`<li><a href="${API}/api/lab/export/download?id=${safe(item.bundle_id)}">${safe(item.name||item.filename)}</a> · ${safe(item.run_count)} runs · ${safe(day(item.created_at))}</li>`).join("")}</ul>`:""}).catch(()=>{});
+  const count=document.createElement("span");count.className="helper";count.textContent=`${state.exportSelected.size} selected`;$("research-export-button").after(count);
+  panel.querySelectorAll("[data-export-run]").forEach(input=>input.onchange=()=>{if(input.checked)state.exportSelected.add(input.dataset.exportRun);else state.exportSelected.delete(input.dataset.exportRun);count.textContent=`${state.exportSelected.size} selected`});
+  $("research-export-name").oninput=event=>{state.exportName=event.target.value};
+  $("research-export-button").onclick=async()=>{
+    const ids=[...state.exportSelected];if(!ids.length||ids.length>64){notice("Select 1 to 64 runs for export.");return}
+    const button=$("research-export-button");button.disabled=true;$("research-export-status").textContent="Building the local research bundle…";
+    try{state.exportName=$("research-export-name").value;const result=await api("/api/lab/export",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({run_ids:ids,name:state.exportName}),signal:AbortSignal.timeout(120000)});state.exportResult=result;drawResearchExport();}
+    catch(error){$("research-export-status").textContent=`Export failed: ${error.message}`;button.disabled=false}
+  };
 }
 $("experiment-run-type").onchange=drawExperimentControls;
 $("experiment-strategy").onchange=drawExperimentControls;

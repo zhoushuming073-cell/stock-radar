@@ -3,7 +3,7 @@ from typing import Any, Mapping
 import pandas as pd
 import pytest
 
-from radar.strategy.adapter import make_candidate_selector
+from radar.strategy.adapter import evaluate_selection, make_candidate_selector
 from radar.strategy.base import StrategyPlugin
 from radar.strategy.context import StrategyContext
 
@@ -53,3 +53,22 @@ def test_plugin_cannot_request_future_feature():
     plugin.required_features = lambda: {"forward_labels"}
     with pytest.raises(ValueError, match="future-data"):
         make_candidate_selector(plugin, {})
+
+
+def test_current_security_name_is_display_only_even_for_legacy_name_filter():
+    class LegacyNameStrategy(ProbeStrategy):
+        def hard_filter(self, context, config):
+            return ~context.frame["security_name"].str.contains("ETF")
+
+        def score(self, context, config):
+            return context.frame["security_name"].str.len().astype(float)
+
+    plugin = LegacyNameStrategy()
+    before = _daily().reset_index(drop=True)
+    future = before.assign(security_name="Future Leveraged ETF")
+    first, _ = evaluate_selection(plugin, {}, before)
+    second, _ = evaluate_selection(plugin, {}, future)
+    assert first["symbol"].tolist() == second["symbol"].tolist()
+    assert first["strategy_score"].tolist() == second["strategy_score"].tolist()
+    assert first["security_name"].tolist() == ["A Inc", "B Inc"]
+    assert second["security_name"].tolist() == ["Future Leveraged ETF"] * 2

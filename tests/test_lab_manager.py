@@ -101,6 +101,8 @@ def test_queue_metadata_and_new_config_create_new_run(manager):
     assert a["metadata"]["config_hash"] != b["metadata"]["config_hash"]
     assert a["metadata"]["config"]["selection"]["max_candidates"] == 3
     assert b["metadata"]["config"]["selection"]["max_candidates"] == 1
+    assert a["metadata"]["market_feature_version"] == manager_module.MARKET_FEATURE_VERSION
+    assert a["metadata"]["resolved_config"]["values"]["dataset"]["market_feature_version"] == manager_module.MARKET_FEATURE_VERSION
     for key in ("strategy_id", "strategy_version", "plugin_interface_version",
                 "strategy_code_hash", "config_hash", "git_revision", "feature_version",
                 "data_snapshot", "source_watermark", "fee_profile", "slippage_bps",
@@ -179,6 +181,65 @@ def test_max_two_queued_launches_and_rerun_no_duplicates(manager, monkeypatch):
     assert all(any(run_id in command for command in launched) for run_id in manager._processes)
     remaining = (set(run_ids) - set(manager._processes)).pop()
     assert manager.store.get_run(remaining)["status"] == "queued"
+
+
+def test_scanner_and_backtest_share_one_worker_budget(manager, monkeypatch):
+    backtests = manager.queue_runs(["tiny_strategy"] * 2)
+    required = {key: "fixture" for key in (
+        "strategy_id", "strategy_version", "plugin_interface_version", "config",
+        "selection", "evaluation", "feature_version", "market_feature_version",
+        "data_snapshot", "source_watermark", "git_revision", "signal_start",
+        "signal_end", "label_version", "strategy_code_hash", "config_hash")}
+    required["config"] = {}
+    required["selection"] = {}
+    required["evaluation"] = {}
+    scanner = manager.store.create_scanner_run(required)
+    launched = []
+
+    class FakeProcess:
+        def __init__(self, command, **_kwargs):
+            launched.append(command)
+
+        def poll(self):
+            return None
+
+    monkeypatch.setattr(manager_module.subprocess, "Popen", FakeProcess)
+    monkeypatch.setattr(RunManager, "_scanner_worker_pid", staticmethod(lambda _id: None))
+    manager.launch_queued_scanners()
+    manager.launch_queued()
+    assert len(launched) == 2
+    assert any("radar.lab.scanner_worker" in command for command in launched)
+    assert sum("radar.lab.worker" in command for command in launched) == 1
+    assert len(manager.store.list_runs(status="queued")) == 2
+    assert manager.store.get_scanner_run(scanner)["status"] == "queued"
+    assert any(run_id in launched[1] for run_id in backtests)
+
+
+def test_restarted_manager_counts_existing_scanner_worker(manager, monkeypatch):
+    backtests = manager.queue_runs(["tiny_strategy"] * 2)
+    fields = {key: "fixture" for key in (
+        "strategy_id", "strategy_version", "plugin_interface_version", "config",
+        "selection", "evaluation", "feature_version", "market_feature_version",
+        "data_snapshot", "source_watermark", "git_revision", "signal_start",
+        "signal_end", "label_version", "strategy_code_hash", "config_hash")}
+    fields.update(config={}, selection={}, evaluation={})
+    scanner = manager.store.create_scanner_run(fields)
+    launched = []
+
+    class FakeProcess:
+        def __init__(self, command, **_kwargs):
+            launched.append(command)
+
+        def poll(self):
+            return None
+
+    monkeypatch.setattr(manager_module.subprocess, "Popen", FakeProcess)
+    monkeypatch.setattr(RunManager, "_scanner_worker_pid",
+                        staticmethod(lambda run_id: 4321 if run_id == scanner else None))
+    recovered = RunManager(manager.root, store_path=manager.store.path, max_workers=2)
+    recovered.launch_queued()
+    assert len(launched) == 1
+    assert sum(run_id in launched[0] for run_id in backtests) == 1
 
 
 def test_timeline_stages_launch_in_order(manager, monkeypatch):

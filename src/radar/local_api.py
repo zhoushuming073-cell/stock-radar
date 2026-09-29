@@ -340,6 +340,31 @@ def make_handler(allowed_origins: set[str]):
                     from radar.lab.experiments import summarize_experiments
                     payload = summarize_experiments(
                         lab_runs(), lab_manager().store.list_scanner_runs(limit=1000))
+                elif target.path == "/api/lab/exports":
+                    from radar.lab.research_export import list_research_bundles
+                    payload = list_research_bundles(DATA / "research-exports")
+                elif target.path == "/api/lab/export/download":
+                    bundle_id = parse_qs(target.query).get("id", [""])[0]
+                    if not re.fullmatch(r"[0-9a-f-]{36}", bundle_id):
+                        raise ValueError("invalid bundle ID")
+                    path = DATA / "research-exports" / f"research-{bundle_id}.zip"
+                    if not path.is_file():
+                        self._json(HTTPStatus.NOT_FOUND, {"error": "bundle not found"})
+                        return
+                    self.send_response(HTTPStatus.OK)
+                    self.send_header("Content-Type", "application/zip")
+                    self.send_header("Content-Disposition", f'attachment; filename="{path.name}"')
+                    self.send_header("Content-Length", str(path.stat().st_size))
+                    self.send_header("Cache-Control", "no-store")
+                    origin = self.headers.get("Origin")
+                    if origin in allowed_origins:
+                        self.send_header("Access-Control-Allow-Origin", origin)
+                        self.send_header("Vary", "Origin")
+                    self.end_headers()
+                    with path.open("rb") as stream:
+                        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                            self.wfile.write(chunk)
+                    return
                 elif target.path in {"/api/lab/run", "/api/lab/equity", "/api/lab/trades",
                                      "/api/lab/events", "/api/lab/days"}:
                     run_id = parse_qs(target.query).get("id", [""])[0]
@@ -378,7 +403,7 @@ def make_handler(allowed_origins: set[str]):
             target = urlsplit(self.path).path
             if target not in {"/api/data/sync", "/api/lab/import", "/api/lab/run", "/api/lab/timeline", "/api/lab/cancel",
                               "/api/lab/uninstall",
-                              "/api/lab/experiment", "/api/lab/scanner/run"}:
+                              "/api/lab/experiment", "/api/lab/scanner/run", "/api/lab/export"}:
                 self._json(HTTPStatus.NOT_FOUND, {"error": "not found"})
                 return
             try:
@@ -412,7 +437,12 @@ def make_handler(allowed_origins: set[str]):
                     data = json.loads(body)
                     if not isinstance(data, dict):
                         raise ValueError("request must be an object")
-                    if target.endswith("/experiment"):
+                    if target == "/api/lab/export":
+                        from radar.lab.research_export import build_research_bundle
+                        payload = build_research_bundle(
+                            manager.store, data.get("run_ids"),
+                            DATA / "research-exports", name=data.get("name", "Research export"))
+                    elif target.endswith("/experiment"):
                         from radar.lab.experiments import queue_experiment
                         payload = queue_experiment(
                             manager, kind=str(data["kind"]),

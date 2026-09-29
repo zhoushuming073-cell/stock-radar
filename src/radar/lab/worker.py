@@ -16,7 +16,8 @@ from radar.backtest.engine import BacktestCancelled, BacktestConfig, run_backtes
 from radar.backtest.metrics import summarize_backtest
 from radar.backtest.runner import (_engine_config, _rules, load_backtest_config,
                                    load_spy_ma200_guard, split_dates)
-from radar.lab.data import available_features, load_strategy_segment, source_watermark
+from radar.lab.data import (MARKET_FEATURE_VERSION, available_features,
+                            load_strategy_segment, source_watermark)
 from radar.lab.execution import resolve_exit_policy
 from radar.lab.parameters import engine_legacy_fields, research_hash
 from radar.lab.store import RunStore
@@ -59,7 +60,8 @@ def execute_run(root: Path, store_path: Path, run_id: str) -> dict:
         for relative, expected in metadata.get("host_source_hashes", {}).items():
             if sha256_file(root / relative) != expected:
                 raise ValueError(f"run host source changed after queuing: {relative}")
-        if metadata["feature_version"] != FEATURE_VERSION:
+        if (metadata["feature_version"] != FEATURE_VERSION or
+                metadata.get("market_feature_version") != MARKET_FEATURE_VERSION):
             raise ValueError("feature version changed after queuing")
         if source_watermark(database) != metadata["source_watermark"]:
             raise ValueError("market source watermark changed after queuing")
@@ -81,6 +83,8 @@ def execute_run(root: Path, store_path: Path, run_id: str) -> dict:
                 raise ValueError("queued resolved configuration hash changed")
             if values["dataset"]["data_snapshot"] != metadata["data_snapshot"]:
                 raise ValueError("queued dataset snapshot differs from run metadata")
+            if values["dataset"].get("market_feature_version") != metadata["market_feature_version"]:
+                raise ValueError("queued market feature version differs from run metadata")
             policy = engine_legacy_fields(values["execution"])
             if policy != metadata["execution_policy"]:
                 raise ValueError("queued execution policy differs from resolved configuration")

@@ -136,6 +136,29 @@ def test_scanner_experiment_summary_uses_event_metrics() -> None:
     assert incomparable["median_precision"] is None
 
 
+def test_scanner_experiment_never_averages_different_outcomes() -> None:
+    common = {"strategy_id": "example", "label_version": "v3",
+              "evaluation": {"top_k_values": [10], "horizon_sessions": 10,
+                             "success_rule": "target_touch", "primary_target": 0.05,
+                             "primary_adverse_target": -0.05,
+                             "event_cooldown_sessions": 5}}
+    runs = []
+    for index, rule in enumerate(("target_touch", "target_before_adverse")):
+        runs.append({"run_id": f"scan-{index}", "status": "completed",
+                     "metadata": {**common,
+                                  "evaluation": {**common["evaluation"], "success_rule": rule},
+                                  "experiment": {"id": "grid-1", "kind": "grid",
+                                                 "run_type": "scanner", "index": index,
+                                                 "variant": rule}},
+                     "metrics": {"event_precision_at_10": .3 + index * .4}})
+    summary = experiments.summarize_experiments([], runs)[0]
+    assert summary["compatible"] is False
+    assert summary["mean_precision"] is None
+    assert len(summary["comparison_groups"]) == 2
+    assert {item["signature"]["success_rule"] for item in summary["comparison_groups"]} == {
+        "target_touch", "target_before_adverse"}
+
+
 def test_ablation_creates_full_baseline_and_each_stage() -> None:
     manager = FakeManager()
     result = experiments.queue_experiment(manager, kind="ablation",
