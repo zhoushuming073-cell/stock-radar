@@ -1,6 +1,11 @@
+> **Status: ✅ COMPLETED**
+>
+> **Role:** Historical implementation/backlog evidence. The actionable work recorded here is closed. Do not use this file as the current task list.
+> **Current status:** `reports/journey-2026-09-30-0651-active.md`
+>
 # Research readiness acceptance — 2026-09-29
 
-This records implementation evidence for `journey-2026-09-29-bug-backlog.md`.
+This records implementation evidence for `journey-2026-09-29-0629-completed.md`.
 It is not a performance recommendation.
 
 ## Correctness repairs

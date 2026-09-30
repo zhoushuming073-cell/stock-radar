@@ -1,10 +1,15 @@
+> **Status: ✅ COMPLETED**
+>
+> **Role:** Historical implementation/backlog evidence. The actionable work recorded here is closed. Do not use this file as the current task list.
+> **Current status:** `reports/journey-2026-09-30-0651-active.md`
+>
 # Stock Radar Journey — Bug Mining Round 2 + UI Integrity Backlog — 2026-09-30
 
 > Scope: new defects found after the 2026-09-29 correctness/readiness pass.
 >
 > Baseline audited: `main @ c80ddce9227d62b53cdc59aae8a347e73bd3a634`.
 >
-> This document intentionally does **not** duplicate the existing items in `reports/journey-2026-09-29-followup-backlog.md` such as Scanner cancellation, Fresh OOS first-class execution, backup retention, partial-session completeness, queue fairness, legacy-report labeling, and README worker documentation. Those remain valid until separately verified/fixed.
+> This document intentionally does **not** duplicate the existing items in `reports/journey-2026-09-29-1351-completed.md` such as Scanner cancellation, Fresh OOS first-class execution, backup retention, partial-session completeness, queue fairness, legacy-report labeling, and README worker documentation. Those remain valid until separately verified/fixed.
 >
 > Primary audit areas in this pass:
 >
@@ -635,7 +640,7 @@ environment provenance
 
 This document extends, rather than replaces:
 
-`reports/journey-2026-09-29-followup-backlog.md`.
+`reports/journey-2026-09-29-1351-completed.md`.
 
 That earlier backlog still contains separate work including:
 

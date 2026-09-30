@@ -1,3 +1,8 @@
+> **Status: 🧭 ROADMAP**
+>
+> **Role:** Future/optional adoption plan. A component mentioned here is not considered implemented unless the current active journey says so.
+> **Current status:** `reports/journey-2026-09-30-0651-active.md`
+>
 # Stock Radar Journey — Open-source Reuse Roadmap 2026-09-29
 
 > Purpose: identify project areas that are still incomplete or likely to become expensive to maintain, and map them to mature open-source components that can be reused instead of reimplemented.

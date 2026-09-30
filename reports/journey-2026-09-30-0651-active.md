@@ -1,3 +1,8 @@
+> **Status: 🟢 ACTIVE**
+>
+> **Role:** Current canonical project status and active backlog. Start here for all current work.
+> **Index:** `reports/README.md`
+>
 # Stock Radar — Canonical Project Status
 
 > **Canonical status file.** Read this file first when deciding what is complete, what is still open, and what should be implemented next.
@@ -45,7 +50,7 @@ The platform is suitable for exploratory Train / Validation research subject to 
 
 ## 2.1 Causal research and research-store integrity — DONE
 
-The earlier research-correctness work recorded in `reports/journey.md` and the first 2026-09-29 bug backlog is closed.
+The earlier research-correctness work recorded in `reports/journey-2026-09-30-0651-active.md` and the first 2026-09-29 bug backlog is closed.
 
 Completed:
 
@@ -66,12 +71,12 @@ Completed:
 
 Primary acceptance evidence:
 
-- `reports/research-readiness-2026-09-29.md`
-- `reports/journey-2026-09-29-bug-backlog.md` — CLOSED
+- `reports/journey-2026-09-29-1306-completed.md`
+- `reports/journey-2026-09-29-0629-completed.md` — CLOSED
 
 ## 2.2 Follow-up operations backlog — DONE
 
-All seven items from `reports/journey-2026-09-29-followup-backlog.md` are implemented in the current source:
+All seven items from `reports/journey-2026-09-29-1351-completed.md` are implemented in the current source:
 
 - Scanner queued/running cancellation;
 - first-class Fresh OOS support in Scanner and Backtest when the split exists;
@@ -85,7 +90,7 @@ Status of the source backlog file: **CLOSED / ARCHIVED**.
 
 ## 2.3 Bug-mining round 2 — DONE
 
-All ten items from `reports/journey-2026-09-30-bug-mining-round-2.md` are implemented in the current source:
+All ten items from `reports/journey-2026-09-30-0124-completed.md` are implemented in the current source:
 
 - atomic multi-Run creation;
 - exact strategy version preserved by Clone;
@@ -102,7 +107,7 @@ Status of the source backlog file: **CLOSED / ARCHIVED**.
 
 The implementation summary is retained at:
 
-- `reports/journey-2026-09-30-fix-pass.md`
+- `reports/journey-2026-09-30-0620-completed.md`
 
 That file records a local result of **262 tests passed** and a browser smoke check. GitHub currently has no CI workflow/check result attached to commit `5cc2d5c...`, so the 262-test statement is retained as local verification evidence rather than independent hosted-CI evidence.
 
@@ -177,7 +182,7 @@ A useful Experiment layer exists:
 - variant status and summary metrics;
 - Research Bundle export.
 
-The larger "Experiment as a first-class entity" goal from `journey-2026-09-29.md` is not fully complete.
+The larger "Experiment as a first-class entity" goal from `journey-2026-09-29-0426-archived.md` is not fully complete.
 
 Still missing or incomplete:
 
@@ -426,7 +431,7 @@ Still desirable:
 
 # 7. Open-source reuse roadmap status
 
-`reports/journey-2026-09-29-open-source-reuse-roadmap.md` remains a roadmap, not an implementation checklist that can be assumed complete.
+`reports/journey-2026-09-29-1421-roadmap.md` remains a roadmap, not an implementation checklist that can be assumed complete.
 
 Clearly adopted in the current repository:
 
@@ -456,14 +461,14 @@ Use the following classification when reading old files.
 
 | File | Current meaning |
 | --- | --- |
-| `reports/journey.md` | **CURRENT CANONICAL STATUS** |
-| `reports/journey-2026-09-29-bug-backlog.md` | ARCHIVED — all 8 items closed |
-| `reports/research-readiness-2026-09-29.md` | ARCHIVED acceptance evidence for the first bug backlog |
-| `reports/journey-2026-09-29-followup-backlog.md` | ARCHIVED — all 7 items closed |
-| `reports/journey-2026-09-30-bug-mining-round-2.md` | ARCHIVED — all 10 items closed |
-| `reports/journey-2026-09-30-fix-pass.md` | ARCHIVED implementation/verification summary for the 17-item fix pass |
-| `reports/journey-2026-09-29.md` | ARCHIVED mixed planning/history; surviving open goals are copied into this canonical file |
-| `reports/journey-2026-09-29-open-source-reuse-roadmap.md` | ROADMAP — optional adoption plan, mostly not integrated |
+| `reports/journey-2026-09-30-0651-active.md` | **CURRENT CANONICAL STATUS** |
+| `reports/journey-2026-09-29-0629-completed.md` | ARCHIVED — all 8 items closed |
+| `reports/journey-2026-09-29-1306-completed.md` | ARCHIVED acceptance evidence for the first bug backlog |
+| `reports/journey-2026-09-29-1351-completed.md` | ARCHIVED — all 7 items closed |
+| `reports/journey-2026-09-30-0124-completed.md` | ARCHIVED — all 10 items closed |
+| `reports/journey-2026-09-30-0620-completed.md` | ARCHIVED implementation/verification summary for the 17-item fix pass |
+| `reports/journey-2026-09-29-0426-archived.md` | ARCHIVED mixed planning/history; surviving open goals are copied into this canonical file |
+| `reports/journey-2026-09-29-1421-roadmap.md` | ROADMAP — optional adoption plan, mostly not integrated |
 | `reports/phase2/*` | HISTORICAL pre-v3 research artifacts, not current Strategy Lab semantics |
 
 ---
@@ -472,13 +477,16 @@ Use the following classification when reading old files.
 
 To prevent status from fragmenting again:
 
-1. **`reports/journey.md` is the only current project-status/backlog file.**
-2. New bug-mining findings are added to the current backlog sections here first.
-3. A dated fix-pass file may be created for an important implementation milestone, but once accepted, the canonical status here must be updated in the same pass.
-4. Old backlog files are never reused as active task lists after closure.
-5. `reports/phase2/` remains historical research evidence.
-6. `docs/` contains contracts/specifications, not current task status.
-7. Research ideas must be separated from correctness bugs and product/UI work.
+1. Every journey log uses `journey-YYYY-MM-DD-HHMM-status.md`.
+2. `HHMM` uses the GitHub repository commit timestamp in UTC so historical filenames are deterministic.
+3. Exactly one journey file may have status `active`. `reports/README.md` points to it.
+4. When a new canonical status snapshot is published, create a new timestamped `active` journey and downgrade the previous active file to `archived` or `completed`, according to its role.
+5. Closed bug backlogs and fix-pass records remain preserved as `completed`; they are not reused as task lists.
+6. Mixed historical planning notes become `archived`; optional future adoption plans use `roadmap`.
+7. New bug-mining findings, product work and research/data work are consolidated into the current active journey before a new standalone log is created.
+8. `reports/phase2/` remains historical research evidence rather than journey status logs.
+9. `docs/` contains contracts/specifications, not current task status.
+10. Every journey file must carry a visible status banner at the top.
 
 ---
 

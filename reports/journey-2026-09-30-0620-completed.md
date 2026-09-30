@@ -1,7 +1,12 @@
+> **Status: ✅ COMPLETED**
+>
+> **Role:** Historical implementation/backlog evidence. The actionable work recorded here is closed. Do not use this file as the current task list.
+> **Current status:** `reports/journey-2026-09-30-0651-active.md`
+>
 # Stock Radar Journey — 2026-09-30 fix pass
 
-This pass implements the ten items in `journey-2026-09-30-bug-mining-round-2.md`
-and the seven follow-ups in `journey-2026-09-29-followup-backlog.md`.
+This pass implements the ten items in `journey-2026-09-30-0124-completed.md`
+and the seven follow-ups in `journey-2026-09-29-1351-completed.md`.
 
 ## Research integrity
 

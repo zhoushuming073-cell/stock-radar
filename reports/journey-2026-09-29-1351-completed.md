@@ -1,8 +1,13 @@
+> **Status: ✅ COMPLETED**
+>
+> **Role:** Historical implementation/backlog evidence. The actionable work recorded here is closed. Do not use this file as the current task list.
+> **Current status:** `reports/journey-2026-09-30-0651-active.md`
+>
 # Stock Radar Journey — Follow-up Backlog 2026-09-29
 
 > Purpose: record the next set of issues found after commit `edb428c055dfc715429f33d23380da314b069d1e`.
 >
-> Scope: this file only contains newly identified follow-up work. It does not repeat the previously completed P0/P1 backlog in `journey-2026-09-29-bug-backlog.md`.
+> Scope: this file only contains newly identified follow-up work. It does not repeat the previously completed P0/P1 backlog in `journey-2026-09-29-0629-completed.md`.
 >
 > Audit baseline: `main @ edb428c055dfc715429f33d23380da314b069d1e`
 

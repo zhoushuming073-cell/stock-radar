@@ -1,3 +1,8 @@
+> **Status: ✅ COMPLETED**
+>
+> **Role:** Historical implementation/backlog evidence. The actionable work recorded here is closed. Do not use this file as the current task list.
+> **Current status:** `reports/journey-2026-09-30-0651-active.md`
+>
 # Stock Radar Journey — Bug Backlog 2026-09-29
 
 > Purpose: translate the latest bug-mining findings into implementation-oriented engineering language for Codex.
