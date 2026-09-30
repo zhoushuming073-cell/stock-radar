@@ -44,5 +44,6 @@ Personal research reports should cite the Run IDs, Research Bundle IDs, dataset 
 
 ## Preserved historical reports
 
+- `research-2026-09-30-1246-stock-radar-product-boundary-final.md` — personal direction note: Stock Radar as the signal/candidate layer, with mature external backtest infrastructure used for portfolio validation.
 - `research-2026-09-27-scanner-validation-draft.md` — first Scanner validation research draft.
 - `research-2026-09-27-project-stage-1-superseded.md` — historical project assessment; use the current ledger in `reports/README.md` for present status.
