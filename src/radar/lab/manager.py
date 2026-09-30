@@ -243,12 +243,14 @@ class RunManager:
 
     def _git_revision(self) -> str:
         result = subprocess.run(["git", "rev-parse", "HEAD"], cwd=self.root,
-                                capture_output=True, text=True, check=False)
+                                capture_output=True, text=True, check=False,
+                                creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
         return result.stdout.strip() if result.returncode == 0 else "unavailable"
 
     def _git_dirty(self) -> bool:
         result = subprocess.run(["git", "status", "--porcelain"], cwd=self.root,
-                                capture_output=True, text=True, check=False)
+                                capture_output=True, text=True, check=False,
+                                creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
         return result.returncode != 0 or bool(result.stdout.strip())
 
     def queue_runs(

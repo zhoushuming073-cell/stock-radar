@@ -110,6 +110,22 @@ def test_queue_metadata_and_new_config_create_new_run(manager):
         assert key in b["metadata"]
 
 
+def test_git_metadata_probes_do_not_open_console(tmp_path, monkeypatch):
+    calls = []
+
+    def fake_run(command, **options):
+        calls.append((command, options))
+        return SimpleNamespace(returncode=0, stdout="revision\n")
+
+    monkeypatch.setattr(manager_module.subprocess, "run", fake_run)
+    probe = SimpleNamespace(root=tmp_path)
+    assert RunManager._git_revision(probe) == "revision"
+    assert RunManager._git_dirty(probe) is True
+    assert [command[1] for command, _ in calls] == ["rev-parse", "status"]
+    assert all(options["creationflags"] == getattr(manager_module.subprocess, "CREATE_NO_WINDOW", 0)
+               for _, options in calls)
+
+
 def test_stop_loss_override_changes_only_the_new_run(manager):
     baseline = manager.queue_runs(["tiny_strategy"])[0]
     variant = manager.queue_runs(
