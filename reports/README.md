@@ -39,4 +39,5 @@ When a new canonical status snapshot is created, rename the previous `📌当前
 ## Non-journey reports
 
 - `phase2/` contains historical pre-v3 research artifacts and datasets. It is not an active project backlog.
+- `personal-research/` contains owner-authored personal research reports and preserved research conclusions.
 - Contracts and specifications belong under `docs/`, not in the journey status stream.
