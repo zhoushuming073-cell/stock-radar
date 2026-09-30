@@ -12,7 +12,7 @@ import duckdb
 from radar.lab.data import _market_context, load_strategy_segment, MARKET_FEATURES
 from radar.lab.scanner import (LABEL_VERSION, build_labels, candidate_metrics,
                                evaluation_settings, label_candidate, target_name)
-from radar.lab.scanner_worker import scan_frames
+from radar.lab.scanner_worker import ScannerCancelled, scan_frames
 from radar.lab.scanner_worker import signal_session_coverage
 from radar.lab.store import RunStore, _json
 from radar.lab.universe import LocalSecurityMaster
@@ -53,12 +53,48 @@ def test_missing_full_signal_session_fails_but_weekend_is_not_expected():
                           "tradability_pass": [True, True]}).set_index(["date", "symbol"], drop=False)
     coverage = signal_session_coverage(frame, sessions, sessions[0], sessions[-1])
     assert coverage == {"expected_signal_sessions": 3, "observed_signal_sessions": 2,
-                        "missing_signal_sessions": ["2025-01-06"]}
+                        "missing_signal_sessions": ["2025-01-06"],
+                        "incomplete_signal_sessions": []}
     with pytest.raises(ValueError, match="2025-01-06"):
         scan_frames(ManyCandidates(), {"selection": {"max_candidates": None}},
                     frame, pd.DataFrame(), sessions, sessions[0], sessions[-1],
                     evaluation_settings(None))
     assert "2025-01-04" not in coverage["missing_signal_sessions"]
+
+
+def test_scanner_checks_cancellation_at_session_boundary():
+    sessions = pd.bdate_range("2025-01-02", periods=2)
+    frame = pd.DataFrame({"date": sessions, "symbol": "AAA", "security_name": "AAA",
+                          "close": 10.0, "ret_1": .1,
+                          "tradability_pass": True}).set_index(["date", "symbol"], drop=False)
+    completed = []
+    def stop_after_day(progress):
+        completed.append(progress["date"])
+        raise ScannerCancelled()
+    with pytest.raises(ScannerCancelled):
+        scan_frames(ManyCandidates(), {"selection": {"max_candidates": None}},
+                    frame, pd.DataFrame(), sessions, sessions[0], sessions[-1],
+                    evaluation_settings(None), progress=stop_after_day)
+    assert completed == [str(sessions[0].date())]
+
+
+def test_severely_truncated_signal_session_is_rejected():
+    sessions = pd.bdate_range("2025-01-02", periods=5)
+    rows = [{"date": day, "symbol": f"S{i}", "security_name": f"S{i}",
+             "close": 10.0, "ret_1": .1, "tradability_pass": True}
+            for day in sessions for i in range(1 if day == sessions[2] else 20)]
+    frame = pd.DataFrame(rows).set_index(["date", "symbol"], drop=False)
+    coverage = signal_session_coverage(frame, sessions, sessions[0], sessions[-1])
+    assert coverage["incomplete_signal_sessions"] == [{
+        "date": str(sessions[2].date()), "observed": 1,
+        "expected": 20.0, "source": "nearby_median"}]
+    published = {str(day.date()): 20 for day in sessions}
+    assert signal_session_coverage(frame, sessions, sessions[0], sessions[-1],
+                                   published)["incomplete_signal_sessions"][0]["source"] == "published_manifest"
+    with pytest.raises(ValueError, match="incomplete signal sessions"):
+        scan_frames(ManyCandidates(), {"selection": {"max_candidates": None}},
+                    frame, pd.DataFrame(), sessions, sessions[0], sessions[-1],
+                    evaluation_settings(None))
 
 
 def test_golden_forward_labels_and_incomplete_horizon():

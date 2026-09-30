@@ -11,6 +11,7 @@ import subprocess
 import sys
 from threading import RLock
 from typing import Any, Mapping
+from uuid import uuid4
 
 import psutil
 import pandas as pd
@@ -83,14 +84,22 @@ class RunManager:
     def list_strategies(self) -> list[StrategyRegistration]:
         return list(self.registry.list_plugins())
 
-    def queue_scanner(self, strategy_id: str, *, split: str = "validation",
+    def queue_scanner(self, strategy_id: str, **options: Any) -> str:
+        return self.queue_scanner_requests([{"strategy_id": strategy_id, **options}])[0]
+
+    def queue_scanner_requests(self, requests: list[dict[str, Any]]) -> list[str]:
+        with self._lock:
+            prepared = [(str(uuid4()), self._prepare_scanner_run(**request)) for request in requests]
+            return self.store.create_scanner_runs_batch(prepared)
+
+    def _prepare_scanner_run(self, strategy_id: str, *, split: str = "validation",
                       max_candidates: int | None | object = _UNSET,
                       config_override: dict | None = None,
                       evaluation_overrides: dict | None = None,
                       universe_mode: str = "current_snapshot",
-                      experiment: dict | None = None) -> str:
-        if split not in {"train", "validation", "test"}:
-            raise ValueError("scanner split must be train, validation or test")
+                      experiment: dict | None = None) -> dict[str, Any]:
+        if split not in {"train", "validation", "test", "fresh_oos"}:
+            raise ValueError("scanner split must be train, validation, test or fresh_oos")
         if max_candidates is not _UNSET and max_candidates is not None and (
                 isinstance(max_candidates, bool) or not isinstance(max_candidates, int) or
                 max_candidates < 0):
@@ -115,6 +124,8 @@ class RunManager:
                     "Deprecated Scanner max_candidates changes strategy output truncation; "
                     "use evaluation.top_k_values for quality metrics.")
             windows = split_dates(self.database, self.root / "config" / "research.yaml")
+            if split not in windows:
+                raise ValueError(f"{split} is not available in the current research store")
             dates = windows[split]
             sessions = [day for day in windows.get("sessions", dates)
                         if dates[0] <= day <= dates[2]]
@@ -195,7 +206,7 @@ class RunManager:
             }
             if experiment:
                 metadata["experiment"] = experiment
-            return self.store.create_scanner_run(metadata)
+            return metadata
 
     def import_zip(self, path: Path) -> StrategyRegistration:
         with self._lock:
@@ -204,18 +215,23 @@ class RunManager:
                                         registry=self.registry, run_tests=True)
 
     def uninstall_strategy(self, strategy_id: str) -> int:
-        """Remove every installed version of a ZIP-imported strategy.
+        """Remove one exact ZIP-imported strategy version.
 
         Built-in strategies under ``root/strategies`` are source-controlled and
         cannot be removed through the lab. Historical Runs are immutable and
         are never deleted; an active Run of the strategy blocks uninstalling.
         """
         with self._lock:
-            if self.store.has_active_strategy_runs(strategy_id):
+            identifier, separator, version = strategy_id.rpartition("@")
+            if not separator or not identifier or not version:
+                raise ValueError("uninstall requires strategy_id@version")
+            strategy_id = identifier
+            if self.store.has_active_strategy_runs(strategy_id, version):
                 raise ValueError(f"strategy has an active run: {strategy_id}")
             registrations = [
                 item for item in self.registry.list_plugins()
                 if item.manifest.id == strategy_id
+                and item.manifest.version == version
             ]
             if not registrations:
                 raise ValueError(f"unknown strategy: {strategy_id}")
@@ -253,7 +269,23 @@ class RunManager:
                                 creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
         return result.returncode != 0 or bool(result.stdout.strip())
 
-    def queue_runs(
+    def queue_runs(self, strategy_ids: list[str], **options: Any) -> list[str]:
+        return self.queue_run_requests([{"strategy_ids": strategy_ids, **options}])
+
+    def queue_run_requests(self, requests: list[dict[str, Any]]) -> list[str]:
+        with self._lock:
+            prepared: list[tuple[str, dict[str, Any]]] = []
+            for request in requests:
+                options = dict(request)
+                assigned_ids = options.pop("assigned_ids", None)
+                metadata = self._prepare_runs(**options)
+                ids = assigned_ids if assigned_ids is not None else [str(uuid4()) for _ in metadata]
+                if len(ids) != len(metadata):
+                    raise ValueError("assigned run IDs do not match prepared Runs")
+                prepared.extend(zip(ids, metadata))
+            return self.store.create_runs_batch(prepared)
+
+    def _prepare_runs(
         self, strategy_ids: list[str], *, split: str = "validation",
         slippage_bps: float = 10.0,
         configs_by_strategy: dict[str, dict] | None = None,
@@ -266,9 +298,9 @@ class RunManager:
         execution_overrides: dict | None = None,
         universe_mode: str = "current_snapshot",
         source_scanner_run_id: str | None = None,
-    ) -> list[str]:
-        if split not in {"train", "validation", "test", "walk_forward"}:
-            raise ValueError("backtest period must be Train, Validation, or Test")
+    ) -> list[dict[str, Any]]:
+        if split not in {"train", "validation", "test", "fresh_oos", "walk_forward"}:
+            raise ValueError("backtest period must be Train, Validation, Test or Fresh OOS")
         if split == "walk_forward" and window_override is None:
             raise ValueError("walk-forward requires a date window")
         if not 0 <= float(slippage_bps) <= 100:
@@ -281,6 +313,8 @@ class RunManager:
             return []
         with self._lock:
             dates = split_dates(self.database, self.root / "config" / "research.yaml")
+            if split == "fresh_oos" and split not in dates:
+                raise ValueError("fresh_oos is not available in the current research store")
             window = list(window_override) if window_override else [str(day.date()) for day in dates[split]]
             if window_override:
                 sessions = {str(day.date()) for day in dates["sessions"]}
@@ -297,7 +331,7 @@ class RunManager:
             snapshot = self._data_snapshot()
             watermark = source_watermark(self.database)
             commit = self._git_revision()
-            created: list[str] = []
+            prepared: list[dict[str, Any]] = []
             for reference in strategy_ids:
                 if "@" in reference:
                     strategy_id, version = reference.rsplit("@", 1)
@@ -313,7 +347,8 @@ class RunManager:
                                                                     registration.config)))
                 if not isinstance(config, dict):
                     raise ValueError("strategy configuration must be a mapping")
-                universe_sessions = [day for day in dates.get("sessions", dates[split])
+                available_sessions = dates["sessions"] if "sessions" in dates else dates[split]
+                universe_sessions = [day for day in available_sessions
                                      if pd.Timestamp(window[0]) <= day <= pd.Timestamp(window[2])]
                 _, provenance = load_universe(self.root, universe_mode, universe_sessions)
                 readiness = local_readiness(self.root, universe_mode, universe_sessions)
@@ -417,8 +452,8 @@ class RunManager:
                     metadata["after_run_id"] = after_run_id
                 if pace_ms:
                     metadata["pace_ms"] = pace_ms
-                created.append(self.store.create_run(metadata))
-            return created
+                prepared.append(metadata)
+            return prepared
 
     @staticmethod
     def _process_matches(pid: int | None, run_id: str) -> bool:
@@ -468,35 +503,51 @@ class RunManager:
                 self._processes.pop(run_id, None)
 
     def launch_queued(self) -> None:
+        self.dispatch_queued()
+
+    def dispatch_queued(self) -> None:
+        """Oldest queued Run first across Backtest and Scanner."""
         with self._lock:
             self.refresh()
-            runs = self.store.list_runs(limit=10_000)
-            by_id = {run["run_id"]: run for run in runs}
-            active = sum(run["status"] in {"running", "cancel_requested"} for run in runs)
-            scanners = self.store.list_scanner_runs(limit=10000)
-            active += sum(run["status"] == "running" for run in scanners)
-            active += sum(bool(run["status"] == "queued" and (
-                (self._scanner_processes.get(run["run_id"]) is not None and
-                 self._scanner_processes[run["run_id"]].poll() is None) or
-                self._scanner_worker_pid(run["run_id"]))) for run in scanners)
-            queued_active: set[str] = set()
-            for run in runs:
-                if run["status"] != "queued":
+            for run in self.store.list_scanner_runs(limit=10000):
+                if run["status"] not in {"running", "cancel_requested"}:
                     continue
                 run_id = run["run_id"]
-                process = self._processes.get(run_id)
-                if (process is not None and process.poll() is None) or self._worker_pid(run_id):
+                process = self._scanner_processes.get(run_id)
+                if (process is not None and process.poll() is None) or self._scanner_worker_pid(run_id):
+                    continue
+                if run["status"] == "cancel_requested":
+                    self.store.finish_scanner_cancel(run_id)
+                else:
+                    self.store.fail_scanner_run(run_id, "scanner worker stopped unexpectedly")
+                self._scanner_processes.pop(run_id, None)
+            runs = self.store.list_runs(limit=10_000)
+            scanners = self.store.list_scanner_runs(limit=10000)
+            by_id = {run["run_id"]: run for run in runs}
+            active = sum(run["status"] in {"running", "cancel_requested"} for run in runs)
+            active += sum(run["status"] in {"running", "cancel_requested"} for run in scanners)
+            pending = sorted([("backtest", run) for run in runs if run["status"] == "queued"] +
+                             [("scanner", run) for run in scanners if run["status"] == "queued"],
+                             key=lambda pair: (pair[1]["created_at"], pair[1]["run_id"]))
+            queued_active = set()
+            for run_type, run in pending:
+                run_id = run["run_id"]
+                processes = self._scanner_processes if run_type == "scanner" else self._processes
+                process = processes.get(run_id)
+                worker_pid = (self._scanner_worker_pid(run_id) if run_type == "scanner"
+                              else self._worker_pid(run_id))
+                if (process is not None and process.poll() is None) or worker_pid:
                     queued_active.add(run_id)
             active += len(queued_active)
-            for run in runs:
+            for run_type, run in pending:
                 if active >= self.max_workers:
                     break
-                if run["status"] != "queued":
-                    continue
                 run_id = run["run_id"]
                 if run_id in queued_active:
                     continue
-                predecessor_id = run["metadata"].get("after_run_id")
+                processes = self._scanner_processes if run_type == "scanner" else self._processes
+                predecessor_id = (run["metadata"].get("after_run_id")
+                                  if run_type == "backtest" else None)
                 if predecessor_id:
                     predecessor = by_id.get(predecessor_id)
                     if predecessor is None:
@@ -507,12 +558,14 @@ class RunManager:
                         continue
                     if predecessor["status"] != "completed":
                         continue
-                log_path = self.log_dir / f"{run_id}.log"
+                log_path = self.log_dir / (f"scanner-{run_id}.log" if run_type == "scanner"
+                                           else f"{run_id}.log")
                 python = Path(sys.executable)
                 pythonw = python.with_name("pythonw.exe")
                 if os.name == "nt" and pythonw.exists():
                     python = pythonw
-                command = [str(python), "-m", "radar.lab.worker", "--root",
+                module = "radar.lab.scanner_worker" if run_type == "scanner" else "radar.lab.worker"
+                command = [str(python), "-m", module, "--root",
                            str(self.root), "--store", str(self.store.path), "--run", run_id]
                 with log_path.open("ab") as log:
                     process = subprocess.Popen(
@@ -520,10 +573,15 @@ class RunManager:
                         stdout=log, stderr=subprocess.STDOUT,
                         creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
                     )
-                self._processes[run_id] = process
+                processes[run_id] = process
                 active += 1
 
-    def cancel(self, run_id: str) -> None:
+    def cancel(self, run_id: str, run_type: str = "backtest") -> None:
+        if run_type == "scanner":
+            self.store.request_scanner_cancel(run_id)
+            return
+        if run_type != "backtest":
+            raise ValueError("unknown run type")
         record = self.store.get_run(run_id)
         if record["status"] == "queued":
             self.store.cancel_run(run_id)
@@ -531,50 +589,7 @@ class RunManager:
             self.store.request_cancel(run_id)
 
     def launch_queued_scanners(self) -> None:
-        """Launch Scanner Runs silently; keep them independent of portfolio Runs."""
-        with self._lock:
-            runs = self.store.list_scanner_runs(limit=10000)
-            for run in runs:
-                if run["status"] != "running":
-                    continue
-                run_id = run["run_id"]
-                process = self._scanner_processes.get(run_id)
-                if process is not None and process.poll() is None:
-                    continue
-                if self._scanner_worker_pid(run_id) is None:
-                    self.store.fail_scanner_run(run_id, "scanner worker stopped unexpectedly")
-                    self._scanner_processes.pop(run_id, None)
-            active = sum(run["status"] == "running" for run in
-                         self.store.list_scanner_runs(limit=10000))
-            backtests = self.store.list_runs(limit=10000)
-            active += sum(run["status"] in {"running", "cancel_requested"}
-                          for run in backtests)
-            active += sum(bool(run["status"] == "queued" and (
-                (self._processes.get(run["run_id"]) is not None and
-                 self._processes[run["run_id"]].poll() is None) or
-                self._worker_pid(run["run_id"]))) for run in backtests)
-            for run in runs:
-                if active >= self.max_workers:
-                    break
-                if run["status"] != "queued":
-                    continue
-                run_id = run["run_id"]
-                existing = self._scanner_processes.get(run_id)
-                if (existing is not None and existing.poll() is None) or self._scanner_worker_pid(run_id):
-                    continue
-                python = Path(sys.executable)
-                pythonw = python.with_name("pythonw.exe")
-                if os.name == "nt" and pythonw.exists():
-                    python = pythonw
-                command = [str(python), "-m", "radar.lab.scanner_worker", "--root",
-                           str(self.root), "--store", str(self.store.path), "--run", run_id]
-                log_path = self.log_dir / f"scanner-{run_id}.log"
-                with log_path.open("ab") as log:
-                    process = subprocess.Popen(command, cwd=self.root, stdin=subprocess.DEVNULL,
-                                               stdout=log, stderr=subprocess.STDOUT,
-                                               creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
-                self._scanner_processes[run_id] = process
-                active += 1
+        self.dispatch_queued()
 
     @staticmethod
     def _scanner_worker_pid(run_id: str) -> int | None:

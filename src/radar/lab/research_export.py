@@ -16,7 +16,7 @@ import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-from radar.lab.store import RunStore, _json
+from radar.lab.store import RunStore, SCHEMA_VERSION, _json
 
 
 def _hash(path: Path) -> str:
@@ -95,7 +95,9 @@ def build_research_bundle(store: RunStore, run_ids: list[str], output_dir: Path,
                                           "run_ids": []})["run_ids"].append(run_id)
             run_dir = base / "runs" / run_id
             run_dir.mkdir(parents=True)
-            (run_dir / "run.json").write_text(_json(run), encoding="utf-8")
+            evidence = {key: value for key, value in run.items()
+                        if key not in {"display_name", "archived_at"}}
+            (run_dir / "run.json").write_text(_json(evidence), encoding="utf-8")
             (run_dir / "metrics.json").write_text(_json(metrics), encoding="utf-8")
             records.append({"run_id": run_id, "run_type": run_type,
                             "strategy_id": metadata.get("strategy_id"),
@@ -156,7 +158,7 @@ def build_research_bundle(store: RunStore, run_ids: list[str], output_dir: Path,
                    else store.get_run(run_id))
             metrics = run.get("metrics") or {}
             if record["run_type"] == "scanner":
-                for k in (5, 10, 20):
+                for k in run["metadata"].get("evaluation", {}).get("top_k_values", []):
                     if f"event_precision_at_{k}" in metrics:
                         topk.append({"run_id": run_id, "k": k,
                                      "event_precision": metrics.get(f"event_precision_at_{k}"),
@@ -210,7 +212,7 @@ def build_research_bundle(store: RunStore, run_ids: list[str], output_dir: Path,
         (provenance / "hashes.json").write_text(_json(hashes), encoding="utf-8")
         (provenance / "environment.json").write_text(_json({
             "exporter": "stock-radar-research-bundle-v1", "pyarrow": pa.__version__,
-            "sqlite_store_schema": 6}), encoding="utf-8")
+            "sqlite_store_schema": SCHEMA_VERSION}), encoding="utf-8")
         temporary_zip = output_dir / f".{bundle_id}.tmp"
         try:
             with ZipFile(temporary_zip, "w", compression=ZIP_DEFLATED, compresslevel=6) as archive:

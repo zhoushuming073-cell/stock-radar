@@ -14,7 +14,7 @@ import sqlite3
 import uuid
 from contextlib import contextmanager
 from dataclasses import asdict, is_dataclass
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal
 from pathlib import Path
 from typing import Any, Iterator, Mapping
@@ -22,7 +22,7 @@ from typing import Any, Iterator, Mapping
 import pandas as pd
 
 
-SCHEMA_VERSION = 7
+SCHEMA_VERSION = 8
 _TERMINAL = frozenset({"completed", "failed", "cancelled"})
 _STATUSES = frozenset({"queued", "running", "cancel_requested", *_TERMINAL})
 _REQUIRED_METADATA = frozenset({
@@ -115,6 +115,9 @@ class RunStore:
                 version = 6
             if version == 6:
                 self._migrate_v7(connection)
+                version = 7
+            if version == 7:
+                self._migrate_v8(connection)
 
     @contextmanager
     def _connect(self) -> Iterator[sqlite3.Connection]:
@@ -366,18 +369,96 @@ class RunStore:
                 connection.execute("ROLLBACK")
             raise
 
+    @staticmethod
+    def _migrate_v8(connection: sqlite3.Connection) -> None:
+        """Extend Scanner lifecycle while preserving candidate foreign keys."""
+        connection.execute("PRAGMA foreign_keys=OFF")
+        try:
+            connection.executescript("""
+                BEGIN IMMEDIATE;
+                CREATE TABLE scanner_runs_v8 (
+                    run_id TEXT PRIMARY KEY,
+                    status TEXT NOT NULL CHECK(status IN
+                        ('queued','running','cancel_requested','completed','failed','cancelled')),
+                    created_at TEXT NOT NULL,
+                    updated_at TEXT NOT NULL,
+                    started_at TEXT,
+                    finished_at TEXT,
+                    pid INTEGER,
+                    metadata_json TEXT NOT NULL,
+                    progress_json TEXT,
+                    metrics_json TEXT,
+                    artifact_hashes_json TEXT,
+                    error_text TEXT
+                );
+                INSERT INTO scanner_runs_v8 SELECT * FROM scanner_runs;
+                DROP TRIGGER scanner_candidate_completed_insert;
+                DROP TRIGGER scanner_candidate_completed_update;
+                DROP TRIGGER scanner_candidate_completed_delete;
+                DROP TABLE scanner_runs;
+                ALTER TABLE scanner_runs_v8 RENAME TO scanner_runs;
+                CREATE INDEX idx_scanner_runs_created ON scanner_runs(created_at DESC,run_id DESC);
+                CREATE TRIGGER scanner_completed_update BEFORE UPDATE ON scanner_runs
+                    WHEN OLD.status='completed'
+                    BEGIN SELECT RAISE(ABORT,'completed scanner run is immutable'); END;
+                CREATE TRIGGER scanner_completed_delete BEFORE DELETE ON scanner_runs
+                    WHEN OLD.status='completed'
+                    BEGIN SELECT RAISE(ABORT,'completed scanner run is immutable'); END;
+                CREATE TRIGGER scanner_candidate_completed_insert BEFORE INSERT ON scanner_candidates
+                    WHEN (SELECT status FROM scanner_runs WHERE run_id=NEW.run_id)='completed'
+                    BEGIN SELECT RAISE(ABORT,'completed candidate snapshot is immutable'); END;
+                CREATE TRIGGER scanner_candidate_completed_update BEFORE UPDATE ON scanner_candidates
+                    WHEN (SELECT status FROM scanner_runs WHERE run_id=OLD.run_id)='completed'
+                      OR (SELECT status FROM scanner_runs WHERE run_id=NEW.run_id)='completed'
+                    BEGIN SELECT RAISE(ABORT,'completed candidate snapshot is immutable'); END;
+                CREATE TRIGGER scanner_candidate_completed_delete BEFORE DELETE ON scanner_candidates
+                    WHEN (SELECT status FROM scanner_runs WHERE run_id=OLD.run_id)='completed'
+                    BEGIN SELECT RAISE(ABORT,'completed candidate snapshot is immutable'); END;
+                PRAGMA user_version=8;
+            """)
+            if connection.execute("PRAGMA foreign_key_check").fetchall():
+                raise RunStoreError("Scanner migration broke foreign keys")
+            connection.execute("COMMIT")
+        except Exception:
+            if connection.in_transaction:
+                connection.execute("ROLLBACK")
+            raise
+        finally:
+            connection.execute("PRAGMA foreign_keys=ON")
+
     def create_scanner_run(self, metadata: Mapping[str, Any]) -> str:
+        run_id = str(uuid.uuid4())
+        self.create_scanner_runs_batch([(run_id, metadata)])
+        return run_id
+
+    def create_scanner_runs_batch(self, runs: list[tuple[str, Mapping[str, Any]]]) -> list[str]:
         required = {"strategy_id", "strategy_version", "plugin_interface_version", "config",
                     "selection", "evaluation", "feature_version", "market_feature_version",
                     "data_snapshot", "source_watermark", "git_revision", "signal_start",
                     "signal_end", "label_version", "strategy_code_hash", "config_hash"}
-        if not isinstance(metadata, Mapping) or required - set(metadata):
-            raise RunStoreError(f"scanner metadata missing fields: {sorted(required - set(metadata))}")
-        run_id, now = str(uuid.uuid4()), _now()
+        encoded = []
+        for run_id, metadata in runs:
+            if not isinstance(metadata, Mapping):
+                raise RunStoreError("scanner metadata must be a mapping")
+            missing = required - set(metadata)
+            if missing:
+                raise RunStoreError(f"scanner metadata missing fields: {sorted(missing)}")
+            encoded.append((run_id, _json(metadata)))
+        if len({run_id for run_id, _ in encoded}) != len(encoded):
+            raise RunStoreError("duplicate scanner run ID in batch")
+        start = datetime.now(timezone.utc)
         with self._connect() as connection:
-            connection.execute("INSERT INTO scanner_runs(run_id,status,created_at,updated_at,metadata_json) "
-                               "VALUES (?,?,?,?,?)", (run_id, "queued", now, now, _json(metadata)))
-        return run_id
+            connection.execute("BEGIN IMMEDIATE")
+            try:
+                for index, (run_id, metadata_json) in enumerate(encoded):
+                    now = (start + timedelta(microseconds=index)).isoformat(timespec="microseconds")
+                    connection.execute("INSERT INTO scanner_runs(run_id,status,created_at,updated_at,metadata_json) "
+                                       "VALUES (?,?,?,?,?)", (run_id, "queued", now, now, metadata_json))
+                connection.execute("COMMIT")
+            except Exception:
+                connection.execute("ROLLBACK")
+                raise
+        return [run_id for run_id, _ in encoded]
 
     def start_scanner_run(self, run_id: str, pid: int) -> None:
         if isinstance(pid, bool) or not isinstance(pid, int) or pid <= 0:
@@ -397,6 +478,42 @@ class RunStore:
                                          (_json(progress), _now(), run_id)).rowcount
             if changed != 1:
                 raise RunStoreError("scanner run is not running")
+
+    def request_scanner_cancel(self, run_id: str) -> str:
+        """Cancel queued work immediately; ask a running worker to stop safely."""
+        with self._connect() as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            try:
+                row = connection.execute("SELECT status FROM scanner_runs WHERE run_id=?",
+                                         (run_id,)).fetchone()
+                if row is None:
+                    raise RunStoreError(f"unknown scanner run: {run_id}")
+                status = row["status"]
+                now = _now()
+                if status == "queued":
+                    connection.execute("UPDATE scanner_runs SET status='cancelled',finished_at=?,"
+                                       "updated_at=? WHERE run_id=?", (now, now, run_id))
+                    status = "cancelled"
+                elif status == "running":
+                    connection.execute("UPDATE scanner_runs SET status='cancel_requested',"
+                                       "updated_at=? WHERE run_id=?", (now, run_id))
+                    status = "cancel_requested"
+                elif status not in {"cancel_requested", "cancelled"}:
+                    raise RunStoreError(f"cannot cancel scanner run in status {status}")
+                connection.execute("COMMIT")
+                return status
+            except Exception:
+                connection.execute("ROLLBACK")
+                raise
+
+    def finish_scanner_cancel(self, run_id: str) -> None:
+        with self._connect() as connection:
+            now = _now()
+            changed = connection.execute(
+                "UPDATE scanner_runs SET status='cancelled',finished_at=?,updated_at=? "
+                "WHERE run_id=? AND status='cancel_requested'", (now, now, run_id)).rowcount
+            if changed != 1:
+                raise RunStoreError("scanner cancellation was not requested")
 
     def finish_scanner_run(self, run_id: str, candidates: list[Mapping[str, Any]],
                            metrics: Mapping[str, Any]) -> None:
@@ -582,28 +699,38 @@ class RunStore:
         return str(row["status"])
 
     def create_run(self, metadata: Mapping[str, Any]) -> str:
-        if not isinstance(metadata, Mapping):
-            raise RunStoreError("metadata must be a mapping")
-        missing = _REQUIRED_METADATA - set(metadata)
-        if missing:
-            raise RunStoreError(f"metadata missing reproducibility fields: {', '.join(sorted(missing))}")
-        encoded = _json(metadata)
         run_id = str(uuid.uuid4())
-        now = _now()
+        self.create_runs_batch([(run_id, metadata)])
+        return run_id
+
+    def create_runs_batch(self, runs: list[tuple[str, Mapping[str, Any]]]) -> list[str]:
+        encoded = []
+        for run_id, metadata in runs:
+            if not isinstance(metadata, Mapping):
+                raise RunStoreError("metadata must be a mapping")
+            missing = _REQUIRED_METADATA - set(metadata)
+            if missing:
+                raise RunStoreError(f"metadata missing reproducibility fields: {', '.join(sorted(missing))}")
+            encoded.append((run_id, _json(metadata)))
+        if len({run_id for run_id, _ in encoded}) != len(encoded):
+            raise RunStoreError("duplicate run ID in batch")
+        start = datetime.now(timezone.utc)
         with self._connect() as connection:
             connection.execute("BEGIN IMMEDIATE")
             try:
-                connection.execute(
-                    "INSERT INTO backtest_runs(run_id,status,created_at,updated_at,metadata_json) "
-                    "VALUES (?,?,?,?,?)",
-                    (run_id, "queued", now, now, encoded),
-                )
-                self._event(connection, run_id, "created", {}, now)
+                for index, (run_id, metadata_json) in enumerate(encoded):
+                    now = (start + timedelta(microseconds=index)).isoformat(timespec="microseconds")
+                    connection.execute(
+                        "INSERT INTO backtest_runs(run_id,status,created_at,updated_at,metadata_json) "
+                        "VALUES (?,?,?,?,?)",
+                        (run_id, "queued", now, now, metadata_json),
+                    )
+                    self._event(connection, run_id, "created", {}, now)
                 connection.execute("COMMIT")
             except Exception:
                 connection.execute("ROLLBACK")
                 raise
-        return run_id
+        return [run_id for run_id, _ in encoded]
 
     def start_run(self, run_id: str, pid: int) -> None:
         if isinstance(pid, bool) or not isinstance(pid, int) or pid <= 0:
@@ -873,7 +1000,7 @@ class RunStore:
                 ).fetchall()
             return [self._run_dict(row) for row in rows]
 
-    def has_active_strategy_runs(self, strategy_id: str) -> bool:
+    def has_active_strategy_runs(self, strategy_id: str, version: str | None = None) -> bool:
         """Check every unfinished Run, without the list_runs display limit."""
         with self._connect() as connection:
             rows = connection.execute(
@@ -881,9 +1008,11 @@ class RunStore:
                 "WHERE status IN ('queued', 'running', 'cancel_requested')"
             ).fetchall()
             rows += connection.execute(
-                "SELECT metadata_json FROM scanner_runs WHERE status IN ('queued','running')"
+                "SELECT metadata_json FROM scanner_runs "
+                "WHERE status IN ('queued','running','cancel_requested')"
             ).fetchall()
-        return any(json.loads(row["metadata_json"]).get("strategy_id") == strategy_id
+        return any((metadata := json.loads(row["metadata_json"])).get("strategy_id") == strategy_id
+                   and (version is None or metadata.get("strategy_version") == version)
                    for row in rows)
 
     def _get_rows(self, table: str, run_id: str) -> pd.DataFrame:

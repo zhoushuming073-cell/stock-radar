@@ -6,7 +6,9 @@ import argparse
 import os
 from pathlib import Path
 import traceback
+from typing import Mapping
 
+import duckdb
 import numpy as np
 import pandas as pd
 
@@ -25,20 +27,62 @@ from radar.strategy.adapter import evaluate_filter_diagnostics, evaluate_selecti
 from radar.strategy.loader import load_strategy_directory
 
 
+class ScannerCancelled(Exception):
+    """A running scan reached a safe session boundary after cancellation."""
+
+
 def signal_session_coverage(feature_frame: pd.DataFrame, sessions: pd.DatetimeIndex,
-                            signal_start: pd.Timestamp, signal_end: pd.Timestamp) -> dict:
+                            signal_start: pd.Timestamp, signal_end: pd.Timestamp,
+                            expected_counts: Mapping[str, int] | None = None) -> dict:
     expected = pd.DatetimeIndex(sessions[(sessions >= signal_start) & (sessions <= signal_end)]).normalize()
     observed = pd.DatetimeIndex(feature_frame.index.get_level_values("date").unique()).normalize()
     missing = expected.difference(observed)
+    counts = feature_frame.groupby(level="date").size()
+    incomplete = []
+    for index, date in enumerate(expected):
+        key = str(date.date())
+        count = int(counts.get(date, 0))
+        if not count:
+            continue
+        published = expected_counts.get(key) if expected_counts is not None else None
+        if published is not None:
+            baseline, minimum_ratio, source = int(published), .5, "published_manifest"
+        else:
+            neighbors = [int(counts.get(other, 0)) for other in
+                         expected[max(0, index - 5):index].append(expected[index + 1:index + 6])]
+            neighbors = [value for value in neighbors if value > 0]
+            baseline = float(np.median(neighbors)) if len(neighbors) >= 2 else 0
+            minimum_ratio, source = .25, "nearby_median"
+        if baseline and count < baseline * minimum_ratio:
+            incomplete.append({"date": key, "observed": count,
+                               "expected": baseline, "source": source})
     return {"expected_signal_sessions": len(expected),
             "observed_signal_sessions": len(expected) - len(missing),
-            "missing_signal_sessions": [str(day.date()) for day in missing]}
+            "missing_signal_sessions": [str(day.date()) for day in missing],
+            "incomplete_signal_sessions": incomplete}
+
+
+def published_session_counts(database: Path, start: pd.Timestamp,
+                             end: pd.Timestamp) -> dict[str, int] | None:
+    with duckdb.connect(str(database), read_only=True) as connection:
+        available = connection.execute("""
+            SELECT COUNT(*) FROM information_schema.tables
+            WHERE table_name='feature_session_coverage'
+        """).fetchone()[0]
+        if not available:
+            return None
+        rows = connection.execute("""
+            SELECT date,row_count FROM feature_session_coverage
+            WHERE feature_version=? AND date BETWEEN ? AND ?
+        """, [FEATURE_VERSION, start.date(), end.date()]).fetchall()
+    return {str(day): int(count) for day, count in rows}
 
 
 def scan_frames(plugin, config: dict, feature_frame: pd.DataFrame, bars: pd.DataFrame,
                 sessions: pd.DatetimeIndex, signal_start: pd.Timestamp,
                 signal_end: pd.Timestamp, evaluation: dict,
-                progress=None, universe_provider=None, terminal_provider=None) -> tuple[list[dict], dict]:
+                progress=None, universe_provider=None, terminal_provider=None,
+                expected_counts: Mapping[str, int] | None = None) -> tuple[list[dict], dict]:
     """One causal selection pass; forward OHLC is used only after it returns."""
     required = set(plugin.required_features())
     candidate_parts: list[pd.DataFrame] = []
@@ -47,10 +91,14 @@ def scan_frames(plugin, config: dict, feature_frame: pd.DataFrame, bars: pd.Data
     funnel_by_day: list[dict] = []
     near_misses: list[dict] = []
     signal_days = sessions[(sessions >= signal_start) & (sessions <= signal_end)]
-    coverage = signal_session_coverage(feature_frame, sessions, signal_start, signal_end)
+    coverage = signal_session_coverage(feature_frame, sessions, signal_start, signal_end,
+                                       expected_counts)
     if coverage["missing_signal_sessions"]:
         raise ValueError("Scanner feature coverage missing full signal sessions: " +
                          ", ".join(coverage["missing_signal_sessions"][:20]))
+    if coverage["incomplete_signal_sessions"]:
+        raise ValueError("Scanner feature coverage incomplete signal sessions: " +
+                         str(coverage["incomplete_signal_sessions"][:20]))
     for ordinal, day in enumerate(signal_days, 1):
         daily = feature_frame.xs(day, level="date", drop_level=False).copy()
         funnel = {"date": str(pd.Timestamp(day).date()),
@@ -189,6 +237,10 @@ def execute_scanner_run(root: Path, store_path: Path, run_id: str) -> dict:
     store = RunStore(store_path)
     metadata = store.get_scanner_run(run_id)["metadata"]
     store.start_scanner_run(run_id, os.getpid())
+    def report_progress(value: dict) -> None:
+        if store.get_scanner_run(run_id)["status"] == "cancel_requested":
+            raise ScannerCancelled()
+        store.scanner_progress(run_id, value)
     try:
         resolved = metadata.get("resolved_config")
         if resolved is not None and (
@@ -245,21 +297,35 @@ def execute_scanner_run(root: Path, store_path: Path, run_id: str) -> dict:
         load_args = (database, start, end, set(manifest.required_features) | MARKET_FEATURES)
         frame = load_strategy_segment(*load_args, provider) if provider else (
             load_strategy_segment(*load_args))
-        coverage = signal_session_coverage(frame, sessions, start, end)
-        store.scanner_progress(run_id, {"coverage": coverage})
+        expected_counts = (published_session_counts(database, start, end)
+                           if provider is None else None)
+        coverage = signal_session_coverage(frame, sessions, start, end, expected_counts)
+        report_progress({"coverage": coverage})
         if coverage["missing_signal_sessions"]:
             raise ValueError("Scanner feature coverage missing full signal sessions: " +
                              ", ".join(coverage["missing_signal_sessions"][:20]))
+        if coverage["incomplete_signal_sessions"]:
+            raise ValueError("Scanner feature coverage incomplete signal sessions: " +
+                             str(coverage["incomplete_signal_sessions"][:20]))
         last = sessions.searchsorted(end, side="right") + metadata["evaluation"]["horizon_sessions"]
         bar_end = sessions[min(last, len(sessions)) - 1]
         bars = load_forward_bars(database, start, bar_end)
         rows, metrics = scan_frames(registration.plugin, metadata["config"], frame, bars,
                                     sessions, start, end, metadata["evaluation"],
-                                    progress=lambda value: store.scanner_progress(run_id, value),
-                                    universe_provider=provider, terminal_provider=terminal)
+                                    progress=report_progress,
+                                    universe_provider=provider, terminal_provider=terminal,
+                                    expected_counts=expected_counts)
+        if store.get_scanner_run(run_id)["status"] == "cancel_requested":
+            raise ScannerCancelled()
         store.finish_scanner_run(run_id, rows, metrics)
         return metrics
+    except ScannerCancelled:
+        store.finish_scanner_cancel(run_id)
+        return {"cancelled": True}
     except Exception as error:
+        if store.get_scanner_run(run_id)["status"] == "cancel_requested":
+            store.finish_scanner_cancel(run_id)
+            return {"cancelled": True}
         store.fail_scanner_run(run_id, f"{type(error).__name__}: {error}")
         raise
 

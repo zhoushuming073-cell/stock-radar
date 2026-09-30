@@ -1,5 +1,7 @@
 # 策略 2 完整条件：首次量化回测
 
+> Historical pre-v3 research artifact. Its split dates and name-based ETF/ETN filters are not the current Strategy Lab contract. See `config/research.yaml` and `docs/RESEARCH_PARAMETER_CONTRACT.md`. Numeric results below were not regenerated.
+
 **结论：相比上次只按 Elasticity 与深回撤排序的简化基线，本版加入了策略 2
 七阶段的候选条件。历史测试段净收益 +10.75%，但训练期 -36.83%，稳定性不足；
 当前不能据此部署或称已找到可靠优势。**

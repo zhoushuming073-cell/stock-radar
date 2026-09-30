@@ -11,22 +11,23 @@ from radar.lab import experiments
 
 class FakeManager:
     def __init__(self) -> None:
-        self.registry = SimpleNamespace(get=lambda strategy_id: SimpleNamespace(
-            config={"min_elasticity": 76.0, "max_new": 3}))
+        self.registry = SimpleNamespace(get=lambda strategy_id, version=None: SimpleNamespace(
+            config={"min_elasticity": 76.0, "max_new": 3},
+            manifest=SimpleNamespace(id=strategy_id)))
         self.calls = []
         self.database = Path("market.duckdb")
         self.root = Path(".")
 
-    def queue_runs(self, ids, **kwargs):
-        self.calls.append((ids, kwargs))
-        return [f"run-{len(self.calls)}"]
+    def queue_run_requests(self, requests):
+        self.calls.extend((request["strategy_ids"], request) for request in requests)
+        return [f"run-{index}" for index in range(1, len(requests) + 1)]
 
     def launch_queued(self):
         pass
 
-    def queue_scanner(self, strategy_id, **kwargs):
-        self.calls.append((strategy_id, kwargs))
-        return f"scanner-{len(self.calls)}"
+    def queue_scanner_requests(self, requests):
+        self.calls.extend((request["strategy_id"], request) for request in requests)
+        return [f"scanner-{index}" for index in range(1, len(requests) + 1)]
 
     def launch_queued_scanners(self):
         pass
@@ -47,8 +48,9 @@ def test_grid_is_bounded_and_keeps_test_out() -> None:
 
 def test_grid_updates_nested_parameter_without_changing_siblings() -> None:
     manager = FakeManager()
-    manager.registry = SimpleNamespace(get=lambda strategy_id: SimpleNamespace(
-        config={"pullback": {"min_depth": 0.1, "max_depth": 0.3}}))
+    manager.registry = SimpleNamespace(get=lambda strategy_id, version=None: SimpleNamespace(
+        config={"pullback": {"min_depth": 0.1, "max_depth": 0.3}},
+        manifest=SimpleNamespace(id=strategy_id)))
     result = experiments.queue_experiment(
         manager, kind="grid", strategy_id="nested_strategy",
         grid={"pullback.min_depth": [0.12, 0.18]},

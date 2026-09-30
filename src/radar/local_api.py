@@ -55,21 +55,18 @@ def lab_strategies() -> list[dict]:
     manager = lab_manager()
     registrations = manager.list_strategies()
     plugin_root = manager.plugin_dir.resolve()
-    removable: dict[str, bool] = {}
-    for item in registrations:
-        imported = (not item.path.is_symlink()
-                    and item.path.parent.resolve() == plugin_root
-                    and item.path.name == f"{item.manifest.id}@{item.manifest.version}")
-        removable[item.manifest.id] = removable.get(item.manifest.id, True) and imported
     return [{
         "id": item.manifest.id,
         "version": item.manifest.version,
+        "strategy_ref": f"{item.manifest.id}@{item.manifest.version}",
         "name": item.manifest.name,
         "description": item.manifest.description,
         "author": item.manifest.author.model_dump(),
         "tags": item.manifest.tags,
         "config": _plain(item.config),
-        "removable": removable[item.manifest.id],
+        "removable": (not item.path.is_symlink()
+                      and item.path.parent.resolve() == plugin_root
+                      and item.path.name == f"{item.manifest.id}@{item.manifest.version}"),
     } for item in registrations]
 
 
@@ -79,15 +76,30 @@ def lab_parameter_schema(strategy_id: str) -> list[dict]:
     from radar.lab.scanner import evaluation_settings
     from radar.lab.schema import parameter_schema
     manager = lab_manager()
-    match = next((item for item in manager.list_strategies()
-                  if item.manifest.id == strategy_id), None)
-    if match is None:
-        raise ValueError(f"unknown strategy: {strategy_id}")
+    try:
+        if "@" in strategy_id:
+            identifier, version = strategy_id.rsplit("@", 1)
+            match = manager.registry.get(identifier, version)
+        else:
+            match = manager.registry.get(strategy_id)
+    except KeyError as error:
+        raise ValueError(f"unknown strategy: {strategy_id}") from error
     execution = execution_defaults_from_legacy(
         load_backtest_config(ROOT / "config" / "backtest.yaml"),
         slippage_bps=10, execution_timing="next_open")
-    return parameter_schema(strategy_id, match.config,
+    return parameter_schema(match.manifest.id, match.config,
                             evaluation_settings(None), execution)
+
+
+def lab_split_status() -> dict:
+    from radar.backtest.runner import split_dates
+
+    windows = split_dates(DATA / "phase2-research.duckdb", ROOT / "config/research.yaml")
+    return {name: {"signal_start": str(window[0].date()),
+                   "signal_end": str(window[1].date()),
+                   "evaluation_end": str(window[2].date())}
+            for name, window in windows.items()
+            if name in {"train", "validation", "test", "fresh_oos"}}
 
 
 def lab_universe_status() -> dict:
@@ -317,6 +329,8 @@ def make_handler(allowed_origins: set[str]):
                 elif target.path == "/api/lab/parameter-schema":
                     strategy_id = parse_qs(target.query).get("strategy_id", [""])[0]
                     payload = lab_parameter_schema(strategy_id)
+                elif target.path == "/api/lab/splits":
+                    payload = lab_split_status()
                 elif target.path == "/api/lab/universe-status":
                     payload = lab_universe_status()
                 elif target.path == "/api/lab/pit-readiness":
@@ -484,7 +498,7 @@ def make_handler(allowed_origins: set[str]):
                         manager.launch_queued_scanners()
                         payload = {"run_id": run_id}
                     elif target.endswith("/cancel"):
-                        manager.cancel(str(data["run_id"]))
+                        manager.cancel(str(data["run_id"]), str(data.get("run_type", "backtest")))
                         payload = {"ok": True}
                     elif target.endswith("/uninstall"):
                         strategy_id = data.get("strategy_id")
@@ -499,38 +513,62 @@ def make_handler(allowed_origins: set[str]):
                         if not isinstance(strategy_id, str) or not isinstance(config, dict):
                             raise ValueError("timeline needs a strategy_id and configuration")
                         batch_id = str(uuid4())
-                        run_ids = []
-                        predecessor = None
-                        for stage in ("train", "validation", "test"):
-                            run_id = manager.queue_runs(
-                                [strategy_id], split=stage,
-                                slippage_bps=float(data.get("slippage_bps", 10)),
-                                configs_by_strategy={strategy_id: config},
-                                batch_id=batch_id, after_run_id=predecessor,
-                                pace_ms=pace_ms,
-                                execution_overrides=data.get("execution"),
-                                universe_mode=str(data.get("universe_mode", "current_snapshot")),
-                                source_scanner_run_id=data.get("source_scanner_run_id"),
-                            )[0]
-                            run_ids.append(run_id)
-                            predecessor = run_id
+                        assigned_ids = [str(uuid4()) for _ in range(3)]
+                        requests = [{
+                            "strategy_ids": [strategy_id], "split": stage,
+                            "slippage_bps": float(data.get("slippage_bps", 10)),
+                            "configs_by_strategy": {strategy_id: config},
+                            "batch_id": batch_id,
+                            "after_run_id": assigned_ids[index - 1] if index else None,
+                            "assigned_ids": [assigned_ids[index]],
+                            "pace_ms": pace_ms,
+                            "execution_overrides": data.get("execution"),
+                            "universe_mode": str(data.get("universe_mode", "current_snapshot")),
+                            "source_scanner_run_id": data.get("source_scanner_run_id"),
+                        } for index, stage in enumerate(("train", "validation", "test"))]
+                        run_ids = manager.queue_run_requests(requests)
                         manager.launch_queued()
                         payload = {"batch_id": batch_id, "run_ids": run_ids}
                     else:
-                        ids = data.get("strategy_ids")
-                        if not isinstance(ids, list) or not all(isinstance(item, str) for item in ids):
-                            raise ValueError("strategy_ids must be a list")
-                        configs = data.get("configs_by_strategy")
-                        if configs is not None and not isinstance(configs, dict):
-                            raise ValueError("configs_by_strategy must be an object")
-                        run_ids = manager.queue_runs(
-                            ids, split=str(data.get("split", "validation")),
-                            slippage_bps=float(data.get("slippage_bps", 10)),
-                            configs_by_strategy=configs,
-                            execution_overrides=data.get("execution"),
-                            universe_mode=str(data.get("universe_mode", "current_snapshot")),
-                            source_scanner_run_id=data.get("source_scanner_run_id"),
-                        )
+                        strategy_runs = data.get("strategy_runs")
+                        if strategy_runs is not None:
+                            if not isinstance(strategy_runs, list) or not strategy_runs or len(strategy_runs) > 64:
+                                raise ValueError("strategy_runs must contain 1 to 64 items")
+                            requests = []
+                            for item in strategy_runs:
+                                if (not isinstance(item, dict) or
+                                        not isinstance(item.get("strategy_ref"), str) or
+                                        not isinstance(item.get("config"), dict) or
+                                        not isinstance(item.get("execution", {}), dict)):
+                                    raise ValueError("invalid strategy run settings")
+                                reference = item["strategy_ref"]
+                                if "@" not in reference or not all(reference.rsplit("@", 1)):
+                                    raise ValueError("strategy_ref must include an exact version")
+                                requests.append({
+                                    "strategy_ids": [reference],
+                                    "split": str(data.get("split", "validation")),
+                                    "slippage_bps": float(item.get("slippage_bps", 10)),
+                                    "configs_by_strategy": {reference: item["config"]},
+                                    "execution_overrides": item.get("execution", {}),
+                                    "universe_mode": str(data.get("universe_mode", "current_snapshot")),
+                                    "source_scanner_run_id": data.get("source_scanner_run_id"),
+                                })
+                            run_ids = manager.queue_run_requests(requests)
+                        else:
+                            ids = data.get("strategy_ids")
+                            if not isinstance(ids, list) or not all(isinstance(item, str) for item in ids):
+                                raise ValueError("strategy_ids must be a list")
+                            configs = data.get("configs_by_strategy")
+                            if configs is not None and not isinstance(configs, dict):
+                                raise ValueError("configs_by_strategy must be an object")
+                            run_ids = manager.queue_runs(
+                                ids, split=str(data.get("split", "validation")),
+                                slippage_bps=float(data.get("slippage_bps", 10)),
+                                configs_by_strategy=configs,
+                                execution_overrides=data.get("execution"),
+                                universe_mode=str(data.get("universe_mode", "current_snapshot")),
+                                source_scanner_run_id=data.get("source_scanner_run_id"),
+                            )
                         manager.launch_queued()
                         payload = {"run_ids": run_ids}
             except (ValueError, KeyError, TypeError, json.JSONDecodeError) as error:

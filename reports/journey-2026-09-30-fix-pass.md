@@ -1,0 +1,51 @@
+# Stock Radar Journey — 2026-09-30 fix pass
+
+This pass implements the ten items in `journey-2026-09-30-bug-mining-round-2.md`
+and the seven follow-ups in `journey-2026-09-29-followup-backlog.md`.
+
+## Research integrity
+
+- Backtest, Timeline, and Experiment fan-out validate every variant before one
+  SQLite transaction creates the batch. Failed requests leave no queued Runs.
+- The browser and parameter-schema API use exact `strategy_id@version` identity.
+  Clone restores the saved canonical execution policy and exact strategy version
+  into a new current-data draft, with an explicit data-snapshot warning.
+- Walk-forward uses the real RunManager path without an eager split lookup.
+- Research exports derive Top-K rows from each Scanner's saved evaluation,
+  report the authoritative SQLite schema version, and exclude mutable run
+  presentation fields from `run.json` evidence.
+- Uninstall requires an exact `strategy_id@version` and removes only that
+  imported version; cancel-requested Scanner Runs still block it. The System
+  panel reports the currently selected universe mode.
+
+## Operations and data checks
+
+- Scanner Runs support queued/running cancellation. A running worker stops at
+  a session boundary, retains progress, and does not publish candidates.
+- Fresh OOS is a runnable Backtest/Scanner split when frozen-split resolution
+  exposes it. Experiment parameter searches remain Train/Validation only.
+- Research-store promotion retains the latest three backups by default; the
+  build command accepts `--backup-retention`.
+- Scanner checks missing sessions and severe per-session truncation. A new
+  research build publishes session row counts; older stores use a conservative
+  nearby-session median check.
+- Backtest and Scanner use one oldest-eligible-first worker queue. Legacy
+  Phase 2 reports are visibly marked as historical; README states the current
+  one-worker default.
+
+## Verification
+
+- Full suite: 262 tests passed.
+- Local browser at `http://127.0.0.1:4174/lab.html`: exact version selection,
+  Clone execution fields, rendered equity chart, Scanner page, and console
+  checked with no application errors.
+- Local RunStore migrated from schema v7 to v8 after an online SQLite backup.
+  The 95 Backtest Runs, 25 Scanner Runs, and 34,987 Scanner candidates remained,
+  and `PRAGMA foreign_key_check` reported no violations.
+- Fresh OOS is not currently offered by the live split endpoint because the
+  stored sessions do not yet form a post-freeze signal and evaluation window.
+
+The open-source reuse roadmap remains a separate adoption plan. This pass
+uses the existing SQLite transaction and queue infrastructure for these
+targeted correctness fixes; it does not claim Huey, Optuna, or other roadmap
+components are integrated.

@@ -94,3 +94,20 @@ def test_partial_or_interrupted_build_never_changes_active_store(tmp_path):
         assert connection.execute("""
             SELECT COUNT(*) FROM daily_features WHERE feature_version=?
         """, [BUILD_FEATURE_VERSION]).fetchone()[0] == complete["feature_rows"]
+
+
+def test_successful_promotions_keep_only_configured_recent_backups(tmp_path):
+    database, config = tmp_path / "research.duckdb", tmp_path / "research.yaml"
+    _small_store(database, config)
+    for _ in range(4):
+        result = build_research_tables(database, config, backup_retention=2)
+        assert result["promoted"] is True
+        backups = list((tmp_path / "research-backups").glob("research.*.duckdb"))
+        assert len(backups) <= 2
+        assert Path(result["backup_database"]) in backups
+    assert result["retained_backups"] == 2
+    rejected = build_research_tables(database, config, max_symbols=1,
+                                     backup_retention=1)
+    assert rejected["promoted"] is False
+    assert len(list((tmp_path / "research-backups").glob("research.*.duckdb"))) == 2
+    assert database.is_file()

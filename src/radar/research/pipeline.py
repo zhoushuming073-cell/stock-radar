@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 import hashlib
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 from typing import Callable
@@ -184,11 +185,28 @@ def _build_research_tables_in_place(
                 if progress:
                     progress({"phase": "scores", "completed_sessions": min(offset + 20, len(sessions)),
                               "total_sessions": len(sessions)})
+        connection.execute("""
+            CREATE TABLE IF NOT EXISTS feature_session_coverage (
+                feature_version VARCHAR NOT NULL,
+                date DATE NOT NULL,
+                row_count BIGINT NOT NULL,
+                PRIMARY KEY(feature_version,date)
+            )
+        """)
+        connection.execute("DELETE FROM feature_session_coverage WHERE feature_version=?",
+                           [BUILD_FEATURE_VERSION])
+        connection.execute("""
+            INSERT INTO feature_session_coverage
+            SELECT feature_version,date,COUNT(*) FROM daily_features
+            WHERE feature_version=? GROUP BY feature_version,date
+        """, [BUILD_FEATURE_VERSION])
         git_root = config_path.resolve().parents[1]
         commit_result = subprocess.run(["git", "rev-parse", "HEAD"], cwd=git_root,
-                                       capture_output=True, text=True, check=False)
+                                       capture_output=True, text=True, check=False,
+                                       creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
         status_result = subprocess.run(["git", "status", "--porcelain"], cwd=git_root,
-                                       capture_output=True, text=True, check=False)
+                                       capture_output=True, text=True, check=False,
+                                       creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
         git_commit = commit_result.stdout.strip() if commit_result.returncode == 0 else "unknown"
         if status_result.stdout.strip():
             git_commit += "-dirty"
@@ -224,6 +242,12 @@ def _validate_staging_store(database: Path, counts: dict, version: str) -> None:
         """, [version]).fetchone()
         if feature_count != counts["feature_rows"] or symbol_count != counts["cohort_total"]:
             raise ValueError("staging feature rows do not match the completed cohort")
+        coverage_rows = connection.execute("""
+            SELECT COUNT(*),COALESCE(SUM(row_count),0) FROM feature_session_coverage
+            WHERE feature_version=?
+        """, [version]).fetchone()
+        if coverage_rows[0] == 0 or coverage_rows[1] != feature_count:
+            raise ValueError("staging per-session feature coverage does not match feature rows")
         label_count = connection.execute("""
             SELECT COUNT(*) FROM forward_labels WHERE label_version=?
         """, [LABEL_VERSION]).fetchone()[0]
@@ -248,6 +272,7 @@ def _validate_staging_store(database: Path, counts: dict, version: str) -> None:
 def build_research_tables(
     database: Path, config_path: Path, *, max_symbols: int | None = None,
     progress: Callable[[dict], None] | None = None,
+    backup_retention: int = 3,
 ) -> dict[str, int | str]:
     """Build in a separate DB; publish the validated file with one atomic replace.
 
@@ -260,6 +285,8 @@ def build_research_tables(
         raise FileNotFoundError(database)
     if max_symbols is not None and max_symbols < 1:
         raise ValueError("max_symbols must be positive")
+    if isinstance(backup_retention, bool) or not isinstance(backup_retention, int) or backup_retention < 1:
+        raise ValueError("backup_retention must be a positive integer")
     stage = database.with_name(f".{database.stem}.{uuid4().hex}.staging.duckdb")
     source_stat = database.stat()
     config_hash = hashlib.sha256(config_path.read_bytes()).hexdigest()
@@ -292,6 +319,21 @@ def build_research_tables(
             raise RuntimeError(f"promotion failed; active store is unchanged; validated staging DB: {stage}") from None
         counts["promoted"] = True
         counts["backup_database"] = str(backup)
+        pattern = re.compile(rf"{re.escape(database.stem)}\.\d{{8}}T\d{{6}}Z\.[0-9a-f]{{8}}\.duckdb")
+        backups = [path for path in backup_dir.iterdir()
+                   if path.is_file() and not path.is_symlink()
+                   and pattern.fullmatch(path.name)
+                   and path.resolve().parent == backup_dir.resolve()]
+        newest = [backup] + sorted((path for path in backups if path != backup),
+                                   key=lambda path: path.stat().st_mtime_ns, reverse=True)
+        retained = len(newest)
+        for obsolete in newest[backup_retention:]:
+            try:
+                obsolete.unlink()
+                retained -= 1
+            except OSError as error:
+                counts["backup_retention_error"] = str(error)
+        counts["retained_backups"] = retained
         return counts
     finally:
         if stage.exists() and not keep_stage:

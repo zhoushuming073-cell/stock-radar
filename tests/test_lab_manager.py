@@ -2,11 +2,14 @@
 
 from pathlib import Path
 from types import SimpleNamespace
+from uuid import uuid4
 
 import pandas as pd
 import pytest
 
 from radar.lab import manager as manager_module
+from radar import local_api
+from radar.lab.experiments import queue_experiment
 from radar.lab.manager import RunManager
 from radar.strategy.base import StrategyPlugin
 from radar.strategy.registry import StrategyRegistration
@@ -50,9 +53,10 @@ def manager(tmp_path, monkeypatch):
         "src/radar/strategy/full_strategy2.py",
         "src/radar/lab/worker.py", "src/radar/lab/data.py",
         "src/radar/lab/parameters.py", "src/radar/lab/universe.py",
+        "src/radar/lab/scanner.py", "src/radar/lab/scanner_worker.py",
         "src/radar/lab/terminal.py", "src/radar/lab/readiness.py",
         "src/radar/backtest/runner.py", "src/radar/research/pipeline.py",
-        "src/radar/strategy/context.py", "src/radar/strategy/validation.py",
+        "src/radar/strategy/base.py", "src/radar/strategy/context.py", "src/radar/strategy/validation.py",
         "src/radar/strategy/loader.py",
     ):
         target = root / relative
@@ -61,6 +65,7 @@ def manager(tmp_path, monkeypatch):
     strategy_path = root / "strategies" / "tiny_strategy"
     strategy_path.mkdir(parents=True)
     (strategy_path / "strategy.py").write_text("# strategy source\n", encoding="utf-8")
+    (strategy_path / "manifest.yaml").write_text("# manifest\n", encoding="utf-8")
     manifest = StrategyManifest.model_validate({
         "name": "Tiny Strategy", "id": "tiny_strategy", "version": "1.0.0",
         "interface_version": 1, "author": {"type": "ai", "name": "Test"},
@@ -86,6 +91,135 @@ def manager(tmp_path, monkeypatch):
     monkeypatch.setattr(RunManager, "_git_dirty", lambda self: False)
     monkeypatch.setattr(RunManager, "_worker_pid", staticmethod(lambda _run_id: None))
     return RunManager(root, store_path=tmp_path / "runs.sqlite3", max_workers=2)
+
+
+def test_multi_strategy_failure_leaves_no_queued_run(manager):
+    with pytest.raises(KeyError):
+        manager.queue_runs(["tiny_strategy", "unknown_strategy"])
+    assert manager.store.list_runs() == []
+
+
+def test_timeline_batch_failure_leaves_no_stage(manager):
+    ids = [str(uuid4()) for _ in range(3)]
+    requests = [{"strategy_ids": ["tiny_strategy"], "split": split,
+                 "assigned_ids": [run_id],
+                 "after_run_id": ids[index - 1] if index else None}
+                for index, (split, run_id) in enumerate(zip(
+                    ("train", "validation", "test"), ids))]
+    requests[1]["strategy_ids"] = ["unknown_strategy"]
+    with pytest.raises(KeyError):
+        manager.queue_run_requests(requests)
+    assert manager.store.list_runs() == []
+    requests[1]["strategy_ids"] = ["tiny_strategy"]
+    assert manager.queue_run_requests(requests) == ids
+    assert [run["run_id"] for run in reversed(manager.store.list_runs())] == ids
+
+
+def test_walk_forward_real_manager_path(manager, monkeypatch):
+    days = pd.date_range("2025-01-02", periods=12, freq="B")
+    monkeypatch.setattr(manager_module, "split_dates", lambda *_: {
+        "sessions": days, "test_start": days[10],
+        "train": tuple(days[:3]), "validation": tuple(days[3:6]),
+        "test": tuple(days[10:]),
+    })
+    window = tuple(str(day.date()) for day in days[6:9])
+    run_id = manager.queue_runs(["tiny_strategy"], split="walk_forward",
+                                window_override=window)[0]
+    assert manager.store.get_run(run_id)["metadata"]["split"] == "walk_forward"
+
+
+def test_experiment_later_invalid_variant_leaves_no_run(manager):
+    with pytest.raises(ValueError, match="unknown strategy override paths"):
+        queue_experiment(manager, kind="grid", strategy_id="tiny_strategy",
+                         grid={"selection.max_candidates": [1, {"bad": 1}]})
+    assert manager.store.list_runs() == []
+
+
+def test_exact_strategy_versions_have_distinct_schemas_and_runs(manager, monkeypatch):
+    first = manager.registry.get("tiny_strategy", "1.0.0")
+    for version, elasticity in (("1.0.0", 1), ("2.0.0", 8)):
+        path = manager.root / "strategies" / f"full_strategy2_v1_{version}"
+        path.mkdir()
+        (path / "strategy.py").write_text(f"# version {version}\n", encoding="utf-8")
+        manifest = first.manifest.model_copy(update={
+            "id": "full_strategy2_v1", "version": version})
+        manager.registry.register(StrategyRegistration(
+            manifest, {"min_elasticity": elasticity}, _Strategy(), path))
+    monkeypatch.setattr(local_api, "lab_manager", lambda: manager)
+    monkeypatch.setattr(local_api, "ROOT", manager.root)
+    schema_v1 = local_api.lab_parameter_schema("full_strategy2_v1@1.0.0")
+    schema_v2 = local_api.lab_parameter_schema("full_strategy2_v1@2.0.0")
+    field = "strategy.min_elasticity"
+    assert next(item for item in schema_v1 if item["path"] == field)["default"] == 1
+    assert next(item for item in schema_v2 if item["path"] == field)["default"] == 8
+    ids = manager.queue_runs(["full_strategy2_v1@1.0.0", "full_strategy2_v1@2.0.0"])
+    assert [manager.store.get_run(run_id)["metadata"]["strategy_version"]
+            for run_id in ids] == ["1.0.0", "2.0.0"]
+    assert manager.store.get_run(ids[0])["metadata"]["strategy_code_hash"] != (
+        manager.store.get_run(ids[1])["metadata"]["strategy_code_hash"])
+
+
+def test_uninstall_one_imported_version_with_builtin_same_id(manager, monkeypatch):
+    builtin = manager.registry.get("tiny_strategy", "1.0.0")
+    imported = manager.plugin_dir / "tiny_strategy@2.0.0"
+    imported.mkdir(parents=True)
+    (imported / "strategy.py").write_text("# imported v2\n", encoding="utf-8")
+    manifest = builtin.manifest.model_copy(update={"version": "2.0.0"})
+    manager.registry.register(StrategyRegistration(manifest, builtin.config, _Strategy(), imported))
+    monkeypatch.setattr(local_api, "lab_manager", lambda: manager)
+    displayed = {item["strategy_ref"]: item for item in local_api.lab_strategies()}
+    assert displayed["tiny_strategy@1.0.0"]["removable"] is False
+    assert displayed["tiny_strategy@2.0.0"]["removable"] is True
+    manager.queue_runs(["tiny_strategy@1.0.0"])
+    assert manager.uninstall_strategy("tiny_strategy@2.0.0") == 1
+    assert not imported.exists()
+    assert manager.registry.get("tiny_strategy", "1.0.0") is builtin
+
+
+def test_canonical_clone_settings_round_trip(manager):
+    reference = "tiny_strategy@1.0.0"
+    override = {"exit": {"stop_loss": -0.2},
+                "sizing": {"method": "strategy_score"},
+                "market_guard": {"mode": "spy_ma200"},
+                "execution_timing": "legacy_close"}
+    original_id = manager.queue_runs([reference], slippage_bps=25,
+                                     execution_overrides=override)[0]
+    original = manager.store.get_run(original_id)["metadata"]
+    execution = original["resolved_config"]["values"]["execution"]
+    cloned_id = manager.queue_runs(
+        [reference], split=original["split"], slippage_bps=execution["slippage_bps"],
+        configs_by_strategy={reference: original["config"]},
+        execution_overrides=execution)[0]
+    cloned = manager.store.get_run(cloned_id)["metadata"]
+    assert cloned["strategy_version"] == original["strategy_version"]
+    assert cloned["strategy_code_hash"] == original["strategy_code_hash"]
+    assert cloned["resolved_config"]["values"] == original["resolved_config"]["values"]
+
+
+def test_fresh_oos_queues_both_run_types_only_when_available(manager, monkeypatch):
+    with pytest.raises(ValueError, match="not available"):
+        manager.queue_runs(["tiny_strategy"], split="fresh_oos")
+    with pytest.raises(ValueError, match="not available"):
+        manager.queue_scanner("tiny_strategy", split="fresh_oos")
+    days = pd.date_range("2025-01-02", periods=15, freq="B")
+    monkeypatch.setattr(manager_module, "split_dates", lambda *_: {
+        "sessions": days, "test_start": days[9],
+        "train": tuple(days[:3]), "validation": tuple(days[3:6]),
+        "test": tuple(days[9:12]), "fresh_oos": tuple(days[12:15]),
+    })
+    backtest = manager.queue_runs(["tiny_strategy"], split="fresh_oos")[0]
+    scanner = manager.queue_scanner("tiny_strategy", split="fresh_oos")
+    assert manager.store.get_run(backtest)["metadata"]["split"] == "fresh_oos"
+    assert manager.store.get_scanner_run(scanner)["metadata"]["split"] == "fresh_oos"
+
+
+def test_scanner_variant_batch_failure_leaves_no_run(manager):
+    requests = [{"strategy_id": "tiny_strategy", "split": "validation"},
+                {"strategy_id": "tiny_strategy", "split": "validation",
+                 "config_override": {"selection": {"max_candidates": 3}, "unknown": 1}}]
+    with pytest.raises(ValueError, match="unknown strategy override paths"):
+        manager.queue_scanner_requests(requests)
+    assert manager.store.list_scanner_runs() == []
 
 
 def test_queue_metadata_and_new_config_create_new_run(manager):
@@ -147,8 +281,10 @@ def test_stop_loss_override_changes_only_the_new_run(manager):
 
 
 def test_uninstall_only_imported_strategy_and_keep_run_history(manager):
-    with pytest.raises(ValueError, match="built-in"):
+    with pytest.raises(ValueError, match="strategy_id@version"):
         manager.uninstall_strategy("tiny_strategy")
+    with pytest.raises(ValueError, match="built-in"):
+        manager.uninstall_strategy("tiny_strategy@1.0.0")
 
     plugin_path = manager.plugin_dir / "imported_strategy@1.0.0"
     plugin_path.mkdir()
@@ -163,13 +299,13 @@ def test_uninstall_only_imported_strategy_and_keep_run_history(manager):
     ))
     run_id = manager.queue_runs(["imported_strategy"])[0]
     with pytest.raises(ValueError, match="active run"):
-        manager.uninstall_strategy("imported_strategy")
+        manager.uninstall_strategy("imported_strategy@1.0.0")
     assert plugin_path.exists()
 
     manager.store.start_run(run_id, 1234)
     manager.store.finish_run(run_id, {"equity": [], "trades": [],
                                       "orders": [], "events": []}, {})
-    assert manager.uninstall_strategy("imported_strategy") == 1
+    assert manager.uninstall_strategy("imported_strategy@1.0.0") == 1
     assert not plugin_path.exists()
     assert manager.store.get_run(run_id)["status"] == "completed"
     with pytest.raises(KeyError):
@@ -224,11 +360,65 @@ def test_scanner_and_backtest_share_one_worker_budget(manager, monkeypatch):
     manager.launch_queued_scanners()
     manager.launch_queued()
     assert len(launched) == 2
-    assert any("radar.lab.scanner_worker" in command for command in launched)
-    assert sum("radar.lab.worker" in command for command in launched) == 1
+    assert all("radar.lab.worker" in command for command in launched)
     assert len(manager.store.list_runs(status="queued")) == 2
     assert manager.store.get_scanner_run(scanner)["status"] == "queued"
-    assert any(run_id in launched[1] for run_id in backtests)
+    assert [next(run_id for run_id in backtests if run_id in command)
+            for command in launched] == backtests
+
+
+def test_global_scheduler_uses_oldest_pending_across_run_types(manager, monkeypatch):
+    manager.max_workers = 1
+    first = manager.queue_runs(["tiny_strategy"])[0]
+    required = {key: "fixture" for key in (
+        "strategy_id", "strategy_version", "plugin_interface_version", "config",
+        "selection", "evaluation", "feature_version", "market_feature_version",
+        "data_snapshot", "source_watermark", "git_revision", "signal_start",
+        "signal_end", "label_version", "strategy_code_hash", "config_hash")}
+    required.update(config={}, selection={}, evaluation={})
+    scanner = manager.store.create_scanner_run(required)
+    last = manager.queue_runs(["tiny_strategy"])[0]
+    launched = []
+    class FakeProcess:
+        def __init__(self, command, **_kwargs):
+            launched.append(command)
+            self.pid = 1000 + len(launched)
+        def poll(self):
+            return None
+    monkeypatch.setattr(manager_module.subprocess, "Popen", FakeProcess)
+    monkeypatch.setattr(RunManager, "_scanner_worker_pid", staticmethod(lambda _id: None))
+    manager.launch_queued()
+    assert first in launched[0]
+    manager.store.start_run(first, 1001)
+    manager.store.finish_run(first, {"equity": [], "trades": [],
+                                    "orders": [], "events": []}, {})
+    manager.launch_queued()
+    assert scanner in launched[1]
+    assert "radar.lab.scanner_worker" in launched[1]
+    assert last not in launched[1]
+
+
+def test_restarted_scheduler_keeps_cross_type_queue_order(manager, monkeypatch):
+    required = {key: "fixture" for key in (
+        "strategy_id", "strategy_version", "plugin_interface_version", "config",
+        "selection", "evaluation", "feature_version", "market_feature_version",
+        "data_snapshot", "source_watermark", "git_revision", "signal_start",
+        "signal_end", "label_version", "strategy_code_hash", "config_hash")}
+    required.update(config={}, selection={}, evaluation={})
+    scanner = manager.store.create_scanner_run(required)
+    manager.queue_runs(["tiny_strategy"])
+    launched = []
+    class FakeProcess:
+        def __init__(self, command, **_kwargs):
+            launched.append(command)
+        def poll(self):
+            return None
+    monkeypatch.setattr(manager_module.subprocess, "Popen", FakeProcess)
+    monkeypatch.setattr(RunManager, "_scanner_worker_pid", staticmethod(lambda _id: None))
+    recovered = RunManager(manager.root, store_path=manager.store.path, max_workers=1)
+    recovered.launch_queued()
+    assert len(launched) == 1
+    assert scanner in launched[0]
 
 
 def test_restarted_manager_counts_existing_scanner_worker(manager, monkeypatch):

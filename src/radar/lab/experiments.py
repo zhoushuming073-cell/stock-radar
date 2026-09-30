@@ -44,6 +44,9 @@ def _apply_variant(base: dict, variant: dict) -> dict:
 
 
 def _registration(manager: RunManager, strategy_id: str):
+    if "@" in strategy_id:
+        identifier, version = strategy_id.rsplit("@", 1)
+        return manager.registry.get(identifier, version)
     return manager.registry.get(strategy_id)
 
 
@@ -65,21 +68,20 @@ def queue_experiment(
     evaluation_base = evaluation_settings(evaluation_overrides) if run_type == "scanner" else None
     evaluation_draft = _plain(evaluation_overrides or {})
     experiment_id = str(uuid4())
-    queued: list[str] = []
+    requests: list[dict[str, Any]] = []
     def queue_variant(config: dict, evaluation: dict | None, variant: Any, index: int) -> None:
         metadata = {"id": experiment_id, "kind": kind, "run_type": run_type,
                     "variant": variant, "index": index}
         if run_type == "scanner":
-            queued.append(manager.queue_scanner(
-                strategy_id, split=split, config_override=config,
-                evaluation_overrides=evaluation, universe_mode=universe_mode,
-                experiment=metadata))
+            requests.append({"strategy_id": strategy_id, "split": split,
+                             "config_override": config, "evaluation_overrides": evaluation,
+                             "universe_mode": universe_mode, "experiment": metadata})
         else:
-            queued.extend(manager.queue_runs(
-                [strategy_id], split=split, slippage_bps=slippage_bps,
-                configs_by_strategy={strategy_id: config},
-                execution_overrides=execution_overrides, universe_mode=universe_mode,
-                experiment=metadata))
+            requests.append({"strategy_ids": [strategy_id], "split": split,
+                             "slippage_bps": slippage_bps,
+                             "configs_by_strategy": {strategy_id: config},
+                             "execution_overrides": execution_overrides,
+                             "universe_mode": universe_mode, "experiment": metadata})
     if kind == "grid":
         if not grid or not isinstance(grid, dict) or len(grid) > 4:
             raise ValueError("grid requires 1 to 4 parameter lists")
@@ -112,7 +114,7 @@ def queue_experiment(
         for config, evaluation, variant, index in prepared:
             queue_variant(config, evaluation, variant, index)
     elif kind == "ablation":
-        if strategy_id != "full_strategy2_v1":
+        if registration.manifest.id != "full_strategy2_v1":
             raise ValueError("Stage ablation is available for full_strategy2_v1")
         for index, stage in enumerate((None, *ABLATION_STAGES)):
             config = {**base, "disabled_stages": [stage] if stage else []}
@@ -139,18 +141,21 @@ def queue_experiment(
                 "oos": [window[0], window[1]],
                 "index": index,
             }
-            queued.extend(manager.queue_runs(
-                [strategy_id], split="walk_forward", window_override=window,
-                slippage_bps=slippage_bps,
-                configs_by_strategy={strategy_id: base},
-                experiment={"id": experiment_id, "kind": kind,
-                            "run_type": run_type, "variant": fold, "index": index},
-            ))
+            requests.append({"strategy_ids": [strategy_id], "split": "walk_forward",
+                             "window_override": window, "slippage_bps": slippage_bps,
+                             "configs_by_strategy": {strategy_id: base},
+                             "execution_overrides": execution_overrides,
+                             "universe_mode": universe_mode,
+                             "experiment": {"id": experiment_id, "kind": kind,
+                                            "run_type": run_type, "variant": fold,
+                                            "index": index}})
             index += 1
-        if not queued:
+        if not requests:
             raise ValueError("not enough pre-Test history for a walk-forward fold")
     else:
         raise ValueError("unknown experiment type")
+    queued = (manager.queue_scanner_requests(requests) if run_type == "scanner"
+              else manager.queue_run_requests(requests))
     if run_type == "scanner":
         manager.launch_queued_scanners()
     else:

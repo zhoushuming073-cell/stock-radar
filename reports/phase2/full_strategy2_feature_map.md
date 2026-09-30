@@ -1,5 +1,7 @@
 # 策略 2 七阶段与现有日线特征的对应
 
+> Historical pre-v3 research artifact. Its split dates and name-based ETF/ETN filters are not the current Strategy Lab contract. See `config/research.yaml` and `docs/RESEARCH_PARAMETER_CONTRACT.md`. Numeric results below were not regenerated.
+
 本表记录 `config/full_strategy2.yaml` / `src/radar/strategy/full_strategy2.py`
 这一版**首次量化实现**。所有特征仅取信号日 `t` 收盘及之前的数据，买入在下一交易日
 Open；`forward_labels` 只用于事后研究，不参与选股。

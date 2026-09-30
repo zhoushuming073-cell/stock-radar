@@ -273,10 +273,18 @@ but they are not an operating-system sandbox.
 
 Each run stores its configuration and reproducibility metadata in local SQLite
 WAL at `data/strategy-lab/runs.sqlite3`, while workers read the market DuckDB
-read-only. Completed Runs are immutable. The two-process local worker cap keeps
-the UI responsive and lets a browser refresh recover progress. Cancelling a Run
+read-only. Completed Runs are immutable. The default is one shared local worker
+for Backtest and Scanner; an explicit setting can raise the cap to four. The
+shared queue runs the oldest eligible work first. Cancelling a Run
 stops it between sessions. A source/data hash mismatch fails the queued Run
 instead of silently executing changed inputs.
+
+Backtest and Scanner can use Fresh OOS after enough post-freeze trading sessions
+arrive; the choice appears only when that interval exists. Historical Test stays
+frozen and exploratory. Experiment parameter searches remain limited to Train
+and Validation. Research-store promotion keeps the latest three complete
+backups by default; `scripts/build_research.py --backup-retention N` changes
+that limit for a build.
 
 The complete Phase 2 Strategy 2 migration was checked against the saved
 Train, Validation and previously viewed Test artifacts: 1,231 signal dates and

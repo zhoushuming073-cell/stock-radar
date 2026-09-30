@@ -1,5 +1,7 @@
 # Phase 2A–2F research handoff
 
+> Historical pre-v3 research artifact. Its split dates and name-based ETF/ETN filters are not the current Strategy Lab contract. See `config/research.yaml` and `docs/RESEARCH_PARAMETER_CONTRACT.md`. Numeric results below were not regenerated.
+
 This implementation follows `../../stock_radar_phase2_backtest_spec.md` through
 Phase 2F. It does **not** define the final Strategy 2 rank, capital allocator,
 or portfolio backtest. Those require a review of the exploratory evidence.

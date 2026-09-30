@@ -5,6 +5,7 @@ from contextlib import closing
 from datetime import datetime
 import sqlite3
 from threading import Barrier
+from uuid import uuid4
 
 import pandas as pd
 import pytest
@@ -38,6 +39,22 @@ def _metadata(**updates):
     }
     value.update(updates)
     return value
+
+
+def test_batch_insert_rolls_back_when_later_run_conflicts(tmp_path):
+    store = RunStore(tmp_path / "runs.sqlite")
+    existing = store.create_run(_metadata())
+    new = str(uuid4())
+    with pytest.raises(sqlite3.IntegrityError):
+        store.create_runs_batch([(new, _metadata()), (existing, _metadata())])
+    assert [run["run_id"] for run in store.list_runs()] == [existing]
+
+
+def test_successful_batch_keeps_input_order(tmp_path):
+    store = RunStore(tmp_path / "runs.sqlite")
+    ids = [str(uuid4()) for _ in range(3)]
+    assert store.create_runs_batch([(run_id, _metadata()) for run_id in ids]) == ids
+    assert [run["run_id"] for run in reversed(store.list_runs())] == ids
 
 
 def test_status_progress_results_survive_reopen(tmp_path):
@@ -124,13 +141,42 @@ def test_completed_run_immutable_even_via_direct_sql(tmp_path):
                                (run_id, other_id))
 
 
-def test_schema_v1_migrates_to_v7(tmp_path):
+def test_schema_v1_migrates_to_v8(tmp_path):
     path = tmp_path / "runs.sqlite"
     with closing(sqlite3.connect(path)) as connection:
         RunStore._migrate_v1(connection)
     RunStore(path)
     with closing(sqlite3.connect(path)) as connection:
-        assert connection.execute("PRAGMA user_version").fetchone()[0] == 7
+        assert connection.execute("PRAGMA user_version").fetchone()[0] == 8
+
+
+def test_scanner_queued_and_running_cancellation_preserve_progress(tmp_path):
+    store = RunStore(tmp_path / "runs.sqlite")
+    required = {key: "fixture" for key in (
+        "strategy_id", "strategy_version", "plugin_interface_version", "config",
+        "selection", "evaluation", "feature_version", "market_feature_version",
+        "data_snapshot", "source_watermark", "git_revision", "signal_start",
+        "signal_end", "label_version", "strategy_code_hash", "config_hash")}
+    required.update(config={}, selection={}, evaluation={})
+    queued = store.create_scanner_run(required)
+    assert store.request_scanner_cancel(queued) == "cancelled"
+    assert store.get_scanner_run(queued)["status"] == "cancelled"
+    with pytest.raises(RunStoreError):
+        store.start_scanner_run(queued, 123)
+    running = store.create_scanner_run(required)
+    store.start_scanner_run(running, 123)
+    store.scanner_progress(running, {"date": "2025-01-03", "completed_sessions": 1})
+    assert store.request_scanner_cancel(running) == "cancel_requested"
+    assert store.has_active_strategy_runs("fixture", "fixture")
+    with pytest.raises(RunStoreError):
+        store.scanner_progress(running, {"completed_sessions": 2})
+    store.finish_scanner_cancel(running)
+    assert not store.has_active_strategy_runs("fixture", "fixture")
+    record = store.get_scanner_run(running)
+    assert record["status"] == "cancelled"
+    assert record["progress"]["completed_sessions"] == 1
+    assert record["metrics"] is None
+    assert store.get_scanner_candidates(running) == []
 
 
 def test_run_rename_and_reversible_delete_preserve_completed_evidence(tmp_path):

@@ -1,5 +1,7 @@
 # Phase 2A–2F preliminary findings
 
+> Historical pre-v3 research artifact. Its split dates and name-based ETF/ETN filters are not the current Strategy Lab contract. See `config/research.yaml` and `docs/RESEARCH_PARAMETER_CONTRACT.md`. Numeric results below were not regenerated.
+
 ## Scope and data
 
 The frozen local source database has 6,133,793 Alpaca SIP, split-adjusted daily

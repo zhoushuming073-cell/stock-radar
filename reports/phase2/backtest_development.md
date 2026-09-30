@@ -1,5 +1,7 @@
 # Phase 2 simplified-baseline portfolio development review — before final Test
 
+> Historical pre-v3 research artifact. Its split dates and name-based ETF/ETN filters are not the current Strategy Lab contract. See `config/research.yaml` and `docs/RESEARCH_PARAMETER_CONTRACT.md`. Numeric results below were not regenerated.
+
 These candidate rules test partial signals, chiefly Elasticity and drawdown.
 They do not implement the full Strategy 2 lifecycle in the Phase 2 specification.
 

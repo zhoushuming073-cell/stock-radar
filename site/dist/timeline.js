@@ -169,7 +169,7 @@ const timelineController = {
 window.timelineController=timelineController;
 $("run-timeline").onclick=async()=>{
   const id=state.focused;
-  const strategy=state.strategies.find(s=>s.id===id);
+  const strategy=strategyByRef(id);
   if(!strategy){notice("Select a strategy first.");return}
   const button=$("run-timeline");button.disabled=true;
   try{

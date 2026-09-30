@@ -23,10 +23,11 @@ async function refreshScanner(){
 }
 async function drawScanner(){
   const run=scannerState.runs.find(item=>item.run_id===$("scanner-run").value);
+  $("scanner-cancel").hidden=!run||!["queued","running"].includes(run.status);
   if(!run){$("scanner-status").textContent="No research runs yet";$("scanner-metrics").innerHTML="";$("scanner-quality").innerHTML="";$("scanner-candidates").innerHTML="";$("scanner-regime").innerHTML="";$("scanner-audit").textContent="";return;}
   $("scanner-audit").textContent=run.metadata?.resolved_config?JSON.stringify({resolved_config:run.metadata.resolved_config,universe:run.metadata.universe_provenance,artifacts:run.artifact_hashes},null,2):"Legacy Scanner run: canonical resolved configuration was not recorded. Current Snapshot bias risk applies.";
   const progress=run.progress||{};
-  $("scanner-status").textContent=`${run.status} · ${progress.date||"—"} · ${progress.completed_sessions||0}/${progress.total_sessions||0} sessions${run.metadata?.universe_mode!=="point_in_time"?" · Current Snapshot: survivorship bias risk present":""}${run.error_text?` · ${run.error_text}`:""}`;
+  $("scanner-status").textContent=`${statusLabel[run.status]||run.status} · ${progress.date||"—"} · ${progress.completed_sessions||0}/${progress.total_sessions||0} sessions${run.metadata?.universe_mode!=="point_in_time"?" · Current Snapshot: survivorship bias risk present":""}${run.error_text?` · ${run.error_text}`:""}`;
   if(run.status!=="completed"){
     for(const name of ["scanner-metrics","scanner-quality","scanner-candidates","scanner-regime"])$(name).innerHTML="";
     scannerState.loadedId=null;scannerState.candidates=[];
@@ -98,10 +99,10 @@ function drawScannerFeatureDetails(){
     label_status:row.label_status,label_reason:row.label_reason},null,2):"No candidates";
 }
 function drawScannerParameters(){
-  const id=$("scanner-strategy").value.split("@")[0];
-  if(!id||!state.strategies.some(item=>item.id===id))return;
+  const id=$("scanner-strategy").value;
+  if(!id||!strategyByRef(id))return;
   if(scannerState.parameterFor===id&&$("scanner-parameter-fields").querySelector("input,select"))return;
-  if(!state.config[id])state.config[id]=structuredClone(state.strategies.find(item=>item.id===id).config);
+  if(!state.config[id])state.config[id]=structuredClone(strategyByRef(id).config);
   scannerState.parameterFor=id;
   renderSchema("scanner-parameter-fields",id,"scanner");
 }
@@ -110,15 +111,23 @@ $("scanner-start").onclick=async()=>{
   if(!strategy){$("scanner-status").textContent="Select a strategy first";return;}
   $("scanner-start").disabled=true;
   try{
-    const config=state.config[strategy.split("@")[0]];
+    const config=state.config[strategy]||strategyByRef(strategy)?.config;
     const result=await post("/api/lab/scanner/run",{strategy_id:strategy,
-      split:$("scanner-split").value,config,evaluation:state.evaluation[strategy.split("@")[0]]||{},
+      split:$("scanner-split").value,config,evaluation:state.evaluation[strategy]||{},
       universe_mode:$("universe-mode").value});
     await refreshScanner();$("scanner-run").value=result.run_id;await drawScanner();
   }catch(error){$("scanner-status").textContent=`Could not start scan: ${error.message}`;}
   finally{$("scanner-start").disabled=false;}
 };
 $("scanner-refresh").onclick=refreshScanner;
+$("scanner-cancel").onclick=async()=>{
+  const runId=$("scanner-run").value;
+  if(!runId)return;
+  $("scanner-cancel").disabled=true;
+  try{await post("/api/lab/cancel",{run_id:runId,run_type:"scanner"});await refreshScanner();}
+  catch(error){$("scanner-status").textContent=`Could not stop scan: ${error.message}`;}
+  finally{$("scanner-cancel").disabled=false;}
+};
 $("scanner-run").onchange=drawScanner;
 $("scanner-strategy").onchange=drawScannerParameters;
 $("scanner-day").onchange=drawScannerCandidates;

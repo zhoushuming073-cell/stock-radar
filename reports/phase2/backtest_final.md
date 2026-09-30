@@ -1,5 +1,7 @@
 # Phase 2 简化候选基线回测结果
 
+> Historical pre-v3 research artifact. Its split dates and name-based ETF/ETN filters are not the current Strategy Lab contract. See `config/research.yaml` and `docs/RESEARCH_PARAMETER_CONTRACT.md`. Numeric results below were not regenerated.
+
 **结论：本次简化基线不具备可部署的稳定收益；当前应保持 CASH。**
 
 本次测试**不是完整 Strategy 2 的收益率**。实际候选规则主要依据高 Elasticity
