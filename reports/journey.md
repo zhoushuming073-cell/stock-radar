@@ -1,727 +1,500 @@
-# Stock Radar Journey
+# Stock Radar — Canonical Project Status
 
-> 项目研究日志。记录关键设计判断、已确认限制、未修问题和下一步研究方向。  
-> 最初审计基线：`main @ aee467c3a510d5421fab6fda9bc30f9124eb28dc`
-> 更新日期：2026-09-29
-
----
-
-## 2026-09-28 — 插件宿主边界与未修研究正确性问题
-
-### 当前结论
-
-Stock Radar 当前的插件接口已经足够支持复杂的**当日横截面候选策略**，但还不是通用交易策略框架。
-
-现有插件最适合：
-
-```text
-信号日 t 的因果特征
-→ hard_filter
-→ score
-→ rank
-→ select
-→ Scanner / Backtest
-```
-
-它可以支持多因子阈值、非线性评分、横截面排名、候选子集选择、诊断分项和概率输出。
-
-但插件本身不能：
-
-- 任意读取历史 K 线；
-- 直接查询 DuckDB / Alpaca / 文件 / 网络；
-- 访问未来标签或未来行情；
-- 自己训练滚动模型；
-- 保存跨日内部状态；
-- 读取现金、持仓、组合回撤等 portfolio state；
-- 自定义仓位分配；
-- 自定义成交机制；
-- 自定义复杂退出；
-- 扩大宿主已经给出的股票池；
-- 直接使用 ES / NQ / YM，因为宿主目前尚未开放这些 causal features。
-
-这是当前架构的核心原则：
-
-```text
-Host 保证数据边界和因果性
-→ Plugin 只消费已经审核过的 causal features
-```
-
-不应通过简单开放数据库权限来扩大插件能力，否则会破坏未来准备建立的严格 As-Of 防偷看体系。
+> **Canonical status file.** Read this file first when deciding what is complete, what is still open, and what should be implemented next.
+>
+> Historical dated journey/backlog files under `reports/` are retained as audit evidence. They are not the current source of truth once their items are closed here.
+>
+> Current review baseline: `main @ 5cc2d5c4f93a709b0f4ce9b5fb7a5000d8371568`
+>  
+> Consolidated: 2026-09-30
 
 ---
 
-## 插件参数自由度
+## Status rules
 
-### 已经比较自由的部分
+- **DONE** — implementation is present in the current source and corresponding regression coverage or acceptance evidence exists.
+- **PARTIAL** — useful functionality exists, but the original larger goal is not fully complete.
+- **OPEN** — current implementation still has a correctness, reliability, product, or research gap.
+- **ARCHIVED** — historical evidence only; do not treat it as an active backlog.
 
-插件的 `strategy.yaml` 可以定义任意嵌套策略参数，例如：
-
-```yaml
-momentum:
-  lookback: 60
-  min_return: 0.20
-
-weights:
-  elasticity: 0.35
-  reversal: 0.25
-  market: 0.20
-
-selection:
-  max_candidates: 20
-```
-
-插件代码通过只读 `Mapping[str, Any]` 使用这些参数。
-
-已有参数的数值可以在新 Run 中修改，并进入 resolved config、source map 和 research hash。
-
-### 目前的限制
-
-Run override 只能修改插件默认配置中**已经存在的 leaf**。
-
-不能在某次 Run 中临时发明新的参数路径。
-
-例如插件默认不存在：
-
-```text
-weights.futures
-```
-
-那么 Run 不能临时新增它。
-
-如果策略需要新参数，应更新插件配置和版本，而不是让单次 Run 改变参数结构。
-
-### UI 限制
-
-当前漂亮的 Core / Advanced 参数 UI 基本只为：
-
-```text
-full_strategy2_v1
-```
-
-显式声明。
-
-第三方 v1 插件后端可以拥有复杂参数，但 UI 没有通用 parameter schema，只能退化成配置 JSON 编辑。
-
-后续较合理的扩展方向是让插件声明自己的参数 schema：
-
-```text
-path
-label
-description
-type
-min
-max
-step
-nullable
-core / advanced
-searchable
-```
+When this file conflicts with an older dated journey document, this file is authoritative for current status.
 
 ---
 
-## 插件数据边界
+# 1. Current platform summary
 
-`StrategyContext` 当前只暴露：
+Stock Radar is currently a local research platform with:
 
-```text
-context.signal_date
-context.frame
-```
+- causal daily feature research and strict As-Of replay checks;
+- strategy plugins with exact version identity in the main browser workflow;
+- historical daily Scanner research with per-session candidate snapshots;
+- Backtest, Timeline and Experiment execution;
+- immutable completed Run evidence in SQLite;
+- Scanner forward-outcome evaluation and candidate-level diagnostics;
+- Research Export Bundles with CSV, Parquet, JSON and SHA-256 evidence;
+- Train / Validation / frozen historical Test splits;
+- Fresh OOS support once enough post-freeze sessions exist;
+- shared Backtest / Scanner worker scheduling;
+- a single local Web UI.
 
-其中 frame 是信号日 t 的股票横截面，包含：
-
-- symbol
-- security_name
-- close
-- 插件在 manifest / required_features 中声明的 causal features
-
-原始：
-
-```text
-open
-high
-low
-volume
-vwap
-trade_count
-```
-
-不会直接开放给插件。
-
-插件也不能访问 forward labels、entry Open、MFE、MAE、future return、数据库连接、券商客户端等。
-
-因此，当前插件可以做：
-
-```text
-复杂横截面打分
-固定 Logistic 推理
-因子组合
-regime-conditioned selection
-```
-
-但不能自己做：
-
-```text
-每天重新训练 Logistic / LightGBM
-直接读取过去 N 根 K 线
-维护 rolling model state
-portfolio-aware rotation
-intraday / limit-order / multi-leg logic
-```
-
-如果未来加入每日滚动 ML，更合理的设计是：
-
-```text
-Plugin 声明模型需求
-→ Host 严格按 As-Of 训练
-→ Host 输出当天 prediction
-→ Plugin 使用 prediction
-```
-
-而不是允许插件直接读取完整历史数据集。
+The platform is suitable for exploratory Train / Validation research subject to the limitations below. It is **not** a claim of unbiased PIT historical research or live-trading readiness.
 
 ---
 
-## Scanner / Execution 的当前硬边界
+# 2. Completed work
 
-### Scanner
+## 2.1 Causal research and research-store integrity — DONE
 
-当前宿主支持：
+The earlier research-correctness work recorded in `reports/journey.md` and the first 2026-09-29 bug backlog is closed.
 
-- entry reference：仅 `next_session_open`
-- horizon：1–60 sessions
-- success rule：
-  - `target_touch`
-  - `target_before_adverse`
-- Top-K：1–1000
-- cooldown：0–60 sessions
-- primary target 必须属于 upside targets
-- primary adverse target 必须属于 downside targets
+Completed:
 
-插件不能自己定义新的 forward outcome 语义。
+- strict As-Of daily causal replay;
+- removal of sample-end liquidity selection from historical daily eligibility;
+- removal of current `tradable` / `exchange` state from historical daily decisions;
+- causal daily Elasticity percentile and market breadth construction;
+- Future Mutation regression tests;
+- strict replay vs fast-engine comparison tests;
+- atomic research-store staging and promotion;
+- frozen dated Train / Validation / Test boundaries;
+- missing full Scanner session detection;
+- current `security_name` removed from historical strategy decisions;
+- causal event-study tradability;
+- persisted `market_feature_version` and legacy provenance warnings;
+- shared Scanner / Backtest worker budget;
+- Scanner experiment summaries separated when evaluation definitions differ.
 
-### Backtest
+Primary acceptance evidence:
 
-插件的候选产生与执行层是分开的。
+- `reports/research-readiness-2026-09-29.md`
+- `reports/journey-2026-09-29-bug-backlog.md` — CLOSED
 
-宿主拥有：
+## 2.2 Follow-up operations backlog — DONE
 
-- initial capital
-- 每日最多新开仓数量
-- gap gate
-- position sizing
-- ADV participation
-- slippage
-- fees
-- market guard
-- take profit
-- stop loss
-- max holding sessions
-- execution timing
+All seven items from `reports/journey-2026-09-29-followup-backlog.md` are implemented in the current source:
 
-当前 allocator 只有：
+- Scanner queued/running cancellation;
+- first-class Fresh OOS support in Scanner and Backtest when the split exists;
+- bounded research backup retention;
+- severe partial-session feature coverage detection;
+- oldest-eligible-first shared worker scheduling;
+- historical/legacy Phase 2 report labeling;
+- README worker-cap documentation reconciliation.
 
-```text
-equal_cash
-strategy_score
-strategy_times_elasticity
-```
+Status of the source backlog file: **CLOSED / ARCHIVED**.
 
-插件不能直接指定：
+## 2.3 Bug-mining round 2 — DONE
 
-```text
-AAA 50%
-BBB 30%
-CCC 20%
-```
+All ten items from `reports/journey-2026-09-30-bug-mining-round-2.md` are implemented in the current source:
 
-也不能自定义 trailing stop、ATR stop、MA exit、portfolio drawdown guard、盘中触发逻辑等。
+- atomic multi-Run creation;
+- exact strategy version preserved by Clone;
+- canonical execution/evaluation settings restored by Clone;
+- real RunManager walk-forward path repaired;
+- version-aware browser/API state for the main workflow;
+- dynamic Research Bundle Top-K export;
+- authoritative RunStore schema provenance;
+- mutable presentation fields excluded from immutable exported Run evidence;
+- exact-version uninstall semantics;
+- selected universe mode displayed correctly.
 
-当前核心定位仍然是：
+Status of the source backlog file: **CLOSED / ARCHIVED**.
 
-> candidate strategy plugin，而不是 general execution plugin。
+The implementation summary is retained at:
 
----
+- `reports/journey-2026-09-30-fix-pass.md`
 
-## 一个容易忽略的 select / rank 语义
+That file records a local result of **262 tests passed** and a browser smoke check. GitHub currently has no CI workflow/check result attached to commit `5cc2d5c...`, so the 262-test statement is retained as local verification evidence rather than independent hosted-CI evidence.
 
-插件的 `select()` 可以决定保留哪些候选。
+## 2.4 Historical daily Scanner research — DONE
 
-但是 Scanner 的正式 `rank` 会由宿主重新按：
+The historical daily Scanner requested by the research workflow exists.
 
-```text
-strategy_score descending
-symbol ascending
-```
+For every signal session in a selected research split, Scanner:
 
-计算。
+- evaluates that day's causal cross-section;
+- filters, scores, ranks and selects candidates;
+- stores the signal date and candidate snapshot;
+- stores diagnostics, probabilities and causal input features;
+- computes forward labels only in the evaluation layer;
+- allows the browser to select a date and inspect that day's candidates.
 
-因此：
+This is **historical daily Scanner research**.
 
-> 插件可以决定“选谁”，但正式排名必须通过 `score()` 表达。
+It is not the same product as a one-click latest-session / "today's candidates" Scanner. That separate product item remains open below.
 
-如果插件认为 AAA 应该排在 BBB 前面，就必须满足：
+## 2.5 Research Export Bundle — DONE
 
-```text
-score(AAA) > score(BBB)
-```
+The planned experiment evidence bundle is implemented.
 
-不能只依赖 `select()` 返回顺序。
+Current bundle support includes:
 
----
+- selected Backtest and Scanner Runs;
+- per-Run metadata and metrics;
+- full Scanner candidates in CSV and Parquet;
+- Backtest equity, trades and events;
+- Top-K comparison metrics;
+- candidate overlap for compatible Scanner definitions;
+- regime and risk summaries;
+- provenance hashes;
+- immutable evidence independent of Run rename/archive presentation state.
 
-# 未修研究正确性问题
+Documentation:
 
-下面这些问题与真正 PIT 历史 Security Master 不完全相同。
+- `docs/research-export.md`
 
-PIT 数据采购 / 历史 universe 还原暂时不作为当前重点。
+## 2.6 Strategy plugin infrastructure — DONE for current v1 scope
 
----
+The current plugin architecture is operational for daily cross-sectional candidate strategies.
 
-## 1. 当前历史研究仍存在 future-conditioned universe selection
+Implemented:
 
-已经确认存在：
+- Pluggy-backed strategy registry;
+- manifest/config validation;
+- required causal feature declarations;
+- strategy ZIP import;
+- versioned registrations;
+- filter / score / select workflow;
+- diagnostics/probabilities;
+- exact-version identity in the main browser workflow.
 
-```text
-用数据集末端最近约 35 日成交额
-→ 决定哪些股票进入整段历史研究
-```
-
-这意味着：
-
-```text
-未来/样本末端流动性
-→ 影响过去日期是否有资格被研究
-```
-
-这属于明确的未来条件选择。
-
-即使暂时接受“当前存活股票 cohort”带来的幸存者偏差，也不应该继续叠加：
-
-```text
-future liquidity selection bias
-```
-
-### 计划解决方式
-
-改为严格历史日 t 的 eligible universe：
-
-```text
-当前可用 cohort
-→ 截断到 t
-→ 用 t 当时的历史长度 / price / ADV20 / bar availability
-→ 得到 U_t
-```
+This remains a candidate-strategy plugin model, not a general trading-engine plugin system.
 
 ---
 
-## 2. 当前 tradable / exchange 状态可能被回灌到整段历史
+# 3. Partially complete larger goals
 
-历史 feature pipeline 当前仍可能使用今天的 asset snapshot：
+## 3.1 Experiment Platform — PARTIAL
 
-```text
-tradable
-exchange
-```
+A useful Experiment layer exists:
 
-去影响过去日期的 `tradability_pass`。
+- grid, ablation and walk-forward creation;
+- multiple variants;
+- queued execution;
+- shared worker limits;
+- persisted Run-level experiment metadata;
+- browser experiment cards;
+- variant status and summary metrics;
+- Research Bundle export.
 
-这属于 current-state backfill。
+The larger "Experiment as a first-class entity" goal from `journey-2026-09-29.md` is not fully complete.
 
-### 计划解决方式
+Still missing or incomplete:
 
-在非 PIT 模式下，历史日 `tradability_pass(t)` 尽量只依赖历史行情可验证条件：
+- independent Experiment table/entity rather than primarily grouping Runs by metadata;
+- experiment name and research question as durable first-class fields;
+- explicit whole-experiment progress;
+- whole-experiment cancellation/restart semantics;
+- experiment-level notes;
+- experiment-level immutable hash/manifest at creation time;
+- richer variant matrix;
+- direct Train vs Validation presentation;
+- automatic report generation.
 
-```text
-price(t)
-ADV20(t)
-history length(t)
-bar available(t)
-```
+## 3.2 Point-in-Time historical research — PARTIAL / NOT FORMALLY READY
 
-当前 snapshot 只用于定义“我们正在研究的 survivor cohort”，不继续作为过去每一天的状态变量。
+The repository has PIT-oriented contracts, security-master support, terminal-event handling and readiness checks.
 
----
+However, repository code support is not the same as having a complete trustworthy PIT historical dataset.
 
-## 3. Elasticity 横截面 percentile 会继承 universe 污染
+Current research must continue to distinguish:
 
-`groupby(date).rank(pct=True)` 本身不是 future leak。
+- **Current Snapshot** — operational, with explicit survivorship-bias risk;
+- **Point-in-Time framework** — implemented;
+- **formal unbiased PIT historical validation** — not established by the repository alone.
 
-问题是参与排名的股票集合如果已经被未来筛选，就会产生：
+Do not mark PIT research "complete" only because the code path exists.
 
-```text
-survivor-normalized percentile
-```
+## 3.3 Fresh OOS — IMPLEMENTED, DATA-AVAILABILITY PENDING
 
-### 正确顺序
+Fresh OOS is a real Scanner/Backtest split in the current software.
 
-```text
-U_t
-→ 每只股票的 Raw Elasticity(t)
-→ 只在 U_t 内做当天 percentile rank
-```
+The 2026-09-30 fix pass records that the then-current local research store still did not contain enough post-2026-09-28 sessions to expose a valid Fresh OOS signal/evaluation window.
 
-而不是先在未来筛出来的全历史 cohort 上计算 percentile。
+Therefore:
 
----
-
-## 4. Market Breadth 会继承同样的 universe 污染
-
-正确的 breadth 应为：
-
-```text
-Breadth_t =
-站上 MA20 的 U_t 成员数
-/
-当天 U_t 总数
-```
-
-因此必须先构造当天的因果 universe，再计算 breadth。
-
-不能用今天的 survivor sample 预先生成整条历史 breadth。
+- software support: **DONE**;
+- currently available research interval at that recorded data snapshot: **NOT YET AVAILABLE**.
 
 ---
 
-# 统一解决方案：Strict As-Of Daily Causal Replay
+# 4. Current correctness / reliability backlog
 
-当前最重要的研究正确性改造不是继续加零散补丁，而是建立统一规则：
+These are the active bugs found after the 2026-09-30 fix pass. They supersede the old closed backlogs.
 
-> 历史日期 t 运行时，系统只能看到 t 当天收盘及以前的信息。
+## CURRENT-P1-01 — Scanner outcome horizon can exceed the frozen split evaluation boundary — OPEN
 
-记信息集为：
+Scanner evaluation currently permits `horizon_sessions` up to 60, while the frozen research contract reserves 10 forward sessions.
 
-```text
-F_t
-```
+A custom Validation Scanner horizon above the reserved window can request labels beyond the stored Validation evaluation boundary and enter the frozen Test interval.
 
-当天输出必须满足：
+Required outcome:
 
-```text
-Candidate_t = f(F_t)
-```
+- queue-time validation against the research contract;
+- worker-time defensive validation;
+- no Scanner label may consume sessions beyond its stored evaluation boundary;
+- regression coverage for the maximum allowed horizon and rejection above it.
 
-而不能是：
+## CURRENT-P1-02 — Source Scanner provenance does not fully bind strategy implementation — OPEN
 
-```text
-Candidate_t = f(F_T), T > t
-```
+A Backtest created from a completed Scanner checks strategy ID/version, configuration, dataset, split and universe, but does not fully bind the Scanner's strategy implementation hash to the Backtest's recorded strategy implementation.
 
-每天重建：
+If a strategy file changes without a version bump after the Scanner completed, the Backtest can consume immutable old Scanner candidates while recording the newer strategy implementation as the current Run implementation.
 
-```text
-U_t
-stock features(t)
-Elasticity(t)
-cross-sectional percentile(t)
-Market Breadth(t)
-SPY / QQQ context(t)
-未来 ES / NQ / YM context(t)
-```
+Required outcome:
 
-只有最后的 Host-owned evaluation layer 可以读取 t 之后的数据生成 forward labels。
+- preserve and validate the signal-producing Scanner implementation provenance;
+- reject incompatible source Scanner / Backtest provenance or record signal-source provenance separately and explicitly;
+- add a regression test for same ID/version with changed strategy code.
 
----
+## CURRENT-P1-03 — Batch persistence is atomic, but batch research context capture is not — OPEN
 
-## Strict Replay 与快速引擎
+The current fix validates all variants before one SQLite transaction, which prevents partial Run insertion.
 
-未来建议保留两个实现：
+However, variant preparation still resolves data snapshot, source watermark and other research context during per-variant preparation. A research database replacement during a large batch preparation can theoretically produce one Experiment containing Runs prepared against different research snapshots.
 
-### Strict Causal Replay
+Required outcome:
 
-最慢、最直接、用于作为正确性基准。
+- capture one immutable batch preparation context;
+- all variants in the request must share it;
+- revalidate the active research source before commit;
+- source change during preparation must fail the complete batch with zero queued Runs.
 
-对于日期 t：
+## CURRENT-P2-01 — Exact strategy version is not yet a mandatory server contract on every route — OPEN
 
-```text
-物理截断所有数据到 t
-→ 从头计算当天 universe / feature / score / rank
-```
+The browser now uses exact `strategy_id@version` identity in the main workflow.
 
-### Fast Vectorized Engine
+Some server/legacy paths still accept a bare strategy ID and resolve a version implicitly.
 
-用于正式大规模实验。
+Required outcome:
 
-但必须定期随机抽历史日期验证：
+- new API paths should require exact version identity;
+- any remaining bare-ID support must be explicitly isolated as legacy compatibility and tested;
+- no automation/CLI path should silently upgrade to another installed version.
 
-```text
-Feature_fast(t) == Feature_strict(t)
-Score_fast(t)   == Score_strict(t)
-Rank_fast(t)    == Rank_strict(t)
-```
+## CURRENT-P2-02 — Unified scheduler is invoked redundantly and repeatedly scans OS processes — OPEN
 
-如果不同，Fast engine 存在潜在因果性问题。
+Backtest and Scanner launch wrappers both call the same unified dispatcher, while some callers invoke both wrappers consecutively.
 
-运行速度本身不是研究正确性的证据。
+Worker recovery also performs repeated process enumeration per queued Run.
 
-UI 中的最短播放时间可以保留，但不能用“算得慢/快”判断是否偷看未来。
+Required outcome:
 
----
+- one canonical dispatcher invocation per polling cycle;
+- build one worker-process map per cycle instead of rescanning per Run;
+- preserve oldest-eligible-first scheduling and restart recovery behavior.
 
-# Future Mutation Test
+## CURRENT-P2-03 — Some result surfaces still hide strategy version from the user — OPEN
 
-建议把下面这个不变量升级成长期 contract test。
+The underlying Run identity is version-aware, but several human-facing lists still emphasize strategy name/ID without always showing the exact version.
 
-选历史日期 t，第一次正常计算：
+Affected presentation includes parts of:
 
-```text
-U_t
-X_t
-Score_t
-Rank_t
-```
+- Run History;
+- Compare selection;
+- Experiment cards;
+- Research Export selection;
+- Scanner Run selection.
 
-然后任意修改 t 之后：
+Required outcome:
 
-```text
-股票价格
-成交量
-SPY / QQQ
-未来 ES / NQ / YM
-future asset metadata
-corporate actions
-```
+- every Run-selection surface should visibly show strategy version;
+- users should be able to distinguish v1/v2 without opening the audit panel.
 
-再次计算 t。
+## CURRENT-P3-01 — Background refresh can clear important user notices — OPEN
 
-必须满足：
+The browser refresh loop clears the shared notice area after a successful refresh.
 
-```text
-U'_t     = U_t
-X'_t     = X_t
-Score'_t = Score_t
-Rank'_t  = Rank_t
-```
+This can remove important Clone/provenance/warning messages shortly after they are shown.
 
-即：
+Required outcome:
 
-```text
-F(D_<=t, D_>t) = F(D_<=t, modified(D_>t))
-```
+- connection state must be separate from user notices;
+- background polling must not clear warnings/errors;
+- transient success messages may expire independently.
 
-这是未来新增因子时最重要的防偷看保险丝。
+## CURRENT-P3-02 — Fresh OOS availability is only loaded at initial page startup — OPEN
+
+The split list is fetched when the page initializes.
+
+If a research rebuild makes Fresh OOS available while the page remains open, normal background refresh does not add the new split option.
+
+Required outcome:
+
+- refresh split availability after relevant data/research updates or as part of a lightweight periodic refresh;
+- no full browser reload should be required.
 
 ---
 
-# 未来 ML 额外约束：Label Maturity
+# 5. Product / UI backlog
 
-仅仅“训练时不能看 t 之后行情”还不够。
+These items are not research-integrity failures. They are product improvements and should remain separate from correctness bugs.
 
-如果 forward label 的 horizon 是 10 sessions，那么靠近训练日的最近信号，其标签在训练日仍未成熟。
+## PRODUCT-01 — Latest-session Daily Scanner — OPEN
 
-未来滚动训练需要满足：
+The current Scanner is a historical research Scanner that processes each session inside Train / Validation / Test / Fresh OOS.
 
-```text
-label_available_at <= training_as_of
-```
+A separate daily-use workflow does not yet exist.
 
-也就是只有已经完整发生过 outcome window 的历史样本才能进入训练。
+Desired product:
 
-同样，任何需要 fit 的对象：
+- run only the latest fully available signal session;
+- show today's/latest candidates immediately;
+- no forward labels are required at run time;
+- retain exact strategy/version/data provenance;
+- reuse the same causal filter/score/rank pipeline;
+- clearly separate "Daily Scanner" from "Scanner Research".
 
-```text
-scaler
-imputer
-winsorization threshold
-PCA
-feature selection
-calibration
-hyperparameter selection
-```
+## PRODUCT-02 — Small UI information-architecture cleanup — OPEN
 
-都只能使用当时可用历史。
+The current Web UI is functional, but the next UI pass should remain small and low-risk.
 
----
+Recommended scope already reviewed:
 
-# 更棘手、不能靠每日重算自动解决的问题
+- reduce card-wall density;
+- make Scanner/Backtest results the primary visual focus;
+- collapse configuration after a Run;
+- use tabs for secondary Trades/Activity/Audit detail;
+- add a persistent research-context bar;
+- make Run history more compact;
+- consolidate duplicate CSS/design tokens;
+- improve strategy-version visibility;
+- improve notice/toast behavior.
 
-## A. 旧 Test 已被查看
+Do not combine this with a frontend-framework rewrite.
 
-之前的 Test slice 已经被研究者看过。
+## PRODUCT-03 — Scanner-centric Compare improvements — PARTIAL
 
-因此它不能继续充当最终 untouched OOS。
+Experiment summaries already expose Scanner metrics and Research Export can compare compatible evidence.
 
-即使程序实现 100% 因果：
+The dedicated Compare experience is still mainly Backtest-oriented.
 
-```text
-看 Test
-→ 改策略
-→ 再跑同一个 Test
-```
+Future Scanner comparison may include:
 
-仍属于 researcher-level data leakage。
+- Precision/Lift;
+- Event Precision/Event Lift;
+- MFE/MAE;
+- falling-knife rate;
+- censoring;
+- regime stability;
+- candidate overlap.
 
-未来需要：
+## PRODUCT-04 — Automatic research report generation — OPEN
 
-```text
-Train
-→ Validation
-→ Freeze
-→ Fresh untouched OOS
-```
-
-Fresh OOS 可以直接等待未来真实行情自然产生，不一定需要购买数据。
+Research Export creates a durable evidence package, but there is no finished first-class "generate research report" workflow from an Experiment/Bundle.
 
 ---
 
-## B. 多重实验 / researcher degrees of freedom
+# 6. Research / data roadmap
 
-即使全部实验都没有时间泄漏：
+These are future research capabilities, not current bugs.
 
-```text
-测试大量参数组合
-→ 只挑最好的一组
-```
+## RESEARCH-01 — Historical daily premarket NASDAQ context — OPEN
 
-也会因为随机噪声得到“看起来很强”的策略。
+Still a research/data-source task.
 
-因此应长期记录：
+Goal: reconstruct historically available premarket market context without using information released after the intended decision timestamp.
 
-```text
-Experiment ID
-改了什么
-为什么改
-预期方向
-Train 结果
-Validation 结果
-是否保留
-```
+## RESEARCH-02 — ES / NQ / YM causal market context — OPEN
 
-不要只保存最终最好看的结果。
+Not integrated into the current strategy context.
 
----
+Any future implementation must be host-owned and timestamp-causal, including roll logic and continuous-contract handling.
 
-## C. Historical data vintage / revision
+## RESEARCH-03 — Trusted PIT security-master / historical-universe data — OPEN
 
-今天重新下载的历史数据，不一定等于当年实时可见的数据版本。
+PIT software support exists, but high-confidence historical membership/delisting/corporate-action source coverage remains a separate data problem.
 
-可能受到：
+## RESEARCH-04 — Rolling ML / label maturity framework — OPEN
 
-```text
-split adjustment
-ticker mapping
-corporate-action back adjustment
-provider correction
-future continuous-futures roll adjustment
-```
+Future rolling models must train only on labels that were already mature at the training as-of timestamp.
 
-影响。
+Any scaler, imputer, feature selection, calibration and hyperparameter search must obey the same cutoff.
 
-严格表示：
+## RESEARCH-05 — Researcher-degrees-of-freedom controls — PARTIAL
 
-```text
-D_2023^(2026 vintage)
-可能不等于
-D_2023^(2023 vintage)
-```
+The platform retains experiment variants and prevents experiment search directly on historical Test, which is useful.
 
-个人项目当前不准备保存每个日期的数据 vintage，因此暂时把它列为已知残余限制。
+Still desirable:
 
-特别需要谨慎的，是绝对价格门槛、未来加入的连续期货序列和 provider 自动 ticker 映射。
+- durable pre-registered research question;
+- saved search space before execution;
+- stronger experiment-level audit trail;
+- explicit Freeze → Fresh OOS workflow.
 
 ---
 
-# PIT 暂缓
+# 7. Open-source reuse roadmap status
 
-当前 `current_snapshot` 模式仍然存在经典幸存者偏差：
+`reports/journey-2026-09-29-open-source-reuse-roadmap.md` remains a roadmap, not an implementation checklist that can be assumed complete.
 
-```text
-过去已经退市 / 消失 / 破产的股票
-可能不在今天的研究 cohort
-```
+Clearly adopted in the current repository:
 
-这件事目前接受为已知限制。
+- Pluggy strategy registry;
+- psutil-assisted worker/process recovery.
 
-未来可能研究两条路线：
+Not evidenced as integrated into the current core Strategy Lab workflow:
 
-1. 购买可信的 PIT Security Master / terminal event data；
-2. 用历史交易记录、交易所/SEC资料、ticker changes、IPO/delisting/corporate actions 等做逆向历史还原。
+- Huey;
+- Label Studio;
+- Optuna;
+- exchange_calendars;
+- Pandera;
+- Hypothesis;
+- mplfinance;
+- QuantStats;
+- Aim / MLflow;
+- DVC.
 
-逆向工程不是当前优先事项，也不能因为“还原出名单”就自动宣称得到完整 PIT 数据。
-
----
-
-# ES / NQ / YM 的计划边界
-
-未来准备给宿主增加三大美股股指期货的因果上下文：
-
-```text
-ES
-NQ
-YM
-```
-
-原则仍然是：
-
-```text
-Raw futures data
-→ Host causal feature builder
-→ as_of timestamp gate
-→ causal futures features
-→ StrategyContext
-```
-
-不允许插件自己直接查询期货数据库。
-
-需要特别防：
-
-- continuous contract back-adjustment leakage；
-- roll rule look-ahead；
-- 同一自然日但晚于 signal timestamp 的期货数据泄漏。
-
-以后信号时点应明确到 timestamp，而不只是 date。
+Do not treat roadmap mentions as installed features.
 
 ---
 
-# 当前建议优先级
+# 8. Historical log map
 
-1. **实现 Strict As-Of Daily Causal Replay**
-2. **清掉末端 35D 流动性选历史股票的问题**
-3. **去掉 current tradable / exchange 对历史日状态的回灌**
-4. **让 Elasticity percentile / Breadth 严格基于 U_t**
-5. **加入 Future Mutation Test**
-6. **建立 Strict Replay vs Fast Engine 对照测试**
-7. **再接 ES / NQ / YM Host-owned causal features**
-8. **未来 ML 时强制 label maturity**
-9. **用实验日志控制 parameter snooping / Test contamination**
-10. **PIT 与历史 universe 逆向恢复后续单独处理**
+Use the following classification when reading old files.
 
----
-
-## 当前研究状态
-
-```text
-探索性 Train / Validation Scanner：
-可继续
-
-正式无偏 PIT 历史验证：
-仍不可宣称完成
-
-当前下一阶段重点：
-程序级因果回放与未来信息隔离
-```
+| File | Current meaning |
+| --- | --- |
+| `reports/journey.md` | **CURRENT CANONICAL STATUS** |
+| `reports/journey-2026-09-29-bug-backlog.md` | ARCHIVED — all 8 items closed |
+| `reports/research-readiness-2026-09-29.md` | ARCHIVED acceptance evidence for the first bug backlog |
+| `reports/journey-2026-09-29-followup-backlog.md` | ARCHIVED — all 7 items closed |
+| `reports/journey-2026-09-30-bug-mining-round-2.md` | ARCHIVED — all 10 items closed |
+| `reports/journey-2026-09-30-fix-pass.md` | ARCHIVED implementation/verification summary for the 17-item fix pass |
+| `reports/journey-2026-09-29.md` | ARCHIVED mixed planning/history; surviving open goals are copied into this canonical file |
+| `reports/journey-2026-09-29-open-source-reuse-roadmap.md` | ROADMAP — optional adoption plan, mostly not integrated |
+| `reports/phase2/*` | HISTORICAL pre-v3 research artifacts, not current Strategy Lab semantics |
 
 ---
 
-## 2026-09-29 — As-Of 因果重放落地与真实数据验收
+# 9. Logging convention from now on
 
-已完成上面优先级 1–6 的程序与数据层改动：
+To prevent status from fragmenting again:
 
-- `strict_asof_day` 只读取信号日 `t` 及以前的股票、SPY、QQQ 行情，并独立重算当日特征、可交易状态、Elasticity、市场宽度及策略排名。
-- 历史研究 cohort 不再由样本末端 35 个交易日的成交额筛选；当前 `active US_EQUITY` 幸存者集合中的每只股票，只要有历史 K 线就参与构建。
-- 历史可交易门槛仅取当日价格、截至当日的 ADV20 和已观察交易日数；当前资产快照的 `tradable`、`exchange` 不再回灌到历史日。
-- Elasticity 分位数和市场宽度按当日合格集合 `U_t` 计算。旧版 `phase2a_f_v2` 与新版 `phase2a_f_v3_asof` 保持版本隔离，Compare 会提示版本差异。
-- 自动化测试会改变 `t` 之后的股票、SPY、QQQ 行情及当前可变交易元数据，确认 `t` 的候选、分数和排名不变；同时逐字段对照慢速严格重放与批量引擎。
+1. **`reports/journey.md` is the only current project-status/backlog file.**
+2. New bug-mining findings are added to the current backlog sections here first.
+3. A dated fix-pass file may be created for an important implementation milestone, but once accepted, the canonical status here must be updated in the same pass.
+4. Old backlog files are never reused as active task lists after closure.
+5. `reports/phase2/` remains historical research evidence.
+6. `docs/` contains contracts/specifications, not current task status.
+7. Research ideas must be separated from correctness bugs and product/UI work.
 
-真实数据源来自 Alpaca SIP、split adjustment，覆盖 2021-09-01 至 2026-09-28：12,151,417 条日 K 线，OHLCV 无空值或非法价格/成交量。57 条成交量为正的记录缺 VWAP，已保留为质量提示；本次特征计算不依赖 VWAP。全量研究库包含 13,562 只当前幸存者股票、12,148,871 条 v3 特征、5,838,633 条已评分特征。
+---
 
-三个真实交易日的严格重放与批量结果逐字段一致，且成员集合、可交易状态、Elasticity 排名和市场宽度一致：
+# 10. Current recommended order
 
-| 日期 | 区段 | 当日有数据 | 合格 | 已排名 |
-| --- | --- | ---: | ---: | ---: |
-| 2024-05-14 | Train | 9,235 | 4,670 | 4,670 |
-| 2025-01-03 | Validation | 9,948 | 5,417 | 5,417 |
-| 2026-05-18 | Test 计算一致性抽检 | 12,315 | 6,144 | 6,143 |
+For the next engineering pass:
 
-Test 抽检只核对特征计算，没有查看策略收益或用于调参。完整 pytest：230 项通过。旧 v2 研究库冻结在本机 `data/phase2-research-v2-frozen.duckdb`，v3 成为默认研究库。
+1. `CURRENT-P1-01` — enforce Scanner horizon inside the frozen evaluation boundary.
+2. `CURRENT-P1-02` — bind Source Scanner signal provenance to exact implementation evidence.
+3. `CURRENT-P1-03` — make batch research-context preparation snapshot-consistent.
+4. `CURRENT-P2-01` — finish server-side exact-version enforcement.
+5. `CURRENT-P2-02` — simplify unified dispatcher/process discovery.
+6. `CURRENT-P2-03` — expose exact strategy versions on all result selectors.
+7. `CURRENT-P3-01` / `CURRENT-P3-02` — UI refresh/message cleanup.
+8. Then implement `PRODUCT-01` Latest-session Daily Scanner.
+9. Then perform the small UI information-architecture cleanup.
+10. Continue the longer research/data roadmap separately.
 
-**仍未解决的研究限制：**当前资产快照仍有幸存者偏差，供应商历史行情可能经事后修订，旧 Test 结果已被研究者看过；因此不能宣称获得了正式无偏 PIT 回测。每日自动更新 `market.duckdb`，研究库更新仍是独立、带版本记录的回填与构建流程，不会自动并入每日行情。ES/NQ/YM 因果特征、ML label maturity、实验日志防多重试验和可信 PIT Security Master 均保留为后续工作。
+This ordering keeps research correctness ahead of convenience features while avoiding another broad rewrite.
