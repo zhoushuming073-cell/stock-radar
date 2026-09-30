@@ -5,7 +5,7 @@
 <h1 align="center">📡 Stock Radar</h1>
 
 <p align="center">
-  <img src="./docs/repo-banner.png" alt="Stock Radar 仓库横幅" width="100%">
+  <img src="./docs/repo-banner.webp" alt="Stock Radar 仓库横幅" width="100%">
 </p>
 
 <p align="center">
@@ -31,6 +31,7 @@
 
 <p align="center">
   <a href="#项目简介">项目简介</a> ·
+  <a href="#界面预览">界面预览</a> ·
   <a href="#当前进度">当前进度</a> ·
   <a href="#系统架构">系统架构</a> ·
   <a href="#快速开始">快速开始</a> ·
@@ -43,6 +44,24 @@
 Stock Radar 是一个个人美股量化研究系统，围绕一个非常具体的实际流程构建：先把全市场几千只股票压缩成少量最符合目标价格结构的观察对象，再把新闻、催化剂、基本面、盘前状态等非价格信息留给第二阶段研究。
 
 整体仍坚持 **local-first（本地优先）**：Alpaca 凭据、DuckDB 市场数据库、策略插件、Run 元数据以及详细研究产物都保留在运行 Stock Radar 的本机。私有浏览器 Dashboard 只通过本机 loopback API 与这些数据交互。
+
+代码、网页、配置模板和纳入版本管理的文档以 GitHub `main` 为准。开始修改前先从 `origin/main` 获取并快进同步，检查本地差异，再把验收通过的修改推回 `main`。本地网站直接使用本仓库的 `site/dist`。`data/` 中的行情库、运行历史、凭据和生成的导出文件只保留在本机，代码同步时不覆盖它们。
+
+## 界面预览
+
+以下截图于 2026 年 9 月 30 日从本地网站截取。图中的数字属于本机历史研究数据，不是实时行情或交易信号。
+
+**行情总览**：日 K、成交量、数据覆盖与校验状态。
+
+![Stock Radar 行情总览](docs/screenshots/market-overview.png)
+
+**Scanner 研究**：候选质量、事件指标和逐日候选快照。
+
+![Stock Radar Scanner 研究](docs/screenshots/scanner-research.png)
+
+**回测研究**：历史运行配置、权益曲线、回撤和持仓。
+
+![Stock Radar 回测研究](docs/screenshots/strategy-lab.png)
 
 ## 研究方向
 

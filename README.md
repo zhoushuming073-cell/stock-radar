@@ -31,6 +31,7 @@
 
 <p align="center">
   <a href="#overview">Overview</a> ·
+  <a href="#interface-preview">Preview</a> ·
   <a href="#project-status">Status</a> ·
   <a href="#architecture">Architecture</a> ·
   <a href="#setup">Setup</a> ·
@@ -43,6 +44,24 @@
 Stock Radar is a personal US-equity quantitative research system built around a practical workflow: reduce thousands of stocks to a small daily watchlist whose price structure matches a defined trading setup, then leave contextual judgment—news, catalysts, fundamentals, premarket behavior and other non-price information—to a later research stage.
 
 The design remains deliberately **local-first**: Alpaca credentials, DuckDB market data, strategy plugins, run metadata, and detailed research artifacts stay on the machine running Stock Radar. The private browser dashboard talks only to a loopback API on that machine.
+
+For source code, the web UI, configuration templates, and tracked documentation, GitHub `main` is the source of truth. Fetch and fast-forward from `origin/main` before new work, review any local changes, then publish verified changes back to `main`. The local website is served from `site/dist` in this repository. Market databases, run history, credentials, and generated exports under `data/` remain local and are never replaced by a source sync.
+
+## Interface preview
+
+These screenshots were captured from the local application on 2026-09-30. The figures are historical research data on one computer; they are not live quotes or trading signals.
+
+**Market overview** — daily candles, volume, data coverage, and validation status.
+
+![Stock Radar market overview](docs/screenshots/market-overview.png)
+
+**Scanner research** — saved candidate quality, event metrics, and daily snapshots.
+
+![Stock Radar Scanner research](docs/screenshots/scanner-research.png)
+
+**Backtest research** — saved run settings, equity, drawdown, and positions.
+
+![Stock Radar backtest research](docs/screenshots/strategy-lab.png)
 
 ## Research direction
 

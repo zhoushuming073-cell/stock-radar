@@ -41,3 +41,8 @@ Example:
 - `reports/personal-research/`: owner-authored research reports and conclusions.
 
 Personal research reports should cite the Run IDs, Research Bundle IDs, dataset snapshot, strategy versions, or other evidence they rely on whenever available.
+
+## Preserved historical reports
+
+- `research-2026-09-27-scanner-validation-draft.md` — first Scanner validation research draft.
+- `research-2026-09-27-project-stage-1-superseded.md` — historical project assessment; use the current ledger in `reports/README.md` for present status.
