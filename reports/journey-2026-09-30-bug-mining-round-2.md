@@ -1,0 +1,681 @@
+# Stock Radar Journey — Bug Mining Round 2 + UI Integrity Backlog — 2026-09-30
+
+> Scope: new defects found after the 2026-09-29 correctness/readiness pass.
+>
+> Baseline audited: `main @ c80ddce9227d62b53cdc59aae8a347e73bd3a634`.
+>
+> This document intentionally does **not** duplicate the existing items in `reports/journey-2026-09-29-followup-backlog.md` such as Scanner cancellation, Fresh OOS first-class execution, backup retention, partial-session completeness, queue fairness, legacy-report labeling, and README worker documentation. Those remain valid until separately verified/fixed.
+>
+> Primary audit areas in this pass:
+>
+> - Experiment and Run creation semantics;
+> - walk-forward execution;
+> - strategy version identity;
+> - Clone Run behavior;
+> - Research Bundle completeness/provenance;
+> - UI behavior that can cause the user to run or interpret a different experiment than intended.
+
+---
+
+## Executive summary
+
+The 2026-09-29 pass repaired the first layer of research correctness: As-Of behavior, frozen splits, Scanner full-day coverage checks, historical naming leakage, causal tradability, market-feature provenance, shared worker budget, evaluation-comparison semantics, and export verification.
+
+This second pass found a different class of defects:
+
+1. **Run creation is not fully transactional.**
+2. **Strategy version identity is not preserved consistently across UI/API flows.**
+3. **The Clone action does not reproduce the full original Run configuration.**
+4. **Walk-forward is exposed in the UI but can fail in the real RunManager path.**
+5. **Research Bundle comparison/provenance output can silently omit or misstate evidence.**
+6. **Several UI labels/actions do not match the real versioned backend semantics.**
+
+The highest-risk items are the ones that can make the user believe one experiment was run while a different configuration/version actually executed.
+
+Recommended immediate order:
+
+```text
+P1-01  atomic Run / Experiment creation
+P1-02  exact strategy-version identity across UI/API
+P1-03  exact Clone semantics
+P1-04  walk-forward real-path failure
+P1-05  version-aware parameter schema/state
+
+then
+
+P2-01  dynamic Top-K export
+P2-02  export schema-version provenance
+P2-03  immutable research evidence vs presentation metadata
+
+then
+
+P2/P3 UI semantics
+```
+
+---
+
+# P1 — Experiment / research integrity
+
+## BM2-P1-01 — Multi-Run creation is not atomic
+
+### Symptom
+
+`RunManager.queue_runs()` validates and persists each Run inside the same loop.
+
+Current structure is effectively:
+
+```text
+for strategy:
+    validate strategy
+    resolve config
+    build metadata
+    create_run(metadata)
+```
+
+If an early strategy succeeds and a later strategy fails validation, the earlier Run has already been inserted into `RunStore`.
+
+The API call then returns an error to the browser, so the user sees the whole request as failed even though one or more queued Runs may already exist.
+
+Because the scheduler later launches queued Runs, a partially-created Run may subsequently execute even though the UI reported failure.
+
+### Affected flows
+
+Potentially affected:
+
+- multi-strategy `RunManager.queue_runs()`;
+- three-stage Timeline creation;
+- Experiment fan-out when one later variant fails;
+- any future batch operation that persists incrementally before the entire request is validated.
+
+### Why this matters
+
+This is a control-plane/research-integrity defect, not only a UX defect.
+
+A failed user action must not leave hidden executable research work behind.
+
+### Required fix
+
+Separate batch preparation from persistence:
+
+```text
+resolve all requested registrations
+→ validate every configuration
+→ validate dataset/universe/source Scanner compatibility
+→ construct all metadata in memory
+→ only after every item succeeds, persist the complete batch
+```
+
+Prefer one RunStore transaction for the batch when possible.
+
+If a multi-stage operation cannot be committed in one transaction, explicit rollback/cancellation semantics must guarantee that no executable orphan remains.
+
+### Acceptance criteria
+
+1. Create a two-strategy batch where strategy A is valid and strategy B fails configuration validation.
+2. The API returns an error.
+3. **Zero** new Runs exist after the failure.
+4. No worker can later launch any Run from the rejected batch.
+5. Add equivalent regression coverage for:
+   - standard multi-strategy Run;
+   - Timeline creation;
+   - Experiment variant fan-out.
+6. A successful batch still preserves deterministic Run ordering.
+
+---
+
+## BM2-P1-02 — Clone Run drops the original strategy version
+
+### Symptom
+
+Historical Run metadata correctly stores both:
+
+- `strategy_id`;
+- `strategy_version`.
+
+However the current Clone UI derives only:
+
+```js
+const id = run?.metadata?.strategy_id
+```
+
+and later submits the bare strategy ID.
+
+The registry behavior for a bare ID is to select the highest semantic version.
+
+Therefore:
+
+```text
+historical Run = strategy_x v1.0.0
+installed versions = v1.0.0 + v2.0.0
+
+Clone historical v1 Run
+→ browser submits strategy_x
+→ registry.get("strategy_x")
+→ v2.0.0 is selected
+```
+
+The cloned Run can therefore execute different strategy code from the Run the user intended to reproduce.
+
+### Why this matters
+
+This directly breaks reproducibility and can contaminate comparison results.
+
+The UI may present the operation as "Clone parameters" while silently changing the strategy implementation.
+
+### Required fix
+
+Use an exact strategy reference everywhere cloning/re-running an existing Run:
+
+```text
+strategy_id@strategy_version
+```
+
+The new Run must preserve the exact version unless the user explicitly chooses an upgrade/migration action.
+
+### Acceptance criteria
+
+1. Install two versions of the same strategy ID.
+2. Create a completed v1 Run.
+3. Clone the v1 Run.
+4. The new draft and queued Run both reference v1 exactly.
+5. The queued Run's `strategy_code_hash` matches the original v1 implementation when no source changes occurred.
+6. No bare-ID fallback is allowed in exact-clone mode.
+7. Add a regression test where v2 is the highest installed SemVer and verify Clone still uses v1.
+
+---
+
+## BM2-P1-03 — Clone Run does not copy the full result-changing configuration
+
+### Symptom
+
+Current Clone behavior copies only:
+
+```js
+state.config[id] = structuredClone(run.metadata.config)
+```
+
+It does not restore all canonical execution settings represented in the immutable Run metadata / resolved configuration.
+
+Examples that can be lost or revert to current defaults:
+
+- slippage;
+- allocator / sizing;
+- market guard;
+- execution timing;
+- host-owned take-profit / stop-loss / holding-period overrides;
+- other execution namespace overrides.
+
+The UI then reports:
+
+> Run parameters copied.
+
+That statement is too strong for the current behavior.
+
+### Why this matters
+
+Two Runs that look like a Clone pair can differ in execution assumptions.
+
+That makes comparison misleading and weakens reproducibility.
+
+### Required fix
+
+Clone from the saved canonical `resolved_config`, not only the strategy-owned draft.
+
+Restore at least:
+
+```text
+strategy
+evaluation (when relevant)
+execution
+dataset selections that are user-selectable and still valid
+exact strategy version
+```
+
+Dataset fingerprints/snapshots should not be blindly mutated into current state. The UI should clearly distinguish:
+
+- "exact historical reproduction" when inputs are still available;
+- "copy settings into a new current-data Run" when the data snapshot necessarily changes.
+
+### Acceptance criteria
+
+1. Create a Run with non-default:
+   - slippage;
+   - stop loss;
+   - allocator;
+   - market guard;
+   - execution timing.
+2. Click Clone.
+3. Every result-changing editable value shown in the draft matches the original Run.
+4. Queue the cloned draft without manual changes.
+5. The resulting resolved configuration differs only in intentionally time-varying dataset/provenance fields.
+6. UI wording must not claim exact copying if any field cannot be restored.
+
+---
+
+## BM2-P1-04 — Walk-forward can fail in the real RunManager path
+
+### Symptom
+
+`RunManager.queue_runs()` builds universe sessions with logic equivalent to:
+
+```python
+dates.get("sessions", dates[split])
+```
+
+For `split == "walk_forward"`, Python evaluates the default argument `dates[split]` before calling `dict.get`.
+
+Because the split dictionary does not contain a `walk_forward` key, this can raise:
+
+```text
+KeyError: 'walk_forward'
+```
+
+even though `dates["sessions"]` exists.
+
+### Why tests did not catch it
+
+The current walk-forward unit test uses a FakeManager and verifies fold construction, but it does not execute the real `RunManager.queue_runs(..., split="walk_forward")` path.
+
+### Required fix
+
+Avoid eager evaluation of a nonexistent fallback.
+
+For example, resolve the session source explicitly rather than embedding `dates[split]` in the default expression.
+
+### Acceptance criteria
+
+1. Add an integration-style test using a real/minimal `RunManager`.
+2. Call `queue_runs(..., split="walk_forward", window_override=...)`.
+3. The split dictionary contains `sessions` but no `walk_forward` key.
+4. No KeyError occurs.
+5. The requested window remains restricted to pre-reserved-Test history according to existing experiment policy.
+6. Existing Train/Validation/Test behavior remains unchanged.
+
+---
+
+## BM2-P1-05 — UI/API strategy state is not version-aware
+
+### Symptom
+
+The backend registry is versioned by:
+
+```text
+(strategy_id, version)
+```
+
+and supports multiple SemVer versions of one strategy ID.
+
+The browser state, however, is primarily keyed only by strategy ID:
+
+```js
+state.config[id]
+state.schemas[id]
+state.selected
+state.focused
+state.execution[id]
+state.evaluation[id]
+```
+
+The Scanner selector visibly uses `id@version`, but parameter handling removes the version and reuses ID-keyed state.
+
+The parameter-schema API also receives only `strategy_id`, and its lookup uses the first matching registration rather than an exact version.
+
+This creates a possible split-brain state:
+
+```text
+UI displays / edits parameters derived from one version
+while
+RunManager resolves a different version
+```
+
+With multiple versions installed, this can become a silent experiment mismatch.
+
+### Required fix
+
+Make strategy identity version-aware end to end.
+
+Recommended canonical UI/API identity:
+
+```text
+strategy_ref = strategy_id@version
+```
+
+Use it for:
+
+- selected/focused strategy state;
+- configuration drafts;
+- evaluation/execution override state;
+- parameter schemas;
+- Scanner start;
+- Backtest start;
+- Experiment start;
+- Clone;
+- uninstall/version management.
+
+### Acceptance criteria
+
+1. Install v1 and v2 of the same strategy ID with different defaults/schema-visible values.
+2. UI can select each version independently.
+3. Editing v1 does not mutate v2 draft state.
+4. Parameter schema for v1 uses v1 defaults.
+5. Parameter schema for v2 uses v2 defaults.
+6. Scanner/Backtest/Experiment metadata records the exact selected version.
+7. Refreshing the page does not collapse two versions into one ID-keyed state.
+
+---
+
+# P2 — Research Bundle completeness and provenance
+
+## BM2-P2-01 — Research Bundle hard-codes Top-K = 5/10/20
+
+### Symptom
+
+Scanner evaluation supports arbitrary valid `evaluation.top_k_values`.
+
+`candidate_metrics()` correctly creates metric keys dynamically for every configured K.
+
+However `research_export.py` exports comparison Top-K metrics using a hard-coded loop:
+
+```python
+for k in (5, 10, 20):
+```
+
+If a study uses:
+
+```text
+Top-K = [7, 15]
+```
+
+the completed Scanner Run contains the correct metrics, but:
+
+```text
+comparisons/topk_metrics.csv
+```
+
+does not include them.
+
+The bundle still succeeds, so this is a silent evidence-completeness defect.
+
+### Required fix
+
+Derive exported K values from the immutable Run evaluation metadata.
+
+### Acceptance criteria
+
+1. Run/export a Scanner study with `top_k_values=[7,15]`.
+2. `topk_metrics.csv` contains rows for K=7 and K=15.
+3. No fabricated 5/10/20 rows appear unless those K values were actually configured.
+4. Mixed Scanner runs with different K sets remain separated by comparison signature where required.
+5. Add an export regression test for non-default K values.
+
+---
+
+## BM2-P2-02 — Research Bundle reports the wrong RunStore schema version
+
+### Symptom
+
+Current RunStore declares:
+
+```python
+SCHEMA_VERSION = 7
+```
+
+but Research Bundle `provenance/environment.json` currently writes:
+
+```json
+"sqlite_store_schema": 6
+```
+
+### Why this matters
+
+The research output is intended to be auditable. Provenance metadata must describe the actual producing schema.
+
+### Required fix
+
+Do not duplicate the schema version as a literal.
+
+Import/use the authoritative RunStore schema constant or expose a RunStore API for it.
+
+### Acceptance criteria
+
+1. Export a bundle from schema v7.
+2. `environment.json` reports v7.
+3. Future schema changes require no second hard-coded update in the exporter.
+4. Add a regression assertion against the authoritative constant.
+
+---
+
+## BM2-P2-03 — Mutable presentation metadata leaks into Research Bundle run.json
+
+### Symptom
+
+Recent work correctly moved presentation-only state such as:
+
+- `display_name`;
+- `archived_at`;
+
+into `run_presentation`, separate from immutable research evidence.
+
+However Research Bundle obtains the Run through the normal presentation-enriched Run read path and writes the complete returned object directly to:
+
+```text
+runs/<run_id>/run.json
+```
+
+Therefore:
+
+```text
+export Run
+→ rename Run
+→ export same Run again
+```
+
+can change `run.json` and the final Bundle SHA even though the actual research evidence did not change.
+
+### Why this matters
+
+The system currently describes completed research evidence as immutable.
+
+Presentation changes should not mutate the evidence representation or its evidence hash.
+
+### Required fix
+
+Separate export layers:
+
+```text
+immutable research record
+→ run.json / evidence
+
+presentation metadata
+→ optional presentation.json
+```
+
+Presentation metadata must not participate in the immutable research-evidence hash unless explicitly documented as a presentation-layer hash.
+
+### Acceptance criteria
+
+1. Export a completed Run and record immutable evidence hashes.
+2. Rename the Run.
+3. Export again.
+4. Immutable evidence files/hashes are unchanged.
+5. If presentation metadata is exported, it is stored separately.
+6. Archive/restore has the same non-effect on immutable evidence.
+
+---
+
+# P2 — Version-management UI semantics
+
+## BM2-P2-04 — Uninstall UI is not aligned with versioned strategy semantics
+
+### Symptom
+
+The Strategies UI renders rows per registration/version, which visually suggests version-level operations.
+
+The uninstall API currently accepts only `strategy_id`, and `RunManager.uninstall_strategy()` is designed around removing every installed version of that ID while refusing built-in strategy paths.
+
+This becomes confusing or unusable when:
+
+- multiple imported versions exist;
+- a built-in version and imported newer version share the same ID;
+- the user intends to remove only one version.
+
+### Required fix
+
+Choose and make explicit one supported semantic:
+
+**Preferred:**
+
+```text
+Uninstall exact strategy_id@version
+```
+
+with a separate explicit "Remove all imported versions" action if needed.
+
+Do not show a per-version row with an operation whose actual scope is all versions.
+
+### Acceptance criteria
+
+1. Two imported versions can be managed independently.
+2. Built-in + imported version coexistence does not prevent removal of the imported version solely because another built-in version exists.
+3. Confirmation text states the exact version/scope.
+4. Active Runs still block unsafe uninstall according to existing policy.
+
+---
+
+# P3 — UI state clarity
+
+## BM2-P3-01 — System universe status can contradict the selected Run mode
+
+### Symptom
+
+The System panel writes:
+
+```text
+Mode: Current Snapshot · Survivorship Bias Risk: Present
+```
+
+as a static status string after loading universe availability.
+
+The Run-mode selector can separately be changed to Point-in-Time when PIT data is available.
+
+The result is a UI that can simultaneously show:
+
+```text
+selected new-run mode = Point-in-Time
+
+System status text = Mode: Current Snapshot
+```
+
+### Required fix
+
+Separate:
+
+- available universe sources;
+- currently selected mode for new Runs;
+- formal PIT readiness.
+
+Do not label Current Snapshot as the active mode when the selector is on PIT.
+
+### Acceptance criteria
+
+1. Selecting PIT updates the "new Run mode" status immediately.
+2. Availability/status text remains distinct from selected mode.
+3. Existing historical Run metadata remains authoritative when viewing an old Run.
+4. Current Snapshot continues to display survivorship-bias warning when selected.
+
+---
+
+# Cross-cutting regression requirements
+
+The next bug-fix pass should add tests that protect the following invariants.
+
+## Version identity
+
+```text
+Run strategy identity = exact (id, version)
+```
+
+A UI selection, Clone, Scanner, Backtest, or Experiment must never silently substitute another installed version.
+
+## Batch atomicity
+
+```text
+request fails
+→ zero executable partial Runs survive
+```
+
+This applies to multi-strategy batches, Timeline batches, and Experiment fan-out.
+
+## Clone integrity
+
+```text
+Clone
+→ copy every user-controlled result-changing setting
+→ preserve exact strategy version
+```
+
+Any unavoidable dataset/provenance changes must be explicit.
+
+## Research export integrity
+
+```text
+configured metrics
+→ all relevant metrics exported
+
+immutable research evidence
+→ unaffected by rename/archive presentation changes
+
+environment provenance
+→ authoritative versions only
+```
+
+---
+
+# Relationship to the existing follow-up backlog
+
+This document extends, rather than replaces:
+
+`reports/journey-2026-09-29-followup-backlog.md`.
+
+That earlier backlog still contains separate work including:
+
+- Scanner cancellation;
+- Fresh OOS first-class Scanner/Backtest flow;
+- research-backup retention;
+- partial-session feature completeness;
+- queue fairness/starvation;
+- legacy report labeling;
+- README worker-default reconciliation.
+
+Do not mark those items complete based on this document.
+
+---
+
+# Recommended implementation order
+
+Before large multi-strategy experiment batches:
+
+```text
+1. BM2-P1-01 batch atomicity
+2. BM2-P1-02 exact Clone version
+3. BM2-P1-03 full Clone configuration
+4. BM2-P1-05 version-aware UI/API state
+5. BM2-P1-04 walk-forward real-path fix
+```
+
+Then repair evidence/export consistency:
+
+```text
+6. BM2-P2-01 dynamic Top-K export
+7. BM2-P2-02 authoritative schema provenance
+8. BM2-P2-03 immutable evidence / presentation separation
+```
+
+Then UI/version-management cleanup:
+
+```text
+9. BM2-P2-04 version-specific uninstall semantics
+10. BM2-P3-01 universe-mode status clarity
+```
+
+The pre-existing follow-up P1 items should be scheduled alongside this list according to implementation locality. In particular, Scanner cancellation, Fresh OOS wiring, partial-session completeness, and the version/atomicity defects should all be resolved before treating the platform as ready for large unattended experiment batches.
