@@ -6,6 +6,7 @@ from pathlib import Path
 from threading import Thread
 from types import SimpleNamespace
 from urllib.request import Request, urlopen
+from urllib.error import HTTPError
 
 import pytest
 
@@ -61,6 +62,27 @@ def test_api_health_and_cors(api):
     status, headers, _ = request(api, "/api/lab/run", method="OPTIONS")
     assert status == 204
     assert headers["Access-Control-Allow-Origin"] == ORIGIN
+
+
+@pytest.mark.parametrize('route', ['run', 'timeline', 'experiment'])
+def test_web_rejects_legacy_execution(api, route):
+    with pytest.raises(HTTPError) as rejected:
+        request(api, '/api/lab/' + route, method='POST',
+                data=json.dumps({'engine': 'legacy'}).encode(), content_type='application/json')
+    assert rejected.value.code == 400
+    assert 'only launches LEAN' in json.load(rejected.value)['error']
+
+
+def test_web_forces_lean_on_new_runs(api, monkeypatch):
+    queued = []
+    manager = local_api.lab_manager()
+    manager.queue_run_requests = lambda requests: queued.extend(requests) or ['queued-native']
+    manager.launch_queued = lambda: None
+    payload = {'strategy_runs': [{'strategy_ref': 'sample@1.0', 'config': {}}]}
+    result = request(api, '/api/lab/run', method='POST',
+                     data=json.dumps(payload).encode(), content_type='application/json')[2]
+    assert result['run_ids'] == ['queued-native']
+    assert queued[0]['engine'] == 'lean'
 
 
 def test_research_and_strategy_routes_remain_available(api):

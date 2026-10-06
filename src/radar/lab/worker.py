@@ -51,7 +51,8 @@ def execute_run(root: Path, store_path: Path, run_id: str) -> dict:
                           (backtest_path, "backtest_config_hash"),
                           (research_path, "research_config_hash"),
                           (strategy_path / "strategy.py", "strategy_code_hash"),
-                          (root / "src" / "radar" / "backtest" / "engine.py", "engine_code_hash"),
+                          (root / ("src/radar/lean/algorithm.py" if metadata.get('engine') == 'lean' else
+                                   "src/radar/backtest/engine.py"), "engine_code_hash"),
                           (root / "src" / "radar" / "strategy" / "adapter.py", "adapter_code_hash"),
                           (root / "src" / "radar" / "strategy" / "full_strategy2.py",
                            "legacy_strategy_code_hash")):
@@ -177,6 +178,9 @@ def execute_run(root: Path, store_path: Path, run_id: str) -> dict:
         pace_ms = int(metadata.get("pace_ms", 0))
         if not 0 <= pace_ms <= 2000:
             raise ValueError("invalid timeline pace")
+        if metadata.get('engine') == 'lean':
+            from radar.lean.integration import execute
+            return execute(root, store, run_id, metadata, frame, split['sessions'], registration, fees)
 
         def report_progress(snapshot: dict) -> None:
             store.append_progress(run_id, snapshot)
@@ -205,6 +209,9 @@ def execute_run(root: Path, store_path: Path, run_id: str) -> dict:
         store.cancel_run(run_id)
         return {"status": "cancelled"}
     except Exception as exc:
+        if store.get_run(run_id)['cancel_requested']:
+            store.cancel_run(run_id)
+            return {'status': 'cancelled'}
         store.fail_run(run_id, f"{type(exc).__name__}: {exc}")
         raise
 

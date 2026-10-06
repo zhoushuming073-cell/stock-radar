@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 
 
 DIST = Path(__file__).resolve().parents[1] / "site" / "dist"
@@ -9,7 +10,7 @@ def test_browser_smoke_uses_production_page_and_real_api():
     page = (DIST / "lab.html").read_text(encoding="utf-8")
     assert 'src="./lab.html?smoke=1#scanner"' in smoke
     for source in ("lab.js", "scanner.js"):
-        assert f'src="./{source}"' in page
+        assert re.search(r'src="\./' + re.escape(source) + r'(?:\?[^\"]*)?"', page)
     for endpoint in ("/health", "/api/lab/strategies", "/api/lab/scanner/runs",
                      "/api/lab/scanner/candidates"):
         assert endpoint in smoke

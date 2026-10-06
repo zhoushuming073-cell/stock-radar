@@ -6,6 +6,7 @@ const pct = n => n!==null&&n!==undefined&&Number.isFinite(Number(n)) ? `${(Numbe
 const day = s => s ? String(s).slice(0,10) : "—";
 const statusLabel = {queued:"Queued",running:"Running",cancel_requested:"Stopping",completed:"Completed",failed:"Failed",cancelled:"Stopped"};
 const human = {train:"Training",validation:"Validation",test:"Historical Test",fresh_oos:"Fresh OOS"};
+const engineLabel = run => run.metadata?.engine==="lean"?"LEAN":"Legacy (archived)";
 const runName = run => run.display_name||run.metadata?.strategy_name||run.metadata?.strategy_id||"Strategy";
 const visibleRuns = () => state.runs.filter(run=>!run.archived_at);
 const strategyRef = strategy => strategy?.strategy_ref||`${strategy?.id}@${strategy?.version}`;
@@ -95,7 +96,7 @@ function schemaField(id,spec){
   else if(spec.type==="choice"){
     const options=spec.path==="evaluation.success_rule"?["target_touch","target_before_adverse"]:
       spec.path==="execution.market_guard.mode"?["none","spy_ma200"]:
-      spec.path==="execution.execution_timing"?["next_open","legacy_close"]:["equal_cash","strategy_score","strategy_times_elasticity"];
+      spec.path==="execution.execution_timing"?["next_open"]:["equal_cash","strategy_score","strategy_times_elasticity"];
     input=`<select id="${safe(key)}">${options.map(option=>`<option value="${safe(option)}" ${option===value?"selected":""}>${safe(option)}</option>`).join("")}</select>`;
   }else if(["integer_list","number_list"].includes(spec.type))input=`<input id="${safe(key)}" type="text" value="${safe((value||[]).join(", "))}">`;
   else input=`<input id="${safe(key)}" type="number" ${spec.step!=null?`step="${spec.step}"`:"step=any"} ${spec.min!=null?`min="${spec.min}"`:""} ${spec.max!=null?`max="${spec.max}"`:""} value="${safe(value??"")}" placeholder="${spec.nullable?"Off":""}">`;
@@ -171,7 +172,7 @@ function drawRuns(){
     return `<div class="run-item"><button data-timeline-batch="${safe(id)}">Three-stage timeline · ${safe(members[0].metadata?.strategy_name||members[0].metadata?.strategy_id)}</button><span>${safe(label)}</span><span>${safe(day(members[0].created_at))}</span>${!state.showDeletedRuns&&members.every(r=>r.status==="completed")?`<button data-compare-batch="${safe(id)}" class="run-action">Compare all 3</button>`:""}</div>`;
   }).join("");
   $("show-deleted-runs").textContent=state.showDeletedRuns?"Back to history":`Recently deleted (${state.runs.length-visibleRuns().length})`;
-  $("run-list").innerHTML=batchRows+displayed.map(r=>`<div class="run-item"><button data-run="${safe(r.run_id)}" title="Run #${safe(r.run_id)}">${safe(runName(r))} · ${safe(human[r.metadata?.split]||r.metadata?.split||"")} <small>#${safe(r.run_id.slice(0,8))}</small></button><span>${safe(statusLabel[r.status]||r.status)}</span><span>${safe(day(r.created_at))}</span><span class="run-actions"><button class="run-action" data-rename-run="${safe(r.run_id)}">Rename</button>${state.showDeletedRuns?`<button class="run-action" data-restore-run="${safe(r.run_id)}">Restore</button>`:`<label><input type="checkbox" data-compare="${safe(r.run_id)}" ${state.compare.has(r.run_id)?"checked":""} ${r.status!=="completed"?"disabled":""}> Compare</label>${["completed","failed","cancelled"].includes(r.status)?`<button class="run-action run-delete" data-archive-run="${safe(r.run_id)}">Delete</button>`:""}`}</span></div>`).join("")||`<span class='helper'>${state.showDeletedRuns?"No deleted runs":"No run history"}</span>`;
+  $("run-list").innerHTML=batchRows+displayed.map(r=>`<div class="run-item"><button data-run="${safe(r.run_id)}" title="Run #${safe(r.run_id)}">${safe(runName(r))} · ${safe(engineLabel(r))} · ${safe(human[r.metadata?.split]||r.metadata?.split||"")} <small>#${safe(r.run_id.slice(0,8))}</small></button><span>${safe(statusLabel[r.status]||r.status)}</span><span>${safe(day(r.created_at))}</span><span class="run-actions"><button class="run-action" data-rename-run="${safe(r.run_id)}">Rename</button>${state.showDeletedRuns?`<button class="run-action" data-restore-run="${safe(r.run_id)}">Restore</button>`:`<label><input type="checkbox" data-compare="${safe(r.run_id)}" ${state.compare.has(r.run_id)?"checked":""} ${r.status!=="completed"?"disabled":""}> Compare</label>${["completed","failed","cancelled"].includes(r.status)?`<button class="run-action run-delete" data-archive-run="${safe(r.run_id)}">Delete</button>`:""}`}</span></div>`).join("")||`<span class='helper'>${state.showDeletedRuns?"No deleted runs":"No run history"}</span>`;
   document.querySelectorAll("[data-timeline-batch]").forEach(b=>b.onclick=()=>{
     const members=state.runs.filter(r=>r.metadata?.batch_id===b.dataset.timelineBatch);
     const ids=["train","validation","test"].map(split=>members.find(r=>r.metadata?.split===split)?.run_id);
@@ -180,7 +181,7 @@ function drawRuns(){
     window.timelineController?.sync(state.runs);
     showPage("lab");
   });
-  document.querySelectorAll("#run-list [data-run]").forEach(b=>b.onclick=()=>{window.timelineController?.detach();state.active=b.dataset.run;drawActive();showPage("lab")});
+  document.querySelectorAll("#run-list [data-run]").forEach(b=>b.onclick=()=>{window.timelineController?.detach();state.active=b.dataset.run;const run=state.runs.find(r=>r.run_id===state.active),ref=runRef(run);if(strategyByRef(ref)){state.focused=ref;state.selected.add(ref);drawStrategies();drawParameters();drawScannerSources();}drawActive();showPage("lab")});
   document.querySelectorAll("#run-list [data-compare]").forEach(b=>b.onchange=()=>changeCompare(b.dataset.compare,b.checked));
   document.querySelectorAll("[data-compare-batch]").forEach(b=>b.onclick=()=>{
     const members=visibleRuns().filter(r=>r.metadata?.batch_id===b.dataset.compareBatch&&r.status==="completed");
@@ -201,7 +202,7 @@ function changeCompare(id,checked){
 function drawCompareOptions(){
   const runs=visibleRuns().filter(r=>r.status==="completed");
   $("compare-selection-count").textContent=`${state.compare.size} / 6 selected`;
-  $("compare-run-list").innerHTML=runs.map(r=>`<label class="compare-option"><input type="checkbox" data-compare-option="${safe(r.run_id)}" ${state.compare.has(r.run_id)?"checked":""}><span><strong>${safe(runName(r))}</strong> · ${safe(human[r.metadata?.split]||r.metadata?.split||"—")} · ${safe(day(r.created_at))} · #${safe(r.run_id.slice(0,8))}</span><span class="${r.metrics?.total_return>=0?"positive":"negative"}">${pct(r.metrics?.total_return)}</span></label>`).join("")||"<p class='helper'>No completed runs available for comparison.</p>";
+  $("compare-run-list").innerHTML=runs.map(r=>`<label class="compare-option"><input type="checkbox" data-compare-option="${safe(r.run_id)}" ${state.compare.has(r.run_id)?"checked":""}><span><strong>${safe(runName(r))}</strong> · ${safe(engineLabel(r))} · ${safe(human[r.metadata?.split]||r.metadata?.split||"—")} · ${safe(day(r.created_at))} · #${safe(r.run_id.slice(0,8))}</span><span class="${r.metrics?.total_return>=0?"positive":"negative"}">${pct(r.metrics?.total_return)}</span></label>`).join("")||"<p class='helper'>No completed runs available for comparison.</p>";
   document.querySelectorAll("[data-compare-option]").forEach(b=>b.onchange=()=>changeCompare(b.dataset.compareOption,b.checked));
 }
 function openRenameRun(id){
@@ -234,7 +235,7 @@ async function drawActive(){
   const run=state.runs.find(r=>r.run_id===state.active);
   if(!run)return;
   $("run-title").textContent=runName(run);
-  $("run-subtitle").textContent=`${human[run.metadata?.split]||run.metadata?.split||""} · ${day(run.metadata?.start_date)} to ${day(run.metadata?.evaluation_end)} · ${run.run_id.slice(0,8)}`;
+  $("run-subtitle").textContent=`${engineLabel(run)} · ${human[run.metadata?.split]||run.metadata?.split||""} · ${day(run.metadata?.start_date)} to ${day(run.metadata?.evaluation_end)} · ${run.run_id.slice(0,8)}`;
   $("run-status").textContent=statusLabel[run.status]||run.status;$("run-status").className=`status ${run.status}`;
   $("cancel-run").hidden=!(["queued","running"].includes(run.status));
   const p=run.progress||{},m=run.metrics||{},initial=m.initial_capital||run.metadata?.execution_policy?.initial_capital||0;
@@ -248,13 +249,13 @@ async function drawActive(){
   $("chart-caption").textContent=p.total_sessions?`${p.completed_sessions||0} / ${p.total_sessions} sessions · ${day(p.date)}`:"By trading session";
   const positions=run.positions||p.open_positions||run.result?.open_positions||[];
   $("position-count").textContent=`${positions.length}`;
-  $("positions-body").innerHTML=positions.map(x=>`<tr><td>${safe(x.symbol)}</td><td>${money(x.quantity??x.shares)}</td><td>${money(x.entry_execution??x.entry_price)}</td><td>${money(x.last_price??x.mark_price)}</td></tr>`).join("")||"<tr><td colspan='4'>No open positions</td></tr>";
+  $("positions-body").innerHTML=positions.map(x=>`<tr><td>${safe(x.symbol)}</td><td>${money(x.quantity??x.shares)}</td><td>${money(x.entry_execution??x.entry_price)}</td><td>${money(x.last_price??x.mark_price??x.last_close)}</td></tr>`).join("")||"<tr><td colspan='4'>No open positions</td></tr>";
   const timing=run.metadata?.execution_policy?.execution_timing||"legacy_close";
   const exits=run.metadata?.execution_policy||{};
   const exitText=(value,percent=false)=>value===null||value===undefined?"Off":percent?`${(100*Number(value)).toFixed(1)}%`:`${value} days`;
-  const fields={"Strategy version":run.metadata?.strategy_version,"Period":human[run.metadata?.split]||run.metadata?.split,"Universe":run.metadata?.universe_mode==="point_in_time"?"Point-in-Time":"Current Snapshot · survivorship bias risk present","Provider":run.metadata?.universe_provenance?.provider||"—","Source Scanner":run.metadata?.source_scanner_run_id||"—","Fill timing":timing==="next_open"?"Close exit signal → next-session Open":"Legacy: close exit signal → same-session Close; entries next Open","Take profit":exitText(exits.take_profit,true),"Stop loss":exitText(exits.stop_loss,true),"Max holding":exitText(exits.max_holding_sessions),"Start":day(run.metadata?.start_date),"End":day(run.metadata?.evaluation_end),"Slippage":`${run.metadata?.slippage_bps??"—"} bps`,"Fee profile":run.metadata?.fee_profile,"Resolved hash":run.metadata?.resolved_config_hash?.slice(0,12),"Data fingerprint":run.metadata?.data_snapshot?.slice(0,12),"Strategy fingerprint":run.metadata?.strategy_code_hash?.slice(0,12)};
+  const fields={"Engine":engineLabel(run),"LEAN commit":run.metadata?.engine_identity?.commit?.slice(0,12)||"—","Signal snapshot":run.metadata?.signal_snapshot?.slice(0,12)||"—","Strategy version":run.metadata?.strategy_version,"Period":human[run.metadata?.split]||run.metadata?.split,"Universe":run.metadata?.universe_mode==="point_in_time"?"Point-in-Time":"Current Snapshot · survivorship bias risk present","Provider":run.metadata?.universe_provenance?.provider||"—","Source Scanner":run.metadata?.source_scanner_run_id||"—","Fill timing":timing==="next_open"?(run.metadata?.engine==="lean"?"Close signal → next-session Open proxy (09:31 ET)":"Close exit signal → next-session Open"):"Legacy: close exit signal → same-session Close; entries next Open","Take profit":exitText(exits.take_profit,true),"Stop loss":exitText(exits.stop_loss,true),"Max holding":exitText(exits.max_holding_sessions),"Start":day(run.metadata?.start_date),"End":day(run.metadata?.evaluation_end),"Slippage":`${run.metadata?.slippage_bps??"—"} bps`,"Fee profile":run.metadata?.fee_profile,"Resolved hash":run.metadata?.resolved_config_hash?.slice(0,12),"Data fingerprint":run.metadata?.data_snapshot?.slice(0,12),"Strategy fingerprint":run.metadata?.strategy_code_hash?.slice(0,12)};
   $("run-meta").innerHTML=Object.entries(fields).map(([k,v])=>`<dt>${safe(k)}</dt><dd title="${safe(v)}">${safe(v)}</dd>`).join("");
-  $("run-audit").textContent=run.metadata?.resolved_config?JSON.stringify(run.metadata.resolved_config,null,2):"Legacy run: canonical resolved configuration was not recorded. See stored execution policy and strategy config in the original run metadata.";
+  $("run-audit").textContent=JSON.stringify({metadata:run.metadata,result:run.result},null,2);
   if(run.error_text)notice(`Run failed: ${run.error_text}`);
   const signature=`${run.run_id}:${run.status}:${run.updated_at||""}`;
   if(["completed","failed","cancelled"].includes(run.status)&&state.drawnSignature===signature)return;
@@ -262,8 +263,8 @@ async function drawActive(){
     const [rows,trades,events]=await Promise.all([api(`/api/lab/equity?id=${run.run_id}`),api(`/api/lab/trades?id=${run.run_id}`),api(`/api/lab/events?id=${run.run_id}`)]);
     if(state.active!==run.run_id)return;
     state.drawnSignature=signature;
-    const dates=rows.map(x=>day(x.date)),values=rows.map(x=>x.equity),peak=[];let highest=0;values.forEach(v=>{highest=Math.max(highest,v);peak.push(highest?100*(v/highest-1):0)});
-    chart($("equity-chart"),[{x:dates,y:values,type:"scatter",mode:"lines",line:{color:"#1769ed",width:2},fill:"tozeroy",fillcolor:"rgba(23,105,237,.08)"}],{yaxis:{tickprefix:"$",tickformat:"~s"}});
+    const dates=rows.map(x=>day(x.date)),values=rows.map(x=>x.equity),peak=[];let highest=initial;values.forEach(v=>{highest=Math.max(highest,v);peak.push(highest?100*(v/highest-1):0)});
+    chart($("equity-chart"),[{x:dates,y:values,name:"Portfolio",type:"scatter",mode:"lines",line:{color:"#1769ed",width:2},fill:"tozeroy",fillcolor:"rgba(23,105,237,.08)"},...(rows.some(x=>x.benchmark!=null)?[{x:dates,y:rows.map(x=>x.benchmark),name:"SPY benchmark",type:"scatter",mode:"lines",line:{color:"#768aa7",dash:"dot"}}]:[])],{showlegend:true,legend:{orientation:"h"},yaxis:{tickprefix:"$",tickformat:"~s"}});
     chart($("drawdown-chart"),[{x:dates,y:peak,type:"scatter",mode:"lines",line:{color:"#f05260",width:1.5},fill:"tozeroy",fillcolor:"rgba(240,82,96,.09)"}],{yaxis:{ticksuffix:"%"}});
     $("trade-count").textContent=`${trades.length} recent`;
     $("trades-body").innerHTML=trades.slice(-8).reverse().map(t=>`<tr><td>${safe(day(t.exit_date))}</td><td>${safe(t.symbol)}</td><td class="${t.net_pnl>=0?"positive":"negative"}">${money(t.net_pnl)}</td><td>${pct(t.net_return)}</td><td>${safe(t.exit_reason)}</td></tr>`).join("")||"<tr><td colspan='5'>No trades yet</td></tr>";
@@ -277,6 +278,10 @@ async function drawCompare(){
   if(state.compareSignature===signature)return;
   state.compareSignature=signature;
   const basis=[
+    ["execution engine",r=>r.metadata?.engine||"legacy"],
+    ["LEAN build",r=>[r.metadata?.engine_identity?.commit,r.metadata?.engine_identity?.engine_sha256,r.metadata?.engine_identity?.launcher_sha256,r.metadata?.engine_identity?.local_patch_sha256]],
+    ["execution price model",r=>r.result?.execution_assumptions],
+    ["position limit",r=>r.metadata?.lean_max_positions],
     ["feature version",r=>r.metadata?.feature_version],
     ["market feature version",r=>r.metadata?.market_feature_version],
     ["host adapter implementation",r=>r.metadata?.adapter_code_hash],
@@ -296,13 +301,13 @@ async function drawCompare(){
   const warning=$("compare-compatibility");
   warning.hidden=!differences.length;
   warning.textContent=differences.length?`These runs differ in ${differences.join(", ")}. Compare their curves as separate experiments; headline metrics are not like-for-like.`:"";
-  $("comparison-body").innerHTML=runs.map(r=>`<tr><td>${safe(runName(r))} #${r.run_id.slice(0,8)}</td><td>${safe(human[r.metadata?.split]||r.metadata?.split)}</td><td class="${r.metrics?.total_return>=0?"positive":"negative"}">${pct(r.metrics?.total_return)}</td><td>${pct(r.metrics?.max_drawdown)}</td><td>${safe(r.metrics?.sharpe?.toFixed?.(2)||"—")}</td><td>${money(r.metrics?.trade_count)}</td></tr>`).join("")||"<tr><td colspan='6'>Select completed runs above</td></tr>";
+  $("comparison-body").innerHTML=runs.map(r=>`<tr><td>${safe(runName(r))} · ${safe(engineLabel(r))} #${r.run_id.slice(0,8)}</td><td>${safe(human[r.metadata?.split]||r.metadata?.split)}</td><td class="${r.metrics?.total_return>=0?"positive":"negative"}">${pct(r.metrics?.total_return)}</td><td>${pct(r.metrics?.max_drawdown)}</td><td>${safe(r.metrics?.sharpe?.toFixed?.(2)||"—")}</td><td>${money(r.metrics?.trade_count)}</td></tr>`).join("")||"<tr><td colspan='6'>Select completed runs above</td></tr>";
   $("compare-preview").innerHTML=(runs.length?runs:visibleRuns().filter(r=>r.status==="completed").slice(0,3)).map(r=>`<div class="preview-row"><span>${safe(runName(r))}</span><strong class="${(r.metrics?.total_return||0)>=0?"positive":"negative"}">${pct(r.metrics?.total_return)}</strong></div>`).join("")||"No completed runs";
   if(!runs.length){const chartEl=$("comparison-chart");if(window.Plotly&&chartEl.data)Plotly.purge(chartEl);return}
   try{
     const rows=await Promise.all(runs.map(r=>api(`/api/lab/equity?id=${r.run_id}`)));
     const colors=["#1769ed","#17a673","#ed9840","#8b63d9","#e2546b","#35a4c4"];
-    const traces=rows.map((series,i)=>({x:series.map(x=>day(x.date)),y:series.map(x=>100*(x.equity/series[0].equity-1)),type:"scatter",mode:"lines",name:`${runName(runs[i])} #${runs[i].run_id.slice(0,4)}`,line:{color:colors[i],width:2}}));
+    const traces=rows.map((series,i)=>({x:series.map(x=>day(x.date)),y:series.map(x=>100*(x.equity/(runs[i].metrics?.initial_capital||runs[i].metadata?.execution_policy?.initial_capital||series[0].equity)-1)),type:"scatter",mode:"lines",name:`${runName(runs[i])} #${runs[i].run_id.slice(0,4)}`,line:{color:colors[i],width:2}}));
     const first=runs[0],spy=await api(`/api/lab/spy?start=${first.metadata.start_date}&end=${first.metadata.evaluation_end}`);
     if(spy.length)traces.push({x:spy.map(x=>day(x.date)),y:spy.map(x=>100*(x.close/spy[0].close-1)),type:"scatter",mode:"lines",name:"SPY reference",line:{color:"#7a879b",dash:"dot"}});
     if(rows[0].length)traces.push({x:[day(rows[0][0].date),day(rows[0].at(-1).date)],y:[0,0],type:"scatter",mode:"lines",name:"Cash baseline",line:{color:"#bec7d5",dash:"dash"}});
@@ -325,7 +330,7 @@ async function refresh(){
     if(state.focused&&!strategies.some(item=>strategyRef(item)===state.focused))state.focused=null;
     if(!state.selected.size&&strategies.length)state.selected.add(strategyRef(strategies[0]));
     if(!state.focused&&strategies.length)state.focused=[...state.selected][0];
-    if(!state.active&&visibleRuns().length){const focusedRun=visibleRuns().find(r=>runRef(r)===state.focused);state.active=(focusedRun||visibleRuns()[0]).run_id;}
+    if(!state.active&&visibleRuns().length){const nativeRuns=visibleRuns().filter(r=>r.metadata?.engine==="lean");const initialRun=nativeRuns.find(r=>runRef(r)===state.focused)||nativeRuns[0]||visibleRuns()[0];state.active=initialRun.run_id;const ref=runRef(initialRun);if(strategyByRef(ref)){state.focused=ref;state.selected=new Set([ref]);}}
     $("connection").innerHTML="<span class='green-dot'></span> Connected locally";
     drawStrategies();drawParameters();drawScannerSources();drawExperimentControls();drawRuns();if(state.active&&!window.timelineController?.active)await drawActive();await drawCompare();await drawExperiments();notice("");
   }catch(error){$("connection").textContent="Local service disconnected";notice(`Cannot connect to the local Strategy Lab: ${error.message}. Start the local Stock Radar service.`)}
@@ -336,7 +341,7 @@ $("run-selected").onclick=async()=>{
   if(!state.selected.size){notice("Select at least one strategy.");return}
   const selected=[...state.selected];
   if($("source-scanner-run").value&&selected.length!==1){notice("A source Scanner run can be used with one matching strategy at a time.");return}
-  try{const result=await post("/api/lab/run",{strategy_runs:selected.map(id=>({strategy_ref:id,config:state.config[id]||strategyByRef(id).config,execution:state.execution[id]||{},slippage_bps:slippageFor(id)})),split:$("split").value,universe_mode:$("universe-mode").value,source_scanner_run_id:$("source-scanner-run").value||null});state.active=result.run_ids[0];await refresh();showPage("lab");}
+  try{const result=await post("/api/lab/run",{engine:"lean",strategy_runs:selected.map(id=>({strategy_ref:id,config:state.config[id]||strategyByRef(id).config,execution:state.execution[id]||{},slippage_bps:slippageFor(id)})),split:$("split").value,universe_mode:$("universe-mode").value,source_scanner_run_id:$("source-scanner-run").value||null});state.active=result.run_ids[0];await refresh();showPage("lab");}
   catch(error){notice(`Could not start run: ${error.message}`)}
 };
 async function importStrategy(event){
@@ -355,6 +360,7 @@ $("clone-run").onclick=()=>{
   state.selected.add(id);state.closed.delete(id);state.focused=id;
   state.config[id]=structuredClone(run.metadata.config);
   state.execution[id]=structuredClone(values.execution);
+  state.execution[id].execution_timing="next_open";
   state.evaluation[id]=structuredClone(values.evaluation||{});
   $("split").value=["train","validation","test","fresh_oos"].includes(run.metadata.split)?run.metadata.split:"validation";
   const pitUnavailable=run.metadata.universe_mode==="point_in_time"&&

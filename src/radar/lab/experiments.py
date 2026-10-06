@@ -58,6 +58,7 @@ def queue_experiment(
     evaluation_overrides: dict | None = None,
     execution_overrides: dict | None = None,
     universe_mode: str = "current_snapshot",
+    engine: str | None = None,
 ) -> dict:
     if split not in {"train", "validation"}:
         raise ValueError("experiments are limited to Train and Validation")
@@ -154,6 +155,9 @@ def queue_experiment(
             raise ValueError("not enough pre-Test history for a walk-forward fold")
     else:
         raise ValueError("unknown experiment type")
+    if run_type == 'backtest' and engine is not None:
+        for request in requests:
+            request['engine'] = engine
     queued = (manager.queue_scanner_requests(requests) if run_type == "scanner"
               else manager.queue_run_requests(requests))
     if run_type == "scanner":

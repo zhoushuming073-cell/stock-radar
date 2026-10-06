@@ -2,6 +2,16 @@
   <a href="./README.md">English</a> · <strong>简体中文</strong>
 </p>
 
+## 本地 LEAN 回测
+
+网页新回测只使用独立安装的免费开源 QuantConnect LEAN。Stock Radar 保留策略研究、
+Scanner 和选股逻辑，先冻结历史每日信号，再交给 LEAN 执行；原网页继续展示资金曲线、
+回撤、Benchmark、交易记录、历史与 Compare。旧结果标记为归档，旧执行内核只作迁移验证。
+旧版网页已封存到 GitHub 标签 `legacy-backtest-ui-2026-10-06`。
+安装路径通过 `config/lean.yaml` 或 `STOCK_RADAR_LEAN_ROOT` 配置，源码不进入本仓库。
+当前使用日线开盘/收盘价格代理，未模拟真实分钟行情、日内触发顺序或真实结算限制。
+详见[接入说明、结果格式与验收](docs/LEAN_EXECUTION.md)。
+
 <h1 align="center">📡 Stock Radar</h1>
 
 <p align="center">

@@ -337,6 +337,13 @@ def make_handler(allowed_origins: set[str]):
                     payload = lab_pit_readiness(parse_qs(target.query).get("split", ["validation"])[0])
                 elif target.path == "/api/lab/runs":
                     payload = lab_runs()
+                elif target.path == '/api/lab/engine':
+                    from radar.lean.runtime import installation
+                    try:
+                        _, identity = installation(ROOT)
+                        payload = {'engine': 'lean', 'available': True, 'identity': identity}
+                    except (ValueError, FileNotFoundError) as error:
+                        payload = {'engine': 'lean', 'available': False, 'error': str(error)}
                 elif target.path == "/api/lab/scanner/runs":
                     manager = lab_manager()
                     manager.launch_queued_scanners()
@@ -380,7 +387,7 @@ def make_handler(allowed_origins: set[str]):
                             self.wfile.write(chunk)
                     return
                 elif target.path in {"/api/lab/run", "/api/lab/equity", "/api/lab/trades",
-                                     "/api/lab/events", "/api/lab/days"}:
+                                     "/api/lab/events", "/api/lab/days", '/api/lab/orders', '/api/lab/result'}:
                     run_id = parse_qs(target.query).get("id", [""])[0]
                     if not re.fullmatch(r"[0-9a-f-]{36}", run_id):
                         raise ValueError("invalid run ID")
@@ -394,6 +401,17 @@ def make_handler(allowed_origins: set[str]):
                     elif target.path.endswith("/days"):
                         after = int(parse_qs(target.query).get("after", ["0"])[0])
                         payload = store.get_daily_snapshots(run_id, after_event_id=after)
+                    elif target.path.endswith('/orders') or target.path.endswith('/result'):
+                        events = store.get_events(run_id).to_dict('records')
+                        orders = [event['payload'] for event in events if event['kind'] == 'order']
+                        if target.path.endswith('/orders'):
+                            payload = orders
+                        else:
+                            record = store.get_run(run_id)
+                            payload = {**(record['result'] or {}), 'run_metadata': record['metadata'],
+                                       'equity': store.get_equity(run_id).to_dict('records'),
+                                       'trades': store.get_trades(run_id).to_dict('records'),
+                                       'orders': orders, 'statistics': record['metrics']}
                     else:
                         payload = store.get_events(run_id).tail(100).to_dict("records")
                 elif target.path == "/api/lab/spy":
@@ -451,6 +469,8 @@ def make_handler(allowed_origins: set[str]):
                     data = json.loads(body)
                     if not isinstance(data, dict):
                         raise ValueError("request must be an object")
+                    if target in {'/api/lab/run', '/api/lab/timeline', '/api/lab/experiment'} and data.get('engine', 'lean') != 'lean':
+                        raise ValueError('The local website only launches LEAN; legacy is archived and validation-only')
                     if target == "/api/lab/export":
                         from radar.lab.research_export import build_research_bundle
                         payload = build_research_bundle(
@@ -467,7 +487,7 @@ def make_handler(allowed_origins: set[str]):
                     elif target.endswith("/experiment"):
                         from radar.lab.experiments import queue_experiment
                         payload = queue_experiment(
-                            manager, kind=str(data["kind"]),
+                            manager, engine='lean', kind=str(data["kind"]),
                             strategy_id=str(data["strategy_id"]),
                             split=str(data.get("split", "validation")),
                             grid=data.get("grid"),
@@ -515,6 +535,7 @@ def make_handler(allowed_origins: set[str]):
                         batch_id = str(uuid4())
                         assigned_ids = [str(uuid4()) for _ in range(3)]
                         requests = [{
+                            "engine": "lean",
                             "strategy_ids": [strategy_id], "split": stage,
                             "slippage_bps": float(data.get("slippage_bps", 10)),
                             "configs_by_strategy": {strategy_id: config},
@@ -545,6 +566,7 @@ def make_handler(allowed_origins: set[str]):
                                 if "@" not in reference or not all(reference.rsplit("@", 1)):
                                     raise ValueError("strategy_ref must include an exact version")
                                 requests.append({
+                                    "engine": "lean",
                                     "strategy_ids": [reference],
                                     "split": str(data.get("split", "validation")),
                                     "slippage_bps": float(item.get("slippage_bps", 10)),
@@ -563,6 +585,7 @@ def make_handler(allowed_origins: set[str]):
                                 raise ValueError("configs_by_strategy must be an object")
                             run_ids = manager.queue_runs(
                                 ids, split=str(data.get("split", "validation")),
+                                engine='lean',
                                 slippage_bps=float(data.get("slippage_bps", 10)),
                                 configs_by_strategy=configs,
                                 execution_overrides=data.get("execution"),

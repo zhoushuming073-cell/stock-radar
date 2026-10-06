@@ -298,6 +298,7 @@ class RunManager:
         execution_overrides: dict | None = None,
         universe_mode: str = "current_snapshot",
         source_scanner_run_id: str | None = None,
+        engine: str | None = None,
     ) -> list[dict[str, Any]]:
         if split not in {"train", "validation", "test", "fresh_oos", "walk_forward"}:
             raise ValueError("backtest period must be Train, Validation, Test or Fresh OOS")
@@ -311,6 +312,17 @@ class RunManager:
             raise ValueError("pace_ms must be between 0 and 2000")
         if not strategy_ids:
             return []
+        from radar.lean.runtime import installation, settings
+        lean_settings = settings(self.root)
+        engine = engine or lean_settings.get('default_engine', 'legacy')
+        if engine not in {'lean', 'legacy'}:
+            raise ValueError('unknown backtest engine')
+        engine_identity = installation(self.root)[1] if engine == 'lean' else None
+        if engine == 'lean' and execution_timing != 'next_open':
+            raise ValueError('LEAN requires next-session Open execution')
+        max_positions = lean_settings.get('max_simultaneous_positions', 30)
+        if isinstance(max_positions, bool) or not isinstance(max_positions, int) or max_positions < 1:
+            raise ValueError('LEAN max_simultaneous_positions must be a positive integer')
         with self._lock:
             dates = split_dates(self.database, self.root / "config" / "research.yaml")
             if split == "fresh_oos" and split not in dates:
@@ -397,13 +409,17 @@ class RunManager:
                 execution_policy = engine_legacy_fields(resolved.values["execution"])
                 exit_source = resolved.sources.get("execution.exit.stop_loss", "host_default")
                 metadata = {
+                    "engine": engine,
+                    "engine_identity": engine_identity,
+                    "initial_capital": resolved.values['execution']['initial_capital'],
+                    "lean_max_positions": max_positions if engine == 'lean' else None,
                     "strategy_id": registration.manifest.id,
                     "strategy_version": registration.manifest.version,
                     "plugin_interface_version": registration.manifest.interface_version,
                     "strategy_name": registration.manifest.name,
                     "strategy_path": str(registration.path),
                     "strategy_code_hash": sha256_file(registration.path / "strategy.py"),
-                    "engine_code_hash": sha256_file(self.root / "src" / "radar" / "backtest" / "engine.py"),
+                    "engine_code_hash": sha256_file(self.root / "src/radar/lean/algorithm.py" if engine == 'lean' else self.root / "src/radar/backtest/engine.py"),
                     "adapter_code_hash": sha256_file(self.root / "src" / "radar" / "strategy" / "adapter.py"),
                     "legacy_strategy_code_hash": sha256_file(self.root / "src" / "radar" / "strategy" / "full_strategy2.py"),
                     "host_source_hashes": {
@@ -444,6 +460,18 @@ class RunManager:
                     "end_date": window[1],
                     "evaluation_end": window[2],
                 }
+                if engine == 'lean':
+                    if resolved.values['execution']['execution_timing'] != 'next_open':
+                        raise ValueError('LEAN requires next-session Open execution')
+                    if universe_mode == 'point_in_time':
+                        raise ValueError('LEAN PIT terminal/corporate-action support is not yet validated; use Current Snapshot')
+                    metadata['host_source_hashes'].update({
+                        str(path.relative_to(self.root)).replace('\\', '/'): sha256_file(path)
+                        for path in (self.root / 'src/radar/lean').glob('*.py')})
+                    metadata['host_source_hashes']['src/radar/backtest/costs.py'] = sha256_file(self.root / 'src/radar/backtest/costs.py')
+                    lean_config = self.root / 'config/lean.yaml'
+                    if lean_config.exists():
+                        metadata['host_source_hashes']['config/lean.yaml'] = sha256_file(lean_config)
                 if experiment:
                     metadata["experiment"] = experiment
                 if batch_id:

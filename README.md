@@ -19,7 +19,7 @@
   <img alt="DuckDB" src="https://img.shields.io/badge/Storage-DuckDB-FFF000?logo=duckdb&logoColor=black">
   <img alt="Web UI" src="https://img.shields.io/badge/UI-Local_Web-2563EB">
   <img alt="pluggy" src="https://img.shields.io/badge/Plugins-pluggy-6C5CE7">
-  <img alt="No order execution" src="https://img.shields.io/badge/Orders-Disabled-success">
+  <img alt="No broker orders" src="https://img.shields.io/badge/Broker_orders-Disabled-success">
 </p>
 
 <p align="center">
@@ -40,6 +40,17 @@
 </p>
 
 ## Overview
+
+### Local LEAN backtests
+
+New web backtests use the independently installed, free open-source
+**QuantConnect LEAN** execution engine. Stock Radar remains the sole strategy,
+Scanner and stock-selection source; it exports frozen daily signals and adapts
+LEAN results into the existing UI. Equity, drawdown, benchmark, trades, history
+and Compare stay in the same website. Legacy results are labeled as archived;
+the old execution engine is retained only for compatibility validation.
+The previous UI is preserved at tag `legacy-backtest-ui-2026-10-06`.
+See [setup, contracts, assumptions and verified migration](docs/LEAN_EXECUTION.md).
 
 Stock Radar is a personal US-equity quantitative research system built around a practical workflow: reduce thousands of stocks to a small daily watchlist whose price structure matches a defined trading setup, then leave contextual judgment—news, catalysts, fundamentals, premarket behavior and other non-price information—to a later research stage.
 
@@ -145,12 +156,14 @@ flowchart LR
     B --> D[Universe + JSON Reports]
 
     C --> E[Market Dashboard]
-    C --> F[Historical Backtest Engine]
+    C --> S[Frozen Historical Signals]
 
     G[Strategy Plugins] --> H[Strategy Lab]
-    H --> F
+    H --> S
+    S --> F[Local QuantConnect LEAN]
+    F --> N[Normalized Result Adapter]
     H --> I[(Run Metadata SQLite)]
-    F --> J[Equity / Orders / Trades / Reports]
+    N --> J[Equity / Orders / Trades / Reports]
 
     C --> K[Loopback API<br/>127.0.0.1:8765]
     D --> K

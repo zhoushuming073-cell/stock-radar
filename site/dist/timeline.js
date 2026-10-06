@@ -158,7 +158,7 @@ const timelineController = {
     setMetric("m-trades",String(frame.closed_trades||0));
     $("position-count").textContent=`${positions.length} · ${day(frame.date)}`;
     $("positions-body").innerHTML=positions.map(x=>`<tr><td>${safe(x.symbol)}</td><td>${money(x.quantity)}</td><td>${money(x.cost_basis??x.entry_execution)}</td><td>${money(x.last_close)}</td></tr>`).join("")||"<tr><td colspan='4'>No positions at today's close</td></tr>";
-    $("run-meta").innerHTML=`<dt>Execution</dt><dd>Close signal → next-session open fill</dd><dt>Capital and positions</dt><dd>Reset at each stage</dd><dt>Stage</dt><dd>${safe(human[this.stages[stage]])}</dd><dt>Session</dt><dd>${safe(day(frame.date))}</dd><dt>Run ID</dt><dd>${safe(this.batch.run_ids[stage].slice(0,8))}</dd>`;
+    $("run-meta").innerHTML=`<dt>Engine</dt><dd>${safe(engineLabel(this.runs[stage]||{}))}</dd><dt>Execution</dt><dd>Close signal → next-session Open; LEAN observes Open proxy at 09:31 ET</dd><dt>Capital and positions</dt><dd>Reset at each stage</dd><dt>Stage</dt><dd>${safe(human[this.stages[stage]])}</dd><dt>Session</dt><dd>${safe(day(frame.date))}</dd><dt>Run ID</dt><dd>${safe(this.batch.run_ids[stage].slice(0,8))}</dd>`;
     $("trade-count").textContent=`${frame.closed_trades||0} trades through this day`;
     const trades=this.frames.slice(0,index+1).filter(f=>f.stage===stage).flatMap(f=>f.new_trades||[]).slice(-8).reverse();
     $("trades-body").innerHTML=trades.map(t=>`<tr><td>${safe(day(t.exit_date))}</td><td>${safe(t.symbol)}</td><td class="${t.net_pnl>=0?"positive":"negative"}">${money(t.net_pnl)}</td><td>${pct(t.net_return)}</td><td>${safe(t.exit_reason)}</td></tr>`).join("")||"<tr><td colspan='5'>No closed trades as of today</td></tr>";
@@ -174,7 +174,7 @@ $("run-timeline").onclick=async()=>{
   const button=$("run-timeline");button.disabled=true;
   try{
     const pace_ms=Number($("timeline-pace").value);
-    const result=await post("/api/lab/timeline",{strategy_id:id,
+    const result=await post("/api/lab/timeline",{engine:"lean",strategy_id:id,
       config:state.config[id]||strategy.config,slippage_bps:slippageFor(id),
       execution:state.execution[id]||{},universe_mode:$("universe-mode").value,pace_ms});
     timelineController.activate({...result,pace_ms});

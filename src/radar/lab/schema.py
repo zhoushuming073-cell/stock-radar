@@ -56,7 +56,7 @@ STRATEGY2_FIELDS = [
     _field("execution.sizing.min_position_fraction", "Min position share", "Minimum portfolio share required to open.", "percentage", "advanced", _BACKTEST, unit="fraction", minimum=0, maximum=1, step=.01),
     _field("execution.liquidity.max_adv_participation", "ADV participation", "Maximum share of average daily dollar volume; must be greater than zero.", "percentage", "advanced", _BACKTEST, unit="fraction", minimum=.000001, maximum=1),
     _field("execution.market_guard.mode", "Market guard", "Optional SPY 200-session moving-average gate.", "choice", "advanced", _BACKTEST),
-    _field("execution.execution_timing", "Exit fill timing", "Next open: close-based exit condition executes at next-session Open. Legacy close: close-based exit executes at same-session Close.", "choice", "advanced", _BACKTEST),
+    _field("execution.execution_timing", "Exit fill timing", "LEAN executes close-based exit conditions at next-session Open.", "choice", "advanced", _BACKTEST),
     _field("execution.entry_gap.enabled", "Entry gap gate", "Enable the next-open gap filter.", "boolean", "advanced", _BACKTEST),
     _field("execution.entry_gap.min", "Minimum entry gap", "Lowest allowed open gap versus prior close.", "percentage", "advanced", _BACKTEST, unit="fraction", minimum=-1, maximum=1, step=.01),
     _field("execution.entry_gap.max", "Maximum entry gap", "Highest allowed open gap versus prior close.", "percentage", "advanced", _BACKTEST, unit="fraction", minimum=-1, maximum=1, step=.01),

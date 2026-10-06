@@ -1,0 +1,5 @@
+# LEAN remains an independent, free local source installation.
+installation_root: 'D:\QuantConnect-LEAN'
+default_engine: lean
+timeout_seconds: 7200
+max_simultaneous_positions: 30

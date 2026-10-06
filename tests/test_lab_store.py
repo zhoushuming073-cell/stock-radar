@@ -50,6 +50,25 @@ def test_batch_insert_rolls_back_when_later_run_conflicts(tmp_path):
     assert [run["run_id"] for run in store.list_runs()] == [existing]
 
 
+def test_lean_input_artifacts_are_bound_once_and_require_running_state(tmp_path):
+    store = RunStore(tmp_path / 'runs.sqlite')
+    run_id = store.create_run(_metadata(engine='lean'))
+    artifacts = {'signal_snapshot': 'signal-hash', 'signal_source': 'scanner-id',
+                 'execution_data_snapshot': 'prices-hash', 'lean_manifest': 'local/manifest.json',
+                 'lean_manifest_sha256': 'manifest-hash'}
+    with pytest.raises(RunStoreError, match='running'):
+        store.bind_execution_artifacts(run_id, artifacts)
+    store.start_run(run_id, 123)
+    store.bind_execution_artifacts(run_id, artifacts)
+    assert all(store.get_run(run_id)['metadata'][key] == value for key, value in artifacts.items())
+    with pytest.raises(RunStoreError, match='already bound'):
+        store.bind_execution_artifacts(run_id, artifacts)
+    old = store.create_run(_metadata(engine='legacy'))
+    store.start_run(old, 123)
+    with pytest.raises(RunStoreError, match='LEAN only'):
+        store.bind_execution_artifacts(old, artifacts)
+
+
 def test_successful_batch_keeps_input_order(tmp_path):
     store = RunStore(tmp_path / "runs.sqlite")
     ids = [str(uuid4()) for _ in range(3)]
@@ -78,7 +97,7 @@ def test_status_progress_results_survive_reopen(tmp_path):
     assert active["current_date"] == "2025-01-03T00:00:00"
     assert active["positions"] == 2
     assert active["latest_signals"] == ["ABC"]
-    assert active["metadata"] == _metadata()
+    assert active["metadata"] == {**_metadata(), 'engine': 'legacy'}
     daily = reopened.get_daily_snapshots(run_id)
     assert len(daily) == 1
     assert daily[0]["date"] == "2025-01-03T00:00:00"

@@ -768,7 +768,7 @@ class RunStore:
         if "date" in snapshot and "equity" in snapshot:
             live_row = {
                 key: snapshot[key] for key in (
-                    "date", "equity", "cash", "gross_exposure", "drawdown",
+                    "date", "timestamp", "equity", "cash", "holdings_value", "benchmark", "gross_exposure", "drawdown",
                     "open_positions", "closed_trades",
                 ) if key in snapshot
             }
@@ -907,12 +907,38 @@ class RunStore:
             value = record.pop(source)
             record[target] = json.loads(value) if value is not None else None
         progress = record["progress"] or {}
+        record['metadata'].setdefault('engine', 'legacy')
         record["worker_pid"] = record["pid"]
         record["cancel_requested"] = record["status"] == "cancel_requested"
         record["current_date"] = progress.get("date")
         record["positions"] = progress.get("open_positions")
         record["latest_signals"] = progress.get("latest_signals", [])
         return record
+
+    def bind_execution_artifacts(self, run_id: str, artifacts: Mapping[str, Any]) -> None:
+        """Bind generated immutable input hashes once, before native execution."""
+        allowed = {'signal_snapshot', 'signal_source', 'execution_data_snapshot', 'lean_manifest', 'lean_manifest_sha256'}
+        if set(artifacts) != allowed:
+            raise RunStoreError('invalid execution artifact fields')
+        with self._connect() as connection:
+            connection.execute('BEGIN IMMEDIATE')
+            try:
+                if self._status(connection, run_id) != 'running':
+                    raise RunStoreError('execution artifacts require a running run')
+                metadata = json.loads(connection.execute(
+                    'SELECT metadata_json FROM backtest_runs WHERE run_id=?', (run_id,)).fetchone()[0])
+                if metadata.get('engine') != 'lean':
+                    raise RunStoreError('execution artifact binding is for LEAN only')
+                if any(key in metadata for key in allowed):
+                    raise RunStoreError('execution artifacts already bound')
+                metadata.update(artifacts)
+                connection.execute('UPDATE backtest_runs SET metadata_json=?, updated_at=? WHERE run_id=?',
+                                   (_json(metadata), _now(), run_id))
+                self._event(connection, run_id, 'execution_artifacts', dict(artifacts), _now())
+                connection.execute('COMMIT')
+            except Exception:
+                connection.execute('ROLLBACK')
+                raise
 
     def get_run(self, run_id: str) -> dict[str, Any]:
         with self._connect() as connection:

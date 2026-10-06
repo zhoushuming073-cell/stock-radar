@@ -54,6 +54,11 @@ def _signature(run: dict, run_type: str) -> dict:
             "horizon_sessions", "success_rule", "primary_target",
             "primary_adverse_target", "event_cooldown_sessions", "top_k_values")}
     else:
+        values['engine'] = metadata.get('engine', 'legacy')
+        identity = metadata.get('engine_identity') or {}
+        values['engine_build'] = {key: identity.get(key) for key in (
+            'commit', 'engine_sha256', 'launcher_sha256', 'local_patch_sha256')}
+        values['max_simultaneous_positions'] = metadata.get('lean_max_positions')
         values["engine_code_hash"] = metadata.get("engine_code_hash")
         values["execution_policy"] = metadata.get("execution_policy")
         values["fee_profile"] = metadata.get("fee_profile")

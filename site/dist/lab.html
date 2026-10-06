@@ -10,8 +10,8 @@
   <link rel="stylesheet" href="./lab.css">
   <script>if(new URLSearchParams(location.search).has("smoke")){window.__scannerSmokeErrors=[];window.onerror=function(message){window.__scannerSmokeErrors.push(String(message))};window.onunhandledrejection=function(event){window.__scannerSmokeErrors.push(String(event.reason))}}</script>
   <script defer src="./vendor/plotly.min.js"></script>
-  <script defer src="./lab.js"></script>
-  <script defer src="./timeline.js"></script>
+  <script defer src="./lab.js?v=lean-v1"></script>
+  <script defer src="./timeline.js?v=lean-v1"></script>
   <script defer src="./scanner.js"></script>
 </head>
 <body>
@@ -52,13 +52,13 @@
       <section class="card section-card"><details class="run-audit"><summary>Scanner audit and parameter sources</summary><pre id="scanner-audit"></pre></details></section>
     </section>
     <section id="lab" class="page">
-    <div class="page-heading"><h2>Research · Backtest</h2><p>Simulate positions under an explicit host execution policy.</p></div>
+    <div class="page-heading"><h2>Research · LEAN Backtest</h2><p>Stock Radar selects stocks. Local QuantConnect LEAN executes frozen signals and manages the portfolio.</p></div>
     <section class="toolbar" aria-label="Experiment settings">
       <label>Backtest period<select id="split"><option value="train">Training</option><option value="validation" selected>Validation</option><option value="test">Test (exploratory)</option></select></label>
       <label>Fee profile<span>Default</span></label>
       <label>Signal source (one stage)<select id="source-scanner-run"><option value="">Strategy (new signals)</option></select></label>
-      <button id="run-timeline" class="primary" type="button">▷ Three-stage daily backtest</button>
-      <button id="run-selected" class="secondary" type="button">Run one stage</button>
+      <button id="run-timeline" class="primary" type="button">▷ LEAN · three stages</button>
+      <button id="run-selected" class="secondary" type="button">Run LEAN · one stage</button>
     </section>
     <div class="view-controls"><label>Display pace <select id="timeline-pace"><option value="200">0.2 sec</option><option value="500" selected>0.5 sec</option><option value="1000">1 sec</option></select></label><span>Playback controls change the display only.</span></div>
     <section class="strategy-strip" id="strategies" aria-label="Available strategies"></section>
@@ -68,7 +68,7 @@
         <div class="metric-grid" id="metrics">
           <article><span>Current equity</span><strong id="m-equity">—</strong></article><article><span>Total return</span><strong id="m-return">—</strong></article><article><span>Max drawdown</span><strong id="m-dd">—</strong></article><article><span>Cash share</span><strong id="m-cash">—</strong></article><article><span>Open positions</span><strong id="m-positions">—</strong></article><article><span>Closed trades</span><strong id="m-trades">—</strong></article>
         </div>
-        <article class="card chart-card"><div class="card-head"><h3 id="equity-title">Equity curve</h3><span id="chart-caption">By trading session</span></div><div id="timeline-controls" class="timeline-controls" hidden><strong id="timeline-phase">Three-stage daily backtest</strong><span id="timeline-day">Waiting for first session</span><input id="timeline-seek" type="range" min="0" max="0" value="0" disabled><button id="timeline-pause" type="button">Pause display</button><small>Each stage resets cash and positions. Pause affects display only. Daily open/close prices are used; intraday trigger order is not simulated. Older runs use same-day close fills.</small></div><div id="equity-chart" class="chart"></div><div class="card-head divider"><h3>Drawdown curve</h3><span>From peak equity</span></div><div id="drawdown-chart" class="chart small-chart"></div></article>
+        <article class="card chart-card"><div class="card-head"><h3 id="equity-title">Equity curve</h3><span id="chart-caption">By trading session</span></div><div id="timeline-controls" class="timeline-controls" hidden><strong id="timeline-phase">Three-stage daily backtest</strong><span id="timeline-day">Waiting for first session</span><input id="timeline-seek" type="range" min="0" max="0" value="0" disabled><button id="timeline-pause" type="button">Pause display</button><small>Each stage resets cash and positions. Pause affects display only. Daily open/close prices are used; intraday trigger order is not simulated. Legacy runs are archived history. New runs use LEAN with daily Open/Close price proxies.</small></div><div id="equity-chart" class="chart"></div><div class="card-head divider"><h3>Drawdown curve</h3><span>From peak equity</span></div><div id="drawdown-chart" class="chart small-chart"></div></article>
         <div class="bottom-grid"><article class="card"><div class="card-head"><h3>Recent Trades</h3><span id="trade-count">—</span></div><div class="table-wrap"><table><thead><tr><th>Exit date</th><th>Symbol</th><th>Net P&L</th><th>Return</th><th>Reason</th></tr></thead><tbody id="trades-body"><tr><td colspan="5">No trades yet</td></tr></tbody></table></div></article><article class="card"><div class="card-head"><h3>Logs / Activity</h3><span id="event-count">—</span></div><div id="events" class="events">No activity yet</div></article><article class="card"><div class="card-head"><h3>Compare Preview</h3><button class="text-button" data-open-page="compare">Open Compare</button></div><div id="compare-preview" class="preview-list">Select runs in Backtest history to compare</div></article></div>
       </section>
       <aside class="detail-column">
