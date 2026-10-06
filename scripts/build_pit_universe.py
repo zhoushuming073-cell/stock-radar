@@ -18,6 +18,21 @@ from radar.pit.sources import REPOSITORIES, download, git, history, pin
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def install_build(build: Path, root: Path) -> None:
+    """Preflight the complete contract before copying into the data directory."""
+    names = ["security-master.csv", "security-master-manifest.json", "security-master-feature-store.json"]
+    if not all((build / name).is_file() for name in names):
+        raise ValueError("build PIT features before installation; immutable master build retained")
+    targets = [root / "data" / name for name in names]
+    if any(path.exists() for path in targets):
+        raise ValueError("installed master already exists; immutable build retained; installation refused")
+    from radar.lab.universe import LocalSecurityMaster
+    LocalSecurityMaster(build / names[0], build / names[1])
+    (root / "data").mkdir(parents=True, exist_ok=True)
+    for target in targets:
+        shutil.copy2(build / target.name, target)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--start", type=date.fromisoformat, default=date(2021, 9, 1))
@@ -76,17 +91,10 @@ def main():
     build = args.output / manifest["source_version"]
     (build / "source-lock.json").write_text(json.dumps(pins, indent=2), encoding="utf-8")
     if args.install:
-        targets = [ROOT / "data/security-master.csv", ROOT / "data/security-master-manifest.json"]
-        feature_sidecar = build / "security-master-feature-store.json"
-        if not feature_sidecar.exists():
-            parser.error("build PIT features before installation; immutable master build retained")
-        targets.append(ROOT / feature_sidecar.name)
-        if any(p.exists() for p in targets):
-            parser.error("installed master already exists; immutable build retained; installation refused")
-        from radar.lab.universe import LocalSecurityMaster
-        LocalSecurityMaster(build / targets[0].name, build / targets[1].name)
-        for target in targets:
-            shutil.copy2(build / target.name, target)
+        try:
+            install_build(build, ROOT)
+        except ValueError as exc:
+            parser.error(str(exc))
     print(json.dumps({"build": str(build), "version": manifest["source_version"],
                       "intervals": report["intervals"], "securities": report["security_ids"],
                       "source_gaps": report["source_gaps"], "anomalies": len(report["anomalies"]),

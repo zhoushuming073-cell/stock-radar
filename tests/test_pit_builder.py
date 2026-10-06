@@ -197,6 +197,25 @@ def test_current_snapshot_does_not_consume_installed_pit(tmp_path):
     assert load_universe(tmp_path, "current_snapshot", [pd.Timestamp("2022-01-01")])[0] is None
 
 
+def test_installation_places_all_contract_files_in_data_and_refuses_replacement(tmp_path):
+    from pathlib import Path
+    import runpy
+    install = runpy.run_path(str(Path(__file__).resolve().parents[1] / "scripts/build_pit_universe.py"))["install_build"]
+    master, _ = build(tmp_path / "builds", [snapshot("2022-01-01")])
+    root = tmp_path / "project"
+    with pytest.raises(ValueError, match="build PIT features"):
+        install(master.csv_path.parent, root)
+    assert not (root / "data/security-master.csv").exists()
+    sidecar = {"master_output_sha256": master.manifest["output_sha256"], "feature_basis": "fixture"}
+    master.csv_path.with_name("security-master-feature-store.json").write_text(json.dumps(sidecar))
+    install(master.csv_path.parent, root)
+    installed, _ = load_universe(root, "point_in_time", [pd.Timestamp("2022-01-01")])
+    assert installed.feature_store == sidecar
+    assert not (root / "security-master-feature-store.json").exists()
+    with pytest.raises(ValueError, match="installation refused"):
+        install(master.csv_path.parent, root)
+
+
 def test_available_after_close_is_not_same_day():
     assert str(effective_day("2022-01-03T22:00:00+00:00")) == "2022-01-04"
     assert str(effective_day("2022-01-03T15:00:00+00:00")) == "2022-01-03"
