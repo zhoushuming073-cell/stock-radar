@@ -120,7 +120,8 @@ Master version 绑定 importer source hashes、pinned source commits、raw snaps
 经逐列比较 security_id/symbol/有效区间/listing/delisting/eligible，并核对源库、配置、feature builder 与输出 DB hashes 后，复用了前版 immutable feature DB。
 新 sidecar 保存 `reviewed_reuse`，`feature-reuse-proof.json` 保存输入集合 hash；原版文件/DB没有改动。也可用正常 `build_pit_features.py` 从原始 bars 独立计算相同逻辑特征，不要求依赖复用。
 
-现已在 `data/security-master.csv`、`data/security-master-manifest.json`、`data/security-master-feature-store.json` 安装完整 contract，保持默认 Current Snapshot。若已有后端进程运行，需要正常重启以载入新源码；本轮不改 UI 或后台计划任务。
+现已在 `data/security-master.csv`、`data/security-master-manifest.json`、`data/security-master-feature-store.json` 安装完整 contract，保持默认 Current Snapshot。
+本机原后端仍加载旧代码；确认正常 RunStore 的 Scanner/Backtest 均无 queued/running/cancel_requested 后，保留原启动参数静默重启 API。HTTP `/health` 为 200，`/api/lab/universe-status` 已返回 `point_in_time_available: true`，version/fingerprint 与本报告相同；收据为 `data/pit/reports/local-api-reload-check.json`。已打开的网页可正常刷新读取新状态。本轮不改 UI 或后台计划任务。
 离线/联网/安装命令见 [PIT contract](../docs/PIT_SECURITY_MASTER.md)。每个新 master（含旧 certified 导入）必须配身份边界特征 sidecar；旧 survivor features 不能通过改名充作 PIT。
 
 ## 8. 正确性与旧系统验收
