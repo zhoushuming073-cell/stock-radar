@@ -2,16 +2,6 @@
   <a href="./README.md">English</a> · <strong>简体中文</strong>
 </p>
 
-## 本地 LEAN 回测
-
-网页新回测只使用独立安装的免费开源 QuantConnect LEAN。Stock Radar 保留策略研究、
-Scanner 和选股逻辑，先冻结历史每日信号，再交给 LEAN 执行；原网页继续展示资金曲线、
-回撤、Benchmark、交易记录、历史与 Compare。旧结果标记为归档，旧执行内核只作迁移验证。
-旧版网页已封存到 GitHub 标签 `legacy-backtest-ui-2026-10-06`。
-安装路径通过 `config/lean.yaml` 或 `STOCK_RADAR_LEAN_ROOT` 配置，源码不进入本仓库。
-当前使用日线开盘/收盘价格代理，未模拟真实分钟行情、日内触发顺序或真实结算限制。
-详见[接入说明、结果格式与验收](docs/LEAN_EXECUTION.md)。
-
 <h1 align="center">📡 Stock Radar</h1>
 
 <p align="center">
@@ -51,6 +41,10 @@ Scanner 和选股逻辑，先冻结历史每日信号，再交给 LEAN 执行；
 
 ## 项目简介
 
+**当前阶段 · 2026-10-06：** 研究基础设施已可用，独立本地 LEAN 第一版接入已通过工程验收。
+[开发阶段报告](reports/development-status-2026-10-06.md)说明已完成能力、验收范围、限制和待办。
+网页新回测只使用 LEAN，Stock Radar 保留全部策略/选股逻辑；安装路径可配置，旧版网页已封存到 GitHub 标签。
+
 Stock Radar 是一个个人美股量化研究系统，围绕一个非常具体的实际流程构建：先把全市场几千只股票压缩成少量最符合目标价格结构的观察对象，再把新闻、催化剂、基本面、盘前状态等非价格信息留给第二阶段研究。
 
 整体仍坚持 **local-first（本地优先）**：Alpaca 凭据、DuckDB 市场数据库、策略插件、Run 元数据以及详细研究产物都保留在运行 Stock Radar 的本机。私有浏览器 Dashboard 只通过本机 loopback API 与这些数据交互。
@@ -59,7 +53,8 @@ Stock Radar 是一个个人美股量化研究系统，围绕一个非常具体�
 
 ## 界面预览
 
-以下截图于 2026 年 9 月 30 日从本地网站截取。图中的数字属于本机历史研究数据，不是实时行情或交易信号。
+以下截图于 2026 年 9 月 30 日从本地网站截取，早于 LEAN-only 入口切换；展示保留的布局，
+不是本次引擎验收截图。图中的数字属于本机历史研究数据，不是实时行情或交易信号。
 
 **行情总览**：日 K、成交量、数据覆盖与校验状态。
 
@@ -94,7 +89,8 @@ Stock Radar 正在从“追求漂亮历史净值曲线”重新聚焦到 **形�
 3. 在完全不看新闻和基本面的情况下，这些候选是否已经显著富集了未来固定窗口内的有利走势？
 4. 后续加入 GPT 的新闻、催化、基本面和盘前复核后，是否还能提供可测量的增量价值？
 
-因此，历史回测仍然重要，但它越来越被视为 **验证工具**，而不是项目的最终产品。下一阶段会优先研究：
+历史回测继续作为 **验证工具**。Scanner 已实现前瞻结果 Precision/Lift、MFE/MAE 和描述性环境分层；
+下一阶段检验这些指标的有效性与稳定性，补充人工形态标签评价和概率校准：
 
 - Precision@5 / Precision@10 / Precision@20
 - 相对 eligible universe 基础命中率的 Lift@K
@@ -116,20 +112,38 @@ Stock Radar 正在从“追求漂亮历史净值曲线”重新聚焦到 **形�
 | 层级 | 当前实现 |
 | --- | --- |
 | **Phase 1 · 数据基础** | 资产主表、拆股调整日线 OHLCV、增量同步、数据校验、股票池导出、DuckDB 来源一致性检查 |
-| **Phase 2 · 研究引擎** | 历史回测引擎、冻结版简化基线、首个七阶段 Strategy 2 候选、结果验证与本地报告 |
-| **Phase 3 · Strategy Lab** | 插件接口 v1、可信 ZIP 导入、持久化 Run 队列、实时权益/回撤、Run 对比、参数网格、阶段消融与 walk-forward |
+| **历史 Phase 2 · 兼容层** | 冻结基线、早期 Strategy 2 研究和旧核算结果，保留为历史证据和迁移验证器 |
+| **策略研究 / Scanner** | 插件 v1、可信 ZIP、因果逐日候选快照、前瞻评价、Precision/Lift、cooldown 事件指标、筛选漏斗与市场环境分层 |
+| **正式回测执行** | 独立本地 QuantConnect LEAN、冻结信号/价格、原生组合执行、统一结果适配、逐笔/逐日对照与引擎审计 |
+| **研究工作流** | 持久化共享队列、三阶段时间线、曲线/持仓/交易、历史重命名/归档/恢复、Compare、有限实验与证据导出 |
 | **可视化** | 单一 Web 界面涵盖市场数据、Scanner、回测、策略与实验；本地 API 使用 8765 端口 |
 | **自动化** | Windows 计划任务负责市场数据日更与本地 API 自启动 |
 | **执行边界** | 不存在券商下单路径；研究 Run 和 Dashboard 不执行真实交易 |
 
 ## 当前进度
 
+**截至 2026-10-06：研究基础设施已可用，本地 LEAN 第一版执行接入已通过工程验收。**
+网页单阶段回测、三阶段顺序时间线和 Backtest 实验只使用 LEAN；Stock Radar 仍是唯一的
+策略判断、因子和选股来源。原网页继续展示资金曲线、回撤、Benchmark、持仓、交易、
+历史、Compare 和审计。旧结果保留并标记归档，旧内核只作兼容和对照验证。
+
+- [详细开发阶段报告](reports/development-status-2026-10-06.md)
+- [当前总账与未完成事项](reports/journey-2026-09-30-0651-📌当前总账.md)
+- [LEAN 安装要求、信号/结果契约与执行假设](docs/LEAN_EXECUTION.md)
+- [GitHub 封存的旧版网页](https://github.com/zhoushuming073-cell/stock-radar/tree/legacy-backtest-ui-2026-10-06)
+
+2026-10-06 已记录的验收：**272 项测试通过，1 项既有弃用警告**，包含真实本地 LEAN
+对照测试；一个历史 Scanner 快照完成 **245 个交易日、96 笔已平仓交易**的原生 smoke
+run，并在现有网页显示曲线、持仓、交易和引擎审计。上述是本地工程验收证据，
+不等于 GitHub CI 验收、Fresh OOS 验收或策略盈利能力证明。详细资金与原始结果留在本机。
+
 - [x] 资产主表与 eligible universe 导出
 - [x] Alpaca SIP 日线增量采集
 - [x] 带 provider/feed/adjustment 来源约束的 DuckDB 存储
 - [x] 非破坏性市场数据校验
 - [x] 本地 Web 市场概览与研究实验室
-- [x] 历史回测引擎与冻结版 baseline
+- [x] 旧回测内核与冻结 baseline 保留为兼容验证器
+- [x] 网页只使用 LEAN、统一结果适配、原生对照测试与浏览器验收
 - [x] 首个七阶段 Strategy 2 研究候选
 - [x] Strategy plugin interface v1 与 ZIP 模板
 - [x] 持久化本地 Strategy Lab 与 Run 队列
@@ -137,9 +151,12 @@ Stock Radar 正在从“追求漂亮历史净值曲线”重新聚焦到 **形�
 - [x] 私有 Sites 集成与无人值守本地更新
 - [x] Scanner Research 候选快照、前瞻标签与候选质量指标
 - [ ] 建立人工标注的 K 线 snapshot 数据集，作为形态 Ground Truth
-- [ ] Pattern Match 评估：Precision@K / Recall / Lift@K
+- [x] 前瞻结果 Precision/Lift、可配置 Top-K、cooldown 事件 Precision/Lift、MFE/MAE 与 primary outcome 环境分层
+- [ ] 基于人工形态标签的检索 Precision/Recall 与图形 Ground Truth 验证
 - [ ] 固定窗口的目标命中概率研究与概率校准
-- [ ] 牛熊 / 波动市场环境条件化
+- [ ] 超出已有描述性分层的市场环境条件化模型
+- [ ] 独立的一键最新交易日 Daily Scanner（当前 Scanner 为历史区间研究）
+- [ ] LEAN 完整 PIT / 公司行动 / 真实结算模拟
 - [ ] candidate-only 分钟数据，用于承接 / 转强 / 执行研究
 - [ ] Quant vs Vision vs Fusion 对照研究
 - [ ] 为未来 GPT 二筛保存 point-in-time 候选与上下文研究日志
@@ -150,25 +167,27 @@ Stock Radar 正在从“追求漂亮历史净值曲线”重新聚焦到 **形�
 
 ```mermaid
 flowchart LR
-    A[Alpaca 市场数据] --> B[同步 + 校验]
+    A[Alpaca Market Data] --> B[Sync + Validation]
     B --> C[(Market DuckDB)]
-    B --> D[Universe + JSON 报告]
+    B --> D[Universe + JSON Reports]
 
-    C --> E[市场 Dashboard]
-    C --> F[历史回测引擎]
+    C --> E[Market Dashboard]
+    C --> S[Frozen Historical Signals]
 
     G[Strategy Plugins] --> H[Strategy Lab]
-    H --> F
+    H --> S
+    S --> F[Local QuantConnect LEAN]
+    F --> N[Normalized Result Adapter]
     H --> I[(Run Metadata SQLite)]
-    F --> J[Equity / Orders / Trades / Reports]
+    N --> J[Equity / Orders / Trades / Reports]
 
     C --> K[Loopback API<br/>127.0.0.1:8765]
     D --> K
     I --> K
     J --> K
-    K --> L[Private Sites Dashboard]
+    K --> L[Unified Local Web UI<br/>optional Sites release copy]
 
-    M[Windows 计划任务] --> B
+    M[Windows Scheduled Tasks] --> B
     M --> K
 ```
 
@@ -178,7 +197,8 @@ flowchart LR
 
 ### 环境要求
 
-- Python 3.11 或更高版本
+- Stock Radar 使用 Python 3.11 或更高版本
+- LEAN 回测还需独立编译安装；安装 Python 包并不会安装 LEAN，详见 [LEAN 接入说明](docs/LEAN_EXECUTION.md)
 - `sync` 和 `validate` 需要 Alpaca API 凭据
 - 以下命令以 Windows PowerShell 为例
 
@@ -201,7 +221,9 @@ ALPACA_SECRET_KEY=...
 
 ## 配置
 
-所有运行都由 `config/base.yaml` 驱动：
+`config/base.yaml` 配置行情采集，`config/research.yaml` 定义研究切分，
+`config/lean.yaml` 配置独立回测引擎（默认 `D:\QuantConnect-LEAN`，可由
+`STOCK_RADAR_LEAN_ROOT` 覆盖）：
 
 ```yaml
 provider: alpaca
@@ -260,7 +282,7 @@ python -m radar validate --end 2026-09-24 --lookback 5 --max-symbols 20
 
 ## 本地 Scanner Research（v1.5）
 
-Scanner Research 是当前主要研究入口。它按交易日保存完整候选排序与诊断子评分，由主程序在后续十个交易日计算前瞻标签，并展示 Top 5/10/20 的 Precision、Lift、MFE/MAE 与市场环境分层结果。此模式不创建模拟仓位；组合回测仍可用于次级诊断。止盈、止损和最长持有天数由各策略的 `exit` 参数控制，`null` 表示关闭对应自动退出。
+Scanner Research 是当前主要研究入口。它按交易日保存完整候选排序与诊断子评分，由主程序在后续十个交易日计算前瞻标签，并展示 Top 5/10/20 的 Precision、Lift、MFE/MAE 与市场环境分层结果。此模式不创建模拟仓位；组合回测由本地 LEAN 执行，用于次级诊断。止盈、止损和最长持有天数由各策略的 `exit` 参数控制，`null` 表示关闭对应自动退出。
 
 新运行会保存统一的 `strategy/evaluation/execution/dataset` 参数值、来源和哈希。Scanner 现支持下行阈值、上涨目标先于下行阈值、同日先后顺序未知标记、重复信号事件计数、逐日筛选漏斗与近似入选股票的排除原因。浏览器把核心参数和高级参数分开显示，参数定义见[研究参数契约](docs/RESEARCH_PARAMETER_CONTRACT.md)。历史运行保留原有含义，不会自动重新计算。
 
@@ -277,9 +299,9 @@ Strategy Lab 使用上述本地 Web 页面，发布版本也集成到现有 Site
 
 只应导入你信任作者提供的 Python 策略代码：结构检查、AST 检查与测试有助于验证插件，但它们并不是操作系统级 sandbox。
 
-每个 Run 会把配置与可复现元数据写入本地 SQLite WAL：`data/strategy-lab/runs.sqlite3`；worker 则以只读方式访问市场 DuckDB。已完成 Run 不可修改。系统最多同时运行两个本地 worker，以保持 UI 响应并允许浏览器刷新后恢复进度。取消 Run 会在 session 之间停止；如果 source/data hash 不匹配，排队中的 Run 会失败，而不是继续使用变化后的输入。
+每个 Run 会把配置与可复现元数据写入本地 SQLite WAL：`data/strategy-lab/runs.sqlite3`；worker 则以只读方式访问市场 DuckDB。已完成 Run 不可修改。默认使用一个 Scanner / Backtest 共享 worker，显式配置可提高到最多四个，按最早可运行任务优先调度。Scanner / 兼容 Run 在 session 之间响应取消，LEAN Run 则终止原生子进程；如果 source/data hash 不匹配，排队中的 Run 会失败，而不是继续使用变化后的输入。
 
-Phase 2 的完整 Strategy 2 迁移已经与保存的 Train、Validation 以及此前查看过的 Test 产物核对：1,231 个 signal dates，以及全部 equity、order、trade CSV 行均完全一致。可以本地重新验证：
+**历史旧内核插件迁移证据，与 LEAN 验收分别记录：** Phase 2 的完整 Strategy 2 迁移已经与保存的 Train、Validation 以及此前查看过的 Test 产物核对：1,231 个 signal dates，以及全部 equity、order、trade CSV 行均完全一致。可以本地重新验证：
 
 ```powershell
 & .\.venv\Scripts\python.exe scripts/verify_phase3_plugin_parity.py
@@ -320,6 +342,8 @@ Start-ScheduledTask -TaskName StockRadar-DailyUpdate
 
 ## Phase 2 简化基线历史回测
 
+> 归档的旧内核研究。以下命令与收益用于复现历史证据，不是当前正式网页回测入口，也不是 LEAN 结果。
+
 Phase 2 研究使用本地 SIP、拆股调整后的日线数据，存放在 `data/phase2-research.duckdb`。研究数据库和详细交易文件保留在本机并被 gitignore。规则与样本切分定义位于 `config/research.yaml`、`config/backtest.yaml`，最终一次性 Test 冻结配置位于 `config/frozen_backtest_v1.yaml`。
 
 冻结版 combined-rank baseline 在计入模型化手续费与滑点后得到：**Train -81.14%**、**Validation +4.49%**、**最终 Test -55.10%**。Test 组合从 $1,000,000 降至 $448,957.69。完整核算、benchmark、验证与局限见 [`reports/phase2/backtest_final.md`](reports/phase2/backtest_final.md)。本地运行后，交互图表位于 `data/research/final-test-v1/回测报告.html`。
@@ -338,6 +362,8 @@ Phase 2 研究使用本地 SIP、拆股调整后的日线数据，存放在 `dat
 baseline 的最终 Test runner 会记录一次性评估标记；再次运行时会返回已经保存的结果。
 
 ## 完整 Strategy 2 探索性研究
+
+> 以下为历史旧内核结果；保留用于研究追溯。网页新运行使用 LEAN，不能用这些收益描述 LEAN 接入验收。
 
 首个七阶段候选包含 prior strength、pullback、downside exhaustion、support/absorption、stopped new lows、early reversal 和 extension limit。精确特征映射与暂定阈值见 [`reports/phase2/full_strategy2_feature_map.md`](reports/phase2/full_strategy2_feature_map.md)。
 
@@ -361,11 +387,19 @@ baseline 的最终 Test runner 会记录一次性评估标记；再次运行时�
 | `data/universe.csv` | 按 symbol 排序的符合条件股票池。 |
 | `data/validation-summary.json` | 最近一次校验摘要，包含 checked/accepted/rejected 行数和结构化问题。 |
 | `data/ingestion-issues.json` | 最近一次同步报告，包含失败标的与详细采集问题。 |
-| `data/daily-update-status.json` | 最近一次无人值守更新结果。 |
+| `data/daily-update-status.json` | 最近一次无人值守行情更新结果。 |
+| `data/phase2-research.duckdb` | 单独构建的研究特征与标签；行情日更任务不会自动刷新此库。 |
+| `data/strategy-lab/runs.sqlite3` | 本地 Run / Scanner 元数据、逐日快照、结果与展示状态。 |
+| `data/strategy-lab/lean/<run_id>/` | 冻结信号、价格、manifest、原生结果与 `normalized-result.json`。 |
 
 `data/` 下生成的数据文件均被 gitignore。
 
 ## 数据约定与局限
+
+- **LEAN 第一版范围：** 日线 Open/Close 价格代理、次日执行、即时结算、配置手续费与滑点、原生组合核算。没有真实分钟路径、盘口或部分成交；示例费率未确认，PIT 终止事件/公司行动执行明确拒绝。
+- **行情更新与研究更新分开：** 静默日更更新 `market.duckdb` 和校验报告，不自动合并至 `phase2-research.duckdb`、重建特征或重新运行 Scanner；研究库构建与原子提升是单独操作。
+- **每日实用入口仍待完成：** 已有历史逐日候选快照，尚无独立的一键最新交易日观察清单。
+- **剩余正确性问题有明确记录：** Scanner 标签窗口边界、来源 Scanner 实现溯源和批量研究快照一致性见[当前总账](reports/journey-2026-09-30-0651-📌当前总账.md)。
 
 <details>
 <summary><strong>展开技术说明</strong></summary>
@@ -392,7 +426,16 @@ baseline 的最终 Test runner 会记录一次性评估标记；再次运行时�
 
 ## 测试
 
-测试套件完全离线运行：使用内存或临时 DuckDB 和伪造 provider 对象，不会访问 Alpaca，也不会读取真实凭据。
+可移植测试使用临时 DuckDB 与伪造 provider，不访问 Alpaca、不读取真实凭据。
+原生 LEAN 安装测试默认跳过；独立安装可用后，执行完整原生验收：
+
+```powershell
+$env:STOCK_RADAR_TEST_LEAN = '1'
+& .\.venv\Scripts\python.exe -m pytest -q
+Remove-Item Env:STOCK_RADAR_TEST_LEAN
+```
+
+最近一次记录为 2026-10-06 原生测试在内的 272 项通过。仅运行可移植测试：
 
 ```powershell
 & .\.venv\Scripts\python.exe -m pytest

@@ -67,8 +67,11 @@ rejected. Duplicate symbol/date records, invalid dates, non-finite values and
 strategy identity mismatches are rejected. The manifest preserves empty signal
 days, the requested sessions, source Scanner ID, strategy/config/code identity,
 research database hash, execution price export hash and exchange-reference hashes.
-The execution algorithm verifies the signal file hash and cannot consume a
-same-day/future signal as an entry. Stock Radar precomputes any market guard;
+The worker binds the sealed manifest hash once. The runtime verifies the manifest,
+configuration, algorithm, signals, price export, data index and consumed files
+before and after native execution; the algorithm verifies its manifest and signal
+hashes before initialization. It cannot consume a same-day/future signal as an entry.
+Stock Radar precomputes any market guard;
 LEAN does not calculate selection factors.
 
 ## Execution assumptions of this first bridge
@@ -122,6 +125,12 @@ and `/result`. `/api/lab/engine` reports local availability and build identity.
 No front-end code interprets native QuantConnect JSON.
 
 ## Verification
+
+Latest recorded native-inclusive acceptance on **2026-10-06: 272 passed,
+1 existing websockets deprecation warning**. After final preparation-cancellation
+changes, targeted worker/store tests also passed (15 tests). See the
+[development-stage report](../reports/development-status-2026-10-06.md) for the
+scope and remaining gaps. These are local results, not hosted-CI evidence.
 
 Native golden cases compare the same frozen candidates, dates, initial capital,
 sizing, fees, slippage and exit conditions against the compatibility engine.

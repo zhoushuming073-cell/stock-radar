@@ -4,9 +4,12 @@
 
 ## Current source of truth
 
-- **📌 当前总账:** `journey-2026-09-30-0651-📌当前总账.md`
+- **📌 当前总账:** [Canonical status / active backlog](journey-2026-09-30-0651-📌当前总账.md) — updated 2026-10-06.
+- **Current development-stage report:** [2026-10-06 · Research + local LEAN integration](development-status-2026-10-06.md) — detailed Chinese overview, acceptance scope, limitations and next milestones.
 
-All current completed/open/partial project status belongs in the current canonical journey.
+The canonical journey owns completed/open/partial backlog status. The dated
+development report explains the verified release stage; it does not create a
+second active backlog. Historical reports are preserved as evidence.
 
 ## Journey filename convention
 
@@ -38,6 +41,7 @@ When a new canonical status snapshot is created, rename the previous `📌当前
 
 ## Non-journey reports
 
+- [Development status · 2026-10-06](development-status-2026-10-06.md): current architecture, Phase A–F migration scope, local acceptance evidence, operational boundaries and planned work.
 - `phase2/` contains historical pre-v3 research artifacts and datasets. It is not an active project backlog.
 - `personal-research/` contains owner-authored personal research reports and preserved research conclusions.
 - Contracts and specifications belong under `docs/`, not in the journey status stream.

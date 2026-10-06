@@ -41,6 +41,10 @@
 
 ## Overview
 
+**Current stage · 2026-10-06:** research infrastructure usable; initial local
+LEAN integration accepted. [Development report](reports/development-status-2026-10-06.md)
+documents what works, what is limited and what remains open.
+
 ### Local LEAN backtests
 
 New web backtests use the independently installed, free open-source
@@ -60,7 +64,10 @@ For source code, the web UI, configuration templates, and tracked documentation,
 
 ## Interface preview
 
-These screenshots were captured from the local application on 2026-09-30. The figures are historical research data on one computer; they are not live quotes or trading signals.
+These screenshots were captured from the local application on 2026-09-30, before
+the LEAN-only launch change. They illustrate the retained layout, not current
+engine acceptance. The figures are historical research data on one computer;
+they are not live quotes or trading signals.
 
 **Market overview** — daily candles, volume, data coverage, and validation status.
 
@@ -95,7 +102,10 @@ The research questions are now:
 3. Are those candidates enriched for favorable forward outcomes over a fixed horizon, even before any news or fundamental filter is applied?
 4. Does a later contextual review add incremental value over the quantitative candidate list alone?
 
-Backtesting therefore remains important, but increasingly as a **validation instrument**. The next research phase will emphasize candidate-quality metrics such as:
+Backtesting remains a **validation instrument**. Scanner already implements
+forward-outcome Precision/Lift, MFE/MAE and descriptive regime breakdowns.
+Further research will establish the validity and stability of these measures,
+add human-labelled pattern evaluation and calibrate target-hit probabilities:
 
 - Precision@5 / Precision@10 / Precision@20
 - Lift@K versus the eligible-market base rate
@@ -117,20 +127,42 @@ The long-term goal is not to reproduce a universal institutional trading stack. 
 | Layer | Current implementation |
 | --- | --- |
 | **Phase 1 · Data foundation** | Asset master, split-adjusted daily OHLCV, incremental sync, validation, universe export, DuckDB provenance checks |
-| **Phase 2 · Research engine** | Historical backtest engine, frozen simplified baseline, initial seven-stage Strategy 2 candidate, verification and local reports |
-| **Phase 3 · Strategy Lab** | Plugin interface v1, trusted ZIP import, persistent run queue, live equity/drawdown, run comparison, parameter grids, ablations and walk-forward folds |
+| **Historical Phase 2 · Compatibility** | Frozen baselines, initial Strategy 2 research and legacy accounting retained as historical evidence and migration validators |
+| **Strategy research / Scanner** | Plugin v1, trusted ZIP import, causal daily candidate snapshots, forward outcomes, Precision/Lift, cooldown event metrics, filter funnels and regime breakdowns |
+| **Formal Backtest execution** | Independent local QuantConnect LEAN, frozen signal/price exports, native portfolio execution, normalized results, golden-case reconciliation and engine/build audit |
+| **Research workflow** | Persistent shared run queue, sequential stage timeline, curves/holdings/trades, history rename/archive/restore, Compare, bounded experiments and evidence export |
 | **Web UI** | One maintained browser frontend for market data, Scanner, Backtest, strategies and experiments; local API on port 8765 |
 | **Automation** | Windows scheduled market refresh and local API startup |
 | **Execution boundary** | No broker-order path; research runs and dashboards do not place trades |
 
 ## Project status
 
+**As of 2026-10-06: the research infrastructure is usable, and the first local
+LEAN execution bridge has passed engineering acceptance.** New web Backtests,
+sequential three-stage timelines and Backtest experiments use LEAN only.
+Stock Radar continues to own all strategy selection and Scanner evaluation.
+This is a daily-price research integration, not validated intraday execution or
+evidence of a profitable strategy.
+
+- [Detailed development-stage report (Chinese)](reports/development-status-2026-10-06.md)
+- [Canonical status and remaining backlog](reports/journey-2026-09-30-0651-📌当前总账.md)
+- [LEAN setup, signal/result contracts and execution assumptions](docs/LEAN_EXECUTION.md)
+- [Archived legacy web version](https://github.com/zhoushuming073-cell/stock-radar/tree/legacy-backtest-ui-2026-10-06)
+
+Engineering acceptance on 2026-10-06: **272 tests passed, 1 existing deprecation
+warning**, including native LEAN golden cases. A real historical Scanner snapshot
+completed a **245-session / 96-closed-trade** native smoke run; the existing UI
+displayed its curves, holdings, trades and engine audit. These are local acceptance
+results, not a new hosted-CI or Fresh OOS result. Detailed balances and raw results
+remain local.
+
 - [x] Asset master and eligible-universe export
 - [x] Incremental Alpaca SIP daily-bar ingestion
 - [x] DuckDB storage with provider/feed/adjustment provenance
 - [x] Non-destructive market-data validation
 - [x] Local Web market overview and research lab
-- [x] Historical backtest engine and frozen baseline
+- [x] Legacy backtest engine and frozen baseline retained for compatibility validation
+- [x] LEAN-only web Backtests, normalized adapter, native parity cases and browser acceptance
 - [x] Initial seven-stage Strategy 2 research candidate
 - [x] Strategy plugin interface v1 and ZIP-ready template
 - [x] Persistent local Strategy Lab and run queue
@@ -138,9 +170,12 @@ The long-term goal is not to reproduce a universal institutional trading stack. 
 - [x] Private Sites integration and unattended local updates
 - [x] Canonical run configuration, Scanner outcome labels, event counts, filter funnel, and local PIT import boundary
 - [ ] Human-labelled chart-snapshot dataset for pattern ground truth
-- [ ] Pattern-match evaluation with Precision@K / Recall / Lift@K
+- [x] Forward-outcome Precision/Lift at configurable Top-K, cooldown event Precision/Lift, MFE/MAE and primary-outcome regime breakdowns
+- [ ] Human-labelled pattern retrieval Precision/Recall and chart ground-truth evaluation
 - [ ] Fixed-horizon target-hit probability research and calibration
-- [ ] Market-regime conditioning
+- [ ] Learned market-regime conditioning beyond implemented descriptive breakdowns
+- [ ] One-click latest-session Daily Scanner (current Scanner processes historical research splits)
+- [ ] Full PIT / corporate-action / settlement realism for native execution
 - [ ] Candidate-only intraday data for support / reversal / execution studies
 - [ ] Quant vs Vision vs Fusion research branch
 - [ ] Point-in-time candidate/context log for future GPT-assisted second-stage review
@@ -169,7 +204,7 @@ flowchart LR
     D --> K
     I --> K
     J --> K
-    K --> L[Private Sites Dashboard]
+    K --> L[Unified Local Web UI<br/>optional Sites release copy]
 
     M[Windows Scheduled Tasks] --> B
     M --> K
@@ -179,7 +214,10 @@ The market database remains read-only to research workers. Strategy Lab stores r
 
 ## Setup
 
-Requires Python 3.11 or newer. From the project root:
+Requires Python 3.11 or newer for Stock Radar. LEAN Backtests additionally require
+the separate compiled local installation; Python package setup alone does not
+install the engine. See [LEAN installation requirements](docs/LEAN_EXECUTION.md).
+From the project root:
 
 ```powershell
 python -m venv .venv
@@ -200,7 +238,8 @@ root (via `python-dotenv`). Both keys are required for `sync` and `validate`;
 
 ## Configuration
 
-`config/base.yaml` drives every run:
+`config/base.yaml` configures market ingestion; `config/research.yaml` defines
+research splits, and `config/lean.yaml` configures the native Backtest installation:
 
 ```yaml
 provider: alpaca
@@ -276,7 +315,7 @@ generic diagnostic scores, host-generated forward labels, configurable Precision
 at Top-K, pooled and daily precision, target-before-adverse outcomes, unique
 signal-event counts and event-level Precision/Lift, daily filter funnels, MFE/MAE
 and market-regime breakdowns under the selected primary outcome without opening simulated
-positions. Strategy Backtest remains available for portfolio diagnostics, with
+positions. Strategy Backtest uses local LEAN for portfolio diagnostics, with
 per-strategy exits (including `null` to turn each automatic exit off).
 New runs persist the resolved `strategy/evaluation/execution/dataset` configuration
 and the source of each value. The browser uses an explicit core/advanced parameter
@@ -308,7 +347,8 @@ WAL at `data/strategy-lab/runs.sqlite3`, while workers read the market DuckDB
 read-only. Completed Runs are immutable. The default is one shared local worker
 for Backtest and Scanner; an explicit setting can raise the cap to four. The
 shared queue runs the oldest eligible work first. Cancelling a Run
-stops it between sessions. A source/data hash mismatch fails the queued Run
+stops Scanner/compatibility work between sessions and terminates the native LEAN
+child for a LEAN Run. A source/data hash mismatch fails the queued Run
 instead of silently executing changed inputs.
 
 Backtest and Scanner can use Fresh OOS after enough post-freeze trading sessions
@@ -318,7 +358,8 @@ and Validation. Research-store promotion keeps the latest three complete
 backups by default; `scripts/build_research.py --backup-retention N` changes
 that limit for a build.
 
-The complete Phase 2 Strategy 2 migration was checked against the saved
+**Historical legacy-plugin migration evidence, separate from LEAN acceptance:**
+the complete Phase 2 Strategy 2 migration was checked against the saved
 Train, Validation and previously viewed Test artifacts: 1,231 signal dates and
 all equity, order and trade CSV rows matched exactly. Recheck locally with:
 
@@ -381,6 +422,9 @@ or changing the Site address:
 
 ## Phase 2 simplified-baseline historical backtest
 
+> Archived legacy-engine research. The commands and returns below reproduce old
+> evidence; they are not the current formal web Backtest path or LEAN results.
+
 Phase 2 research uses local SIP, split-adjusted daily bars in
 `data/phase2-research.duckdb`. The research database and detailed trade files
 stay on this computer and are gitignored. The rules and split definitions are
@@ -412,6 +456,9 @@ The baseline's final Test runner records a one-time evaluation marker and
 returns the stored result on a repeat invocation.
 
 ## Full Strategy 2 exploratory research
+
+> Historical legacy-engine results; retained for research provenance. New web
+> runs use LEAN. These historical returns do not describe native LEAN acceptance.
 
 The first seven-stage candidate includes prior strength, pullback, downside
 exhaustion, support/absorption, stopped new lows, early reversal, and an
@@ -445,10 +492,28 @@ to validate any claimed improvement. This remains research, not an order signal.
 | `data/universe.csv` | Eligible universe, sorted by symbol, columns: `symbol, name, exchange, asset_class, tradable, fractionable, shortable`. |
 | `data/validation-summary.json` | Latest `validate` report: checked/accepted/rejected rows and structured issues. |
 | `data/ingestion-issues.json` | Latest `sync` report: failed symbols and detailed data issues. |
+| `data/daily-update-status.json` | Latest silent market-update status. |
+| `data/phase2-research.duckdb` | Separately built causal research features and labels; not refreshed by the market daily task. |
+| `data/strategy-lab/runs.sqlite3` | Local Run/Scanner metadata, daily snapshots, results and presentation state. |
+| `data/strategy-lab/lean/<run_id>/` | Sealed signals/prices/manifest, native output and `normalized-result.json`. |
 
 Generated files under `data/` are gitignored.
 
 ## Conventions and limitations
+
+- **LEAN bridge scope:** daily Open/Close proxies, immediate settlement,
+  next-session execution, configured fees/slippage and native portfolio accounting.
+  No real minute path, order-book depth or partial fills. Current illustrative fees
+  are unconfirmed; PIT terminal/corporate-action execution is explicitly rejected.
+- **Market refresh and research refresh are separate.** The silent daily task
+  updates `market.duckdb` and validation reports. It does not automatically merge
+  new bars into `phase2-research.duckdb`, rebuild its features, or rerun Scanner.
+  Research rebuild/promotion is a separate explicit operation.
+- **Daily-use Scanner is still pending.** Historical per-session snapshots exist;
+  a dedicated one-click latest-session watchlist is not yet implemented.
+- **Remaining correctness work is tracked explicitly.** Scanner horizon boundaries,
+  source-Scanner implementation provenance and batch snapshot consistency remain
+  open in the [canonical backlog](reports/journey-2026-09-30-0651-📌当前总账.md).
 
 - **Asset master comes from current snapshots.** Only active US-equity assets are
   requested from Alpaca, so tickers that were delisted or renamed before the first
@@ -487,8 +552,19 @@ Generated files under `data/` are gitignored.
 
 ## Tests
 
-The test suite is fully offline: it uses in-memory/temporary DuckDB databases and
-fake provider objects, and it never contacts Alpaca or reads real credentials.
+Portable tests use temporary DuckDB databases and fake providers; they do not
+contact Alpaca or read real credentials. Native LEAN installation tests are
+skipped unless explicitly enabled. For the native acceptance suite, with the
+independent installation available:
+
+```powershell
+$env:STOCK_RADAR_TEST_LEAN = '1'
+& .\.venv\Scripts\python.exe -m pytest -q
+Remove-Item Env:STOCK_RADAR_TEST_LEAN
+```
+
+The latest recorded native-inclusive acceptance is 272 passed on 2026-10-06.
+For the portable suite:
 
 ```powershell
 & .\.venv\Scripts\python.exe -m pytest
