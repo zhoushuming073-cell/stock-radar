@@ -41,8 +41,11 @@
 
 ## Overview
 
-**Current stage · 2026-10-06:** research infrastructure usable; initial local
-LEAN integration accepted. [Development report](reports/development-status-2026-10-06.md)
+**Current stage · 2026-10-07:** research infrastructure and initial local LEAN
+integration accepted; open-source historical PIT reconstruction and an independent
+identity-bounded feature store added. PIT data remains exploratory and incomplete,
+and PIT LEAN execution remains blocked. [PIT acceptance](reports/pit-acceptance-2026-10-07.md)
+and [development report](reports/development-status-2026-10-06.md)
 documents what works, what is limited and what remains open.
 
 ### Local LEAN backtests
@@ -523,8 +526,10 @@ Generated files under `data/` are gitignored.
   `validate` uses only the newest observed snapshot.
 - **PIT mode needs external historical evidence.** The local CSV + manifest adapter
   accepts a dated security master with stable security IDs and checks interval
-  coverage. No real historical security master is bundled, and a current Alpaca
-  snapshot cannot make old studies bias-free. See [PIT import format](docs/PIT_SECURITY_MASTER.md).
+  coverage. The historical Git snapshot builder and separate identity-bounded
+  features support exploratory reconstruction; generated data stays local and
+  is incomplete. A current Alpaca snapshot cannot make old studies bias-free.
+  See [PIT build/import workflow](docs/PIT_SECURITY_MASTER.md).
 - **The eligible filter is coarse, not common-stock-only.** It keeps US-equity
   assets that are `active` and `tradable` and listed on NASDAQ, NYSE, AMEX, ARCA
   or BATS. ETFs, ADRs, preferred shares and similar listed equity-like classes pass
@@ -563,7 +568,7 @@ $env:STOCK_RADAR_TEST_LEAN = '1'
 Remove-Item Env:STOCK_RADAR_TEST_LEAN
 ```
 
-The latest recorded native-inclusive acceptance is 272 passed on 2026-10-06.
+The latest recorded native-inclusive acceptance is 314 passed on 2026-10-07.
 For the portable suite:
 
 ```powershell

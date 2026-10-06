@@ -41,7 +41,8 @@
 
 ## 项目简介
 
-**当前阶段 · 2026-10-06：** 研究基础设施已可用，独立本地 LEAN 第一版接入已通过工程验收。
+**当前阶段 · 2026-10-07：** 研究基础设施和本地 LEAN 接入已验收；新增开放历史快照 PIT 重建、独立证券身份边界特征库和按日 Scanner 接入。历史身份、普通股分类及退市行情覆盖仍不完整，PIT LEAN 执行继续拒绝。
+[PIT 数据库验收报告](reports/pit-acceptance-2026-10-07.md)记录数据来源、差异及未完成边界。
 [开发阶段报告](reports/development-status-2026-10-06.md)说明已完成能力、验收范围、限制和待办。
 网页新回测只使用 LEAN，Stock Radar 保留全部策略/选股逻辑；安装路径可配置，旧版网页已封存到 GitHub 标签。
 
@@ -123,6 +124,7 @@ Stock Radar 正在从“追求漂亮历史净值曲线”重新聚焦到 **形�
 ## 当前进度
 
 **截至 2026-10-06：研究基础设施已可用，本地 LEAN 第一版执行接入已通过工程验收。**
+2026-10-07 数据库专项增补：**314 项测试通过，1 项既有弃用警告**，包含原生 LEAN 回归。PIT 与 Current Snapshot 并行；旧库保留。第一版 PIT 是探索性重建，不能声明 survivorship-bias-free，未进行 PIT 收益或策略优化。
 网页单阶段回测、三阶段顺序时间线和 Backtest 实验只使用 LEAN；Stock Radar 仍是唯一的
 策略判断、因子和选股来源。原网页继续展示资金曲线、回撤、Benchmark、持仓、交易、
 历史、Compare 和审计。旧结果保留并标记归档，旧内核只作兼容和对照验证。
@@ -286,7 +288,7 @@ Scanner Research 是当前主要研究入口。它按交易日保存完整候选
 
 新运行会保存统一的 `strategy/evaluation/execution/dataset` 参数值、来源和哈希。Scanner 现支持下行阈值、上涨目标先于下行阈值、同日先后顺序未知标记、重复信号事件计数、逐日筛选漏斗与近似入选股票的排除原因。浏览器把核心参数和高级参数分开显示，参数定义见[研究参数契约](docs/RESEARCH_PARAMETER_CONTRACT.md)。历史运行保留原有含义，不会自动重新计算。
 
-当前默认股票池来自现时资产快照，历史研究存在幸存者偏差风险。项目提供本地 PIT Security Master 的导入边界和覆盖检查，但**没有内置真实历史 Security Master**；仅导入当前 Alpaca 股票列表不能消除此风险。格式和限制见 [PIT 导入说明](docs/PIT_SECURITY_MASTER.md)。
+当前默认股票池来自现时资产快照，历史研究存在幸存者偏差风险。项目提供历史 Git 快照 builder、区间型 PIT master、独立身份边界特征库和覆盖检查；生成数据留在本机，属于**探索性、不完整的历史重建**。仅导入当前 Alpaca 股票列表不能消除此风险。构建流程和限制见 [PIT 导入说明](docs/PIT_SECURITY_MASTER.md)。
 
 在项目根目录双击 `启动本地看板.cmd`，即可打开唯一维护的本地网页 `http://127.0.0.1:4174/lab.html#scanner`，并启动或复用 `http://127.0.0.1:8765` 数据接口。网页可查看三阶段逐日时间线。本地修改 `site/dist/` 后无需部署 Sites；行情数据库、策略文件、凭据和研究结果均留在本机。标签公式、合格股票池和复现规则见 [策略插件规范](docs/STRATEGY_PLUGIN_SPEC.md)。
 
@@ -435,7 +437,7 @@ $env:STOCK_RADAR_TEST_LEAN = '1'
 Remove-Item Env:STOCK_RADAR_TEST_LEAN
 ```
 
-最近一次记录为 2026-10-06 原生测试在内的 272 项通过。仅运行可移植测试：
+最近一次记录为 2026-10-07 原生测试在内的 314 项通过。仅运行可移植测试：
 
 ```powershell
 & .\.venv\Scripts\python.exe -m pytest

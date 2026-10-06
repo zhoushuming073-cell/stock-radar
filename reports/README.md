@@ -4,7 +4,8 @@
 
 ## Current source of truth
 
-- **📌 当前总账:** [Canonical status / active backlog](journey-2026-09-30-0651-📌当前总账.md) — updated 2026-10-06.
+- **📌 当前总账:** [Canonical status / active backlog](journey-2026-09-30-0651-📌当前总账.md) — updated 2026-10-07 Asia/Shanghai.
+- **PIT migration acceptance:** [2026-10-07 · Local reconstruction and limitations](pit-acceptance-2026-10-07.md) — pinned data, price gaps, production Scanner samples and correctness regression evidence.
 - **Current development-stage report:** [2026-10-06 · Research + local LEAN integration](development-status-2026-10-06.md) — detailed Chinese overview, acceptance scope, limitations and next milestones.
 
 The canonical journey owns completed/open/partial backlog status. The dated
@@ -31,6 +32,7 @@ When a new canonical status snapshot is created, rename the previous `📌当前
 | File | Status | Purpose |
 | --- | --- | --- |
 | `journey-2026-09-30-0651-📌当前总账.md` | 📌 当前总账 | Current consolidated project status and backlog |
+| `journey-2026-10-06-1750-🟡部分完成.md` | 🟡 部分完成 | Historical PIT engineering/data acceptance; remaining data trust belongs in the canonical ledger |
 | `journey-2026-09-29-0426-🗂️历史归档.md` | 🗂️ 历史归档 | Mixed 2026-09-29 planning/history; surviving work migrated to current ledger |
 | `journey-2026-09-29-0629-✅已完成.md` | ✅ 已完成 | First research-integrity bug backlog; closed |
 | `journey-2026-09-29-1306-✅已完成.md` | ✅ 已完成 | Acceptance/readiness evidence for the first backlog |
@@ -42,6 +44,7 @@ When a new canonical status snapshot is created, rename the previous `📌当前
 ## Non-journey reports
 
 - [Development status · 2026-10-06](development-status-2026-10-06.md): current architecture, Phase A–F migration scope, local acceptance evidence, operational boundaries and planned work.
+- [Initial PIT architecture audit · 2026-10-07](pit-initial-audit-2026-10-07.md) and [PIT acceptance](pit-acceptance-2026-10-07.md): before/after database architecture and honest data readiness.
 - `phase2/` contains historical pre-v3 research artifacts and datasets. It is not an active project backlog.
 - `personal-research/` contains owner-authored personal research reports and preserved research conclusions.
 - Contracts and specifications belong under `docs/`, not in the journey status stream.
