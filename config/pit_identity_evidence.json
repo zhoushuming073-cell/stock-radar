@@ -1,0 +1,35 @@
+[
+  {
+    "security_id": "SEC-0001326801-CLASS-A",
+    "symbol": "FB",
+    "valid_from": "2021-09-01",
+    "valid_to": "2022-06-08",
+    "resolution_status": "verified",
+    "identity_resolution_method": "SEC_8K_000132680122000070+NASDAQ_ECA2022-125+share_class",
+    "evidence_url": "https://www.sec.gov/Archives/edgar/data/1326801/000132680122000070/fb-20220531.htm",
+    "validation_url": "https://www.nasdaqtrader.com/TraderNews.aspx?id=ECA2022-125",
+    "evidence_published_date": "2022-05-31",
+    "reviewed_date": "2026-10-07",
+    "observed_name_pattern": "(?:Facebook|Meta Platforms).*Class A",
+    "authoritative_symbol_interval": true,
+    "security_type": "common",
+    "notes": "Retrospective security identity confirmation; first bound is research coverage, not IPO date. CIK plus share class distinguishes issuer securities. No price alias inferred."
+  },
+  {
+    "security_id": "SEC-0001326801-CLASS-A",
+    "symbol": "META",
+    "valid_from": "2022-06-09",
+    "valid_to": "2026-10-07",
+    "resolution_status": "verified",
+    "identity_resolution_method": "SEC_8K_000132680122000070+NASDAQ_ECA2022-125+share_class",
+    "evidence_url": "https://www.sec.gov/Archives/edgar/data/1326801/000132680122000070/fb-20220531.htm",
+    "validation_url": "https://www.nasdaqtrader.com/TraderNews.aspx?id=ECA2022-125",
+    "evidence_published_date": "2022-05-31",
+    "reviewed_date": "2026-10-07",
+    "observed_name_pattern": "Meta Platforms.*Class A",
+    "authoritative_symbol_interval": true,
+    "extend_first_observation": true,
+    "security_type": "common",
+    "notes": "Official effective date overrides a nearby lagging screener observation. Does not map any earlier unrelated META security."
+  }
+]

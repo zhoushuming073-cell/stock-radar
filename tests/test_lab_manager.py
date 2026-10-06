@@ -99,6 +99,111 @@ def test_multi_strategy_failure_leaves_no_queued_run(manager):
     assert manager.store.list_runs() == []
 
 
+def test_scanner_horizon_respects_frozen_evaluation_reservation(manager):
+    with pytest.raises(ValueError, match="frozen split evaluation boundary"):
+        manager.queue_scanner("tiny_strategy", evaluation_overrides={"horizon_sessions": 11})
+    assert manager.store.list_scanner_runs() == []
+    run = manager.queue_scanner("tiny_strategy", evaluation_overrides={"horizon_sessions": 10})
+    assert manager.store.get_scanner_run(run)["metadata"]["evaluation"]["horizon_sessions"] == 10
+
+
+def test_scanner_worker_cannot_read_prices_or_sessions_past_frozen_boundary(manager, monkeypatch):
+    from radar.lab import scanner_worker as worker
+    run = manager.queue_scanner("tiny_strategy")
+    registration = manager.registry.get("tiny_strategy")
+    original_hash = worker.sha256_file
+    monkeypatch.setattr(worker, "sha256_file", lambda path:
+        "snapshot-hash" if path == manager.database else original_hash(path))
+    monkeypatch.setattr(worker, "source_watermark", lambda *_: "watermark")
+    monkeypatch.setattr(worker, "available_features", lambda *_: set())
+    monkeypatch.setattr(worker, "load_strategy_directory", lambda *_args, **_kwargs: registration)
+    monkeypatch.setattr(worker, "split_dates", lambda *_: {
+        "validation": (pd.Timestamp("2025-01-02"), pd.Timestamp("2025-01-03"), pd.Timestamp("2025-01-04")),
+        "sessions": pd.date_range("2025-01-02", "2025-01-30")})
+    frame = pd.DataFrame({"date": pd.date_range("2025-01-02", "2025-01-03"),
+                          "symbol": "AAA", "tradability_pass": True}).set_index(["date", "symbol"], drop=False)
+    monkeypatch.setattr(worker, "load_strategy_segment", lambda *_: frame)
+    monkeypatch.setattr(worker, "published_session_counts", lambda *_: None)
+    consumed = {}
+    def bars(_database, _start, end):
+        consumed["bar_end"] = end
+        return pd.DataFrame()
+    def scan(_plugin, _config, _frame, _bars, sessions, *_args, **_kwargs):
+        consumed["sessions"] = sessions
+        return [], {}
+    monkeypatch.setattr(worker, "load_forward_bars", bars)
+    monkeypatch.setattr(worker, "scan_frames", scan)
+    worker.execute_scanner_run(manager.root, manager.store.path, run)
+    assert consumed["bar_end"] == pd.Timestamp("2025-01-04")
+    assert consumed["sessions"].max() == pd.Timestamp("2025-01-04")
+
+
+@pytest.mark.parametrize("kind", ["scanner", "backtest"])
+def test_batch_research_mutation_rejects_every_variant(manager, monkeypatch, kind):
+    state = {"snapshot": "snapshot-hash", "prepared": 0}
+    monkeypatch.setattr(RunManager, "_data_snapshot", lambda self: state["snapshot"])
+    method_name = "_prepare_scanner_run" if kind == "scanner" else "_prepare_runs"
+    original = getattr(manager, method_name)
+    def changed(*args, **kwargs):
+        result = original(*args, **kwargs)
+        state["prepared"] += 1
+        state["snapshot"] = "changed-snapshot"
+        return result
+    monkeypatch.setattr(manager, method_name, changed)
+    with pytest.raises(ValueError, match="(?:snapshot|sources) changed"):
+        if kind == "scanner":
+            manager.queue_scanner_requests([{"strategy_id": "tiny_strategy"}] * 2)
+        else:
+            manager.queue_run_requests([{"strategy_ids": ["tiny_strategy"]}] * 2)
+    assert manager.store.list_runs() == []
+    assert manager.store.list_scanner_runs() == []
+
+
+def test_source_scanner_same_version_changed_implementation_rejected(manager):
+    run_id = manager.queue_scanner("tiny_strategy")
+    manager.store.start_scanner_run(run_id, 123)
+    manager.store.finish_scanner_run(run_id, [], {})
+    strategy = manager.registry.get("tiny_strategy")
+    (strategy.path / "strategy.py").write_text("# changed without version bump\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="signal-producing implementation"):
+        manager.queue_runs(["tiny_strategy"], source_scanner_run_id=run_id)
+    assert manager.store.list_runs() == []
+
+
+def test_queued_scanner_rejects_mutated_pit_source_before_loading_features(manager, monkeypatch):
+    import hashlib
+    import json
+    from radar.lab import scanner_worker as scanner_module
+    from radar.lab.worker import sha256_file
+    data = manager.root / "data"
+    csv = data / "security-master.csv"
+    csv.write_text("security_id,symbol,valid_from,valid_to,listing_date,delisting_date,exchange,security_type,eligible\n"
+                   "AAA-SEC,AAA,2025-01-02,,,,NYSE,common,true\n")
+    path = data / "security-master-manifest.json"
+    manifest = {"provider": "fixture", "source_version": "1", "coverage_start": "2025-01-02",
+                "coverage_end": "2025-01-04", "coverage_complete": True}
+    path.write_text(json.dumps(manifest))
+    snapshot = sha256_file(manager.database)
+    (data / "security-master-feature-store.json").write_text(json.dumps({
+        "master_output_sha256": hashlib.sha256(csv.read_bytes()).hexdigest(),
+        "source_database_sha256": snapshot, "research_config_sha256": sha256_file(manager.root / "config/research.yaml"),
+        "database_sha256": "unused-before-rejection", "feature_basis": "fixture"}))
+    monkeypatch.setattr(RunManager, "_data_snapshot", lambda self: snapshot)
+    monkeypatch.setattr(manager_module, "local_readiness", lambda *_: {"research_validity": "synthetic_fixture"})
+    run = manager.queue_scanner("tiny_strategy", universe_mode="point_in_time")
+    path.write_text(json.dumps({**manifest, "source_version": "2"}))
+    registration = manager.registry.get("tiny_strategy")
+    monkeypatch.setattr(scanner_module, "source_watermark", lambda *_: "watermark")
+    monkeypatch.setattr(scanner_module, "available_features", lambda *_: set())
+    monkeypatch.setattr(scanner_module, "load_strategy_directory", lambda *_a, **_kw: registration)
+    days = pd.DatetimeIndex(["2025-01-02", "2025-01-03", "2025-01-04"])
+    monkeypatch.setattr(scanner_module, "split_dates", lambda *_: {"validation": tuple(days), "sessions": days})
+    with pytest.raises(ValueError, match="queued PIT security master changed"):
+        scanner_module.execute_scanner_run(manager.root, manager.store.path, run)
+    assert manager.store.get_scanner_run(run)["status"] == "failed"
+    assert manager.store.get_scanner_candidates(run) == []
+
+
 def test_timeline_batch_failure_leaves_no_stage(manager):
     ids = [str(uuid4()) for _ in range(3)]
     requests = [{"strategy_ids": ["tiny_strategy"], "split": split,

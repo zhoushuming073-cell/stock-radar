@@ -37,12 +37,16 @@ def assess_readiness(mode: str, sessions: Sequence[pd.Timestamp],
         report["reasons"].append("PIT Security Master is unavailable")
         return report
     report["security_master"] = master.provenance().metadata()
+    if master.reconstructed:
+        report["reasons"].append("open-source reconstructed membership is not source-attested complete")
+        report["research_validity"] = "reconstructed_membership_exploratory"
     try:
         master.validate_coverage(days)
     except ValueError as error:
         report["reasons"].append(str(error))
         return report
-    report["research_validity"] = "pit_with_censoring_audit"
+    if not master.reconstructed:
+        report["research_validity"] = "pit_with_censoring_audit"
     if terminal is None:
         report["reasons"].append("terminal-event provider is unavailable")
     else:

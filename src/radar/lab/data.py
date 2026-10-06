@@ -38,6 +38,23 @@ def load_strategy_segment(
     *, feature_version: str = FEATURE_VERSION,
 ) -> pd.DataFrame:
     """Load only current/past feature columns; never join forward_labels."""
+    identity_features = False
+    if universe_provider is not None:
+        # An observed PIT universe must not silently inherit survivor-ranked,
+        # ticker-rolled features from the old Current Snapshot database.
+        from radar.pit.features import file_hash
+        store = getattr(universe_provider, "feature_store", None)
+        if not store:
+            raise ValueError("PIT requires an identity-bounded causal feature store")
+        if Path(store["source_database"]).resolve() != Path(database).resolve():
+            raise ValueError("PIT features use another source research database")
+        if file_hash(Path(database)) != store["source_database_sha256"]:
+            raise ValueError("PIT feature source research snapshot changed")
+        pit_database = Path(store["database"])
+        if file_hash(pit_database) != store["database_sha256"]:
+            raise ValueError("PIT feature store changed after building/queuing")
+        database = pit_database
+        identity_features = True
     fields = ENGINE_FEATURES | (required_features - MARKET_FEATURES)
     if universe_provider is not None and "market_breadth" in required_features:
         fields = fields | {"dist_ma_20"}
@@ -51,9 +68,10 @@ def load_strategy_segment(
         selected = ", ".join(f'f."{name}"' for name in sorted(fields))
         asset_join = "" if universe_provider is not None else "JOIN assets AS a ON f.symbol=a.symbol"
         security_name = "f.symbol" if universe_provider is not None else "COALESCE(a.name, f.symbol)"
+        identity_column = ", f.security_id" if identity_features else ""
         frame = connection.execute(f"""
             SELECT f.date, f.symbol, b.open, b.close, {selected},
-                   {security_name} AS security_name
+                   {security_name} AS security_name {identity_column}
             FROM daily_features AS f
             JOIN daily_bars AS b ON f.date=b.date AND f.symbol=b.symbol
             {asset_join}

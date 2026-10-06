@@ -27,6 +27,15 @@ DEFAULT_EVALUATION = {
 }
 
 
+def validate_frozen_horizon(settings: Mapping[str, Any], research_config: Mapping[str, Any]) -> None:
+    """Do not exceed the frozen split's reserved forward evaluation window."""
+    reserved = (research_config.get("research") or {}).get("max_forward_sessions", 10)
+    if isinstance(reserved, bool) or not isinstance(reserved, int) or reserved < 1:
+        raise ValueError("research max_forward_sessions must be a positive integer")
+    if settings["horizon_sessions"] > reserved:
+        raise ValueError(f"Scanner horizon exceeds frozen split evaluation boundary ({reserved} sessions)")
+
+
 def evaluation_settings(raw: Mapping[str, Any] | None) -> dict[str, Any]:
     value = {**DEFAULT_EVALUATION, **dict(raw or {})}
     if isinstance(value.get("false_falling_knife"), Mapping):

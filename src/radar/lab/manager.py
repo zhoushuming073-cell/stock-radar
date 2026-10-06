@@ -23,7 +23,7 @@ from radar.lab.data import MARKET_FEATURE_VERSION, available_features, source_wa
 from radar.lab.parameters import (engine_legacy_fields, execution_defaults_from_legacy,
                                   research_hash, resolve_config, ResolvedRunConfig,
                                   validate_execution)
-from radar.lab.scanner import LABEL_VERSION, evaluation_settings
+from radar.lab.scanner import LABEL_VERSION, evaluation_settings, validate_frozen_horizon
 from radar.lab.readiness import local_readiness
 from radar.lab.terminal import TERMINAL_LABEL_VERSION, load_terminal_events, TERMINAL_POLICY
 from radar.lab.store import RunStore
@@ -89,15 +89,40 @@ class RunManager:
 
     def queue_scanner_requests(self, requests: list[dict[str, Any]]) -> list[str]:
         with self._lock:
-            prepared = [(str(uuid4()), self._prepare_scanner_run(**request)) for request in requests]
+            context = self._capture_batch_context()
+            prepared = [(str(uuid4()), self._prepare_scanner_run(**request, _batch_context=context)) for request in requests]
+            self._validate_batch_context(context, [metadata for _, metadata in prepared])
             return self.store.create_scanner_runs_batch(prepared)
+
+    def _capture_batch_context(self) -> dict:
+        """Seal one batch's research inputs before variant preparation."""
+        paths = [self.root / "config/research.yaml", self.root / "config/backtest.yaml",
+                 self.root / "data/security-master.csv", self.root / "data/security-master-manifest.json",
+                 self.root / "data/terminal-events.csv", self.root / "data/terminal-events-manifest.json"]
+        paths.append(self.root / "data/security-master-feature-store.json")
+        context = {"snapshot": self._data_snapshot(), "watermark": source_watermark(self.database),
+                   "files": {str(path): sha256_file(path) if path.exists() else None for path in paths}}
+        context["windows"] = split_dates(self.database, self.root / "config/research.yaml")
+        return context
+
+    def _validate_batch_context(self, context: dict, metadata: list[dict]) -> None:
+        if any(row["data_snapshot"] != context["snapshot"] or
+               row["source_watermark"] != context["watermark"] for row in metadata):
+            raise ValueError("research snapshot changed during batch preparation")
+        current = self._capture_batch_context()
+        if any(context[key] != current[key] for key in ("snapshot", "watermark", "files")):
+            raise ValueError("research sources changed during batch preparation; no Runs queued")
+        if any(row.get("research_config_hash") != context["files"][str(self.root / "config/research.yaml")]
+               for row in metadata):
+            raise ValueError("research configuration changed during batch preparation")
 
     def _prepare_scanner_run(self, strategy_id: str, *, split: str = "validation",
                       max_candidates: int | None | object = _UNSET,
                       config_override: dict | None = None,
                       evaluation_overrides: dict | None = None,
                       universe_mode: str = "current_snapshot",
-                      experiment: dict | None = None) -> dict[str, Any]:
+                      experiment: dict | None = None,
+                      _batch_context: dict | None = None) -> dict[str, Any]:
         if split not in {"train", "validation", "test", "fresh_oos"}:
             raise ValueError("scanner split must be train, validation, test or fresh_oos")
         if max_candidates is not _UNSET and max_candidates is not None and (
@@ -123,13 +148,15 @@ class RunManager:
                 warnings.append(
                     "Deprecated Scanner max_candidates changes strategy output truncation; "
                     "use evaluation.top_k_values for quality metrics.")
-            windows = split_dates(self.database, self.root / "config" / "research.yaml")
+            windows = (_batch_context["windows"] if _batch_context else
+                       split_dates(self.database, self.root / "config" / "research.yaml"))
             if split not in windows:
                 raise ValueError(f"{split} is not available in the current research store")
             dates = windows[split]
             sessions = [day for day in windows.get("sessions", dates)
                         if dates[0] <= day <= dates[2]]
-            _, provenance = load_universe(self.root, universe_mode, sessions)
+            provider, provenance = load_universe(self.root, universe_mode, sessions)
+            self._validate_pit_feature_binding(provider, _batch_context["snapshot"] if _batch_context else self._data_snapshot())
             readiness = local_readiness(self.root, universe_mode, sessions)
             terminal = load_terminal_events(self.root) if universe_mode == "point_in_time" else None
             label_version = TERMINAL_LABEL_VERSION if terminal is not None else LABEL_VERSION
@@ -142,7 +169,7 @@ class RunManager:
                 "label_version": label_version,
                 "terminal_fingerprint": terminal.fingerprint if terminal else None,
                 "terminal_policy": TERMINAL_POLICY if terminal else None,
-                "data_snapshot": self._data_snapshot(),
+                "data_snapshot": _batch_context["snapshot"] if _batch_context else self._data_snapshot(),
                 "universe_mode": universe_mode,
                 "universe_fingerprint": provenance.fingerprint,
                 "universe_provider": provenance.provider,
@@ -156,6 +183,8 @@ class RunManager:
                 execution_defaults={}, dataset=dataset,
                 evaluation_overrides=evaluation_overrides)
             evaluation = evaluation_settings(resolved.values["evaluation"])
+            validate_frozen_horizon(evaluation, yaml.safe_load(
+                (self.root / "config/research.yaml").read_text(encoding="utf-8")))
             canonical = {**resolved.values, "evaluation": evaluation}
             resolved = ResolvedRunConfig(canonical, resolved.sources, research_hash(canonical))
             metadata = {
@@ -196,7 +225,7 @@ class RunManager:
                 "feature_version": FEATURE_VERSION,
                 "market_feature_version": MARKET_FEATURE_VERSION,
                 "data_snapshot": dataset["data_snapshot"],
-                "source_watermark": source_watermark(self.database),
+                "source_watermark": _batch_context["watermark"] if _batch_context else source_watermark(self.database),
                 "git_revision": self._git_revision(),
                 "git_dirty": self._git_dirty(),
                 "signal_start": str(dates[0].date()),
@@ -257,6 +286,16 @@ class RunManager:
             self._snapshot_cache = (*key, sha256_file(self.database))
         return self._snapshot_cache[2]
 
+    def _validate_pit_feature_binding(self, provider, snapshot: str) -> None:
+        if provider is not None:
+            store = getattr(provider, "feature_store", None)
+            if not store:
+                raise ValueError("PIT requires an identity-bounded causal feature store")
+            if store["source_database_sha256"] != snapshot:
+                raise ValueError("PIT features are bound to another research snapshot")
+            if store["research_config_sha256"] != sha256_file(self.root / "config/research.yaml"):
+                raise ValueError("PIT feature research configuration changed; rebuild separately")
+
     def _git_revision(self) -> str:
         result = subprocess.run(["git", "rev-parse", "HEAD"], cwd=self.root,
                                 capture_output=True, text=True, check=False,
@@ -274,15 +313,17 @@ class RunManager:
 
     def queue_run_requests(self, requests: list[dict[str, Any]]) -> list[str]:
         with self._lock:
+            context = self._capture_batch_context()
             prepared: list[tuple[str, dict[str, Any]]] = []
             for request in requests:
                 options = dict(request)
                 assigned_ids = options.pop("assigned_ids", None)
-                metadata = self._prepare_runs(**options)
+                metadata = self._prepare_runs(**options, _batch_context=context)
                 ids = assigned_ids if assigned_ids is not None else [str(uuid4()) for _ in metadata]
                 if len(ids) != len(metadata):
                     raise ValueError("assigned run IDs do not match prepared Runs")
                 prepared.extend(zip(ids, metadata))
+            self._validate_batch_context(context, [metadata for _, metadata in prepared])
             return self.store.create_runs_batch(prepared)
 
     def _prepare_runs(
@@ -299,6 +340,7 @@ class RunManager:
         universe_mode: str = "current_snapshot",
         source_scanner_run_id: str | None = None,
         engine: str | None = None,
+        _batch_context: dict | None = None,
     ) -> list[dict[str, Any]]:
         if split not in {"train", "validation", "test", "fresh_oos", "walk_forward"}:
             raise ValueError("backtest period must be Train, Validation, Test or Fresh OOS")
@@ -324,7 +366,8 @@ class RunManager:
         if isinstance(max_positions, bool) or not isinstance(max_positions, int) or max_positions < 1:
             raise ValueError('LEAN max_simultaneous_positions must be a positive integer')
         with self._lock:
-            dates = split_dates(self.database, self.root / "config" / "research.yaml")
+            dates = (_batch_context["windows"] if _batch_context else
+                     split_dates(self.database, self.root / "config" / "research.yaml"))
             if split == "fresh_oos" and split not in dates:
                 raise ValueError("fresh_oos is not available in the current research store")
             window = list(window_override) if window_override else [str(day.date()) for day in dates[split]]
@@ -340,8 +383,8 @@ class RunManager:
             research_path = self.root / "config" / "research.yaml"
             fee_profile = load_fee_config(research_path).profile
             backtest_raw = yaml.safe_load(backtest_path.read_text(encoding="utf-8"))
-            snapshot = self._data_snapshot()
-            watermark = source_watermark(self.database)
+            snapshot = _batch_context["snapshot"] if _batch_context else self._data_snapshot()
+            watermark = _batch_context["watermark"] if _batch_context else source_watermark(self.database)
             commit = self._git_revision()
             prepared: list[dict[str, Any]] = []
             for reference in strategy_ids:
@@ -362,7 +405,8 @@ class RunManager:
                 available_sessions = dates["sessions"] if "sessions" in dates else dates[split]
                 universe_sessions = [day for day in available_sessions
                                      if pd.Timestamp(window[0]) <= day <= pd.Timestamp(window[2])]
-                _, provenance = load_universe(self.root, universe_mode, universe_sessions)
+                provider, provenance = load_universe(self.root, universe_mode, universe_sessions)
+                self._validate_pit_feature_binding(provider, snapshot)
                 readiness = local_readiness(self.root, universe_mode, universe_sessions)
                 terminal = load_terminal_events(self.root) if universe_mode == "point_in_time" else None
                 if source_scanner_run_id:
@@ -384,6 +428,18 @@ class RunManager:
                         raise ValueError("source Scanner signal interval does not match")
                     if _config_hash(config) != study["config_hash"]:
                         raise ValueError("source Scanner strategy config does not match")
+                    expected_implementation = {
+                        "strategy_code_hash": sha256_file(registration.path / "strategy.py"),
+                        "strategy_manifest_hash": sha256_file(registration.path / "manifest.yaml"),
+                        "adapter_code_hash": sha256_file(self.root / "src/radar/strategy/adapter.py"),
+                    }
+                    if any(study.get(key) != value for key, value in expected_implementation.items()):
+                        raise ValueError("source Scanner signal-producing implementation does not match")
+                    if any(study.get("host_source_hashes", {}).get(key) != sha256_file(self.root / key)
+                           for key in ("src/radar/strategy/full_strategy2.py",
+                                       "src/radar/strategy/context.py", "src/radar/strategy/validation.py",
+                                       "src/radar/strategy/loader.py")):
+                        raise ValueError("source Scanner signal-producing host implementation does not match")
                 dataset = {
                     "split": split, "signal_start": window[0], "signal_end": window[1],
                     "evaluation_end": window[2], "feature_version": FEATURE_VERSION,
@@ -397,6 +453,7 @@ class RunManager:
                     "terminal_fingerprint": terminal.fingerprint if terminal else None,
                     "terminal_policy": TERMINAL_POLICY if terminal else None,
                     "source_scanner_run_id": source_scanner_run_id,
+                    "signal_source_provenance_hash": _config_hash(study) if source_scanner_run_id else None,
                 }
                 defaults = execution_defaults_from_legacy(
                     backtest_raw, slippage_bps=slippage_bps,
@@ -455,6 +512,7 @@ class RunManager:
                     "pit_readiness": readiness,
                     "source_scanner_run_id": source_scanner_run_id,
                     "split": split,
+                    "signal_source_provenance": study if source_scanner_run_id else None,
                     "window": window,
                     "start_date": window[0],
                     "end_date": window[1],

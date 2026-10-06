@@ -11,13 +11,14 @@ from typing import Mapping
 import duckdb
 import numpy as np
 import pandas as pd
+import yaml
 
 from radar.backtest.runner import split_dates
 from radar.lab.data import (MARKET_FEATURES, MARKET_FEATURE_VERSION, available_features,
                             load_forward_bars, load_strategy_segment, source_watermark)
 from radar.lab.parameters import research_hash
 from radar.lab.scanner import (LABEL_VERSION, build_labels, candidate_metrics,
-                               signal_event_flags)
+                               signal_event_flags, validate_frozen_horizon)
 from radar.lab.store import RunStore
 from radar.lab.universe import load_universe
 from radar.lab.terminal import load_terminal_events, TERMINAL_LABEL_VERSION
@@ -84,6 +85,8 @@ def scan_frames(plugin, config: dict, feature_frame: pd.DataFrame, bars: pd.Data
                 progress=None, universe_provider=None, terminal_provider=None,
                 expected_counts: Mapping[str, int] | None = None) -> tuple[list[dict], dict]:
     """One causal selection pass; forward OHLC is used only after it returns."""
+    if universe_provider is not None:
+        feature_frame = universe_provider.filter_frame(feature_frame)
     required = set(plugin.required_features())
     candidate_parts: list[pd.DataFrame] = []
     background_parts: list[pd.DataFrame] = []
@@ -103,6 +106,10 @@ def scan_frames(plugin, config: dict, feature_frame: pd.DataFrame, bars: pd.Data
         daily = feature_frame.xs(day, level="date", drop_level=False).copy()
         funnel = {"date": str(pd.Timestamp(day).date()),
                   "eligible_universe": int(len(daily))}
+        if universe_provider is not None:
+            membership_count = len(universe_provider.eligible_on(day))
+            funnel["pit_membership"] = membership_count
+            funnel["missing_feature_or_price"] = membership_count - len(daily)
         tradable = daily["tradability_pass"].fillna(False).astype(bool)
         funnel["tradable"] = int(tradable.sum())
         eligible = daily[daily["tradability_pass"].fillna(False).astype(bool)].copy()
@@ -276,9 +283,14 @@ def execute_scanner_run(root: Path, store_path: Path, run_id: str) -> dict:
             raise ValueError("strategy identity changed after queuing")
         split = split_dates(database, root / "config" / "research.yaml")
         sessions = pd.DatetimeIndex(split["sessions"])
+        validate_frozen_horizon(metadata["evaluation"], yaml.safe_load(
+            (root / "config/research.yaml").read_text(encoding="utf-8")))
         start, end = pd.Timestamp(metadata["signal_start"]), pd.Timestamp(metadata["signal_end"])
         coverage_end = (pd.Timestamp(metadata["resolved_config"]["values"]["dataset"]["evaluation_end"])
-                        if metadata.get("resolved_config") else end)
+                        if metadata.get("resolved_config") else pd.Timestamp(split[metadata["split"]][2]))
+        # Forward outcome sessions and OHLC are physically bounded, including
+        # when the last signal has less than a complete label horizon left.
+        sessions = sessions[sessions <= coverage_end]
         covered_sessions = sessions[(sessions >= start) & (sessions <= coverage_end)]
         provider, provenance = load_universe(
             root, metadata.get("universe_mode", "current_snapshot"), covered_sessions)
@@ -308,7 +320,7 @@ def execute_scanner_run(root: Path, store_path: Path, run_id: str) -> dict:
             raise ValueError("Scanner feature coverage incomplete signal sessions: " +
                              str(coverage["incomplete_signal_sessions"][:20]))
         last = sessions.searchsorted(end, side="right") + metadata["evaluation"]["horizon_sessions"]
-        bar_end = sessions[min(last, len(sessions)) - 1]
+        bar_end = min(coverage_end, sessions[min(last, len(sessions)) - 1])
         bars = load_forward_bars(database, start, bar_end)
         rows, metrics = scan_frames(registration.plugin, metadata["config"], frame, bars,
                                     sessions, start, end, metadata["evaluation"],

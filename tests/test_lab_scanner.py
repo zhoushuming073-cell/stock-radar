@@ -322,6 +322,28 @@ def test_pit_forward_label_follows_security_identity_across_ticker_change(tmp_pa
     assert metrics["base_rate"] == 1.0
 
 
+def test_scanner_itself_applies_dated_membership_and_counts_missing_features(tmp_path):
+    csv, manifest = tmp_path / "security-master.csv", tmp_path / "security-master-manifest.json"
+    csv.write_text("security_id,symbol,valid_from,valid_to,listing_date,delisting_date,exchange,security_type,eligible\n"
+                   "A,AAA,2025-01-02,,,2025-01-02,NYSE,common,true\n"
+                   "N,NEW,2025-01-03,,2025-01-03,,NYSE,common,true\n"
+                   "M,MISSING,2025-01-02,,,,NYSE,common,true\n")
+    manifest.write_text(json.dumps({"provider": "fixture", "source_version": "1", "coverage_start": "2025-01-02",
+                                    "coverage_end": "2025-01-03", "coverage_complete": True}))
+    provider = LocalSecurityMaster(csv, manifest)
+    days = pd.DatetimeIndex(["2025-01-02", "2025-01-03"])
+    features = pd.DataFrame([{"date": day, "symbol": symbol, "security_name": symbol,
+        "close": 10., "ret_1": .1, "tradability_pass": True} for day in days for symbol in ("AAA", "NEW")])
+    bars = features.assign(open=10., high=10.6, low=9.9)
+    rows, metrics = scan_frames(ManyCandidates(), {"selection": {"max_candidates": None}},
+        features.set_index(["date", "symbol"], drop=False), bars, days, days[0], days[-1],
+        evaluation_settings({"horizon_sessions": 1}), universe_provider=provider)
+    assert {(str(pd.Timestamp(r["signal_date"]).date()), r["symbol"]) for r in rows} == {
+        ("2025-01-02", "AAA"), ("2025-01-03", "NEW")}
+    assert metrics["funnel_by_day"][0]["pit_membership"] == 2
+    assert metrics["funnel_by_day"][0]["missing_feature_or_price"] == 1
+
+
 def test_market_context_uses_history_through_signal_date_only():
     days = pd.bdate_range("2025-01-02", periods=80)
     original = pd.DataFrame([{"date": day, "symbol": symbol, "close": float(i + 100)}

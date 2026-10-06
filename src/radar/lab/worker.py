@@ -145,6 +145,10 @@ def execute_run(root: Path, store_path: Path, run_id: str) -> dict:
             if study["status"] != "completed" or not store.verify_scanner_artifacts(source_scanner):
                 raise ValueError("source Scanner artifact is unavailable or changed")
             source_meta = study["metadata"]
+            if (source_meta.get("strategy_code_hash") != metadata.get("strategy_code_hash") or
+                    source_meta.get("adapter_code_hash") != metadata.get("adapter_code_hash") or
+                    source_meta != metadata.get("signal_source_provenance")):
+                raise ValueError("source Scanner signal-producing implementation provenance differs")
             if (source_meta.get("strategy_id") != metadata["strategy_id"] or
                     source_meta.get("strategy_version") != metadata["strategy_version"] or
                     source_meta.get("config_hash") != metadata["config_hash"] or

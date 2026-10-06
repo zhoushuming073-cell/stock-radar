@@ -42,6 +42,8 @@ class UniverseProvenance:
     coverage_start: str | None
     coverage_end: str | None
     bias_risk: str
+    feature_basis: str | None = None
+    feature_store_sha256: str | None = None
 
     def metadata(self) -> dict:
         return self.__dict__.copy()
@@ -60,8 +62,16 @@ class LocalSecurityMaster:
                     "coverage_complete"):
             if key not in self.manifest:
                 raise ValueError(f"security-master manifest missing {key}")
-        if self.manifest["coverage_complete"] is not True:
+        self.reconstructed = self.manifest.get("reconstruction_kind") == "snapshot-interval-v1"
+        if self.manifest["coverage_complete"] is not True and not self.reconstructed:
             raise ValueError("security-master source has not attested complete coverage")
+        if self.reconstructed:
+            if self.manifest["coverage_complete"] is not False or self.manifest.get("source_attested_completeness") is not False:
+                raise ValueError("reconstructed membership cannot attest complete coverage")
+            if hashlib.sha256(self.csv_path.read_bytes()).hexdigest() != self.manifest.get("output_sha256"):
+                raise ValueError("security-master output hash mismatch")
+            if not self.manifest.get("coverage_windows"):
+                raise ValueError("reconstructed membership requires explicit coverage windows")
         for key in ("provider", "source_version"):
             if not isinstance(self.manifest[key], str) or not self.manifest[key].strip():
                 raise ValueError(f"security-master {key} must be nonempty")
@@ -69,7 +79,10 @@ class LocalSecurityMaster:
         self.coverage_end = pd.Timestamp(self.manifest["coverage_end"]).normalize()
         if self.coverage_start > self.coverage_end:
             raise ValueError("invalid security-master coverage interval")
-        self.frame = pd.read_csv(self.csv_path, dtype={"security_id": str, "symbol": str})
+        # NA is a real ticker. Pandas' default NA vocabulary must not turn
+        # security identifiers into missing values; dates are parsed below.
+        self.frame = pd.read_csv(self.csv_path, dtype={"security_id": str, "symbol": str},
+                                 keep_default_na=False)
         missing = REQUIRED_COLUMNS - set(self.frame)
         if missing:
             raise ValueError(f"security-master CSV missing columns: {sorted(missing)}")
@@ -103,6 +116,15 @@ class LocalSecurityMaster:
         self._fingerprint = hashlib.sha256(
             self.csv_path.read_bytes() + b"\0" +
             self.manifest_path.read_bytes()).hexdigest()
+        self.feature_store = None
+        sidecar = self.csv_path.with_name("security-master-feature-store.json")
+        if sidecar.exists():
+            self.feature_store = json.loads(sidecar.read_text(encoding="utf-8"))
+            if self.feature_store.get("master_output_sha256") != hashlib.sha256(self.csv_path.read_bytes()).hexdigest():
+                raise ValueError("PIT feature store is bound to another security master")
+            self._fingerprint = hashlib.sha256(
+                self.csv_path.read_bytes() + b"\0" + self.manifest_path.read_bytes() +
+                b"\0" + sidecar.read_bytes()).hexdigest()
 
     @property
     def fingerprint(self) -> str:
@@ -110,25 +132,28 @@ class LocalSecurityMaster:
 
     def _validate_intervals(self) -> None:
         # A ticker may be reused, but never by two security IDs on one date.
-        for symbol, rows in self.frame.groupby("symbol"):
-            ordered = rows.sort_values("valid_from")
-            end = None
-            for row in ordered.itertuples(index=False):
-                if end is not None and row.valid_from <= end:
-                    raise ValueError(f"overlapping symbol mappings: {symbol}")
-                end = row.valid_to if pd.notna(row.valid_to) else pd.Timestamp.max.normalize()
-        for security_id, rows in self.frame.groupby("security_id"):
-            ordered = rows.sort_values("valid_from")
-            end = None
-            for row in ordered.itertuples(index=False):
-                if end is not None and row.valid_from <= end:
-                    raise ValueError(f"overlapping security identity mappings: {security_id}")
-                end = row.valid_to if pd.notna(row.valid_to) else pd.Timestamp.max.normalize()
+        for key, label in (("symbol", "symbol"), ("security_id", "security identity")):
+            ordered = self.frame.sort_values([key, "valid_from"], kind="stable")
+            ends = ordered.valid_to.fillna(pd.Timestamp.max.normalize())
+            prior_end = ends.groupby(ordered[key], sort=False).shift()
+            overlap = ordered.valid_from.le(prior_end)
+            if overlap.any():
+                raise ValueError(f"overlapping {label} mappings: {ordered.loc[overlap, key].iloc[0]}")
 
     def eligible_on(self, date: pd.Timestamp) -> pd.DataFrame:
+        rows = self.observed_on(date)
+        return rows.loc[rows["eligible"]].copy()
+
+    def observed_on(self, date: pd.Timestamp) -> pd.DataFrame:
+        """Return observed instruments, retaining unknown/ineligible types."""
         day = pd.Timestamp(date).normalize()
+        if pd.isna(day) or day < self.coverage_start or day > self.coverage_end:
+            raise ValueError("PIT date is outside source coverage")
+        if self.reconstructed and not any(
+                pd.Timestamp(first) <= day <= pd.Timestamp(last)
+                for first, last in self.manifest["coverage_windows"]):
+            raise ValueError(f"PIT source gap on {day.date()}")
         rows = self.frame[
-            self.frame["eligible"] &
             self.frame["valid_from"].le(day) &
             (self.frame["valid_to"].isna() | self.frame["valid_to"].ge(day)) &
             (self.frame["listing_date"].isna() | self.frame["listing_date"].le(day)) &
@@ -151,6 +176,10 @@ class LocalSecurityMaster:
             return frame.copy()
         source = frame.reset_index(drop=True).copy()
         source["date"] = pd.to_datetime(source["date"]).dt.normalize()
+        for day in source["date"].unique():
+            self.observed_on(day)
+        if "security_id" in source:
+            source = source.rename(columns={"security_id": "_input_security_id"})
         source = source.drop(columns=["security_name"], errors="ignore")
         name_column = ["security_name"] if "security_name" in self.frame else []
         master = self.frame.loc[self.frame["eligible"],
@@ -164,6 +193,10 @@ class LocalSecurityMaster:
             (result["listing_date"].isna() | result["listing_date"].le(day)) &
             (result["delisting_date"].isna() | result["delisting_date"].ge(day))
         ].copy()
+        if "_input_security_id" in result:
+            if result["_input_security_id"].ne(result["security_id"]).any():
+                raise ValueError("price/feature security identity differs from PIT mapping")
+            result = result.drop(columns="_input_security_id")
         if result.duplicated(["date", "symbol"]).any():
             raise ValueError("ambiguous PIT security mapping for date and symbol")
         result = result.drop(columns=["valid_from", "valid_to",
@@ -180,7 +213,10 @@ class LocalSecurityMaster:
             source_version=str(self.manifest["source_version"]),
             fingerprint=self.fingerprint,
             coverage_start=str(self.coverage_start.date()),
-            coverage_end=str(self.coverage_end.date()), bias_risk="source_dependent")
+            coverage_end=str(self.coverage_end.date()),
+            bias_risk="source_dependent_incomplete" if self.reconstructed else "source_dependent",
+            feature_basis=(self.feature_store or {}).get("feature_basis"),
+            feature_store_sha256=(self.feature_store or {}).get("database_sha256"))
 
 
 def current_snapshot_provenance() -> UniverseProvenance:
