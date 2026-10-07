@@ -44,7 +44,7 @@
 **Current stage · 2026-10-07:** research infrastructure and initial local LEAN
 integration accepted; open-source historical PIT reconstruction and an independent
 identity-bounded feature store added. PIT data remains exploratory and incomplete,
-and PIT LEAN execution remains blocked. [PIT acceptance](reports/pit-acceptance-2026-10-07.md),
+and the installed formal PIT portfolio remains blocked by specific Run dependencies. [Final PIT execution acceptance](reports/pit-final-acceptance-2026-10-07.md), [PIT acceptance](reports/pit-acceptance-2026-10-07.md),
 [reviewed identity / retired-price acceptance](reports/pit-data-trust-acceptance-2026-10-07.md)
 and [development report](reports/development-status-2026-10-06.md)
 document what works, what is limited and what remains open.
@@ -508,7 +508,7 @@ Generated files under `data/` are gitignored.
 - **LEAN bridge scope:** daily Open/Close proxies, immediate settlement,
   next-session execution, configured fees/slippage and native portfolio accounting.
   No real minute path, order-book depth or partial fills. Current illustrative fees
-  are unconfirmed; PIT terminal/corporate-action execution is explicitly rejected.
+  are unconfirmed; PIT execution uses a frozen run dependency gate; unresolved required prices, identities or actions block that Run.
 - **Market refresh and research refresh are separate.** The silent daily task
   updates `market.duckdb` and validation reports. It does not automatically merge
   new bars into `phase2-research.duckdb`, rebuild its features, or rerun Scanner.
@@ -569,7 +569,7 @@ $env:STOCK_RADAR_TEST_LEAN = '1'
 Remove-Item Env:STOCK_RADAR_TEST_LEAN
 ```
 
-The latest recorded native-inclusive acceptance is 314 passed on 2026-10-07.
+The latest recorded native-inclusive acceptance is 377 passed on 2026-10-07.
 For the portable suite:
 
 ```powershell

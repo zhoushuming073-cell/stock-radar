@@ -1,0 +1,381 @@
+{
+  "policy": "pit-final-local-evidence-v1",
+  "date": "2026-10-07 Asia/Shanghai",
+  "implementation_commit": "013bcc9bbf4e903681e55dcbf6f2ae1f4b6a913f",
+  "formal_pit_operational": false,
+  "full_test_suite": {
+    "passed": 377,
+    "warnings": 1,
+    "native_enabled": true,
+    "seconds": 82.92
+  },
+  "post_ui_static_tests": 10,
+  "scanners": {
+    "current_snapshot": "d30a9c6d-1780-4211-a0d4-94372bad97b2",
+    "point_in_time": "fc7a7002-277b-4921-b2fc-17e1bb5a929c"
+  },
+  "current_native": {
+    "run_id": "7384345d-1137-426c-87a4-b36030135e63",
+    "status": "completed",
+    "metrics": {
+      "average_loss": -7147.148723429962,
+      "average_win": 5269.203621636916,
+      "benchmark_return": 0.16222810931399878,
+      "cagr": null,
+      "final_equity": 934221.7906461,
+      "initial_capital": 1000000.0,
+      "max_drawdown": -0.477494454041855,
+      "net_pnl": -65778.20935390005,
+      "profit_factor": 0.9661376757356074,
+      "sessions": 245,
+      "sharpe": -0.038827630563246646,
+      "sortino": -0.05705165687557905,
+      "total_fees": 207619.738886,
+      "total_return": -0.0657782093539,
+      "trade_count": 640,
+      "turnover": 92.84563401840384,
+      "win_rate": 0.5671875
+    },
+    "average_net_return": -0.0017195838273447474,
+    "last_equity_keys": [
+      "timestamp",
+      "date",
+      "equity",
+      "cash",
+      "holdings_value",
+      "benchmark",
+      "drawdown",
+      "positions",
+      "gross_exposure"
+    ],
+    "events": {},
+    "native_artifacts": {
+      "manifest.json": "c10561fc1d901ba7fd4cc563f6ab32bcf1097b8593e6635d7118514547c37a15",
+      "data-index.json": "0d7e41588a7a179a89b34e862315cec2add415c4e9ba074be3ab3f7cb9ee7979",
+      "signals.json": "4f1a7f503c023dd067e266a0b7086f1c6933c913072df2722baa17bcb0272b22",
+      "source-prices.csv": "b371192b2e50bb407930780460f7f9ef5abbebccb1f77a504b0ec512b0d19808",
+      "normalized-result.json": "acc6f4a43a230e638d00f43b03bcbd479944acde9df9901656071b253c605fd5",
+      "7384345d-1137-426c-87a4-b36030135e63.json": "17e4fe80f7aa661712e6d0c4625cccb64dfbaabd967b06ad5b60eae17e845161"
+    },
+    "strict_comparison": {
+      "strategy_id": true,
+      "strategy_version": true,
+      "config_hash": true,
+      "fee_profile": true,
+      "slippage_bps": true,
+      "window": true,
+      "engine_identity": true,
+      "execution": true
+    },
+    "open_positions_at_end": 1,
+    "peak_position_count": 19,
+    "terminal_events": "not represented by unchanged Current model",
+    "request_monitor": {
+      "succeeded-data-requests-count": 58500,
+      "failed-data-requests-count": 807332,
+      "succeeded-universe-data-requests-count": 0,
+      "failed-universe-data-requests-count": 0,
+      "total-data-requests-count": 865832,
+      "failed-data-requests-percentage": 93.0,
+      "total-universe-data-requests-count": 0,
+      "failed-universe-data-requests-percentage": 0.0,
+      "data-request-rates": [
+        0.0,
+        5834.0,
+        36179.0,
+        40033.0,
+        22645.0,
+        17559.0,
+        14980.0,
+        14308.0,
+        13893.0,
+        30175.0,
+        27626.0,
+        40957.0,
+        22751.0,
+        971.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "failed-data-requests-file": "failed-data-requests-20261007042111212.txt"
+    }
+  },
+  "final_pit_attempt": {
+    "run_id": "5e2458cf-b587-4367-be36-cf6c1d076b29",
+    "status": "failed",
+    "error": "ValueError: LEAN PIT run BLOCKED: {\"CorporateAction\": 6422, \"Identity\": 6418, \"LEAN Input\": 2, \"Membership\": 1, \"Price\": 14023}",
+    "dependency": {
+      "dependency_sha256": "03118eee3cebb3cab78b86949cac39ab0a36b0a222322ca1e1cea66707a7e45e",
+      "sha256": "8dd55b0ef9a2d5e9901fb518995b7a48a61ab15a0f5c3e202c56e580f8057889"
+    },
+    "readiness": {
+      "dependency_sha256": "03118eee3cebb3cab78b86949cac39ab0a36b0a222322ca1e1cea66707a7e45e",
+      "formal_pit_ready": false,
+      "missing_prices": 435803,
+      "policy": "pit-run-closure-v1",
+      "preflight_ready": false,
+      "price_coverage": 0.7846356003105417,
+      "required_prices": 2023561,
+      "research_validity": "retrospective_pit_blocked",
+      "scope": "run",
+      "scorecard": {
+        "CorporateAction": "FAIL",
+        "Identity": "FAIL",
+        "LEAN Input": "FAIL",
+        "LEAN Native Execution": "NOT_RUN",
+        "Membership": "FAIL",
+        "Price": "FAIL",
+        "Result Reconciliation": "NOT_RUN",
+        "Terminal": "PASS"
+      },
+      "security_count": 6422,
+      "signals": 4177
+    },
+    "gate_reason_count": {
+      "CorporateAction": 6422,
+      "Identity": 6418,
+      "LEAN Input": 2,
+      "Membership": 1,
+      "Price": 14023,
+      "Terminal": 0
+    },
+    "source_hashes": {
+      "config/lean.yaml": "94f55ce17790da83a232effa7f8cd36ccb1597c1e6977c3cc7f698ed80c30719",
+      "src/radar/backtest/costs.py": "33532553b8e141c32a1ffcc987ea74abc437dd753835ca1254e500e0e4221d95",
+      "src/radar/backtest/runner.py": "a6ef8dc07514bff030b53e9e905a1e18e910ae88b2f45d3287d9a6353f19473e",
+      "src/radar/lab/data.py": "0d1f88b225b877c7b096553b070395a21eaf84daae1148ad4975931668754019",
+      "src/radar/lab/parameters.py": "fdb7260e88ae09144a4d34d13fe05fefeb9b5832180a4e878e64547b1575345b",
+      "src/radar/lab/readiness.py": "6880d1ebffb589b90235ae44f34b54dacd5c49abb3db1d1c6d684466b6b37012",
+      "src/radar/lab/terminal.py": "a581f443509d64b0d7e15950b2b2723dd0c1aac5368a965dd226fed40daf377c",
+      "src/radar/lab/universe.py": "2d75b3a8eb2cef055737aef9bb76cfc3addd1c2e20ef46f05548fd02877aeadb",
+      "src/radar/lab/worker.py": "c4d1f5b0245142081875c3b3083275faaaee8778d77e0b3a2ceae00d93a267cb",
+      "src/radar/lean/__init__.py": "f410b7abdae05098491360119da81025063438bc5968a7a1e3526e36584e9261",
+      "src/radar/lean/algorithm.py": "88c5989467b45f56d2f192ed26e9b1331465e1bde0c5bca74dbf1ac5794de41e",
+      "src/radar/lean/contracts.py": "f9cead84515881c3576d2c5879e5c829f0ff1c49db03b8d7836825982db38c46",
+      "src/radar/lean/export.py": "b112312003752eb0023cd921f04ca5e630438f119eb31833402320605cbce2cc",
+      "src/radar/lean/integration.py": "68bf432b3582d8a5e6c56fa73dff475f600a96d8974e5b2b483c381432c4f7c0",
+      "src/radar/lean/result_adapter.py": "f73687d53bc82040c096fc4579a568fa0a915e4a7a362176a9c5990a319075b0",
+      "src/radar/lean/runtime.py": "8152b27a8a331a72483a147ef78b042b4016e28ba7e1aff13794ba7882c346b7",
+      "src/radar/pit/__init__.py": "c8ac747a12d1e2674faa104215d305b9aeceef1eb6326d9f13334cab326e1c56",
+      "src/radar/pit/actions.py": "e6ec892ca32d12d002dd51d950a1c7fa0bccdad6f188c081058c2401141d735b",
+      "src/radar/pit/audit.py": "cb2686473030b4a545a17bdbe375fb1ae4d3ce87606e2022f379950be1ee4b23",
+      "src/radar/pit/builder.py": "7a71b148b0370c11f806f7a8665dd4ccfe90f511c7c60737dfba1bb42e1cc04a",
+      "src/radar/pit/execution.py": "5773da3bcb25001b9040cd4a1ac28ddd8f24ab34d4899a052ba0900a05d8ae29",
+      "src/radar/pit/features.py": "e1f01ef09705e250356c3d75ceee8b0200bfac9ff167ec2f58a19ffc6df2360d",
+      "src/radar/pit/lean_plan.py": "4adc001af19d6cdfc7382855a93279228e46e937caed4d35da2ce75baa4f4e1c",
+      "src/radar/pit/price_import.py": "b98001d09b1f9331f63d7b903e47d1bdb1b8bba8c4fe552a8bd4ad580df3639b",
+      "src/radar/pit/public_prices.py": "dd2907eb201bdadf3979d598ff41aa334228be381f1d6ab3f34f6eebc0f24ebb",
+      "src/radar/pit/quality.py": "0dd82b0b978b66f2c0092f824703144204d97d10b8b4a3ea51bb3becf349b7e3",
+      "src/radar/pit/resolution.py": "e60f05602bbc5c1c2bebd25adee29dcf1876d908a3e23ea714c6bcc3addb09ac",
+      "src/radar/pit/run.py": "89763b47b522d937b6ce7cad8009c13dec3fa036a11c2c73625dbc242a57c9a8",
+      "src/radar/pit/sources.py": "dc56e5bc0095f087139e7c76e0347ffac3516fb7ce66d1c4650c04958d33949c",
+      "src/radar/pit/trust.py": "eccd0b86ba921fe7ecb46be619c26f7378ede95623753191a9a5b6f16b3fa7b4",
+      "src/radar/pit/validation.py": "b640111fd11303d1518dc75a66347e732c29da84f7836521abe02a2ff9e296cf",
+      "src/radar/research/pipeline.py": "27f28e32cf667e22ad950a79a22be9070edd822096e06549d3ca89be0d31816c",
+      "src/radar/strategy/context.py": "4a43e4b3b1c887b039c499afbfb4a88332dac3c1a5c54aae38dbed765e20b888",
+      "src/radar/strategy/loader.py": "f6bfe6eb84f07e4123b329608ab8bf7fd49617968e4ab1d162390ebc2b9d887f",
+      "src/radar/strategy/validation.py": "84424509ce45b2191f7069d5aee8cceeba8e492c5707b93c8be26ffd5c8a667c"
+    }
+  },
+  "scanner_comparison": {
+    "current_snapshot": {
+      "candidates": 6981,
+      "selected": 6981,
+      "sessions": 235,
+      "population_session_sum": 2397726,
+      "population_min": 9609,
+      "population_max": 10859,
+      "feature_complete_sum": 1242905,
+      "no_price_sum": 0,
+      "insufficient_warmup_sum": 0,
+      "config_hash": "86b4ca06bd0556c0a732b5c9e829f99cfdd03d617bcbe33602233dba939ff8d3",
+      "resolved_config_hash": "b372f8e924e3745bd59f6876588d328f0213c088bbfa9cc29b41468edb1ad84b"
+    },
+    "point_in_time": {
+      "candidates": 4177,
+      "selected": 4177,
+      "sessions": 235,
+      "population_session_sum": 1218543,
+      "population_min": 5166,
+      "population_max": 5213,
+      "feature_complete_sum": 687937,
+      "no_price_sum": 161257,
+      "insufficient_warmup_sum": 64696,
+      "config_hash": "86b4ca06bd0556c0a732b5c9e829f99cfdd03d617bcbe33602233dba939ff8d3",
+      "resolved_config_hash": "ba86b0d91d9b7e9197395cc052c55e5e0fdd81fbaf61665db922633169c68f2c"
+    },
+    "all": {
+      "overlap": 4177,
+      "current_only": 2804,
+      "pit_only": 0
+    },
+    "selected": {
+      "overlap": 4177,
+      "current_only": 2804,
+      "pit_only": 0
+    }
+  },
+  "candidate_decomposition": {
+    "current_only_observations": {
+      "eligible_common_feature_or_warmup_or_selection_difference": 1314,
+      "no_dated_master_observation": 939,
+      "excluded_type:adr": 431,
+      "excluded_type:unknown": 89,
+      "excluded_type:warrant": 22,
+      "excluded_type:spac": 9
+    },
+    "overlap_rank_changed": 3706,
+    "overlap_score_changed": 0,
+    "interpretation": "categories describe source observations and inferred classification, not certified legal IPO/delist or isolated causal return effects"
+  },
+  "resolution_queue": {
+    "dependency_sha256": "03118eee3cebb3cab78b86949cac39ab0a36b0a222322ca1e1cea66707a7e45e",
+    "priority": 0,
+    "assessed": 6422,
+    "blocked": 6422,
+    "accepted": 0,
+    "pending": 0,
+    "attempt_hashes_verified": true,
+    "sqlite_sha256": "51776477560a66443f658321e3562396b00e044b0a0b2fe338d1950e51ab9312"
+  },
+  "network": {
+    "discovery": {
+      "status": "failed",
+      "reason": "HTTP Error 403: Forbidden",
+      "policy": "access denial not bypassed"
+    },
+    "reviewed_identities": 4,
+    "downloaded_bars": 1439,
+    "accepted": 0,
+    "status": "quarantined"
+  },
+  "local_artifact_hashes": {
+    "formal-run-receipt.json": "4fae2152af3c9360f66715dc3d1b2835aa3e456b281001f108d13035e17fbeaa",
+    "pit-final-gated-attempt.json": "5005648097a7dfeffe8fe6c068fbb3601c58e227bae7b42e676514c3453f5fd0",
+    "resolution-network-outcomes.json": "0c14ce88d1fedd36050f77b67b86bcf8417bb410e3b5fcfdede0ecb83ca29ecd",
+    "real-native-goldens.json": "687f0527f343435e449c457cc74e59a85ca00c7a78bf19a8b8f8242e1f77cce8",
+    "entry-receipt.json": "0919085e5861f8c9a83f4cfb8bbdc1adec40a681fc2a4be11ad3af1fca716adc",
+    "exit-database-receipt.json": "c781616e25808a96f366130ea4feee8cb4f2bce994220f8dc07a6110879e0ead",
+    "comparison.json": "616beab95806c5963949b320d5b0e641dc11412bb80123b38e0ec5e9df943a72",
+    "api-qa.json": "2a4890329c0a2868c3c5afc0f77e51017f8a149a3e843d0615df2f16b766a8f4"
+  },
+  "limitations": [
+    "native real event witnesses use hand-authored accounting-test signals; no full formal Scanner population PASS",
+    "original 8765 API not restarted after automatic approval rejected process/background operations; new API verified separately on 8766",
+    "retrospective validation, not Fresh OOS"
+  ],
+  "global_scorecard": {
+    "dimensions": {
+      "Membership": {
+        "status": "PARTIAL",
+        "mapping_intervals": 90339,
+        "source_gap_windows": 0,
+        "source_attested_complete": false
+      },
+      "Identity": {
+        "status": "PARTIAL",
+        "verified_intervals": 17,
+        "unresolved_intervals": 90322,
+        "unresolved_ratio": 0.9998118199227355
+      },
+      "Classification": {
+        "status": "PARTIAL",
+        "verified_intervals": 17,
+        "unknown_intervals": 5707,
+        "unknown_ratio": 0.0631731588793323,
+        "unknown_eligible": 0
+      },
+      "Event": {
+        "status": "PARTIAL",
+        "verified_event_records": 15,
+        "listing_dates_known_intervals": 3,
+        "delisting_dates_known_intervals": 0,
+        "types": {
+          "symbol_change": 3,
+          "merger": 3,
+          "trading_suspension": 4,
+          "exchange_transfer": 2,
+          "listing": 2,
+          "split": 1
+        }
+      },
+      "Price": {
+        "status": "PARTIAL",
+        "eligible_common_episodes": 15263,
+        "no_price": 7605,
+        "partial_price": 140,
+        "complete_available_interval": 7518,
+        "insufficient_warmup_126": 9642,
+        "expected_security_sessions": 6892714,
+        "missing_security_sessions": 1419830,
+        "feature_store_counts": {
+          "securities": 7658,
+          "feature_rows": 5472884
+        },
+        "identity_certified_all_series": false
+      },
+      "CorporateAction": {
+        "status": "FAIL",
+        "validated_general_factor_pipeline": false,
+        "terminal_economic_models_enabled": 0,
+        "documented_split_events": 1
+      }
+    },
+    "lean_pit_execution_ready": false,
+    "lean_minimum_gates": {
+      "signal_identity_unambiguous": {
+        "status": "FAIL",
+        "reason": "not certified end to end for the requested portfolio"
+      },
+      "execution_bars_identity_verified": {
+        "status": "FAIL",
+        "reason": "not certified end to end for the requested portfolio"
+      },
+      "symbol_maps_verified": {
+        "status": "FAIL",
+        "reason": "not certified end to end for the requested portfolio"
+      },
+      "split_factors_verified": {
+        "status": "FAIL",
+        "reason": "not certified end to end for the requested portfolio"
+      },
+      "position_lifecycle_complete": {
+        "status": "FAIL",
+        "reason": "not certified end to end for the requested portfolio"
+      },
+      "delisting_events_complete": {
+        "status": "FAIL",
+        "reason": "not certified end to end for the requested portfolio"
+      },
+      "terminal_economics_supported": {
+        "status": "FAIL",
+        "reason": "not certified end to end for the requested portfolio"
+      },
+      "provenance_complete": {
+        "status": "FAIL",
+        "reason": "not certified end to end for the requested portfolio"
+      },
+      "real_golden_cases_validated": {
+        "status": "FAIL",
+        "reason": "not certified end to end for the requested portfolio"
+      },
+      "native_result_reconciliation": {
+        "status": "FAIL",
+        "reason": "not certified end to end for the requested portfolio"
+      }
+    },
+    "research_validity": "reconstructed_membership_exploratory",
+    "survivorship_bias_risk": "source_dependent_incomplete",
+    "coverage_audit_sha256": "ba7324120245ca761db2555f253d03e6e6f4f0a6c3a71e26a6d41ccf19f6ffd8",
+    "coverage_calendar_start": "2021-09-01",
+    "coverage_calendar_end": "2026-09-28"
+  },
+  "api_qa": {
+    "port": 8766,
+    "global_scope": "global",
+    "run_attempts": 2,
+    "current_status": "completed",
+    "pit_status": "failed/BLOCKED"
+  }
+}

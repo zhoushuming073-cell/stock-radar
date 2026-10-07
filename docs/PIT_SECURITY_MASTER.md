@@ -68,7 +68,7 @@ fingerprint. Changing the imported files after a run is queued fails that run.
 
 Price history, feature history, and corporate-action-adjusted series must also
 cover delisted securities. A security master alone does not fill missing bars.
-LEAN remains the formal execution engine; **PIT LEAN execution remains rejected**
+LEAN remains the formal execution engine; **installed formal PIT portfolio execution remains blocked by run dependencies**
 until corporate actions, identity maps and terminal economics are trustworthy.
 
 ## Reconstruction sources and uncertainty
@@ -243,5 +243,7 @@ of a feature store or a few passing cases.
 
 Installed batch measurements, exceptions and real golden cases are in the
 [new trust acceptance](../reports/pit-data-trust-acceptance-2026-10-07.md).
-[LEAN format design](PIT_LEAN_DATA_DESIGN.md) is non-executable and explicitly
-distinct from QuantConnect official data.
+[LEAN execution contract](PIT_LEAN_DATA_DESIGN.md) now includes frozen Run closure,
+conditional preflight, raw/split accounting and native witnesses. Generated data
+is explicitly distinct from QuantConnect official data. See the new
+[final acceptance](../reports/pit-final-acceptance-2026-10-07.md) for actual Run blockers.

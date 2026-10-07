@@ -7,6 +7,7 @@
 - **📌 当前总账:** [Canonical status / active backlog](journey-2026-09-30-0651-📌当前总账.md) — updated 2026-10-07 Asia/Shanghai.
 - **PIT migration acceptance:** [2026-10-07 · Local reconstruction and limitations](pit-acceptance-2026-10-07.md) — pinned data, price gaps, production Scanner samples and correctness regression evidence.
 - **PIT trust / retired-price acceptance:** [2026-10-07 · Reviewed identities, events and real OHLCV](pit-data-trust-acceptance-2026-10-07.md) — installed enrichment, six-dimension readiness, 342 tests and pre-task daily-update exception; first acceptance preserved.
+- **PIT final execution acceptance:** [2026-10-07 · Frozen Run closure, native actions and formal blockers](pit-final-acceptance-2026-10-07.md) — Global and Run scorecards remain separate; no false portfolio completion.
 - **Current development-stage report:** [2026-10-06 · Research + local LEAN integration](development-status-2026-10-06.md) — detailed Chinese overview, acceptance scope, limitations and next milestones.
 
 The canonical journey owns completed/open/partial backlog status. The dated

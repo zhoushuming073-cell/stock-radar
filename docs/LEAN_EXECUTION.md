@@ -95,8 +95,11 @@ LEAN does not calculate selection factors.
   order-book depth and partial fills are not simulated. Existing unconfirmed
   illustrative fee schedules retain that status.
 - Current Snapshot retains its documented survivorship/data risks. Point-in-Time
-  terminal/corporate-action execution is rejected explicitly until separately
-  validated. It never silently downgrades to Current Snapshot or legacy.
+  PIT execution requires a frozen full-population Run dependency closure and all
+  six preflight gates PASS. The installed representative Validation Run remains
+  BLOCKED. Native rename/split/cash-entitlement cases are validated separately;
+  unsupported terminal economics remain blocked. It never silently downgrades
+  to Current Snapshot or legacy. See [PIT execution](PIT_LEAN_DATA_DESIGN.md).
 
 ## Result contract: `stock-radar-backtest-v1`
 
@@ -155,3 +158,9 @@ portfolio, benchmark, drawdown, positions, trades and engine audit.
 
 LEAN is [QuantConnect/Lean](https://github.com/QuantConnect/Lean), Apache-2.0.
 Its source and runtimes are not copied into Stock Radar's Git repository.
+
+The 2026-10-07 final PIT pass has 377 local tests passing with native LEAN enabled.
+See [final PIT acceptance](../reports/pit-final-acceptance-2026-10-07.md) for
+the complete frozen Validation comparison, supported action accounting,
+remaining Run dependency failures and the difference between event goldens
+and formal strategy execution.
