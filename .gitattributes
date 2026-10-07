@@ -1,0 +1,13 @@
+# These new audit sources are frozen by physical SHA-256. Preserve their bytes
+# across Windows checkouts without changing the older frozen source files.
+config/pit_research_decision_rules.json text eol=lf
+scripts/audit_pit_research_decisions.py text eol=lf
+scripts/capture_pit_decision_targets.py text eol=lf
+scripts/certify_pit_core_bounds.py text eol=lf
+scripts/finalize_pit_decision_acceptance.py text eol=lf
+scripts/resolve_pit_decision_scope.py text eol=lf
+scripts/write_pit_final_report.py text eol=lf
+src/radar/pit/decision.py text eol=lf
+src/radar/pit/decision_bounds.py text eol=lf
+tests/test_pit_decision_bounds.py text eol=lf
+tests/test_pit_decision_scope.py text eol=lf

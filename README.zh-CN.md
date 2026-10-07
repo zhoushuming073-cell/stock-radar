@@ -52,6 +52,12 @@ Scanner已实际计算。真实Research-Grade PIT Native LEAN仍被身份、重�
 `/api/lab/pit-research-readiness`明确显示研究级标签，禁止回退Current；现有常驻服务需
 正常重载才能加载新增接口。[研究级验收报告](reports/acceptance/pit-research-grade-acceptance-2026-10-07.md)
 包含三层缺口、敏感性结果、证据哈希和15项验收答复。
+最新决策范围审计：身份安全口径仍有29–72个/日可能竞争者，Full/Core每日Top3重合
+19.9115%；Core实际候选尚有106个未解决身份、12个执行日期及10个事件/价格审查目标。
+已接受10条SMR持仓范围补充行情，未发布新Native输入，正式PIT组合继续NOT_RUN。
+[最终20项验收](reports/pit-research-final-acceptance-2026-10-07.md)与
+[P0队列](reports/evidence/pit-research-final-priority-2026-10-07.json)给出剩余决策范围，
+不再清洗全市场无关缺口。新审计通过CLI提供，现有API/Native保持原冻结阻塞门禁。
 [本轮可信度与退出行情验收](reports/acceptance/pit-data-trust-acceptance-2026-10-07.md)记录 9 个已核验身份、1,462 条真实补价、数据库耦合、六维 readiness 和旧库定时更新例外。
 [开发阶段报告](reports/current/development-status-2026-10-06.md)说明已完成能力、验收范围、限制和待办。
 网页新回测只使用 LEAN，Stock Radar 保留全部策略/选股逻辑；安装路径可配置，旧版网页已封存到 GitHub 标签。
@@ -448,7 +454,8 @@ $env:STOCK_RADAR_TEST_LEAN = '1'
 Remove-Item Env:STOCK_RADAR_TEST_LEAN
 ```
 
-最近一次记录为 2026-10-07 原生测试在内的436项通过；最终研究源绑定修正后另有67项专项通过。仅运行可移植测试：
+最近一次记录为2026-10-07原生测试在内的468项通过，包含32项新增决策范围用例。
+真实引擎fixture通过不等于真实Strategy 2 PIT组合通过。仅运行可移植测试：
 
 ```powershell
 & .\.venv\Scripts\python.exe -m pytest

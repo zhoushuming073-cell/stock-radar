@@ -1,0 +1,39 @@
+{
+  "policy": "pit-research-decision-v1",
+  "quality_tier": "research-grade",
+  "label": "Research-Grade PIT",
+  "base_rules": "config/pit_research_grade_rules.json",
+  "strategy": "full_strategy2_v1@1.0.0",
+  "window": ["2024-09-30", "2025-09-08", "2025-09-22"],
+  "core_rules_unchanged": true,
+  "top_k": 3,
+  "boundary_k": 5,
+  "release": {
+    "maximum_daily_true_competitors": 3,
+    "minimum_top3_slot_overlap": 0.98,
+    "minimum_identical_top3_days": 0.95,
+    "maximum_unknown_changed_top3_slots": 0,
+    "maximum_candidate_identity_unresolved": 0,
+    "maximum_candidate_execution_gaps": 0,
+    "maximum_candidate_material_unresolved": 0,
+    "maximum_known_split_terminal_unresolved": 0,
+    "outcome_absolute_difference": 0.05,
+    "ordinary_dividend_return_bound": 0.001
+  },
+  "rank_proof": {
+    "missing_dollar_volume_upper_bound": null,
+    "complete_recent_window": 20,
+    "ties": "security_id ascending",
+    "identity_or_126_session_uncertainty": "may fail eligibility but cannot exceed observed 20-session liquidity when all 20 are present",
+    "no_extrapolated_price_or_volume": true
+  },
+  "scenario_semantics": {
+    "best": "interval envelope favorable to observed decisions; no synthetic tradable prices",
+    "worst": "each unresolved competitor may qualify and receive any strategy score in the legal range; simultaneous membership displacement bounded separately",
+    "excluded": "only proven noncompetitive or known rule-ineligible securities; unresolved competitors remain possible",
+    "D": "same frozen cap and rules; only genuinely resolved eligible borderline competitors may replace members"
+  },
+  "scope": "Core ranking participants, possible decision competitors, actual Scanner candidates, possible holdings and benchmark; other residuals require a dated irrelevance proof",
+  "native_condition": "all seven scoped gates PASS; use existing real Strategy 2 Native LEAN and reconciliation; no Current fallback",
+  "threshold_context": "fixed before new decision stability analysis and before any new Native portfolio return; prior ABC Scanner outcomes are already public"
+}

@@ -576,6 +576,17 @@ The existing local API process needs a normal reload to serve the new route.
 See the [acceptance and scope counts](reports/acceptance/pit-research-grade-acceptance-2026-10-07.md)
 and [derived evidence](reports/evidence/pit-research-grade-evidence-2026-10-07.json).
 
+The final decision audit narrows the scope to Core competitors, actual candidates
+and possible holdings. Identity-safe bounds retain 29–72 possible competitors
+per day; Full/Core daily Top3 overlap is 19.9115%. Core candidates still have
+106 unresolved identities, 12 execution dates and 10 event/price review targets,
+after accepting ten independently checked SMR holding-only rows. Real PIT Native
+remains blocked; identical C/D lists do not prove robustness. See the
+[20-answer final acceptance](reports/pit-research-final-acceptance-2026-10-07.md)
+and [focused P0 queue](reports/evidence/pit-research-final-priority-2026-10-07.json).
+The new decision gate is an independent CLI audit; the existing API and Native
+release route retain their frozen blocked evidence.
+
 ## Tests
 
 Portable tests use temporary DuckDB databases and fake providers; they do not
@@ -589,8 +600,9 @@ $env:STOCK_RADAR_TEST_LEAN = '1'
 Remove-Item Env:STOCK_RADAR_TEST_LEAN
 ```
 
-The latest recorded native-inclusive acceptance is 436 passed on 2026-10-07;
-67 targeted tests also passed after the final research source-binding correction.
+The latest recorded native-inclusive acceptance is 468 passed on 2026-10-07,
+including 32 new decision-scope cases. Real-engine fixture reconciliation passed;
+the real Strategy 2 Research PIT portfolio remains NOT_RUN.
 For the portable suite:
 
 ```powershell

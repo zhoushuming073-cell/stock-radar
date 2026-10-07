@@ -1,0 +1,1154 @@
+{
+  "policy": "pit-research-decision-v1",
+  "rules_sha256": "a75524ab1dc07db301e9ced0385f80b78f437d4ed7bac4c8a90e891111098406",
+  "status": "PARTIAL / BLOCKED",
+  "original_core_unknown_range": [
+    52,
+    111
+  ],
+  "effective_core_uncertainty_range": [
+    29,
+    72
+  ],
+  "remaining_distinct_competitors": 1346,
+  "initial_exact_rank_proofs": 2438,
+  "recent_daily_floor_proofs": 6424,
+  "focused_proofs": 288,
+  "confirmed_core_lower_range": null,
+  "cutoffs": {
+    "950": [
+      47922136.496999994,
+      79336731.65875
+    ],
+    "1000": [
+      44014329.264,
+      72334607.1305
+    ],
+    "1050": [
+      40456274.342999995,
+      65555432.808749996
+    ]
+  },
+  "candidate_scopes": {
+    "A": {
+      "candidate_ids": 1050,
+      "signals": 4284,
+      "identity_unresolved": 306,
+      "execution_price_gaps": 42,
+      "required_execution_prices": 35506,
+      "material_unresolved": 88,
+      "split_or_lifecycle_ambiguity_ids": 8,
+      "known_halt_ids": 1,
+      "source_disagreement_ids": 104,
+      "candidate_feature_price_gaps": 29
+    },
+    "B": {
+      "candidate_ids": 780,
+      "signals": 3235,
+      "identity_unresolved": 78,
+      "execution_price_gaps": 5,
+      "required_execution_prices": 26685,
+      "material_unresolved": 51,
+      "split_or_lifecycle_ambiguity_ids": 1,
+      "known_halt_ids": 1,
+      "source_disagreement_ids": 44,
+      "candidate_feature_price_gaps": 14
+    },
+    "C": {
+      "candidate_ids": 327,
+      "signals": 1264,
+      "identity_unresolved": 106,
+      "execution_price_gaps": 12,
+      "required_execution_prices": 10345,
+      "material_unresolved": 10,
+      "split_or_lifecycle_ambiguity_ids": 2,
+      "known_halt_ids": 1,
+      "source_disagreement_ids": 10,
+      "candidate_feature_price_gaps": 0
+    },
+    "D": {
+      "candidate_ids": 327,
+      "signals": 1264,
+      "identity_unresolved": 106,
+      "execution_price_gaps": 12,
+      "required_execution_prices": 10345,
+      "material_unresolved": 10,
+      "split_or_lifecycle_ambiguity_ids": 2,
+      "known_halt_ids": 1,
+      "source_disagreement_ids": 10,
+      "candidate_feature_price_gaps": 0
+    }
+  },
+  "accepted_scoped_holding_rows": 10,
+  "corrected_lifecycle_flags": [
+    {
+      "profile": "A",
+      "security_id": "OBS-20d1765ca6389e7dcc44fd17",
+      "symbols": [
+        "AEVA"
+      ]
+    },
+    {
+      "profile": "A",
+      "security_id": "OBS-44644566d236446ba739d359",
+      "symbols": [
+        "HYLN"
+      ]
+    },
+    {
+      "profile": "A",
+      "security_id": "OBS-67ff1873f4f5f2038e25f10c",
+      "symbols": [
+        "QXO"
+      ]
+    },
+    {
+      "profile": "A",
+      "security_id": "OBS-6d97c9e6e818f434d3ac79a7",
+      "symbols": [
+        "SMR"
+      ]
+    },
+    {
+      "profile": "A",
+      "security_id": "OBS-82fad9d1759aabb9c349237f",
+      "symbols": [
+        "OUST"
+      ]
+    },
+    {
+      "profile": "A",
+      "security_id": "SEC-0001321655-CLASS-A",
+      "symbols": [
+        "PLTR"
+      ]
+    },
+    {
+      "profile": "A",
+      "security_id": "SEC-0001878848-ORDINARY",
+      "symbols": [
+        "IREN"
+      ]
+    },
+    {
+      "profile": "B",
+      "security_id": "OBS-20d1765ca6389e7dcc44fd17",
+      "symbols": [
+        "AEVA"
+      ]
+    },
+    {
+      "profile": "B",
+      "security_id": "OBS-82fad9d1759aabb9c349237f",
+      "symbols": [
+        "OUST"
+      ]
+    },
+    {
+      "profile": "C",
+      "security_id": "OBS-20d1765ca6389e7dcc44fd17",
+      "symbols": [
+        "AEVA"
+      ]
+    },
+    {
+      "profile": "C",
+      "security_id": "OBS-67ff1873f4f5f2038e25f10c",
+      "symbols": [
+        "QXO"
+      ]
+    },
+    {
+      "profile": "C",
+      "security_id": "OBS-6d97c9e6e818f434d3ac79a7",
+      "symbols": [
+        "SMR"
+      ]
+    },
+    {
+      "profile": "C",
+      "security_id": "SEC-0001321655-CLASS-A",
+      "symbols": [
+        "PLTR"
+      ]
+    },
+    {
+      "profile": "C",
+      "security_id": "SEC-0001878848-ORDINARY",
+      "symbols": [
+        "IREN"
+      ]
+    },
+    {
+      "profile": "D",
+      "security_id": "OBS-20d1765ca6389e7dcc44fd17",
+      "symbols": [
+        "AEVA"
+      ]
+    },
+    {
+      "profile": "D",
+      "security_id": "OBS-67ff1873f4f5f2038e25f10c",
+      "symbols": [
+        "QXO"
+      ]
+    },
+    {
+      "profile": "D",
+      "security_id": "OBS-6d97c9e6e818f434d3ac79a7",
+      "symbols": [
+        "SMR"
+      ]
+    },
+    {
+      "profile": "D",
+      "security_id": "SEC-0001321655-CLASS-A",
+      "symbols": [
+        "PLTR"
+      ]
+    },
+    {
+      "profile": "D",
+      "security_id": "SEC-0001878848-ORDINARY",
+      "symbols": [
+        "IREN"
+      ]
+    }
+  ],
+  "sensitivity": {
+    "profiles": {
+      "A": {
+        "candidate_count": 4284,
+        "hit_rate": 0.6931551804969527,
+        "path_success": 0.4829151732377539,
+        "mfe": 0.13656401270494234,
+        "mae": -0.11252139171933859,
+        "falling_knife": 0.5443037974683544
+      },
+      "B": {
+        "candidate_count": 3235,
+        "hit_rate": 0.6782178217821783,
+        "path_success": 0.48775125628140703,
+        "mfe": 0.13107324225553407,
+        "mae": -0.10824268702275437,
+        "falling_knife": 0.5297029702970297
+      },
+      "C": {
+        "candidate_count": 1264,
+        "hit_rate": 0.65,
+        "path_success": 0.4682220434432824,
+        "mfe": 0.10668473683253532,
+        "mae": -0.10245333511054816,
+        "falling_knife": 0.5023809523809524
+      },
+      "D": {
+        "candidate_count": 1264,
+        "hit_rate": 0.65,
+        "path_success": 0.4682220434432824,
+        "mfe": 0.10668473683253532,
+        "mae": -0.10245333511054816,
+        "falling_knife": 0.5023809523809524
+      }
+    },
+    "top3_pair_summary": {
+      "AB": {
+        "slot_overlap": 0.6391752577319587,
+        "identical_day_fraction": 0.28085106382978725,
+        "identical_order_fraction": 0.28085106382978725,
+        "active_days": 231,
+        "empty_both_days": 4
+      },
+      "AC": {
+        "slot_overlap": 0.19911504424778761,
+        "identical_day_fraction": 0.02553191489361702,
+        "identical_order_fraction": 0.02553191489361702,
+        "active_days": 231,
+        "empty_both_days": 4
+      },
+      "BC": {
+        "slot_overlap": 0.13793103448275862,
+        "identical_day_fraction": 0.02553191489361702,
+        "identical_order_fraction": 0.02553191489361702,
+        "active_days": 229,
+        "empty_both_days": 6
+      },
+      "CD": {
+        "slot_overlap": 1.0,
+        "identical_day_fraction": 1.0,
+        "identical_order_fraction": 1.0,
+        "active_days": 205,
+        "empty_both_days": 30
+      }
+    },
+    "D_equivalent_C": true,
+    "CD_observed_status": "IDENTICAL",
+    "robust_status": "FAIL",
+    "native_metrics": null,
+    "interpretation": "C/D observed equality does not resolve competitors absent from both profiles"
+  },
+  "top5": {
+    "AC": {
+      "slot_overlap": 0.18440366972477065,
+      "identical_day_fraction": 0.01702127659574468,
+      "identical_order_fraction": 0.01702127659574468,
+      "active_days": 231,
+      "empty_both_days": 4
+    },
+    "CD": {
+      "slot_overlap": 1.0,
+      "identical_day_fraction": 1.0,
+      "identical_order_fraction": 1.0,
+      "active_days": 205,
+      "empty_both_days": 30
+    }
+  },
+  "missingness": {
+    "status": "FAIL",
+    "uncertain_days": 235,
+    "maximum_daily_changed_slots": 3,
+    "sum_changed_slots_upper": 705,
+    "scenario_best": {
+      "changed_existing_slots": 0,
+      "interpretation": "favorable eligibility/features, not established fact"
+    },
+    "scenario_worst": {
+      "hit_rate_interval": [
+        0,
+        1
+      ],
+      "path_success_interval": [
+        0,
+        1
+      ],
+      "interpretation": "logical envelope, unknown future outcomes; no imputed OHLCV"
+    },
+    "scenario_excluded": {
+      "only_proven_noncompetitors": true,
+      "unresolved_removed": 0
+    },
+    "note": "aggregate worst upper envelope need not be simultaneously attainable; it cannot certify a small bound"
+  },
+  "score_stress": {
+    "changed_days": 235,
+    "maximum_changed_slots": 3,
+    "sum_changed_observed_slots": 519,
+    "sum_changed_selection_slots": 705,
+    "claim": "score interval stress witness; not historical trades, prices or jointly proven attainable histories",
+    "excluded_rule": "only proven noncompetitors removed; unresolved retained in the uncertainty set"
+  },
+  "dividends": {
+    "A": {
+      "possible_events": 21,
+      "portfolio_return_upper_bound": null,
+      "known_exposure_sum": 0.07156455998855304,
+      "unpriced_exposures": [],
+      "large_distribution_flags": [
+        {
+          "security_id": "OBS-eb00426b4531dd228ebc8300",
+          "date": "2025-03-20",
+          "ratio": 0.05479452054794521
+        }
+      ],
+      "rows": [
+        {
+          "security_id": "OBS-04a8a06ae459a7af0b9f49d8",
+          "date": "2025-03-31",
+          "max_return_contribution": 0.0010504201680672268
+        },
+        {
+          "security_id": "OBS-076b61bde726748e6712be27",
+          "date": "2025-01-10",
+          "max_return_contribution": 0.00017374685083832854
+        },
+        {
+          "security_id": "OBS-2594ff2b3ee99061ca289a21",
+          "date": "2025-07-09",
+          "max_return_contribution": 0.0025380710659898475
+        },
+        {
+          "security_id": "OBS-2d90a12128371b933182fe10",
+          "date": "2025-06-02",
+          "max_return_contribution": 0.004770423375074538
+        },
+        {
+          "security_id": "OBS-30291371e9ba4ea705774e7b",
+          "date": "2025-03-18",
+          "max_return_contribution": 0.00014060742407199096
+        },
+        {
+          "security_id": "OBS-64f9b38c5edef37bb9ed43f6",
+          "date": "2024-12-13",
+          "max_return_contribution": 0.0017448352875488555
+        },
+        {
+          "security_id": "OBS-6b619325b8687f9f38aa0546",
+          "date": "2025-08-19",
+          "max_return_contribution": 0.0074850299401197605
+        },
+        {
+          "security_id": "OBS-6fa07afa92679f3c6bc398b0",
+          "date": "2025-06-13",
+          "max_return_contribution": 0.006385696040868455
+        },
+        {
+          "security_id": "OBS-6fa07afa92679f3c6bc398b0",
+          "date": "2025-09-05",
+          "max_return_contribution": 0.00631911532385466
+        },
+        {
+          "security_id": "OBS-7752c841c47a8ea1c54a876d",
+          "date": "2025-03-10",
+          "max_return_contribution": 0.00024084778420038533
+        },
+        {
+          "security_id": "OBS-7dce041f33045298d4802203",
+          "date": "2025-08-08",
+          "max_return_contribution": 0.0005430355688297583
+        },
+        {
+          "security_id": "OBS-9430053ffaece61f82fb372c",
+          "date": "2025-04-11",
+          "max_return_contribution": 0.0021820720956620405
+        },
+        {
+          "security_id": "OBS-988b55d57a10cb466ae74a56",
+          "date": "2024-11-12",
+          "max_return_contribution": 0.0004563209579089548
+        },
+        {
+          "security_id": "OBS-9a3d0b9b089da159a1cfa4fb",
+          "date": "2024-12-20",
+          "max_return_contribution": 0.0005167506532288167
+        },
+        {
+          "security_id": "OBS-b4c4c327a63373d1e278042c",
+          "date": "2025-01-17",
+          "max_return_contribution": 0.003739316239316239
+        },
+        {
+          "security_id": "OBS-b617551545720781cef9f50f",
+          "date": "2025-07-10",
+          "max_return_contribution": 0.0009523809523809524
+        },
+        {
+          "security_id": "OBS-b6f341795fda5f802619d846",
+          "date": "2025-07-23",
+          "max_return_contribution": 0.0006033692136892406
+        },
+        {
+          "security_id": "OBS-b92b913cfc4a9eb61e82d7b4",
+          "date": "2025-04-25",
+          "max_return_contribution": 0.00224527665317139
+        },
+        {
+          "security_id": "OBS-cc784d8ac746f554e173c978",
+          "date": "2025-04-08",
+          "max_return_contribution": 0.009157509157509156
+        },
+        {
+          "security_id": "OBS-eb00426b4531dd228ebc8300",
+          "date": "2025-03-20",
+          "max_return_contribution": 0.0182648401826484
+        },
+        {
+          "security_id": "OBS-ebbd40f28e6de89d5f32ccde",
+          "date": "2025-06-05",
+          "max_return_contribution": 0.00205489505357405
+        }
+      ],
+      "bound_definition": "potential cash yield: sum maximum 1/3 allocations at possible entry equity; actual final-equity effect requires holdings/equity/reinvestment paths"
+    },
+    "B": {
+      "possible_events": 18,
+      "portfolio_return_upper_bound": null,
+      "known_exposure_sum": 0.04294725295030606,
+      "unpriced_exposures": [],
+      "large_distribution_flags": [],
+      "rows": [
+        {
+          "security_id": "OBS-076b61bde726748e6712be27",
+          "date": "2025-01-10",
+          "max_return_contribution": 0.00017374685083832854
+        },
+        {
+          "security_id": "OBS-1c1bf1e2467ef107a04c7574",
+          "date": "2025-07-01",
+          "max_return_contribution": 0.001893939393939394
+        },
+        {
+          "security_id": "OBS-2c1516daced7e658c098c198",
+          "date": "2024-12-13",
+          "max_return_contribution": 0.006116207951070336
+        },
+        {
+          "security_id": "OBS-2c22ac5232109712cea8ccf2",
+          "date": "2025-08-01",
+          "max_return_contribution": 0.0009166666666666665
+        },
+        {
+          "security_id": "OBS-2d90a12128371b933182fe10",
+          "date": "2025-06-02",
+          "max_return_contribution": 0.004770423375074538
+        },
+        {
+          "security_id": "OBS-6b619325b8687f9f38aa0546",
+          "date": "2025-08-19",
+          "max_return_contribution": 0.0074850299401197605
+        },
+        {
+          "security_id": "OBS-7752c841c47a8ea1c54a876d",
+          "date": "2025-03-10",
+          "max_return_contribution": 0.00024084778420038533
+        },
+        {
+          "security_id": "OBS-7dce041f33045298d4802203",
+          "date": "2025-08-08",
+          "max_return_contribution": 0.0005430355688297583
+        },
+        {
+          "security_id": "OBS-89d1687b724310bc80eafb2a",
+          "date": "2025-08-11",
+          "max_return_contribution": 0.0036559139784946232
+        },
+        {
+          "security_id": "OBS-9430053ffaece61f82fb372c",
+          "date": "2025-04-11",
+          "max_return_contribution": 0.0021820720956620405
+        },
+        {
+          "security_id": "OBS-988b55d57a10cb466ae74a56",
+          "date": "2024-11-12",
+          "max_return_contribution": 0.0004563209579089548
+        },
+        {
+          "security_id": "OBS-9a3d0b9b089da159a1cfa4fb",
+          "date": "2024-12-20",
+          "max_return_contribution": 0.0005167506532288167
+        },
+        {
+          "security_id": "OBS-9afdac5ec528d6a82d7d8c26",
+          "date": "2025-02-28",
+          "max_return_contribution": 0.0018484288354898336
+        },
+        {
+          "security_id": "OBS-b4c4c327a63373d1e278042c",
+          "date": "2025-01-17",
+          "max_return_contribution": 0.003739316239316239
+        },
+        {
+          "security_id": "OBS-b6f341795fda5f802619d846",
+          "date": "2025-07-23",
+          "max_return_contribution": 0.0006033692136892406
+        },
+        {
+          "security_id": "OBS-b92b913cfc4a9eb61e82d7b4",
+          "date": "2025-04-25",
+          "max_return_contribution": 0.00224527665317139
+        },
+        {
+          "security_id": "OBS-d57685e9b7521ef071673603",
+          "date": "2025-04-04",
+          "max_return_contribution": 0.004152249134948096
+        },
+        {
+          "security_id": "OBS-d794bb99fe058d6a21ecd6c5",
+          "date": "2024-12-04",
+          "max_return_contribution": 0.0014076576576576574
+        }
+      ],
+      "bound_definition": "potential cash yield: sum maximum 1/3 allocations at possible entry equity; actual final-equity effect requires holdings/equity/reinvestment paths"
+    },
+    "C": {
+      "possible_events": 23,
+      "portfolio_return_upper_bound": null,
+      "known_exposure_sum": 0.046752298422355336,
+      "unpriced_exposures": [],
+      "large_distribution_flags": [
+        {
+          "security_id": "OBS-eb00426b4531dd228ebc8300",
+          "date": "2025-03-20",
+          "ratio": 0.05479452054794521
+        }
+      ],
+      "rows": [
+        {
+          "security_id": "OBS-076b61bde726748e6712be27",
+          "date": "2025-01-10",
+          "max_return_contribution": 0.00017374685083832854
+        },
+        {
+          "security_id": "OBS-1b8f0178188ea514112c9e5a",
+          "date": "2024-11-15",
+          "max_return_contribution": 0.001383276910196207
+        },
+        {
+          "security_id": "OBS-23626fb0969b0c027075e919",
+          "date": "2024-11-27",
+          "max_return_contribution": 0.001059322033898305
+        },
+        {
+          "security_id": "OBS-2594ff2b3ee99061ca289a21",
+          "date": "2025-07-09",
+          "max_return_contribution": 0.0025380710659898475
+        },
+        {
+          "security_id": "OBS-2c22ac5232109712cea8ccf2",
+          "date": "2025-08-01",
+          "max_return_contribution": 0.0009166666666666665
+        },
+        {
+          "security_id": "OBS-2d90a12128371b933182fe10",
+          "date": "2025-06-02",
+          "max_return_contribution": 0.004770423375074538
+        },
+        {
+          "security_id": "OBS-30291371e9ba4ea705774e7b",
+          "date": "2025-03-18",
+          "max_return_contribution": 0.00014060742407199096
+        },
+        {
+          "security_id": "OBS-56fa13d1a6d29f214533979d",
+          "date": "2024-11-18",
+          "max_return_contribution": 0.0015089784216085712
+        },
+        {
+          "security_id": "OBS-5c5d093029b2ecb9c1f73e0c",
+          "date": "2025-09-11",
+          "max_return_contribution": 0.0008496732026143791
+        },
+        {
+          "security_id": "OBS-621b717d63af4fe481e95281",
+          "date": "2024-12-10",
+          "max_return_contribution": 0.0014947683109118085
+        },
+        {
+          "security_id": "OBS-635b2315dbd9b01c67f31ac8",
+          "date": "2024-11-15",
+          "max_return_contribution": 0.0003028467595396729
+        },
+        {
+          "security_id": "OBS-7752c841c47a8ea1c54a876d",
+          "date": "2025-03-10",
+          "max_return_contribution": 0.00024084778420038533
+        },
+        {
+          "security_id": "OBS-8639d50681b06cad387595b5",
+          "date": "2025-09-02",
+          "max_return_contribution": 0.0013226013679477006
+        },
+        {
+          "security_id": "OBS-8d8ca5bcfb3578b096b6edec",
+          "date": "2024-11-29",
+          "max_return_contribution": 0.00020119712288114283
+        },
+        {
+          "security_id": "OBS-9a3d0b9b089da159a1cfa4fb",
+          "date": "2024-12-20",
+          "max_return_contribution": 0.0005167506532288167
+        },
+        {
+          "security_id": "OBS-b6f341795fda5f802619d846",
+          "date": "2025-07-23",
+          "max_return_contribution": 0.0006033692136892406
+        },
+        {
+          "security_id": "OBS-b92b913cfc4a9eb61e82d7b4",
+          "date": "2024-10-25",
+          "max_return_contribution": 0.002161696875203014
+        },
+        {
+          "security_id": "OBS-b92b913cfc4a9eb61e82d7b4",
+          "date": "2025-04-25",
+          "max_return_contribution": 0.00224527665317139
+        },
+        {
+          "security_id": "OBS-bd7562eb77888fb7be37feef",
+          "date": "2025-05-30",
+          "max_return_contribution": 0.0010511268079381095
+        },
+        {
+          "security_id": "OBS-e52808234e4ef57dab5d2619",
+          "date": "2024-12-05",
+          "max_return_contribution": 0.0022837754070014027
+        },
+        {
+          "security_id": "OBS-eb00426b4531dd228ebc8300",
+          "date": "2025-03-20",
+          "max_return_contribution": 0.0182648401826484
+        },
+        {
+          "security_id": "OBS-f3ec3c09162c4da99685d6f2",
+          "date": "2025-08-12",
+          "max_return_contribution": 0.0010950503723171265
+        },
+        {
+          "security_id": "OBS-f716217ddce1719352491fbf",
+          "date": "2025-01-24",
+          "max_return_contribution": 0.001627384960718294
+        }
+      ],
+      "bound_definition": "potential cash yield: sum maximum 1/3 allocations at possible entry equity; actual final-equity effect requires holdings/equity/reinvestment paths"
+    },
+    "D": {
+      "possible_events": 23,
+      "portfolio_return_upper_bound": null,
+      "known_exposure_sum": 0.046752298422355336,
+      "unpriced_exposures": [],
+      "large_distribution_flags": [
+        {
+          "security_id": "OBS-eb00426b4531dd228ebc8300",
+          "date": "2025-03-20",
+          "ratio": 0.05479452054794521
+        }
+      ],
+      "rows": [
+        {
+          "security_id": "OBS-076b61bde726748e6712be27",
+          "date": "2025-01-10",
+          "max_return_contribution": 0.00017374685083832854
+        },
+        {
+          "security_id": "OBS-1b8f0178188ea514112c9e5a",
+          "date": "2024-11-15",
+          "max_return_contribution": 0.001383276910196207
+        },
+        {
+          "security_id": "OBS-23626fb0969b0c027075e919",
+          "date": "2024-11-27",
+          "max_return_contribution": 0.001059322033898305
+        },
+        {
+          "security_id": "OBS-2594ff2b3ee99061ca289a21",
+          "date": "2025-07-09",
+          "max_return_contribution": 0.0025380710659898475
+        },
+        {
+          "security_id": "OBS-2c22ac5232109712cea8ccf2",
+          "date": "2025-08-01",
+          "max_return_contribution": 0.0009166666666666665
+        },
+        {
+          "security_id": "OBS-2d90a12128371b933182fe10",
+          "date": "2025-06-02",
+          "max_return_contribution": 0.004770423375074538
+        },
+        {
+          "security_id": "OBS-30291371e9ba4ea705774e7b",
+          "date": "2025-03-18",
+          "max_return_contribution": 0.00014060742407199096
+        },
+        {
+          "security_id": "OBS-56fa13d1a6d29f214533979d",
+          "date": "2024-11-18",
+          "max_return_contribution": 0.0015089784216085712
+        },
+        {
+          "security_id": "OBS-5c5d093029b2ecb9c1f73e0c",
+          "date": "2025-09-11",
+          "max_return_contribution": 0.0008496732026143791
+        },
+        {
+          "security_id": "OBS-621b717d63af4fe481e95281",
+          "date": "2024-12-10",
+          "max_return_contribution": 0.0014947683109118085
+        },
+        {
+          "security_id": "OBS-635b2315dbd9b01c67f31ac8",
+          "date": "2024-11-15",
+          "max_return_contribution": 0.0003028467595396729
+        },
+        {
+          "security_id": "OBS-7752c841c47a8ea1c54a876d",
+          "date": "2025-03-10",
+          "max_return_contribution": 0.00024084778420038533
+        },
+        {
+          "security_id": "OBS-8639d50681b06cad387595b5",
+          "date": "2025-09-02",
+          "max_return_contribution": 0.0013226013679477006
+        },
+        {
+          "security_id": "OBS-8d8ca5bcfb3578b096b6edec",
+          "date": "2024-11-29",
+          "max_return_contribution": 0.00020119712288114283
+        },
+        {
+          "security_id": "OBS-9a3d0b9b089da159a1cfa4fb",
+          "date": "2024-12-20",
+          "max_return_contribution": 0.0005167506532288167
+        },
+        {
+          "security_id": "OBS-b6f341795fda5f802619d846",
+          "date": "2025-07-23",
+          "max_return_contribution": 0.0006033692136892406
+        },
+        {
+          "security_id": "OBS-b92b913cfc4a9eb61e82d7b4",
+          "date": "2024-10-25",
+          "max_return_contribution": 0.002161696875203014
+        },
+        {
+          "security_id": "OBS-b92b913cfc4a9eb61e82d7b4",
+          "date": "2025-04-25",
+          "max_return_contribution": 0.00224527665317139
+        },
+        {
+          "security_id": "OBS-bd7562eb77888fb7be37feef",
+          "date": "2025-05-30",
+          "max_return_contribution": 0.0010511268079381095
+        },
+        {
+          "security_id": "OBS-e52808234e4ef57dab5d2619",
+          "date": "2024-12-05",
+          "max_return_contribution": 0.0022837754070014027
+        },
+        {
+          "security_id": "OBS-eb00426b4531dd228ebc8300",
+          "date": "2025-03-20",
+          "max_return_contribution": 0.0182648401826484
+        },
+        {
+          "security_id": "OBS-f3ec3c09162c4da99685d6f2",
+          "date": "2025-08-12",
+          "max_return_contribution": 0.0010950503723171265
+        },
+        {
+          "security_id": "OBS-f716217ddce1719352491fbf",
+          "date": "2025-01-24",
+          "max_return_contribution": 0.001627384960718294
+        }
+      ],
+      "bound_definition": "potential cash yield: sum maximum 1/3 allocations at possible entry equity; actual final-equity effect requires holdings/equity/reinvestment paths"
+    }
+  },
+  "readiness": {
+    "policy": "pit-research-decision-v1",
+    "quality_tier": "research-grade",
+    "label": "Research-Grade PIT",
+    "ready": false,
+    "scorecard": {
+      "Causal integrity": "FAIL",
+      "Research identity": "FAIL",
+      "Research membership": "FAIL",
+      "Research price": "FAIL",
+      "Material corporate actions": "FAIL",
+      "Terminal": "FAIL",
+      "LEAN Input": "FAIL"
+    },
+    "reasons": {
+      "Causal integrity": [
+        "unresolved inputs can still change historical decisions"
+      ],
+      "Research identity": [
+        "candidate_identity_unresolved exceeds frozen threshold"
+      ],
+      "Research membership": [
+        "effective Core competitors exceed frozen budget",
+        "remaining missingness can change Top3",
+        "decision outcome sensitivity incomplete or unstable"
+      ],
+      "Research price": [
+        "candidate_execution_gaps exceeds frozen threshold",
+        "ranking feature/benchmark scope incomplete"
+      ],
+      "Material corporate actions": [
+        "candidate_material_unresolved exceeds frozen threshold",
+        "ordinary dividend effect not reliably bounded"
+      ],
+      "Terminal": [
+        "known_split_terminal_unresolved exceeds frozen threshold"
+      ],
+      "LEAN Input": [
+        "real frozen native inputs not verified",
+        "decision-scoped upstream gates incomplete"
+      ]
+    },
+    "native_execution": "NOT_RUN",
+    "reconciliation": "NOT_RUN",
+    "fallback": "forbidden"
+  },
+  "native_execution": "NOT_RUN",
+  "reconciliation": "NOT_RUN",
+  "native_metrics": null,
+  "coupling": "independent diagnostic gate; existing API/native path retains blocked earlier gate; no Current fallback",
+  "artifacts": [
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\research-final\\focused-resolutions\\accepted-holding-prices.json",
+      "sha256": "e2552c3aadce2428d0ab88a5b233ed2215da041d49e8d6c5cf3d5f9eb40e1054"
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\research-final\\focused-resolutions\\candidate-audit.json",
+      "sha256": "ccefedaea62f859273f5cf6852dfff12aff0f7453b7f63eb7fedbcafaf838e1c"
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\research-final\\focused-resolutions\\core-rank-stability.json",
+      "sha256": "ae738b7e210ae154cdc91f767d7006f013afa22b6aeb0ecf7e8a3672495693cb"
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\research-final\\focused-resolutions\\dated-class-facts.json",
+      "sha256": "933598fdf7a28bef1b8f4b9c66c7b9ee386086b0103544e64bc3d3cf817c7808"
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\research-final\\focused-resolutions\\inputs.json",
+      "sha256": "f72f1cb88fa48f19808f58e3e7eed35830818b65331e38b984b26b9c54fd5b6d"
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\research-final\\focused-resolutions\\missingness-impact.json",
+      "sha256": "fcfabbbd11192f827f60a2f2202ae055ab4bc94c268417eb6261f5cc970afde1"
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\research-final\\focused-resolutions\\priority-queue.json",
+      "sha256": "85e4e7150c38ec65334f48fc6f3b37616b13e9c306b463c823a34bbe9f37c79e"
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\research-final\\focused-resolutions\\readiness.json",
+      "sha256": "44a765c2772ec46285428e7edc041b505c3603b7f7561972cea540add9766724"
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\research-final\\focused-resolutions\\score-stress.json",
+      "sha256": "e78fe4d82eb6314ebc88b3c2094d462724aeeaa38072160cbfe8df70a0d77035"
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\research-final\\identity-safe-bounds\\core-rank-stability.json",
+      "sha256": "467ab4d690a482d1f2daa8690b0cfe7da2806b55bff31138d0e7b44d2d504fd4"
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\research-final\\identity-safe-bounds\\inputs.json",
+      "sha256": "599cfb4bf7a5d58c2fde6375a028a0d906849702f6c2454c77ea164eb06ed430"
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\research-final\\identity-safe-bounds\\missingness-impact.json",
+      "sha256": "9059bc3762cdead194566648a58b5a471a2fd2b0087634c292103789a88dc197"
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\research-final\\identity-safe-bounds\\readiness.json",
+      "sha256": "cdafcd7b5f8f2046d59fac222ffadcf850426c15a8f3a5d7a5401dffba0e7c95"
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\research-final\\identity-safe-bounds\\score-stress.json",
+      "sha256": "07ec9128b547817d19716fae84e00170584a1dcea788fde636f44c0da0048bc4"
+    }
+  ],
+  "first_phase_freeze": {
+    "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\research-final\\rules-freeze.json",
+    "sha256": "5b157a9aafb483708eb69edac2d928743afb3d08d7e5c0307dc8116b5e718ccf"
+  },
+  "conditional_liquidity_unknown_range": [
+    22,
+    61
+  ],
+  "known_core_identity_uncertain_range": [
+    288,
+    311
+  ],
+  "identity_cleared_price_eligible_range": [
+    978,
+    1197
+  ],
+  "identity_safe_rank_proofs": 622,
+  "reopened_conditional_rank_exclusions": 1816,
+  "confirmed_members_note": "939-978 was conditional on all known Core eligibility; unresolved known identities prohibit calling it an unconditional proof",
+  "protected_files": [
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\market.duckdb",
+      "sha256": "0043f66ea4ac75c14d1a65e2765cb314d8cc19299f64abe390fd58e30caad60d",
+      "expected": "0043f66ea4ac75c14d1a65e2765cb314d8cc19299f64abe390fd58e30caad60d",
+      "unchanged": true
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\phase2-research-v2-frozen.duckdb",
+      "sha256": "71361753f5d593ba43c090a984b299cc24f309e9345aae0f2c5615bc73341c7e",
+      "expected": "71361753f5d593ba43c090a984b299cc24f309e9345aae0f2c5615bc73341c7e",
+      "unchanged": true
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\phase2-research.duckdb",
+      "sha256": "b2565184a372c6ce7d5b448acebad3dfbad0bf51c77b785f5d0a342352d364c3",
+      "expected": "b2565184a372c6ce7d5b448acebad3dfbad0bf51c77b785f5d0a342352d364c3",
+      "unchanged": true
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\phase2-source-snapshot.duckdb",
+      "sha256": "f6081cfc1a8bbe5856a5a3659be7ae6dfc3f864cb865ce2d12e2fd67200d0fd9",
+      "expected": "f6081cfc1a8bbe5856a5a3659be7ae6dfc3f864cb865ce2d12e2fd67200d0fd9",
+      "unchanged": true
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\security-master.csv",
+      "sha256": "5e6985a5d4a756061cdc2dba3ad27055e7b7beeb1491e11690d5dbe7621ac6c9",
+      "expected": "5e6985a5d4a756061cdc2dba3ad27055e7b7beeb1491e11690d5dbe7621ac6c9",
+      "unchanged": true
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\security-master-manifest.json",
+      "sha256": "fa137f66560ed63bcee5bf43a759f65b552e3db611b756446af9fa961ec13559",
+      "expected": "fa137f66560ed63bcee5bf43a759f65b552e3db611b756446af9fa961ec13559",
+      "unchanged": true
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\security-master-feature-store.json",
+      "sha256": "e267981e0343752adb1584d77863568f495f07e029391cd2156a22967892e845",
+      "expected": "e267981e0343752adb1584d77863568f495f07e029391cd2156a22967892e845",
+      "unchanged": true
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\normalized\\533905312e4c19ef2f80558d80c06c1b644f3eefc01fbba0c703904f1dc8bdaa\\pit-research.duckdb",
+      "sha256": "9c39a9f99c8fb1985b40c797a74f41dd6073872243b26584c8401347115a00ff",
+      "expected": "9c39a9f99c8fb1985b40c797a74f41dd6073872243b26584c8401347115a00ff",
+      "unchanged": true
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\config\\pit_final_run_plan.json",
+      "sha256": "6b1336a9bdfa9438471e057460ade0d945f57e8ae9736b5ecca80fb6667c8fcb",
+      "expected": "6b1336a9bdfa9438471e057460ade0d945f57e8ae9736b5ecca80fb6667c8fcb",
+      "unchanged": true
+    }
+  ],
+  "old_research_dependency_verified": "f1b4b2db60ee52a5d8f13426c9a6cd5750b337d0bd96bf05746960b92db0ac3a",
+  "cutoff_relative_gaps": {
+    "950_to_1000": {
+      "minimum": 0.06038737151190062,
+      "median": 0.09948881551403307,
+      "maximum": 0.1325076377018384
+    },
+    "1050_to_1000": {
+      "minimum": -0.1152958697385542,
+      "median": -0.08811224842252374,
+      "maximum": -0.05985173667190992
+    }
+  },
+  "current_scanner_symbol_top3": {
+    "A": {
+      "slot_overlap": 0.5561959654178674,
+      "identical_day_fraction": 0.1702127659574468,
+      "identical_order_fraction": 0.1702127659574468,
+      "active_days": 234,
+      "empty_both_days": 1
+    },
+    "B": {
+      "slot_overlap": 0.4071942446043165,
+      "identical_day_fraction": 0.059574468085106386,
+      "identical_order_fraction": 0.059574468085106386,
+      "active_days": 234,
+      "empty_both_days": 1
+    },
+    "C": {
+      "slot_overlap": 0.13688760806916425,
+      "identical_day_fraction": 0.00425531914893617,
+      "identical_order_fraction": 0.00425531914893617,
+      "active_days": 234,
+      "empty_both_days": 1
+    }
+  },
+  "current_choice_snapshot": {
+    "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\research-final\\current-scanner-choice-snapshot.json",
+    "sha256": "21894d2b7837a990633e3a890d815017d913e30e5a6cd98761739ce6fa43c210"
+  },
+  "current_scanner": {
+    "average_mae_10": -0.11099739627666455,
+    "average_mfe_10": 0.1322857909995473,
+    "candidate_count": 6981,
+    "censored_candidate_count": 0,
+    "hit_5pct_10d_rate": 0.6824237215298667
+  },
+  "current_native": {
+    "run_id": "7384345d-1137-426c-87a4-b36030135e63",
+    "status": "completed",
+    "metrics": {
+      "average_loss": -7147.148723429962,
+      "average_win": 5269.203621636916,
+      "benchmark_return": 0.16222810931399878,
+      "cagr": null,
+      "final_equity": 934221.7906461,
+      "initial_capital": 1000000.0,
+      "max_drawdown": -0.477494454041855,
+      "net_pnl": -65778.20935390005,
+      "profit_factor": 0.9661376757356074,
+      "sessions": 245,
+      "sharpe": -0.038827630563246646,
+      "sortino": -0.05705165687557905,
+      "total_fees": 207619.738886,
+      "total_return": -0.0657782093539,
+      "trade_count": 640,
+      "turnover": 92.84563401840384,
+      "win_rate": 0.5671875
+    },
+    "average_net_return": -0.0017195838273447474,
+    "last_equity_keys": [
+      "timestamp",
+      "date",
+      "equity",
+      "cash",
+      "holdings_value",
+      "benchmark",
+      "drawdown",
+      "positions",
+      "gross_exposure"
+    ],
+    "events": {},
+    "native_artifacts": {
+      "manifest.json": "c10561fc1d901ba7fd4cc563f6ab32bcf1097b8593e6635d7118514547c37a15",
+      "data-index.json": "0d7e41588a7a179a89b34e862315cec2add415c4e9ba074be3ab3f7cb9ee7979",
+      "signals.json": "4f1a7f503c023dd067e266a0b7086f1c6933c913072df2722baa17bcb0272b22",
+      "source-prices.csv": "b371192b2e50bb407930780460f7f9ef5abbebccb1f77a504b0ec512b0d19808",
+      "normalized-result.json": "acc6f4a43a230e638d00f43b03bcbd479944acde9df9901656071b253c605fd5",
+      "7384345d-1137-426c-87a4-b36030135e63.json": "17e4fe80f7aa661712e6d0c4625cccb64dfbaabd967b06ad5b60eae17e845161"
+    },
+    "strict_comparison": {
+      "strategy_id": true,
+      "strategy_version": true,
+      "config_hash": true,
+      "fee_profile": true,
+      "slippage_bps": true,
+      "window": true,
+      "engine_identity": true,
+      "execution": true
+    },
+    "open_positions_at_end": 1,
+    "peak_position_count": 19,
+    "terminal_events": "not represented by unchanged Current model",
+    "request_monitor": {
+      "succeeded-data-requests-count": 58500,
+      "failed-data-requests-count": 807332,
+      "succeeded-universe-data-requests-count": 0,
+      "failed-universe-data-requests-count": 0,
+      "total-data-requests-count": 865832,
+      "failed-data-requests-percentage": 93.0,
+      "total-universe-data-requests-count": 0,
+      "failed-universe-data-requests-percentage": 0.0,
+      "data-request-rates": [
+        0.0,
+        5834.0,
+        36179.0,
+        40033.0,
+        22645.0,
+        17559.0,
+        14980.0,
+        14308.0,
+        13893.0,
+        30175.0,
+        27626.0,
+        40957.0,
+        22751.0,
+        971.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "failed-data-requests-file": "failed-data-requests-20261007042111212.txt"
+    }
+  },
+  "tests": {
+    "new_cases": 32,
+    "targeted_passed": 32,
+    "full_passed": 468,
+    "full_seconds": 82.25,
+    "native_included": true,
+    "real_engine_fixture_not_actual_strategy_acceptance": true,
+    "warnings": "one existing websockets deprecation"
+  },
+  "report_generator": {
+    "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\scripts\\write_pit_final_report.py",
+    "sha256": "1166b1dd3f782179db55424c4da615bf4de1ba9ad5383ed48783e00f5e8d8191"
+  }
+}

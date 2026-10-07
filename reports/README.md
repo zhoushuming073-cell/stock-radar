@@ -22,6 +22,8 @@
 | `docs/` (repository root) | Contracts and specifications; intentionally outside `reports/` |
 
 The `reports/` root is intentionally kept small: this index plus the canonical ledger.
+The final research report below retains its explicit user-requested root path;
+its derived evidence and P0 queue follow the `evidence/` layout.
 
 ## PIT acceptance chain · 2026-10-07
 
@@ -31,6 +33,7 @@ The `reports/` root is intentionally kept small: this index plus the canonical l
 4. [Data clearance](acceptance/pit-clearance-acceptance-2026-10-07.md) — IREN continuity and full source probes; Formal PIT remains blocked.
 5. [Bulk-source benchmark / trust ceiling](acceptance/pit-source-breakthrough-acceptance-2026-10-07.md) — large candidate coverage, no false formal admission.
 6. [Research-Grade PIT](acceptance/pit-research-grade-acceptance-2026-10-07.md) — **PARTIAL** research-grade evidence; real Research-Grade Native LEAN remains blocked.
+7. [Final research decision audit](pit-research-final-acceptance-2026-10-07.md) — **PARTIAL / BLOCKED**; identity-safe Core competitors 29–72/day, actual-candidate gates, Top3 and missingness stress, 468 passing tests. [Derived evidence](evidence/pit-research-final-evidence-2026-10-07.json) and [focused P0 queue](evidence/pit-research-final-priority-2026-10-07.json).
 
 Supporting material:
 - [Initial PIT architecture audit](audit/pit-initial-audit-2026-10-07.md)
