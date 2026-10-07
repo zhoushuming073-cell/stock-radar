@@ -179,18 +179,23 @@ def resolve_task(root: Path, task: dict, *, network: bool = False, pin: str | No
     if not network:
         outcome["reasons"].append("existing evidence reused; price/action acceptance requires explicit complete raw/basis/license review")
         return outcome
-    from radar.pit.public_prices import acquire_symbol
+    from radar.pit.public_prices import acquire_sessions
+    if not row['missing_sessions']:
+        outcome['reasons'].append('price scope complete; no OHLCV downloaded; identity/basis/action certification still required')
+        return outcome
     raw = root / "data/pit/raw/resolution"
     for mapping in local:
-        first = max(min(row["required_sessions"]), mapping["valid_from"])
-        last = min(max(row["required_sessions"]), mapping["valid_to"])
-        if first > last:
+        missing = [d for d in row['missing_sessions'] if mapping['valid_from'] <= d <= mapping['valid_to']]
+        if not missing:
             continue
-        acquisition = acquire_symbol(mapping["symbol"], pin, first, last, raw)
+        acquisition = acquire_sessions(mapping["symbol"], pin, missing, raw)
         artifact = Path(acquisition["file"])
         outcome["artifacts"].append({**acquisition, "physical_sha256": file_hash(artifact)})
-    outcome["status"] = "quarantined"
-    outcome["reasons"].append("downloaded immutable OHLCV/split/dividend/symbol data; raw identity/basis/license/calendar acceptance not inferred from HTTP success")
+    if outcome['artifacts']:
+        outcome["status"] = "quarantined"
+        outcome["reasons"].append("downloaded immutable OHLCV/split/dividend/symbol data; raw identity/basis/license/calendar acceptance not inferred from HTTP success")
+    else:
+        outcome['reasons'].append('required gaps lie outside reviewed symbol intervals; no historical alias queried')
     return outcome
 
 

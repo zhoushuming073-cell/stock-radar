@@ -1,0 +1,564 @@
+{
+  "status": "Engineering complete; formal PIT execution remains data-blocked",
+  "git_baseline": "ea937e5bd70b872c3143a8502ff3234a658f584e",
+  "plan_sha256": "6b1336a9bdfa9438471e057460ade0d945f57e8ae9736b5ecca80fb6667c8fcb",
+  "before": {
+    "dependency": {
+      "path": "C:\\Users\\\u5468\u6811\u94ed\\Desktop\\\u7f8e\u80a1\u7b56\u7565\u7814\u7a76\\stock-radar\\data\\pit\\run-dependencies\\60885fa95065a255a0f233919c057e1c0bbe27c0c194f709e02ecaec34de0725.json",
+      "sha256": "c913159ae0d0b23f38bb5d10e5920e7e9237431437a4926d46591be00d634814",
+      "dependency_sha256": "60885fa95065a255a0f233919c057e1c0bbe27c0c194f709e02ecaec34de0725"
+    },
+    "counts": {
+      "securities": 6422,
+      "signals": 4177,
+      "required_prices": 2023561,
+      "missing_prices": 435803,
+      "fully_unpriced": 1138,
+      "partially_unpriced": 1177,
+      "identity_blocked": 6418,
+      "action_coverage_reviewed": 0,
+      "local_gap_candidates": 82483,
+      "identity_strata": {
+        "E": 1848,
+        "F": 4570,
+        "B": 2,
+        "C": 1,
+        "D": 1
+      },
+      "no_price_categories": {
+        "identity-unresolved": 1137,
+        "source-unavailable": 1
+      },
+      "gate_reason_counts": {
+        "Identity": 6418,
+        "Membership": 1,
+        "Price": 14023,
+        "CorporateAction": 6422,
+        "Terminal": 0,
+        "LEAN Input": 2
+      }
+    }
+  },
+  "after": {
+    "dependency": {
+      "path": "C:\\Users\\\u5468\u6811\u94ed\\Desktop\\\u7f8e\u80a1\u7b56\u7565\u7814\u7a76\\stock-radar\\data\\pit\\run-dependencies\\2538efd79fdc64f5479f4345256f4d077e709d475c84a0452be9baa87256febf.json",
+      "sha256": "cf9ae48ad8511280b8b245fc5aca7a15411b6f11c1cc82f6181adab707a08dbf",
+      "dependency_sha256": "2538efd79fdc64f5479f4345256f4d077e709d475c84a0452be9baa87256febf"
+    },
+    "counts": {
+      "securities": 6421,
+      "signals": 4176,
+      "required_prices": 2023436,
+      "missing_prices": 435678,
+      "fully_unpriced": 1138,
+      "partially_unpriced": 1176,
+      "identity_blocked": 6416,
+      "action_coverage_reviewed": 0,
+      "local_gap_candidates": 82358,
+      "identity_strata": {
+        "E": 1846,
+        "F": 4570,
+        "B": 3,
+        "C": 1,
+        "D": 1
+      },
+      "no_price_categories": {
+        "identity-unresolved": 1137,
+        "recoverable-via-known-source": 1
+      },
+      "gate_reason_counts": {
+        "Identity": 6416,
+        "Membership": 1,
+        "Price": 14020,
+        "CorporateAction": 6421,
+        "Terminal": 0,
+        "LEAN Input": 1
+      }
+    }
+  },
+  "scanner_id": "8583b0e6-cc9b-497c-9ddc-b2355821ea13",
+  "formal_run_id": "b4483d79-adac-4845-b28c-ebf9605ca5cb",
+  "formal_status": "failed",
+  "formal_error": "ValueError: LEAN PIT run BLOCKED: {\"CorporateAction\": 6421, \"Identity\": 6416, \"LEAN Input\": 1, \"Membership\": 1, \"Price\": 14020}",
+  "scorecard": {
+    "CorporateAction": "FAIL",
+    "Identity": "FAIL",
+    "LEAN Input": "FAIL",
+    "LEAN Native Execution": "NOT_RUN",
+    "Membership": "FAIL",
+    "Price": "FAIL",
+    "Result Reconciliation": "NOT_RUN",
+    "Terminal": "PASS"
+  },
+  "frozen_parameter_checks": {
+    "strategy_id": true,
+    "strategy_version": true,
+    "config_hash": true,
+    "fee_profile": true,
+    "slippage_bps": true,
+    "execution_policy": true,
+    "window": true,
+    "engine_identity": true
+  },
+  "host_sources_verified": true,
+  "accepted_identity": "SEC-0001878848-ORDINARY",
+  "accepted_new_price_rows": 0,
+  "accepted_new_action_events": 0,
+  "raw_bar_delta": 0,
+  "scanner_delta": {
+    "before": 4177,
+    "after": 4176,
+    "removed": [
+      [
+        "2024-12-31",
+        "METC"
+      ],
+      [
+        "2025-02-05",
+        "MXCT"
+      ],
+      [
+        "2025-02-07",
+        "ANET"
+      ],
+      [
+        "2025-04-17",
+        "RBBN"
+      ]
+    ],
+    "added": [
+      [
+        "2025-04-11",
+        "IREN"
+      ],
+      [
+        "2025-06-02",
+        "IREN"
+      ],
+      [
+        "2025-06-03",
+        "IREN"
+      ]
+    ],
+    "non_iren_unscored_feature_symmetric_difference": 0
+  },
+  "unpriced_probes": {
+    "source_url": "https://www.dolthub.com/repositories/post-no-preference/stocks",
+    "source_version": "vt6qeesk27k07492k5jc5b7p04mf0s6o",
+    "license": "CC-BY-SA-4.0; pinned LICENSE previously captured",
+    "security_probes": 1138,
+    "securities_with_price_probe": 1052,
+    "sample_bars": 2461,
+    "symbol_records": 942
+  },
+  "source_documents": [
+    {
+      "source": "stock-data-readme",
+      "receipt": {
+        "url": "https://raw.githubusercontent.com/TylerJForstrom/Stock-Data/a9ef6bf27e48899409ebf0712c61422081a7f457/README.md",
+        "final_url": "https://raw.githubusercontent.com/TylerJForstrom/Stock-Data/a9ef6bf27e48899409ebf0712c61422081a7f457/README.md",
+        "raw_sha256": "375301029047d2a0a7e16d02ba6364bc12c0f8818348496defd279af14491e07",
+        "bytes": 4543,
+        "captured_at": "2026-10-07T05:07:36.742463+00:00"
+      }
+    },
+    {
+      "source": "stock-data-pit-manifest",
+      "receipt": {
+        "url": "https://raw.githubusercontent.com/TylerJForstrom/Stock-Data/a9ef6bf27e48899409ebf0712c61422081a7f457/data/symbols/pit/manifest.json",
+        "final_url": "https://raw.githubusercontent.com/TylerJForstrom/Stock-Data/a9ef6bf27e48899409ebf0712c61422081a7f457/data/symbols/pit/manifest.json",
+        "raw_sha256": "44a36e9aaa6a729ae889fcb12db399c7fd89e869ae473eaa19cbb796556cdf6d",
+        "bytes": 3340,
+        "captured_at": "2026-10-07T05:07:37.232759+00:00"
+      }
+    },
+    {
+      "source": "nasdaq-daily-list",
+      "receipt": {
+        "url": "https://classic.nasdaqtrader.com/Trader.aspx?id=DailyListPD",
+        "final_url": "https://classic.nasdaqtrader.com/Trader.aspx?id=DailyListPD",
+        "raw_sha256": "214231bda0b7b58fc93989de0560956789282bd82a5d68756493123f7e913e70",
+        "bytes": 59093,
+        "captured_at": "2026-10-07T05:07:38.957329+00:00"
+      }
+    },
+    {
+      "source": "nyse-samples",
+      "receipt": {
+        "url": "https://ftp.nyse.com/Corporate%20Actions%20Data%20Samples/CORPORATE%20ACTIONS%20OF%20NYSE%20GROUP%20LISTINGS/",
+        "final_url": "https://ftp.nyse.com/Corporate%20Actions%20Data%20Samples/CORPORATE%20ACTIONS%20OF%20NYSE%20GROUP%20LISTINGS/",
+        "raw_sha256": "424214ad91c540b30fd2b5e4d4d2d47b95c346d84e6896389b7a07be03be17fa",
+        "bytes": 9509,
+        "captured_at": "2026-10-07T05:07:39.897280+00:00"
+      }
+    },
+    {
+      "source": "marketparquet-docs",
+      "receipt": {
+        "url": "https://marketparquet.com/documentation",
+        "final_url": "https://marketparquet.com/documentation",
+        "raw_sha256": "453682905da3d2a2bb6c5227453df7e22a6a2d59c0e44d249275d52b96181a49",
+        "bytes": 17746,
+        "captured_at": "2026-10-07T05:07:40.790633+00:00"
+      }
+    }
+  ],
+  "action_probes": {
+    "split": {
+      "source_symbols_in_broad_window": 842,
+      "formal_ids_with_symbol_candidates": 642,
+      "note": "event dates must be rebound to issuer/class and each required mapping; broad window intersection is not accepted coverage"
+    },
+    "dividend": {
+      "source_symbols_in_broad_window": 6631,
+      "formal_ids_with_symbol_candidates": 2250,
+      "note": "event dates must be rebound to issuer/class and each required mapping; broad window intersection is not accepted coverage"
+    }
+  },
+  "protected_databases": {
+    "checked_at": "2026-10-07T05:20:39.480258+00:00",
+    "baseline": "prior physical hashes reverified before and after this data installation",
+    "files": {
+      "data/market.duckdb": {
+        "sha256": "0043f66ea4ac75c14d1a65e2765cb314d8cc19299f64abe390fd58e30caad60d",
+        "unchanged": true
+      },
+      "data/phase2-research-v2-frozen.duckdb": {
+        "sha256": "71361753f5d593ba43c090a984b299cc24f309e9345aae0f2c5615bc73341c7e",
+        "unchanged": true
+      },
+      "data/phase2-research.duckdb": {
+        "sha256": "b2565184a372c6ce7d5b448acebad3dfbad0bf51c77b785f5d0a342352d364c3",
+        "unchanged": true
+      },
+      "data/phase2-source-snapshot.duckdb": {
+        "sha256": "f6081cfc1a8bbe5856a5a3659be7ae6dfc3f864cb865ce2d12e2fd67200d0fd9",
+        "unchanged": true
+      }
+    }
+  },
+  "tests": {
+    "passed": 397,
+    "native_opt_in": true,
+    "seconds": 73.85,
+    "warnings": 1
+  },
+  "api_production": "code installed, production local API restart pending user/local shell",
+  "artifacts": {
+    "iteration-1/blocker-inventory.json": {
+      "sha256": "ba654426f82c0b8d5a3ddeac54181fabfed1e5906159902ffd994af4fa31cc05",
+      "path": "data\\pit\\clearance\\iteration-1\\blocker-inventory.json"
+    },
+    "iteration-1/summary.json": {
+      "sha256": "c6decca2581e87ffb64d4664be8966ecacd20aeca5d25f5c8faae44e5ad8856c",
+      "path": "data\\pit\\clearance\\iteration-1\\summary.json"
+    },
+    "iteration-1/readiness.json": {
+      "sha256": "7b223235c67fe40cea202e23114d8acf4b359f3912302604071202ea5d286a39",
+      "path": "data\\pit\\clearance\\iteration-1\\readiness.json"
+    },
+    "formal-attempt.json": {
+      "sha256": "a894c2bf2f8c765de24ad1bb40bff1c37d50b37cbe79215879b1330c9a2254c7",
+      "path": "data\\pit\\clearance\\formal-attempt.json"
+    },
+    "install-receipt.json": {
+      "sha256": "ae36da6f51468cdfc5f84cea9e2bc3ba614888dfaeac4f1ca494e567ce9a4394",
+      "path": "data\\pit\\clearance\\install-receipt.json"
+    },
+    "identity-tiers.json": {
+      "sha256": "f2df5e1521ec6955993d2d1652655777c3a2e1bc5d1900d313480520916516d5",
+      "path": "data\\pit\\clearance\\identity-tiers.json"
+    },
+    "unpriced-source-probes.json": {
+      "sha256": "66d9349bc0b7e357987e6a9c191a6076de9a193cb26f9f9c7d09a08311e218a7",
+      "path": "data\\pit\\clearance\\unpriced-source-probes.json"
+    },
+    "action-source-probes.json": {
+      "sha256": "794a7963cb0f278348faca746de0ca567c20661e89f2b2c6707f73cde2e4ba5c",
+      "path": "data\\pit\\clearance\\action-source-probes.json"
+    },
+    "scanner-delta.json": {
+      "sha256": "167e3353219c930e0730f813bbfde3b08dd0823c4a6e3cc42113d34f267528fc",
+      "path": "data\\pit\\clearance\\scanner-delta.json"
+    },
+    "byon-missing-probe.json": {
+      "sha256": "6fdad89cb5001546eca00b957948c4d71bcc9deae648339f691e746492625033",
+      "path": "data\\pit\\clearance\\byon-missing-probe.json"
+    },
+    "full-suite.txt": {
+      "sha256": "9f17a7eea0de4a36d0429fa702ed0c3b92d7054d9af619cb2306c1777459db09",
+      "path": "data\\pit\\clearance\\full-suite.txt"
+    },
+    "queue-summary.json": {
+      "sha256": "4440175146fb9c9ec00372033b1fffacdb19cb97a60e46444cb7fee68449c2b9",
+      "path": "data\\pit\\clearance\\queue-summary.json"
+    },
+    "resolution.sqlite3": {
+      "sha256": "36b2c5e0c91a0721d0bc9b4b6b33defd506a1d4c42695ae4db8e945830f75cb1",
+      "path": "data\\pit\\clearance\\resolution.sqlite3"
+    },
+    "api-qa.json": {
+      "sha256": "f596311208db3cb5e5f33db220b56a10b280e9061d3bf73e6c13b3cb6f04c6ed",
+      "path": "data\\pit\\clearance\\api-qa.json"
+    },
+    "source-document-receipts.json": {
+      "sha256": "2b999bbf0484c952fc0bea821ff910440bacced23c76c9d5611c798f3f83681d",
+      "path": "data\\pit\\clearance\\source-document-receipts.json"
+    },
+    "iren-2025.json": {
+      "sha256": "af3b35274072736c2fa1747bfb43c31b53c419d0bf1b83d4525992adc6c6026d",
+      "path": "data\\pit\\clearance\\iren-2025.json"
+    },
+    "iren-2026.json": {
+      "sha256": "a461201a54312a80b466812995a697f017de641c99eb9beced01b01ca5657a10",
+      "path": "data\\pit\\clearance\\iren-2026.json"
+    },
+    "iren-6k.json": {
+      "sha256": "4cf1ea3ecd988891e39c7e7445ec31a5aeaaed6e5aa84acb183aa32c910aef76",
+      "path": "data\\pit\\clearance\\iren-6k.json"
+    }
+  },
+  "resolution_queue": {
+    "dependency_sha256": "2538efd79fdc64f5479f4345256f4d077e709d475c84a0452be9baa87256febf",
+    "summary": [
+      {
+        "priority": 0,
+        "status": "blocked",
+        "count": 6421
+      }
+    ],
+    "attempts": 6421,
+    "outcome_hashes_verified": true,
+    "network": false,
+    "note": "existing evidence assessment; downloaded discovery remains quarantined; no automatic acceptance"
+  },
+  "api_qa": [
+    {
+      "url": "http://127.0.0.1:8766/health",
+      "http_status": 200,
+      "keys": [
+        "ok",
+        "service",
+        "database_present"
+      ],
+      "ok": true
+    },
+    {
+      "url": "http://127.0.0.1:8766/api/lab/universe-status",
+      "http_status": 200,
+      "keys": [
+        "current",
+        "point_in_time_available",
+        "point_in_time",
+        "point_in_time_scorecard"
+      ]
+    },
+    {
+      "url": "http://127.0.0.1:8766/api/lab/pit-readiness?split=validation",
+      "http_status": 200,
+      "keys": [
+        "research_validity",
+        "formal_pit_ready",
+        "source_attested_completeness",
+        "system_verified_structural_validity",
+        "security_master",
+        "historical_bar_coverage",
+        "terminal_events",
+        "known_terminal_events",
+        "valued_terminal_events",
+        "unvalued_terminal_events",
+        "unmatched_master_delistings",
+        "terminal_value_policy",
+        "reasons",
+        "data_readiness_scorecard",
+        "split",
+        "scope",
+        "execution_policy",
+        "requested_coverage",
+        "run_readiness",
+        "scanner_censoring_audit"
+      ],
+      "scope": "global"
+    },
+    {
+      "url": "http://127.0.0.1:8766/api/lab/run?id=b4483d79-adac-4845-b28c-ebf9605ca5cb",
+      "http_status": 200,
+      "keys": [
+        "run_id",
+        "status",
+        "created_at",
+        "updated_at",
+        "started_at",
+        "finished_at",
+        "cancel_requested_at",
+        "pid",
+        "error_text",
+        "display_name",
+        "archived_at",
+        "metadata",
+        "progress",
+        "metrics",
+        "result",
+        "worker_pid",
+        "cancel_requested",
+        "current_date",
+        "positions",
+        "latest_signals"
+      ],
+      "status": "failed"
+    },
+    {
+      "url": "http://127.0.0.1:8766/api/lab/run?id=7384345d-1137-426c-87a4-b36030135e63",
+      "http_status": 200,
+      "keys": [
+        "run_id",
+        "status",
+        "created_at",
+        "updated_at",
+        "started_at",
+        "finished_at",
+        "cancel_requested_at",
+        "pid",
+        "error_text",
+        "display_name",
+        "archived_at",
+        "metadata",
+        "progress",
+        "metrics",
+        "result",
+        "worker_pid",
+        "cancel_requested",
+        "current_date",
+        "positions",
+        "latest_signals"
+      ],
+      "status": "completed"
+    }
+  ],
+  "installed_entry_files": {
+    "security-master.csv": {
+      "old": "a6f1362eaa38ed8a0daf00273b858c4c9dbf5f476de35688868ff6fd86564569",
+      "new": "5e6985a5d4a756061cdc2dba3ad27055e7b7beeb1491e11690d5dbe7621ac6c9",
+      "backup": "C:\\Users\\\u5468\u6811\u94ed\\Desktop\\\u7f8e\u80a1\u7b56\u7565\u7814\u7a76\\stock-radar\\data\\pit\\install-history\\clearance-509fe269e2e84a257f9b6d3116063f8a7d3f52ee8dec0adb236c8a192b95293d\\security-master.csv"
+    },
+    "security-master-manifest.json": {
+      "old": "77fe98c9fcb3c55a6141ebb808bd6e042478f883a5bd4f55ede63716656603b9",
+      "new": "fa137f66560ed63bcee5bf43a759f65b552e3db611b756446af9fa961ec13559",
+      "backup": "C:\\Users\\\u5468\u6811\u94ed\\Desktop\\\u7f8e\u80a1\u7b56\u7565\u7814\u7a76\\stock-radar\\data\\pit\\install-history\\clearance-509fe269e2e84a257f9b6d3116063f8a7d3f52ee8dec0adb236c8a192b95293d\\security-master-manifest.json"
+    },
+    "security-master-feature-store.json": {
+      "old": "a25ac5df975b5217612db59f210b71e5b967ff782ef220f457b5dd095e28bc46",
+      "new": "e267981e0343752adb1584d77863568f495f07e029391cd2156a22967892e845",
+      "backup": "C:\\Users\\\u5468\u6811\u94ed\\Desktop\\\u7f8e\u80a1\u7b56\u7565\u7814\u7a76\\stock-radar\\data\\pit\\install-history\\clearance-509fe269e2e84a257f9b6d3116063f8a7d3f52ee8dec0adb236c8a192b95293d\\security-master-feature-store.json"
+    }
+  },
+  "trust_catalog_sha256": "074602c1e570e8435c52bc3e5897ecad12fc189d4701d9d2dd6e348427ec1559",
+  "accepted_identity_sources": {
+    "iren-2025.json": {
+      "url": "https://iren.gcs-web.com/node/11431/html",
+      "final_url": "https://iren.gcs-web.com/node/11431/html",
+      "raw_sha256": "79ab60fff564e770460ed9f99eef998ccb10dd10ced6aa7321148841beeb3d3b",
+      "bytes": 3821994,
+      "captured_at": "2026-10-07T04:56:41.301558+00:00"
+    },
+    "iren-2026.json": {
+      "url": "https://iren.gcs-web.com/node/12566/html",
+      "final_url": "https://iren.gcs-web.com/node/12566/html",
+      "raw_sha256": "c78a1075506400a544754d8c6e2f178f69e0e4f4a14b05ba0a2e9ecfa743692f",
+      "bytes": 4802345,
+      "captured_at": "2026-10-07T04:57:54.200290+00:00"
+    },
+    "iren-6k.json": {
+      "url": "https://irisenergy.gcs-web.com/static-files/b57c7e75-2dbe-4916-8d16-d5657d3712f8",
+      "final_url": "https://irisenergy.gcs-web.com/static-files/b57c7e75-2dbe-4916-8d16-d5657d3712f8",
+      "raw_sha256": "f63a04ec57022badab362491ce5ae720bde0e20615a33512463b2a64d9f11749",
+      "bytes": 6053844,
+      "captured_at": "2026-10-07T04:56:42.852763+00:00"
+    }
+  },
+  "installed_features": {
+    "database": "C:\\Users\\\u5468\u6811\u94ed\\Desktop\\\u7f8e\u80a1\u7b56\u7565\u7814\u7a76\\stock-radar\\data\\pit\\normalized\\533905312e4c19ef2f80558d80c06c1b644f3eefc01fbba0c703904f1dc8bdaa\\pit-research.duckdb",
+    "database_sha256": "9c39a9f99c8fb1985b40c797a74f41dd6073872243b26584c8401347115a00ff",
+    "counts": {
+      "securities": 7657,
+      "feature_rows": 5472884
+    },
+    "external_prices": {
+      "database": "C:\\Users\\\u5468\u6811\u94ed\\Desktop\\\u7f8e\u80a1\u7b56\u7565\u7814\u7a76\\stock-radar\\data\\pit\\normalized\\533905312e4c19ef2f80558d80c06c1b644f3eefc01fbba0c703904f1dc8bdaa\\external-prices.duckdb",
+      "database_sha256": "84733c6f6aa708d91fbd40c3961c71fdbcb1c23f5b4261d546ded1e99a754f39",
+      "rows_sha256": "b3ffa1e3947cc6b232618220654f3d04dec31c984b6817821447d88f4e8b48fe",
+      "master_output_sha256": "5e6985a5d4a756061cdc2dba3ad27055e7b7beeb1491e11690d5dbe7621ac6c9",
+      "review_sha256": "83ce5de1976e951e5470e51a77e99a7b2514d93c496f6609cdaf94be062f5ae3",
+      "importer_sha256": "b98001d09b1f9331f63d7b903e47d1bdb1b8bba8c4fe552a8bd4ad580df3639b",
+      "source_version": "vt6qeesk27k07492k5jc5b7p04mf0s6o",
+      "series": [
+        {
+          "file": "ATVI-85f54d6458d18468d8f28cf22a3094f6ee92cca967d06a062af1eeb2d829a7a9.json",
+          "payload_sha256": "85f54d6458d18468d8f28cf22a3094f6ee92cca967d06a062af1eeb2d829a7a9",
+          "source_symbol": "ATVI",
+          "security_id": "SEC-0000718877-COMMON",
+          "valid_from": "2021-09-01",
+          "valid_to": "2023-10-12",
+          "confidence": "verified",
+          "adjustment": "raw_no_splits",
+          "identity_evidence_catalog": "config/pit_trust_evidence.json",
+          "rows": 532,
+          "last_close": 94.42,
+          "terminal_settlement": null,
+          "license": "CC-BY-SA-4.0"
+        },
+        {
+          "file": "TWTR-00b95b71d6efa3e0226a9d800d4a0a28eefe0e3cf7e88972c74ab0a8625b9627.json",
+          "payload_sha256": "00b95b71d6efa3e0226a9d800d4a0a28eefe0e3cf7e88972c74ab0a8625b9627",
+          "source_symbol": "TWTR",
+          "security_id": "SEC-0001418091-COMMON",
+          "valid_from": "2021-09-01",
+          "valid_to": "2022-10-27",
+          "confidence": "verified",
+          "adjustment": "raw_no_splits",
+          "identity_evidence_catalog": "config/pit_trust_evidence.json",
+          "rows": 292,
+          "last_close": 53.7,
+          "terminal_settlement": null,
+          "license": "CC-BY-SA-4.0"
+        },
+        {
+          "file": "SPLK-0c840377e36be2330e8d26b50d2eb53cf4a6c015a8658073579fa9ea4d92df71.json",
+          "payload_sha256": "0c840377e36be2330e8d26b50d2eb53cf4a6c015a8658073579fa9ea4d92df71",
+          "source_symbol": "SPLK",
+          "security_id": "SEC-0001353283-COMMON",
+          "valid_from": "2021-09-01",
+          "valid_to": "2024-03-15",
+          "confidence": "verified",
+          "adjustment": "raw_no_splits",
+          "identity_evidence_catalog": "config/pit_trust_evidence.json",
+          "rows": 638,
+          "last_close": 156.9,
+          "terminal_settlement": null,
+          "license": "CC-BY-SA-4.0"
+        }
+      ],
+      "rows": 1462,
+      "status": "research_accepted_source_dependent",
+      "terminal_economics": "unresolved",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "post-no-preference/stocks on DoltHub; reviewed identity binding by Stock Radar",
+      "limitations": [
+        "public EOD source is not exchange-certified consolidated SIP",
+        "no general split/dividend factor normalization",
+        "no terminal execution model"
+      ]
+    },
+    "builder_code_sha256": "e1f01ef09705e250356c3d75ceee8b0200bfac9ff167ec2f58a19ffc6df2360d"
+  },
+  "api_restart_policy_reason": "prior automatic approval rejection: blocked by policy; no further forced stop/start",
+  "temporary_api_stopped": true,
+  "identity_candidate_tier_counts": {
+    "E": 1848,
+    "A": 2451,
+    "F": 1950,
+    "B": 171,
+    "C": 1,
+    "D": 1
+  }
+}

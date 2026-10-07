@@ -15,6 +15,52 @@ from radar.pit.features import file_hash
 from radar.schema import EXPECTED_COLUMNS, ensure_research_schema
 
 
+def merge_price_gaps(existing: pd.DataFrame, incoming: pd.DataFrame, sessions: list[str],
+                     master, review: dict, frozen_hashes: set[str]) -> pd.DataFrame:
+    """Reviewed raw-only gap merge. Caller installs into a new immutable artifact.
+
+    Never converts the legacy split-adjusted store implicitly. Same-date source
+    conflicts and even identical duplicate dates fail: acquisitions must be gaps.
+    """
+    sid = review.get('security_id')
+    hashes = review.get('source_hashes', [])
+    if (review.get('verified') is not True or review.get('identity_bound') is not True
+            or review.get('price_basis') != 'raw' or not review.get('source_version')
+            or not review.get('license') or not hashes or not set(hashes) <= frozen_hashes):
+        raise ValueError('gap merge requires bound identity/raw/license/source review')
+    if sessions != sorted(set(sessions)) or not sessions:
+        raise ValueError('invalid required session calendar')
+    frames = []
+    for original in (existing, incoming):
+        f = original.copy(); f['date']=pd.to_datetime(f.date).dt.strftime('%Y-%m-%d')
+        if not f.security_id.eq(sid).all() or f.date.duplicated().any():
+            raise ValueError('gap merge identity/duplicate conflict')
+        if not set(f.adjustment) <= {'raw','none','unadjusted'}:
+            raise ValueError('gap merge cannot mix adjusted bases')
+        if not set(f.date) <= set(sessions):
+            raise ValueError('gap merge outside required sessions')
+        numeric=f[['open','high','low','close','volume']].astype(float)
+        if not (np.isfinite(numeric).all(axis=1) & numeric.low.gt(0) & numeric.volume.ge(0)
+                & numeric.volume.eq(np.floor(numeric.volume)) & numeric.open.between(numeric.low,numeric.high)
+                & numeric.close.between(numeric.low,numeric.high)).all():
+            raise ValueError('invalid gap OHLCV')
+        frames.append(f)
+    base, added = frames
+    if set(base.date) & set(added.date):
+        raise ValueError('multi-source overlap/conflict: only missing sessions may be added')
+    if set(added.date) != set(sessions)-set(base.date):
+        raise ValueError('gap fill missing/extra required sessions')
+    if digest(json.loads(added.sort_values('date').to_json(orient='records'))) != review.get('incoming_rows_sha256'):
+        raise ValueError('gap source rows changed')
+    combined=pd.concat(frames,ignore_index=True).sort_values('date').reset_index(drop=True)
+    mapped=master.filter_frame(combined.assign(date=pd.to_datetime(combined.date)))
+    identity=master.frame.loc[master.frame.security_id.eq(sid)]
+    if (identity.empty or not identity.resolution_status.eq('verified').all() or len(mapped)!=len(combined)
+            or not mapped.security_id.eq(sid).all()):
+        raise ValueError('gap prices conflict with verified dated master')
+    return combined
+
+
 def accept_prices(raw: Path, review: dict, master, output: Path, *, raw_actions: list[dict] | None = None,
                   validate_only: bool = False) -> dict:
     """Require scope, hashes, license, adjustment proof and complete real sessions.

@@ -4,7 +4,32 @@ Stock Radar generates its own **Stock Radar generated PIT execution dataset**.
 It is not QuantConnect official Security Master data. Global completeness and
 run readiness are separate. The installed reconstructed population remains
 incomplete; formal portfolio status is documented in the
-[final acceptance](../reports/pit-final-acceptance-2026-10-07.md).
+[final acceptance](../reports/pit-final-acceptance-2026-10-07.md) and latest
+[data clearance](../reports/pit-clearance-acceptance-2026-10-07.md).
+
+The installed IREN identity correction removes its independent map-root collision.
+The full frozen Validation still has 435,678 missing prices and 6,416 unresolved
+identities. Native execution remains blocked; 397 passing tests are engineering
+evidence, not a completed formal PIT portfolio.
+
+The scoped membership policy `pit-formal-membership-v1` requires the full dated
+population hash, frozen source evidence, an official completeness declaration or
+independent origins, and seven explained checks: continuity, exchange coverage,
+carry, anomalies, future listing exclusion, disappeared securities and class
+boundaries. It does not require global perfection. Current sources cannot attest
+this Run's population completeness.
+
+`no_material_action_review` requires complete identity-bound source coverage of
+all material event types over every required session. Empty event results cannot
+certify absence. Resolution price acquisition now requests only missing sessions
+inside reviewed mappings and skips complete price scopes. `merge_price_gaps`
+audits exact raw gaps, source/identity/license locks and rejects source overlap;
+it does not implicitly convert or install the legacy split-adjusted broker data.
+
+`scripts/audit_pit_formal_blockers.py` builds an inventory from the full formal
+dependency closure; `--frozen` replays and verifies an existing locked closure.
+`scripts/probe_pit_formal_sources.py` records bulk source discovery in quarantine.
+Source availability and CIK candidates are not acceptance certificates.
 
 ## Frozen dependency closure
 

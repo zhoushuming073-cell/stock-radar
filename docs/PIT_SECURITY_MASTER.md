@@ -247,3 +247,14 @@ Installed batch measurements, exceptions and real golden cases are in the
 conditional preflight, raw/split accounting and native witnesses. Generated data
 is explicitly distinct from QuantConnect official data. See the new
 [final acceptance](../reports/pit-final-acceptance-2026-10-07.md) for actual Run blockers.
+
+The latest [data clearance](../reports/pit-clearance-acceptance-2026-10-07.md)
+installs master `533905312e4c19ef2f80558d80c06c1b644f3eefc01fbba0c703904f1dc8bdaa`.
+Three official IREN filings bind both observed name episodes to the same listed
+ordinary class, `SEC-0001878848-ORDINARY`; observation dates remain unchanged.
+The feature store was independently rebuilt with unchanged formulas and source
+bars, and all three active entry files have backups. Verified intervals are now
+19; no new prices or action events were accepted. Full-scope negative action
+evidence and seven-check membership certification remain mandatory; secondary
+undated CIK candidates cannot certify historical securities. Formal execution
+remains data-blocked after the installed identity correction.

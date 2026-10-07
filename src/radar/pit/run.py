@@ -18,6 +18,31 @@ from radar.pit.features import file_hash
 
 POLICY = "pit-run-closure-v1"
 PREFLIGHT = ("Identity", "Membership", "Price", "CorporateAction", "Terminal", "LEAN Input")
+MEMBERSHIP_CHECKS = ('snapshot_continuity','exchange_coverage','carry_policy','source_anomalies',
+                     'future_listing_exclusion','disappeared_securities_handling','classification_boundary')
+
+
+def scoped_membership_attested(manifest: dict, frozen_hashes: set[str]) -> bool:
+    """Allow strong multi-source Run evidence without requiring global perfection."""
+    claim=manifest['population_attestation']; hashes=set(claim.get('source_hashes',[]))
+    if (claim.get('verified') is not True or claim.get('policy')!='pit-formal-membership-v1'
+            or claim.get('start','9999')>manifest['window'][0] or claim.get('end','0000')<manifest['window'][2]
+            or not hashes or not hashes<=frozen_hashes or not claim.get('reviewer_logic_version')
+            or claim.get('population_sha256')!=digest(manifest['population'])):
+        return False
+    sources=claim.get('sources',[])
+    if not sources or any(not s.get('url','').startswith('https://') or not s.get('source_version')
+                          or s.get('raw_sha256') not in hashes for s in sources):
+        return False
+    independent={s.get('independent_origin') for s in sources if s.get('independent_origin')}
+    if not any(s.get('official_complete_population') is True for s in sources) and len(independent)<2:
+        return False
+    for key in MEMBERSHIP_CHECKS:
+        check=claim.get('checks',{}).get(key,{})
+        evidence=set(check.get('evidence_hashes',[]))
+        if check.get('status')!='verified' or not check.get('explanation') or not evidence or not evidence<=hashes:
+            return False
+    return True
 
 
 def iso(value) -> str:
@@ -185,9 +210,10 @@ def build_dependency(master, database: Path, sessions, frame: pd.DataFrame,
         record["price_rows_sha256"] = digest(_records(subset.sort_values(["date", "symbol"])))
         record["price_sources"] = _records(subset[["provider", "feed", "adjustment"]].drop_duplicates())
         mismatch = []
+        intervals = [(m['symbol'], iso(m['valid_from']), iso(m['valid_to']) if m['valid_to'] else '9999-12-31')
+                     for m in record['mappings']]
         for bar in subset.itertuples(index=False):
-            mapped = [m for m in record["mappings"] if m["symbol"] == bar.symbol
-                      and iso(m["valid_from"]) <= bar.date <= (iso(m["valid_to"]) if m["valid_to"] else "9999-12-31")]
+            mapped = [m for m in intervals if m[0] == bar.symbol and m[1] <= bar.date <= m[2]]
             if len(mapped) != 1:
                 mismatch.append(bar.date)
         record["price_mapping_mismatch"] = mismatch
@@ -226,10 +252,7 @@ def readiness(manifest: dict) -> dict:
     def bound_claim(claim):
         hashes = claim.get("source_hashes", [])
         return bool(hashes) and set(hashes) <= frozen_hashes
-    certificate = manifest["population_attestation"]
-    if not (manifest["source_attested_membership"] or (
-            certificate.get("verified") is True and certificate.get("start", "9999") <= manifest["window"][0]
-            and certificate.get("end", "0000") >= manifest["window"][2] and bound_claim(certificate))):
+    if not (manifest["source_attested_membership"] or scoped_membership_attested(manifest, frozen_hashes)):
         reasons["Membership"].append("full run population lacks source-attested historical completeness")
     total, missing = 0, 0
     native_roots = set()
@@ -268,7 +291,14 @@ def readiness(manifest: dict) -> dict:
             reasons['Price'].append(identity + ': stored adjusted prices are not certified raw execution inputs')
         if row["warmup_calendar_shortfall"]:
             reasons["Price"].append(identity + ": unknown pre-calendar warm-up")
-        if cert.get("action_coverage_verified") is not True:
+        no_action = cert.get('no_material_action_review')
+        if no_action is not None:
+            from radar.pit.actions import validate_no_material_action
+            action_coverage = validate_no_material_action(no_action, identity, row['required_sessions'],
+                                                         row['actions'], frozen_hashes)
+        else:
+            action_coverage = cert.get('action_coverage_verified') is True
+        if not action_coverage:
             reasons["CorporateAction"].append(identity + ": complete action coverage not attested for required scope")
         for action in row["actions"]:
             if action["confidence"] != "verified" or action["handling_mode"] == "blocked":

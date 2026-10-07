@@ -131,3 +131,36 @@ def acquire_symbol(symbol: str, pin: str, start: str, end: str, cache: Path) -> 
     sha = hashlib.sha256(json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
     (cache / (symbol + "-" + sha + ".json")).write_text(json.dumps(payload, indent=2), encoding="utf-8")
     return {"symbol": symbol, "sha256": sha, "rows": len(rows), "file": str(cache / (symbol + "-" + sha + ".json"))}
+
+
+def acquire_sessions(symbol: str, pin: str, sessions: list[str], cache: Path) -> dict:
+    """Fetch only the missing exchange labels; empty gaps perform no network IO."""
+    from datetime import date
+    if not re.fullmatch(r"[A-Z0-9.-]{1,20}", symbol) or not re.fullmatch(r"[0-9a-v]{32}", pin):
+        raise ValueError("invalid symbol or Dolt commit")
+    if sessions != sorted(set(sessions)) or any(str(date.fromisoformat(d)) != d for d in sessions):
+        raise ValueError("missing sessions must be unique ordered ISO dates")
+    if not sessions:
+        return {"symbol": symbol, "rows": 0, "status": "price_scope_complete_no_fetch"}
+    rows, receipts, ancillary = [], [], {}
+    for offset in range(0, len(sessions), 30):
+        dates = ','.join("'"+d+"'" for d in sessions[offset:offset+30])
+        sql = (f"SELECT * FROM ohlcv AS OF '{pin}' WHERE date IN ({dates}) "
+               f"AND act_symbol='{symbol}' ORDER BY date LIMIT 100")
+        chunk, receipt = query(sql, cache)
+        if len(chunk) >= 100:
+            raise ValueError('price chunk may be truncated')
+        rows.extend(chunk); receipts.append(receipt)
+    for table in ('split', 'dividend', 'symbol'):
+        ancillary[table], receipt = query(f"SELECT * FROM {table} AS OF '{pin}' WHERE act_symbol='{symbol}'", cache)
+        receipts.append(receipt)
+    payload = {'provider':PROVIDER, 'license':LICENSE, 'source_version':pin,
+        'source_symbol':symbol, 'requested_start':sessions[0], 'requested_end':sessions[-1],
+        'requested_sessions':sessions, 'rows':rows, 'ancillary':ancillary,
+        'queries':[{k:r[k] for k in ('url','raw_sha256','sql')} for r in receipts],
+        'adjustment':'unverified', 'session_date':'US exchange session label',
+        'status':'quarantined_requires_identity_and_adjustment_review'}
+    sha=hashlib.sha256(json.dumps(payload,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+    artifact=cache/(symbol+'-'+sha+'.json')
+    artifact.write_text(json.dumps(payload,indent=2),encoding='utf-8')
+    return {'symbol':symbol,'sha256':sha,'rows':len(rows),'file':str(artifact)}

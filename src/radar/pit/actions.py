@@ -15,6 +15,36 @@ TERMINALS = {"cash_acquisition", "stock_merger", "merger", "bankruptcy",
 NONTERMINALS = {"listing", "symbol_change", "exchange_transfer", "split", "reverse_split", "dividend"}
 
 
+def validate_no_material_action(review: dict, security_id: str, sessions: list[str],
+                                known_actions: list[dict], frozen_hashes: set[str]) -> bool:
+    """A negative result requires positive, complete source coverage evidence.
+
+    Source silence, an empty event table, and a split-only endpoint are insufficient.
+    This validates the declaration's scope and locks, not the truth of a publisher.
+    """
+    needed = {'split','reverse_split','symbol_change','merger','cash_acquisition',
+              'delisting','exchange_transfer','dividend','bankruptcy','equity_cancellation'}
+    if not sessions or review.get('result') != 'reviewed_no_material_action':
+        return False
+    if (review.get('security_id') != security_id or not review.get('reviewer_logic_version')
+            or review.get('review_start','9999') > min(sessions)
+            or review.get('review_end','0000') < max(sessions)):
+        return False
+    sources = review.get('sources_checked', [])
+    covered = set()
+    for source in sources:
+        if (not source.get('url','').startswith('https://') or not source.get('source_version')
+                or source.get('raw_sha256') not in frozen_hashes
+                or source.get('identity_bound') is not True or source.get('coverage_complete') is not True
+                or source.get('start','9999') > min(sessions) or source.get('end','0000') < max(sessions)):
+            return False
+        covered.update(source.get('event_types_checked',[]))
+    if not needed <= covered or not needed <= set(review.get('event_types_checked',[])):
+        return False
+    return not any(a['security_id']==security_id and min(sessions)<=a['effective_date']<=max(sessions)
+                   and a['event_type'] in needed for a in known_actions)
+
+
 def corporate_actions(catalog: dict, reviews: dict | None = None) -> list[dict]:
     """Normalize without upgrading the original evidence's confidence."""
     reviews = reviews or {}

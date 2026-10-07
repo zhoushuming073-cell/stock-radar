@@ -61,6 +61,24 @@
       "raw_sha256": "5ee92081f4966749ed40e1d4cae9bc6add4207c5cf115e16d5ca87302227a928",
       "source_version": "Nasdaq ECA2022-125",
       "license": "public official disclosure; raw retained locally, no blanket redistribution claim"
+    },
+    "iren-2025": {
+      "url": "https://iren.gcs-web.com/node/11431/html",
+      "raw_sha256": "79ab60fff564e770460ed9f99eef998ccb10dd10ced6aa7321148841beeb3d3b",
+      "source_version": "IREN issuer 10-K 0001878848-25-000063 filed 2025-08-28",
+      "license": "public official disclosure; raw retained locally, no blanket redistribution claim"
+    },
+    "iren-rename": {
+      "url": "https://irisenergy.gcs-web.com/static-files/b57c7e75-2dbe-4916-8d16-d5657d3712f8",
+      "raw_sha256": "f63a04ec57022badab362491ce5ae720bde0e20615a33512463b2a64d9f11749",
+      "source_version": "IREN issuer 6-K 2025-05-14 note 1 name change 2024-11-28",
+      "license": "public official disclosure; raw retained locally, no blanket redistribution claim"
+    },
+    "iren-2026": {
+      "url": "https://iren.gcs-web.com/node/12566/html",
+      "raw_sha256": "c78a1075506400a544754d8c6e2f178f69e0e4f4a14b05ba0a2e9ecfa743692f",
+      "source_version": "IREN issuer 10-K 0001878848-26-000052 filed 2026-08-27",
+      "license": "public official disclosure; raw retained locally, no blanket redistribution claim"
     }
   },
   "mappings": [
@@ -288,6 +306,23 @@
       "method": "reviewed_official_security_class_exchange_dated_scope",
       "observed_name_pattern": "Alibaba.*American Depositary",
       "security_type": "adr"
+    },
+    {
+      "security_id": "SEC-0001878848-ORDINARY",
+      "symbol": "IREN",
+      "old_symbol": "IREN",
+      "new_symbol": "IREN",
+      "effective_date": "2024-11-28",
+      "issuer_id": "CIK-0001878848",
+      "share_class": "ordinary no par value; listed class distinct from B Class",
+      "exchange": "NASDAQ",
+      "valid_from": "2021-11-18",
+      "valid_to": "2026-10-07",
+      "source": "iren-2026",
+      "confidence": "verified",
+      "method": "issuer 2025 and 2026 10-K ordinary-share listing continuity + 2025 6-K legal name change; observation dates preserved",
+      "observed_name_pattern": "^(Iris Energy|IREN) Limited Ordinary Shares$",
+      "security_type": "common"
     }
   ],
   "events": [
@@ -474,6 +509,20 @@
       "preferred_evidence": null,
       "reason": "secondary scalar cannot prove cash/stock election and allocation treatment",
       "resolution_status": "unresolved"
+    },
+    {
+      "security": "SEC-0001878848-ORDINARY",
+      "issue_type": "false_episode_split_on_issuer_name_change",
+      "source_a": "NASDAQ Screener Git observed name switch 2024-12-07",
+      "source_b": "https://irisenergy.gcs-web.com/static-files/b57c7e75-2dbe-4916-8d16-d5657d3712f8",
+      "values_a": [
+        "OBS-449bb6f3aa23209884239c73",
+        "OBS-626ad46887c682e17d3cf605"
+      ],
+      "values_b": "one Nasdaq ordinary class, legal name changed 2024-11-28, ticker unchanged",
+      "preferred_evidence": "https://irisenergy.gcs-web.com/static-files/b57c7e75-2dbe-4916-8d16-d5657d3712f8",
+      "reason": "issuer note 1 confirms legal name change; 10-K item 5 confirms continuous ordinary-share listing, no ticker change or new security inferred",
+      "resolution_status": "verified"
     }
   ]
 }
