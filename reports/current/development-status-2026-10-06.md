@@ -1,8 +1,8 @@
 # Stock Radar 开发阶段报告 · 2026-10-06
 
-> **2026-10-07（Asia/Shanghai）数据库专项增补：** 已实现并在本机生成开放历史快照 PIT master、独立身份边界特征库、按日 Scanner 接入及覆盖报告。最新完整本地测试为 **314 passed，1 warning**，包含原生 LEAN 回归。`CURRENT-P1-01/02/03` 已修复。真实历史证券身份、普通股分类与退市行情仍不完整，状态为 **reconstructed membership exploratory / source-dependent incomplete**；LEAN PIT 执行继续拒绝。详见 [PIT 验收报告](pit-acceptance-2026-10-07.md)。以下既有 LEAN 验收样本保留为历史证据。
+> **2026-10-07（Asia/Shanghai）数据库专项增补：** 已实现并在本机生成开放历史快照 PIT master、独立身份边界特征库、按日 Scanner 接入及覆盖报告。最新完整本地测试为 **314 passed，1 warning**，包含原生 LEAN 回归。`CURRENT-P1-01/02/03` 已修复。真实历史证券身份、普通股分类与退市行情仍不完整，状态为 **reconstructed membership exploratory / source-dependent incomplete**；LEAN PIT 执行继续拒绝。详见 [PIT 验收报告](../acceptance/pit-acceptance-2026-10-07.md)。以下既有 LEAN 验收样本保留为历史证据。
 
-> **类型：开发阶段快照 / 本地验收说明。** 当前任务状态和优先级仍以[当前总账](journey-2026-09-30-0651-📌当前总账.md)为准；本报告不另建一份 backlog。
+> **类型：开发阶段快照 / 本地验收说明。** 当前任务状态和优先级仍以[当前总账](../journey-2026-09-30-0651-📌当前总账.md)为准；本报告不另建一份 backlog。
 >
 > **核对的代码基线：** `main @ 0dc8f3c22df75fe94d951f7ad1567a5093a837e4`。本次更新仅整理文档，不修改交易执行逻辑。
 >
@@ -188,7 +188,7 @@ flowchart TD
 ## 9. 进一步阅读
 
 - [English README](../README.md) / [中文 README](../README.zh-CN.md)
-- [当前总账](journey-2026-09-30-0651-📌当前总账.md)
+- [当前总账](../journey-2026-09-30-0651-📌当前总账.md)
 - [LEAN execution contract](../docs/LEAN_EXECUTION.md)
 - [Research Export Bundle](../docs/research-export.md)
 - [PIT Security Master 输入与限制](../docs/PIT_SECURITY_MASTER.md)

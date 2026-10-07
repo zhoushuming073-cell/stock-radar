@@ -4,7 +4,7 @@
 
 最终源码实现提交：`013bcc9bbf4e903681e55dcbf6f2ae1f4b6a913f`，已推送并重新读取 GitHub main 核验。任务开始及发布前重新读取的基线均为 `8a523be52d294ddb592ba768d45a29c4175205d8`。本报告和文档在后续文档提交中交付；不把文档提交的自引用 hash 编入文件自身。
 
-保留前两份 [首版验收](pit-acceptance-2026-10-07.md)、[可信度验收](pit-data-trust-acceptance-2026-10-07.md) 原样。唯一开放 backlog 仍在 [当前总账 §3.2](journey-2026-09-30-0651-📌当前总账.md)。
+保留前两份 [首版验收](pit-acceptance-2026-10-07.md)、[可信度验收](pit-data-trust-acceptance-2026-10-07.md) 原样。唯一开放 backlog 仍在 [当前总账 §3.2](../journey-2026-09-30-0651-📌当前总账.md)。
 
 ## 1. 最终链路与实际执行边界
 
@@ -188,7 +188,7 @@ NVDA case 截止 6/10，未跨 6/11 dividend，不以它认证通用 dividend ac
 | Current native result | `17e4fe80f7aa661712e6d0c4625cccb64dfbaabd967b06ad5b60eae17e845161` |
 | Current normalized result | `acc6f4a43a230e638d00f43b03bcbd479944acde9df9901656071b253c605fd5` |
 
-[机器可读验收证据](pit-final-evidence-2026-10-07.json) 保存实际指标、gate counts、源文件 hashes、队列/网络结果与本地 receipt hashes。各 real native case 的 map/factor/actions/price/index、native/raw/normalized hashes 见已提交的小型 fixture。未生成正式 PIT native dataset，因此该正式 Run 的 map/factor/native result hash 不伪造。
+[机器可读验收证据](../evidence/pit-final-evidence-2026-10-07.json) 保存实际指标、gate counts、源文件 hashes、队列/网络结果与本地 receipt hashes。各 real native case 的 map/factor/actions/price/index、native/raw/normalized hashes 见已提交的小型 fixture。未生成正式 PIT native dataset，因此该正式 Run 的 map/factor/native result hash 不伪造。
 
 | 旧数据库 | 入场与结束 SHA-256（相同） |
 | --- | --- |

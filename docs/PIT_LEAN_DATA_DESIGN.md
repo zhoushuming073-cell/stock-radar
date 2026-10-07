@@ -4,8 +4,8 @@ Stock Radar generates its own **Stock Radar generated PIT execution dataset**.
 It is not QuantConnect official Security Master data. Global completeness and
 run readiness are separate. The installed reconstructed population remains
 incomplete; formal portfolio status is documented in the
-[final acceptance](../reports/pit-final-acceptance-2026-10-07.md) and latest
-[data clearance](../reports/pit-clearance-acceptance-2026-10-07.md).
+[final acceptance](../reports/acceptance/pit-final-acceptance-2026-10-07.md) and latest
+[data clearance](../reports/acceptance/pit-clearance-acceptance-2026-10-07.md).
 
 The installed IREN identity correction removes its independent map-root collision.
 The full frozen Validation still has 435,678 missing prices and 6,416 unresolved

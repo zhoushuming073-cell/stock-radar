@@ -132,7 +132,7 @@ No front-end code interprets native QuantConnect JSON.
 Latest recorded native-inclusive acceptance on **2026-10-06: 272 passed,
 1 existing websockets deprecation warning**. After final preparation-cancellation
 changes, targeted worker/store tests also passed (15 tests). See the
-[development-stage report](../reports/development-status-2026-10-06.md) for the
+[development-stage report](../reports/current/development-status-2026-10-06.md) for the
 scope and remaining gaps. These are local results, not hosted-CI evidence.
 
 Native golden cases compare the same frozen candidates, dates, initial capital,
@@ -160,7 +160,7 @@ LEAN is [QuantConnect/Lean](https://github.com/QuantConnect/Lean), Apache-2.0.
 Its source and runtimes are not copied into Stock Radar's Git repository.
 
 The 2026-10-07 final PIT pass has 377 local tests passing with native LEAN enabled.
-See [final PIT acceptance](../reports/pit-final-acceptance-2026-10-07.md) for
+See [final PIT acceptance](../reports/acceptance/pit-final-acceptance-2026-10-07.md) for
 the complete frozen Validation comparison, supported action accounting,
 remaining Run dependency failures and the difference between event goldens
 and formal strategy execution.

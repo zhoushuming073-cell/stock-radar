@@ -4,9 +4,9 @@
 
 这次停止逐证券人工清障，改为按日期查询全部依赖代码、批量历史身份匹配和全窗人口比较。未开发新的正式 adapter/importer，未安装候选数据。免费路线的当前边界主要是身份、原始价格口径及人口/行动完整性证明，不能把结果解释为“免费行情根本不存在”。
 
-- [完整 40 来源评分表](source-breakthrough-scorecard-2026-10-07.md)
-- [所有能力、许可、版本字段的 JSON](source-breakthrough-scorecard-2026-10-07.json)
-- [可审计的计数、版本、receipt、保护哈希](pit-source-breakthrough-evidence-2026-10-07.json)
+- [完整 40 来源评分表](../evidence/source-breakthrough-scorecard-2026-10-07.md)
+- [所有能力、许可、版本字段的 JSON](../evidence/source-breakthrough-scorecard-2026-10-07.json)
+- [可审计的计数、版本、receipt、保护哈希](../evidence/pit-source-breakthrough-evidence-2026-10-07.json)
 - 前序 [数据清障验收](pit-clearance-acceptance-2026-10-07.md)、[最终工程验收](pit-final-acceptance-2026-10-07.md) 保留原样。
 
 ## 1. 重新读取的真实基线

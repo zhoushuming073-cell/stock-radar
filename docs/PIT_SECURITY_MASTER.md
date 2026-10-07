@@ -172,8 +172,8 @@ Coverage audits keep no-price instruments in the denominator and distinguish
 all observed episodes from eligible common episodes. A secondary delisting-price
 proximity audit is explicitly unverified; it cannot establish terminal value.
 The frozen-strategy comparison examines historical selection only, without
-future returns. See [architecture audit](../reports/pit-initial-audit-2026-10-07.md)
-and [local acceptance](../reports/pit-acceptance-2026-10-07.md).
+future returns. See [architecture audit](../reports/audit/pit-initial-audit-2026-10-07.md)
+and [local acceptance](../reports/acceptance/pit-acceptance-2026-10-07.md).
 
 ## Reviewed evidence and external-price enrichment (2026-10-07)
 
@@ -242,13 +242,13 @@ the audit unavailable/stale. Formal readiness never follows from the existence
 of a feature store or a few passing cases.
 
 Installed batch measurements, exceptions and real golden cases are in the
-[new trust acceptance](../reports/pit-data-trust-acceptance-2026-10-07.md).
+[new trust acceptance](../reports/acceptance/pit-data-trust-acceptance-2026-10-07.md).
 [LEAN execution contract](PIT_LEAN_DATA_DESIGN.md) now includes frozen Run closure,
 conditional preflight, raw/split accounting and native witnesses. Generated data
 is explicitly distinct from QuantConnect official data. See the new
-[final acceptance](../reports/pit-final-acceptance-2026-10-07.md) for actual Run blockers.
+[final acceptance](../reports/acceptance/pit-final-acceptance-2026-10-07.md) for actual Run blockers.
 
-The latest [data clearance](../reports/pit-clearance-acceptance-2026-10-07.md)
+The latest [data clearance](../reports/acceptance/pit-clearance-acceptance-2026-10-07.md)
 installs master `533905312e4c19ef2f80558d80c06c1b644f3eefc01fbba0c703904f1dc8bdaa`.
 Three official IREN filings bind both observed name episodes to the same listed
 ordinary class, `SEC-0001878848-ORDINARY`; observation dates remain unchanged.

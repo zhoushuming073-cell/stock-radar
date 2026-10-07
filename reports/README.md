@@ -1,55 +1,59 @@
 # Reports Log Index
 
-> **Purpose:** Navigation only. This file is not a journey log.
+> **Purpose:** navigation and document governance only. This file is not a journey log and does not create a second backlog.
 
 ## Current source of truth
 
-- **📌 当前总账:** [Canonical status / active backlog](journey-2026-09-30-0651-📌当前总账.md) — updated 2026-10-07 Asia/Shanghai.
-- **PIT migration acceptance:** [2026-10-07 · Local reconstruction and limitations](pit-acceptance-2026-10-07.md) — pinned data, price gaps, production Scanner samples and correctness regression evidence.
-- **PIT trust / retired-price acceptance:** [2026-10-07 · Reviewed identities, events and real OHLCV](pit-data-trust-acceptance-2026-10-07.md) — installed enrichment, six-dimension readiness, 342 tests and pre-task daily-update exception; first acceptance preserved.
-- **PIT final execution acceptance:** [2026-10-07 · Frozen Run closure, native actions and formal blockers](pit-final-acceptance-2026-10-07.md) — Global and Run scorecards remain separate; no false portfolio completion.
-- **Latest PIT data clearance:** [2026-10-07 · IREN continuity, full source probes and completion boundary](pit-clearance-acceptance-2026-10-07.md) — installed identity correction, 397 native-inclusive tests; formal Run still data-blocked, no PIT return comparison.
-- **PIT bulk-source benchmark / trust ceiling:** [2026-10-07 · Source breakthrough acceptance](pit-source-breakthrough-acceptance-2026-10-07.md) — 40 offerings reviewed; large candidate coverage found, but no new formal data accepted and Formal PIT remains BLOCKED.
-- **Research-Grade PIT acceptance:** [2026-10-07 · Research gate, raw-price acceptance and causal Core sensitivity](pit-research-grade-acceptance-2026-10-07.md) — PARTIAL; separate research-grade evidence landed, while real Research-Grade PIT Native LEAN remains blocked by unresolved identity/event/price risks.
-- **Current development-stage report:** [2026-10-06 · Research + local LEAN integration](development-status-2026-10-06.md) — detailed Chinese overview, acceptance scope, limitations and next milestones.
+- **📌 当前总账:** [Canonical status / active backlog](journey-2026-09-30-0651-📌当前总账.md) — the only active project ledger.
+- **Current development-stage snapshot:** [2026-10-06 · Research + local LEAN integration](current/development-status-2026-10-06.md).
+- When a dated report conflicts with the canonical ledger, the canonical ledger wins for current status. Dated reports remain audit evidence.
 
-The canonical journey owns completed/open/partial backlog status. The dated
-development report explains the verified release stage; it does not create a
-second active backlog. Historical reports are preserved as evidence.
+## Directory layout
 
-## Journey filename convention
+| Path | Role |
+| --- | --- |
+| `acceptance/` | Dated acceptance reports and bounded engineering/research conclusions |
+| `evidence/` | Machine-readable evidence, scorecards and supporting derived artifacts |
+| `audit/` | Point-in-time architecture/audit records |
+| `archive/journeys/` | Closed, partial or roadmap journey history; not an active backlog |
+| `personal-research/` | Owner-authored research reports and preserved research conclusions |
+| `phase2/` | Historical pre-v3 research artifacts and datasets |
+| `current/` | Current stage snapshots that explain the active platform state |
+| `docs/` (repository root) | Contracts and specifications; intentionally outside `reports/` |
 
-`journey-YYYY-MM-DD-HHMM-<emoji><status>.md`
+The `reports/` root is intentionally kept small: this index plus the canonical ledger.
 
-- Date/time uses the GitHub repository commit timestamp in UTC.
-- Exactly one journey may be `📌当前总账`.
-- `📌当前总账` = current canonical status/backlog.
-- `✅已完成` = closed backlog, implementation or acceptance evidence.
-- `🟡部分完成` = historical log with some unfinished work still relevant.
-- `❌未完成` = standalone unresolved historical work; use sparingly because current work belongs in the canonical journey.
-- `🗂️历史归档` = historical mixed planning/research record, no longer actionable.
-- `🧭路线图` = optional/future direction, not implementation evidence.
+## PIT acceptance chain · 2026-10-07
 
-When a new canonical status snapshot is created, rename the previous `📌当前总账` journey to `✅已完成` or `🗂️历史归档`, create the new timestamped `📌当前总账` journey, and update this index.
+1. [Initial local PIT reconstruction](acceptance/pit-acceptance-2026-10-07.md) — architecture, pinned data and explicit limitations.
+2. [Identity / retired-price trust continuation](acceptance/pit-data-trust-acceptance-2026-10-07.md) — reviewed identities, events and real OHLCV enrichment.
+3. [Final execution-gate engineering](acceptance/pit-final-acceptance-2026-10-07.md) — frozen Run closure, native actions and formal blockers.
+4. [Data clearance](acceptance/pit-clearance-acceptance-2026-10-07.md) — IREN continuity and full source probes; Formal PIT remains blocked.
+5. [Bulk-source benchmark / trust ceiling](acceptance/pit-source-breakthrough-acceptance-2026-10-07.md) — large candidate coverage, no false formal admission.
+6. [Research-Grade PIT](acceptance/pit-research-grade-acceptance-2026-10-07.md) — **PARTIAL** research-grade evidence; real Research-Grade Native LEAN remains blocked.
 
-## Journey inventory
+Supporting material:
+- [Initial PIT architecture audit](audit/pit-initial-audit-2026-10-07.md)
+- [Source-breakthrough human scorecard](evidence/source-breakthrough-scorecard-2026-10-07.md)
+- Machine-readable evidence and JSON scorecards live under `evidence/`.
+
+## Historical journey inventory
 
 | File | Status | Purpose |
 | --- | --- | --- |
-| `journey-2026-09-30-0651-📌当前总账.md` | 📌 当前总账 | Current consolidated project status and backlog |
-| `journey-2026-10-06-1750-🟡部分完成.md` | 🟡 部分完成 | Historical PIT engineering/data acceptance; remaining data trust belongs in the canonical ledger |
-| `journey-2026-09-29-0426-🗂️历史归档.md` | 🗂️ 历史归档 | Mixed 2026-09-29 planning/history; surviving work migrated to current ledger |
-| `journey-2026-09-29-0629-✅已完成.md` | ✅ 已完成 | First research-integrity bug backlog; closed |
-| `journey-2026-09-29-1306-✅已完成.md` | ✅ 已完成 | Acceptance/readiness evidence for the first backlog |
-| `journey-2026-09-29-1351-✅已完成.md` | ✅ 已完成 | Follow-up backlog; all seven items closed |
-| `journey-2026-09-29-1421-🧭路线图.md` | 🧭 路线图 | Open-source reuse/adoption roadmap |
-| `journey-2026-09-30-0124-✅已完成.md` | ✅ 已完成 | Bug-mining round 2; all ten items closed |
-| `journey-2026-09-30-0620-✅已完成.md` | ✅ 已完成 | Fix-pass and local verification evidence |
+| [2026-09-29 04:26](archive/journeys/journey-2026-09-29-0426-🗂️历史归档.md) | 🗂️ 历史归档 | Mixed planning/history; surviving work migrated to the current ledger |
+| [2026-09-29 06:29](archive/journeys/journey-2026-09-29-0629-✅已完成.md) | ✅ 已完成 | First research-integrity bug backlog; closed |
+| [2026-09-29 13:06](archive/journeys/journey-2026-09-29-1306-✅已完成.md) | ✅ 已完成 | Acceptance/readiness evidence for the first backlog |
+| [2026-09-29 13:51](archive/journeys/journey-2026-09-29-1351-✅已完成.md) | ✅ 已完成 | Follow-up backlog; all seven items closed |
+| [2026-09-29 14:21](archive/journeys/journey-2026-09-29-1421-🧭路线图.md) | 🧭 路线图 | Optional open-source reuse/adoption roadmap |
+| [2026-09-30 01:24](archive/journeys/journey-2026-09-30-0124-✅已完成.md) | ✅ 已完成 | Bug-mining round 2; all ten items closed |
+| [2026-09-30 06:20](archive/journeys/journey-2026-09-30-0620-✅已完成.md) | ✅ 已完成 | Fix-pass and local verification evidence |
+| [2026-10-06 17:50](archive/journeys/journey-2026-10-06-1750-🟡部分完成.md) | 🟡 部分完成 | Historical PIT engineering/data acceptance; remaining work belongs in the canonical ledger |
 
-## Non-journey reports
+## Maintenance rules
 
-- [Development status · 2026-10-06](development-status-2026-10-06.md): current architecture, Phase A–F migration scope, local acceptance evidence, operational boundaries and planned work.
-- [Initial PIT architecture audit · 2026-10-07](pit-initial-audit-2026-10-07.md) and [PIT acceptance](pit-acceptance-2026-10-07.md): before/after database architecture and honest data readiness.
-- `phase2/` contains historical pre-v3 research artifacts and datasets. It is not an active project backlog.
-- `personal-research/` contains owner-authored personal research reports and preserved research conclusions.
-- Contracts and specifications belong under `docs/`, not in the journey status stream.
+- Exactly one active canonical ledger is allowed.
+- New acceptance reports go to `acceptance/`; machine evidence goes to `evidence/`; architecture audits go to `audit/`.
+- Closed or superseded journey records go to `archive/journeys/`; do not leave them in the root.
+- Historical evidence is preserved rather than rewritten to make later results look cleaner.
+- Strategy logic, research parameters and trading assumptions are not changed as part of report housekeeping.

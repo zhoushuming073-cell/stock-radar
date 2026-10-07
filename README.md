@@ -44,9 +44,9 @@
 **Current stage · 2026-10-07:** research infrastructure and initial local LEAN
 integration accepted; open-source historical PIT reconstruction and an independent
 identity-bounded feature store added. PIT data remains exploratory and incomplete,
-and the installed formal PIT portfolio remains blocked by specific Run dependencies. [Research-grade PIT acceptance](reports/pit-research-grade-acceptance-2026-10-07.md), [bulk source benchmark](reports/pit-source-breakthrough-acceptance-2026-10-07.md), [PIT data clearance](reports/pit-clearance-acceptance-2026-10-07.md), [Final PIT execution acceptance](reports/pit-final-acceptance-2026-10-07.md), [PIT acceptance](reports/pit-acceptance-2026-10-07.md),
-[reviewed identity / retired-price acceptance](reports/pit-data-trust-acceptance-2026-10-07.md)
-and [development report](reports/development-status-2026-10-06.md)
+and the installed formal PIT portfolio remains blocked by specific Run dependencies. [Research-grade PIT acceptance](reports/acceptance/pit-research-grade-acceptance-2026-10-07.md), [bulk source benchmark](reports/acceptance/pit-source-breakthrough-acceptance-2026-10-07.md), [PIT data clearance](reports/acceptance/pit-clearance-acceptance-2026-10-07.md), [Final PIT execution acceptance](reports/acceptance/pit-final-acceptance-2026-10-07.md), [PIT acceptance](reports/acceptance/pit-acceptance-2026-10-07.md),
+[reviewed identity / retired-price acceptance](reports/acceptance/pit-data-trust-acceptance-2026-10-07.md)
+and [development report](reports/current/development-status-2026-10-06.md)
 document what works, what is limited and what remains open.
 
 ### Local LEAN backtests
@@ -148,7 +148,7 @@ Stock Radar continues to own all strategy selection and Scanner evaluation.
 This is a daily-price research integration, not validated intraday execution or
 evidence of a profitable strategy.
 
-- [Detailed development-stage report (Chinese)](reports/development-status-2026-10-06.md)
+- [Detailed development-stage report (Chinese)](reports/current/development-status-2026-10-06.md)
 - [Canonical status and remaining backlog](reports/journey-2026-09-30-0651-📌当前总账.md)
 - [LEAN setup, signal/result contracts and execution assumptions](docs/LEAN_EXECUTION.md)
 - [Archived legacy web version](https://github.com/zhoushuming073-cell/stock-radar/tree/legacy-backtest-ui-2026-10-06)
@@ -573,8 +573,8 @@ Snapshot. Real Validation Native execution remains blocked by unresolved
 identity, material events, prices and membership uncertainty. Scanner diagnostics
 and passing native fixtures do not establish a trustworthy PIT portfolio result.
 The existing local API process needs a normal reload to serve the new route.
-See the [acceptance and scope counts](reports/pit-research-grade-acceptance-2026-10-07.md)
-and [derived evidence](reports/pit-research-grade-evidence-2026-10-07.json).
+See the [acceptance and scope counts](reports/acceptance/pit-research-grade-acceptance-2026-10-07.md)
+and [derived evidence](reports/evidence/pit-research-grade-evidence-2026-10-07.json).
 
 ## Tests
 

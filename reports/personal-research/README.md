@@ -36,7 +36,8 @@ Example:
 
 ## Relationship to other report directories
 
-- `reports/journey-*`: engineering/project status history.
+- `reports/journey-2026-09-30-0651-📌当前总账.md`: current canonical project status.
+- `reports/archive/journeys/`: historical engineering/project-status records.
 - `reports/phase2/`: historical pre-v3 research-engine artifacts.
 - `reports/personal-research/`: owner-authored research reports and conclusions.
 

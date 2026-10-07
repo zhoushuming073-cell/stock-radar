@@ -126,4 +126,4 @@ Membership 允许官方完整人口声明，或 `pit-formal-membership-v1` 的�
 
 8766 的新进程验证 `/health`、universe status、PIT readiness、正式 blocked Run 详情、Current completed history 均 HTTP 200。正式 8765 原进程保留；此前自动审批拒绝停止/启动服务，返回原因仅为 `blocked by policy`，本轮未强行终止，也没有把服务重启问题计入数据 gate：**code installed, production local API restart pending user/local shell**。临时验证服务已停止，端口检查仅有 8765 仍监听。
 
-机器证据：[pit-clearance-evidence-2026-10-07.json](pit-clearance-evidence-2026-10-07.json)。完整本地 source/query/queue/安装记录在 `data/pit/clearance/` 和 `data/pit/raw/clearance*`；不上传行情或大型 DB。状态及剩余工作只归入 [唯一当前总账 §3.2](journey-2026-09-30-0651-📌当前总账.md)。正式 PIT portfolio、Current/PIT 收益差和 Fresh OOS 结论都没有生成。
+机器证据：[pit-clearance-evidence-2026-10-07.json](../evidence/pit-clearance-evidence-2026-10-07.json)。完整本地 source/query/queue/安装记录在 `data/pit/clearance/` 和 `data/pit/raw/clearance*`；不上传行情或大型 DB。状态及剩余工作只归入 [唯一当前总账 §3.2](../journey-2026-09-30-0651-📌当前总账.md)。正式 PIT portfolio、Current/PIT 收益差和 Fresh OOS 结论都没有生成。

@@ -56,7 +56,7 @@ def main():
         'current_native':current,'protected_files':guards,'artifacts':artifacts,
         'tests':{'full_passed':436,'full_seconds':85.81,'native_included':True,'after_source_guard_fix_passed':67,
                  'after_source_guard_fix_seconds':53.17,'warning':'existing websockets deprecation'}}
-    out=root/'reports/pit-research-grade-evidence-2026-10-07.json'
+    out=root/'reports/evidence/pit-research-grade-evidence-2026-10-07.json'
     out.write_text(json.dumps(evidence,indent=2,ensure_ascii=False,allow_nan=False),encoding='utf-8')
     pct=lambda value:'未测' if value is None else f'{value*100:.4f}%'
     lines=['# Stock Radar Research-Grade PIT 验收 · 2026-10-07','',
@@ -132,8 +132,8 @@ def main():
         '', '## 8. 复现与下一项数据工作','',
         '固定规则后依次运行：`download_pit_research_prices.py` → `audit_pit_research_grade.py` → `build_pit_research_diagnostics.py` → `finalize_pit_research_evidence.py`。raw/license/失败响应/dated reference保存在本地ignored目录；哈希失配明确失败。要用新规则或改已冻结代码重做，请建立新的版本目录与闭包，保留本次结果。',
         '下一步的数据价值集中在Core未知竞争者、实际候选身份/重大事件、来源分歧及缺价作用的量化；不再以全6,421逐股法律认证作为A类的要求。不扩大框架、不凭空采购、不凭结果修改Core规则。',
-        '完整derived计数与artifact SHA见 `pit-research-grade-evidence-2026-10-07.json`；底层raw与数据库保持本地。唯一总账维持研究目标OPEN/PARTIAL。', '']
-    (root/'reports/pit-research-grade-acceptance-2026-10-07.md').write_text('\n'.join(lines),encoding='utf-8')
+        '完整derived计数与artifact SHA见 `../evidence/pit-research-grade-evidence-2026-10-07.json`；底层raw与数据库保持本地。唯一总账维持研究目标OPEN/PARTIAL。', '']
+    (root/'reports/acceptance/pit-research-grade-acceptance-2026-10-07.md').write_text('\n'.join(lines),encoding='utf-8')
     print('Acceptance report and derived evidence written; protected files unchanged',flush=True)
 
 

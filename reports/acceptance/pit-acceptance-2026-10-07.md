@@ -2,7 +2,7 @@
 
 > 本机日期：Asia/Shanghai。整体状态：**工程第一版完成，真实数据可信度部分完成**。
 > `reconstructed_membership_exploratory` / `source_dependent_incomplete`，不是 survivorship-bias-free。
-> 唯一当前 backlog 在 [当前总账](journey-2026-09-30-0651-📌当前总账.md) 第 3.2 节；本报告是验收证据。
+> 唯一当前 backlog 在 [当前总账](../journey-2026-09-30-0651-📌当前总账.md) 第 3.2 节；本报告是验收证据。
 
 ## 1. 结果与架构
 
@@ -15,7 +15,7 @@ LEAN PIT 请求实际返回 `LEAN PIT terminal/corporate-action support is not y
 
 ## 2. 先审计后修改
 
-[初始架构审计](pit-initial-audit-2026-10-07.md)基于 `main @ 3521ce3`，已与远端核对。当前资产来源为 Alpaca active US equities，研究库用这批存续资产构建历史特征；每日因果筛选仍无法复原未进入当前 cohort 的退市证券。原始资产、日线与特征主要按 ticker 作键，缺少稳定证券身份。现有 PIT contract 已具备日期映射、终止事件边界和 fail-safe，但此前没有实际安装 master，也缺少防止 ticker reuse 串入滚动特征的独立 store。
+[初始架构审计](../audit/pit-initial-audit-2026-10-07.md)基于 `main @ 3521ce3`，已与远端核对。当前资产来源为 Alpaca active US equities，研究库用这批存续资产构建历史特征；每日因果筛选仍无法复原未进入当前 cohort 的退市证券。原始资产、日线与特征主要按 ticker 作键，缺少稳定证券身份。现有 PIT contract 已具备日期映射、终止事件边界和 fail-safe，但此前没有实际安装 master，也缺少防止 ticker reuse 串入滚动特征的独立 store。
 
 本轮核心实现为 `0b0f50c`；安装路径修复及回归为 `99c9282`。
 安装验收暴露 feature sidecar 的错误目标目录，修复后已实际验证 RunManager。初始失败没有绕过安全检查，也没有将缺少 sidecar 的模式当作可运行。

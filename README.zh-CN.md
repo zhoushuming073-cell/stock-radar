@@ -42,7 +42,7 @@
 ## 项目简介
 
 **当前阶段 · 2026-10-07：** 研究基础设施和本地 LEAN 接入已验收；新增开放历史快照 PIT 重建、独立证券身份边界特征库和按日 Scanner 接入。历史身份、普通股分类及退市行情覆盖仍不完整，PIT LEAN 执行继续拒绝。
-[PIT 数据库验收报告](reports/pit-acceptance-2026-10-07.md)记录数据来源、差异及未完成边界。
+[PIT 数据库验收报告](reports/acceptance/pit-acceptance-2026-10-07.md)记录数据来源、差异及未完成边界。
 
 最新研究级专项：新增独立 `research-grade` 门禁，保留原严格门禁。
 自动通过2,597个低风险身份，独立接受906,095条原始行情，补回66,236条旧缺价。
@@ -50,10 +50,10 @@
 Scanner已实际计算。真实Research-Grade PIT Native LEAN仍被身份、重大事件、缺价与
 人口不确定性阻塞，不能宣称无幸存者偏差或稳定alpha。System及新增
 `/api/lab/pit-research-readiness`明确显示研究级标签，禁止回退Current；现有常驻服务需
-正常重载才能加载新增接口。[研究级验收报告](reports/pit-research-grade-acceptance-2026-10-07.md)
+正常重载才能加载新增接口。[研究级验收报告](reports/acceptance/pit-research-grade-acceptance-2026-10-07.md)
 包含三层缺口、敏感性结果、证据哈希和15项验收答复。
-[本轮可信度与退出行情验收](reports/pit-data-trust-acceptance-2026-10-07.md)记录 9 个已核验身份、1,462 条真实补价、数据库耦合、六维 readiness 和旧库定时更新例外。
-[开发阶段报告](reports/development-status-2026-10-06.md)说明已完成能力、验收范围、限制和待办。
+[本轮可信度与退出行情验收](reports/acceptance/pit-data-trust-acceptance-2026-10-07.md)记录 9 个已核验身份、1,462 条真实补价、数据库耦合、六维 readiness 和旧库定时更新例外。
+[开发阶段报告](reports/current/development-status-2026-10-06.md)说明已完成能力、验收范围、限制和待办。
 网页新回测只使用 LEAN，Stock Radar 保留全部策略/选股逻辑；安装路径可配置，旧版网页已封存到 GitHub 标签。
 
 Stock Radar 是一个个人美股量化研究系统，围绕一个非常具体的实际流程构建：先把全市场几千只股票压缩成少量最符合目标价格结构的观察对象，再把新闻、催化剂、基本面、盘前状态等非价格信息留给第二阶段研究。
@@ -140,7 +140,7 @@ Stock Radar 正在从“追求漂亮历史净值曲线”重新聚焦到 **形�
 策略判断、因子和选股来源。原网页继续展示资金曲线、回撤、Benchmark、持仓、交易、
 历史、Compare 和审计。旧结果保留并标记归档，旧内核只作兼容和对照验证。
 
-- [详细开发阶段报告](reports/development-status-2026-10-06.md)
+- [详细开发阶段报告](reports/current/development-status-2026-10-06.md)
 - [当前总账与未完成事项](reports/journey-2026-09-30-0651-📌当前总账.md)
 - [LEAN 安装要求、信号/结果契约与执行假设](docs/LEAN_EXECUTION.md)
 - [GitHub 封存的旧版网页](https://github.com/zhoushuming073-cell/stock-radar/tree/legacy-backtest-ui-2026-10-06)

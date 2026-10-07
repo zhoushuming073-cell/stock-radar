@@ -103,4 +103,4 @@ Raw source与feature artifact复用既有schema、identity feature公式、produ
 
 固定规则后依次运行：`download_pit_research_prices.py` → `audit_pit_research_grade.py` → `build_pit_research_diagnostics.py` → `finalize_pit_research_evidence.py`。raw/license/失败响应/dated reference保存在本地ignored目录；哈希失配明确失败。要用新规则或改已冻结代码重做，请建立新的版本目录与闭包，保留本次结果。
 下一步的数据价值集中在Core未知竞争者、实际候选身份/重大事件、来源分歧及缺价作用的量化；不再以全6,421逐股法律认证作为A类的要求。不扩大框架、不凭空采购、不凭结果修改Core规则。
-完整derived计数与artifact SHA见 `pit-research-grade-evidence-2026-10-07.json`；底层raw与数据库保持本地。唯一总账维持研究目标OPEN/PARTIAL。
+完整derived计数与artifact SHA见 `../evidence/pit-research-grade-evidence-2026-10-07.json`；底层raw与数据库保持本地。唯一总账维持研究目标OPEN/PARTIAL。
