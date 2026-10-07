@@ -73,7 +73,8 @@ def freeze_signals(frame, sessions, metadata, plugin, store, execution, guard=No
 
 def prepare_bundle(home: Path, output: Path, metadata: dict, sessions: list,
                    signals: list[dict], prices: pd.DataFrame, execution: dict,
-                   fees, allowed: dict | None = None, max_positions: int = 30) -> Path:
+                   fees, allowed: dict | None = None, max_positions: int = 30,
+                   *, pit_dataset: dict | None = None) -> Path:
     """Native LEAN Equity minute files contain two *daily-price proxy* observations.
 
     At 09:31 only that day's Open is visible. At the exchange close only Close
@@ -136,8 +137,9 @@ def prepare_bundle(home: Path, output: Path, metadata: dict, sessions: list,
         required[signal['symbol']].update(days[index + 1:end])
     for symbol in symbols:
         lower = symbol.lower()
-        for kind, content in (('map_files', f'19980102,{lower},P\n20501231,{lower},P\n'),
-                              ('factor_files', '19980102,1,1,1\n20501231,1,1,1\n')):
+        spec = (pit_dataset or {}).get('securities', {}).get(symbol)
+        for kind, content in (('map_files', spec['maps'] if spec else f'19980102,{lower},P\n20501231,{lower},P\n'),
+                              ('factor_files', spec['factors'] if spec else '19980102,1,1,1\n20501231,1,1,1\n')):
             folder = data / 'equity/usa' / kind
             folder.mkdir(parents=True, exist_ok=True)
             (folder / f'{lower}.csv').write_text(content, encoding='ascii')
@@ -145,6 +147,9 @@ def prepare_bundle(home: Path, output: Path, metadata: dict, sessions: list,
         folder.mkdir(parents=True, exist_ok=True)
         subset = prices.loc[(prices['symbol'] == symbol) & prices['date'].isin(required[symbol])]
         for row in subset.to_dict('records'):
+            mapped_lower = row.get('mapped_symbol', symbol).lower() if pit_dataset else lower
+            folder = data / 'equity/usa/minute' / mapped_lower
+            folder.mkdir(parents=True, exist_ok=True)
             day = row['date']
             close_seconds = pd.Timedelta(close_times[day]).total_seconds()
             lines = []
@@ -159,7 +164,7 @@ def prepare_bundle(home: Path, output: Path, metadata: dict, sessions: list,
             stamp = day.replace('-', '')
             # Fixed ZIP timestamps make the exported data hash reproducible.
             with zipfile.ZipFile(folder / f'{stamp}_trade.zip', 'w', zipfile.ZIP_DEFLATED) as archive:
-                info = zipfile.ZipInfo(f'{stamp}_{lower}_minute_trade.csv', (2000, 1, 1, 0, 0, 0))
+                info = zipfile.ZipInfo(f'{stamp}_{mapped_lower}_minute_trade.csv', (2000, 1, 1, 0, 0, 0))
                 info.compress_type = zipfile.ZIP_DEFLATED
                 archive.writestr(info, ''.join(lines))
     data_files = {str(p.relative_to(data)).replace('\\', '/'): digest(p)
@@ -185,6 +190,12 @@ def prepare_bundle(home: Path, output: Path, metadata: dict, sessions: list,
                 'algorithm_sha256': digest(algorithm),
                 'limitations': ['No intraday path or trigger ordering', 'No order book/partial-fill simulation',
                                 'Universe and source-price adjustment biases remain those of the input snapshot']}
+    if pit_dataset:
+        # Actions, delisting/settlement inputs and full dependency hash are part
+        # of the same manifest lock as maps, factors, prices and engine source.
+        manifest['pit_dataset'] = {**pit_dataset, 'price_sha256': digest(price_file),
+                                   'data_index_sha256': digest(data_index)}
+        manifest['price_basis'] = 'raw execution; native holdings splits once; causal split-only features'
     path = output / 'manifest.json'
     write_json(path, manifest)
     return path

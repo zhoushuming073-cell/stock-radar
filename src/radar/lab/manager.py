@@ -110,6 +110,10 @@ class RunManager:
                row["source_watermark"] != context["watermark"] for row in metadata):
             raise ValueError("research snapshot changed during batch preparation")
         current = self._capture_batch_context()
+        for row in metadata:
+            if row.get('pit_dependency'):
+                from radar.pit.run import load_dependency
+                load_dependency(row['pit_dependency'])
         if any(context[key] != current[key] for key in ("snapshot", "watermark", "files")):
             raise ValueError("research sources changed during batch preparation; no Runs queued")
         if any(row.get("research_config_hash") != context["files"][str(self.root / "config/research.yaml")]
@@ -522,8 +526,6 @@ class RunManager:
                 if engine == 'lean':
                     if resolved.values['execution']['execution_timing'] != 'next_open':
                         raise ValueError('LEAN requires next-session Open execution')
-                    if universe_mode == 'point_in_time':
-                        raise ValueError('LEAN PIT terminal/corporate-action support is not yet validated; use Current Snapshot')
                     metadata['host_source_hashes'].update({
                         str(path.relative_to(self.root)).replace('\\', '/'): sha256_file(path)
                         for path in (self.root / 'src/radar/lean').glob('*.py')})
@@ -531,6 +533,27 @@ class RunManager:
                     lean_config = self.root / 'config/lean.yaml'
                     if lean_config.exists():
                         metadata['host_source_hashes']['config/lean.yaml'] = sha256_file(lean_config)
+                    if universe_mode == 'point_in_time':
+                        from radar.lab.data import load_strategy_segment
+                        from radar.lean.export import freeze_signals
+                        from radar.backtest.runner import load_spy_ma200_guard
+                        from radar.pit.run import local_dependency, save_dependency, readiness
+                        frame = load_strategy_segment(self.database, pd.Timestamp(window[0]), pd.Timestamp(window[2]),
+                                                      set(registration.manifest.required_features), provider)
+                        execution = resolved.values['execution']
+                        guard = (load_spy_ma200_guard(self.database, universe_sessions[-1])
+                                 if execution['market_guard']['mode'] == 'spy_ma200' else None)
+                        signals, _ = freeze_signals(frame, universe_sessions, metadata, registration.plugin,
+                                                    self.store, execution, guard)
+                        closure = local_dependency(self.root, provider, metadata, frame, available_sessions, signals)
+                        metadata['pit_dependency'] = save_dependency(self.root, closure)
+                        metadata['run_pit_readiness'] = readiness(closure)
+                        # Persist blocked attempts for Run History. The worker verifies
+                        # the same frozen closure and rejects before invoking LEAN.
+                        metadata['research_validity'] = metadata['run_pit_readiness']['research_validity']
+                        metadata['host_source_hashes'].update({
+                            str(path.relative_to(self.root)).replace('\\', '/'): sha256_file(path)
+                            for path in (self.root / 'src/radar/pit').glob('*.py')})
                 if experiment:
                     metadata["experiment"] = experiment
                 if batch_id:

@@ -44,6 +44,20 @@ def normalize(output: Path, raw_path: Path, identity: dict) -> tuple[dict, dict]
     if final is None or abs(float(final) - completed['equity']) > .02:
         raise ValueError('Native LEAN result equity does not reconcile with portfolio observations')
     orders = journal(output / 'fills.jsonl')
+    actions = journal(output / 'actions.jsonl')
+    if manifest.get('pit_dataset'):
+        cash_from_fills = initial + sum((1 if row['direction'] == 'sell' else -1)
+            * row['quantity'] * row['fill_price'] - row['fees'] for row in orders)
+        for action in actions:
+            if action['event_type'] == 'split':
+                cash_from_fills += action.get('cash_in_lieu', 0)
+            if action['event_type'] == 'cash_acquisition':
+                if (abs(action['cash_after'] - action['cash_before'] - action['cash_entitlement']) > .000001
+                        or action['holding_after'] != 0):
+                    raise ValueError('Native terminal cash/holding does not reconcile')
+                cash_from_fills += action['cash_entitlement']
+        if abs(cash_from_fills - completed['cash']) > .02:
+            raise ValueError('Native PIT cash does not reconcile with fills and corporate actions')
     total_fees = sum(row['fees'] for row in orders)
     if abs(total_fees - completed['total_fees']) > .0001:
         raise ValueError('LEAN fees do not reconcile with fill events')
@@ -52,7 +66,9 @@ def normalize(output: Path, raw_path: Path, identity: dict) -> tuple[dict, dict]
         trades.append({**row, 'entry_price': row['entry_execution'], 'exit_price': row['exit_execution'],
                        'pnl': row['net_pnl'], 'pnl_percentage': row['net_return'],
                        'buy_fee_total': row['entry_fee'], 'sell_fee_total': row['exit_fee'],
-                       'gross_pnl': row['quantity'] * (row['exit_execution'] - row['entry_execution']),
+                       'gross_pnl': (row['net_pnl'] + row['entry_fee'] + row['exit_fee']
+                                     if manifest.get('pit_dataset') else
+                                     row['quantity'] * (row['exit_execution'] - row['entry_execution'])),
                        'slippage_cost': row['quantity'] * (
                            row['entry_execution'] - row['entry_reference'] + row['exit_reference'] - row['exit_execution'])})
     native_orders = raw.get('orders', {})
@@ -100,5 +116,18 @@ def normalize(output: Path, raw_path: Path, identity: dict) -> tuple[dict, dict]
               'execution_data_snapshot': manifest['data_snapshot'],
               'execution_assumptions': {key: manifest[key] for key in (
                   'price_model', 'price_precision', 'price_basis', 'fill_model', 'settlement', 'limitations')}}
+    if manifest.get('pit_dataset'):
+        result['corporate_actions'] = actions
+        sources['trade_count'] = 'native fills plus explicitly reconciled corporate-action entitlement closures; not LEAN TradeBuilder count'
+        result['pit_execution_dataset'] = manifest['pit_dataset']
+        preflight = manifest['run_metadata'].get('run_pit_readiness') or {}
+        result['run_metadata']['run_pit_readiness'] = {**preflight,
+            'scorecard': {**preflight.get('scorecard', {}), 'LEAN Native Execution': 'PASS',
+                         'Result Reconciliation': 'PASS'}}
+        for collection in (orders, trades, result['open_positions']):
+            for row in collection:
+                spec = manifest['pit_dataset']['securities'].get(row['symbol'])
+                if spec:
+                    row['security_id'] = spec['security_id']
     (output / 'normalized-result.json').write_text(json.dumps(result, indent=2, allow_nan=False), encoding='utf-8')
     return result, metrics

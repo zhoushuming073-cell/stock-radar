@@ -130,8 +130,17 @@ def lab_pit_readiness(split: str) -> dict:
     sessions = [day for day in dates["sessions"] if start <= day <= end]
     report = local_readiness(ROOT, "point_in_time", sessions)
     report["split"] = split
+    report['scope'] = 'global'
+    report['execution_policy'] = 'frozen run dependency closure; global incompleteness does not veto an independently ready run'
     report["requested_coverage"] = {"start": str(start.date()), "end": str(end.date())}
     store = lab_manager().store
+    attempts = [run for run in store.list_runs(limit=1000)
+                if run['metadata'].get('split') == split and run['metadata'].get('universe_mode') == 'point_in_time'
+                and run['metadata'].get('engine') == 'lean']
+    report['run_readiness'] = [{'run_id': run['run_id'], 'status': run['status'],
+        'dependency': run['metadata'].get('pit_dependency'),
+        'readiness': (run.get('result') or {}).get('run_metadata', {}).get('run_pit_readiness') or run['metadata'].get('run_pit_readiness')}
+        for run in attempts]
     runs = store.list_scanner_runs(limit=1000)
     relevant = [run for run in runs if run["status"] == "completed" and
                 run["metadata"].get("split") == split and

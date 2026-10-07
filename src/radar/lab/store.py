@@ -918,7 +918,7 @@ class RunStore:
     def bind_execution_artifacts(self, run_id: str, artifacts: Mapping[str, Any]) -> None:
         """Bind generated immutable input hashes once, before native execution."""
         allowed = {'signal_snapshot', 'signal_source', 'execution_data_snapshot', 'lean_manifest', 'lean_manifest_sha256'}
-        if set(artifacts) != allowed:
+        if set(artifacts) not in (allowed, allowed | {'pit_execution_dataset'}):
             raise RunStoreError('invalid execution artifact fields')
         with self._connect() as connection:
             connection.execute('BEGIN IMMEDIATE')

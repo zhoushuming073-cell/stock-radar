@@ -88,6 +88,94 @@ class StockRadarExecution(QCAlgorithm):
         self._sr_peak = self._sr_initial
         self._sr_benchmark_start = None
         self._sr_observed_days = []
+        self._sr_pit = self._sr_bundle.get('pit_dataset')
+        if self._sr_pit:
+            for ticker, spec in self._sr_pit['securities'].items():
+                event = spec.get('terminal')
+                if event:
+                    date = datetime.strptime(event['review']['settlement_date'], '%Y-%m-%d')
+                    self.schedule.on(self.date_rules.on(date.year, date.month, date.day),
+                                     self.time_rules.at(0, 1), lambda t=ticker, e=event: self.settle_cash(t, e))
+
+    def key_for_symbol(self, symbol):
+        # Native map events change Symbol.Value, while the SID remains stable.
+        return next(key for key, value in self._sr_symbols.items() if value == symbol)
+
+    def on_splits(self, splits):
+        if not self._sr_pit:
+            return
+        for split in splits.values():
+            if split.type != SplitType.SPLIT_OCCURRED:
+                continue
+            ticker = self.key_for_symbol(split.symbol)
+            entry = self._sr_entries.get(ticker)
+            if entry:
+                factor = float(split.split_factor)
+                before = entry['quantity']
+                # LEAN has already applied the split to its holdings. Update only
+                # fill annotations, never a second holdings/cash adjustment.
+                entry['quantity'] = float(self.portfolio[split.symbol].quantity)
+                entry['cost_basis_adjusted'] = entry.get('cost_basis_adjusted', entry['entry_total'] / before) * factor
+                fractional = before / factor - entry['quantity']
+                cash_in_lieu = fractional * float(self.securities[split.symbol].price)
+                entry['corporate_cash'] = entry.get('corporate_cash', 0) + cash_in_lieu
+                entry['entry_execution'] *= factor
+                entry['entry_reference'] *= factor
+                self.append('actions.jsonl', {'event_type': 'split', 'symbol': ticker,
+                            'date': self.time.strftime('%Y-%m-%d'), 'factor': factor,
+                            'quantity_before': before, 'quantity_after': entry['quantity'],
+                            'native_cash': float(self.portfolio.cash), 'cash_in_lieu': cash_in_lieu})
+
+    def on_symbol_changed_events(self, events):
+        if not self._sr_pit:
+            return
+        for event in events.values():
+            self.append('actions.jsonl', {'event_type': 'symbol_change',
+                        'symbol': self.key_for_symbol(event.symbol),
+                        'date': self.time.strftime('%Y-%m-%d'),
+                        'old_symbol': event.old_symbol, 'new_symbol': event.new_symbol})
+
+    def settle_cash(self, ticker, event):
+        """A disclosed entitlement, not a market fill or synthetic price bar.
+
+        This explicit PIT convention recognizes the cash right on the reviewed
+        effective date. LEAN's native cash book/holdings are the only ledger.
+        It does not claim the shareholder's bank actually paid on that date.
+        """
+        entry = self._sr_entries.pop(ticker, None)
+        if entry is None:
+            return
+        symbol = self._sr_symbols[ticker]
+        holding = self.portfolio[symbol]
+        quantity = float(holding.quantity)
+        if quantity != entry['quantity']:
+            raise ValueError('Native terminal holding differs from fill annotation')
+        terms = event['review']
+        if event['handling_mode'] != 'native_cash_entitlement' or terms['settlement_fee'] != 0:
+            raise ValueError('Unsupported terminal accounting convention')
+        cash = float(self.portfolio.cash)
+        proceeds = quantity * terms['cash_per_share']
+        self.portfolio.cash_book['USD'].add_amount(proceeds)
+        holding.set_holdings(0, 0)
+        if abs(float(self.portfolio.cash) - cash - proceeds) > .000001 or float(holding.quantity) != 0:
+            raise ValueError('Native cash entitlement does not reconcile')
+        self._sr_exits.pop(ticker, None)
+        self._sr_pending = [s for s in self._sr_pending if s['symbol'] != ticker]
+        day = self.time.strftime('%Y-%m-%d')
+        pnl = proceeds + entry.get('corporate_cash', 0) - entry['entry_total']
+        trade = {**{k: v for k, v in entry.items() if k != 'entry_index'},
+                 'exit_time': self.utc_time.isoformat(), 'exit_date': day,
+                 'exit_reference': terms['cash_per_share'], 'exit_execution': terms['cash_per_share'],
+                 'exit_fee': 0, 'fees': entry['entry_fee'], 'exit_proceeds': proceeds,
+                 'net_pnl': pnl, 'net_return': pnl / entry['entry_total'],
+                 'holding_sessions': sum(entry['entry_date'] <= d <= day for d in self._sr_sessions),
+                 'exit_reason': 'cash_acquisition_entitlement', 'exit_kind': 'corporate_action_settlement'}
+        self.append('trades.jsonl', trade)
+        self._sr_trade_count += 1
+        self.append('actions.jsonl', {'event_type': 'cash_acquisition', 'event_id': event['event_id'],
+                    'symbol': ticker, 'date': day, 'quantity': quantity, 'cash_before': cash,
+                    'cash_after': float(self.portfolio.cash), 'cash_entitlement': proceeds,
+                    'holding_after': float(holding.quantity), 'terms': terms})
 
     def append(self, filename, row):
         with (self._sr_output / filename).open('a', encoding='utf-8') as stream:
@@ -102,7 +190,7 @@ class StockRadarExecution(QCAlgorithm):
     def on_order_event(self, event):
         if event.status != OrderStatus.FILLED:
             return
-        ticker = event.symbol.value
+        ticker = self.key_for_symbol(event.symbol) if self._sr_pit else event.symbol.value
         context = self._sr_context[ticker]
         quantity, price = float(event.fill_quantity), float(event.fill_price)
         fee = float(event.order_fee.value.amount)
@@ -124,7 +212,7 @@ class StockRadarExecution(QCAlgorithm):
                                     'entry_index': self._sr_day_index[day]}
         else:
             entry = self._sr_entries.pop(ticker)
-            proceeds = abs(quantity) * price - fee
+            proceeds = abs(quantity) * price - fee + entry.get('corporate_cash', 0)
             pnl = proceeds - entry['entry_total']
             trade = {**{k: v for k, v in entry.items() if k != 'entry_index'},
                      'exit_time': stamp, 'exit_date': day, 'exit_reference': context['reference'],
@@ -168,7 +256,7 @@ class StockRadarExecution(QCAlgorithm):
                     raise ValueError(f'PIT held security has no Open: {day} {ticker}')
                 continue
             reference = float(bars[ticker].open)
-            move = reference / (entry['entry_total'] / entry['quantity']) - 1
+            move = reference / entry.get('cost_basis_adjusted', entry['entry_total'] / entry['quantity']) - 1
             reason = self._sr_exits.get(ticker) or self.reason(move, gap=True)
             if reason:
                 self.submit(ticker, -entry['quantity'], reference, reason)
@@ -219,12 +307,12 @@ class StockRadarExecution(QCAlgorithm):
             security = self.securities[self._sr_symbols[ticker]]
             last = float(security.price)
             holding = self.portfolio[self._sr_symbols[ticker]]
-            move = last / (entry['entry_total'] / entry['quantity']) - 1
+            move = last / entry.get('cost_basis_adjusted', entry['entry_total'] / entry['quantity']) - 1
             reason = self.reason(move, self._sr_day_index[day] - entry['entry_index'] + 1)
             if reason:
                 self._sr_exits[ticker] = reason
             positions.append({**{k: v for k, v in entry.items() if k != 'entry_index'},
-                              'last_close': last, 'last_price': last, 'cost_basis': entry['entry_total'] / entry['quantity'],
+                              'last_close': last, 'last_price': last, 'cost_basis': entry.get('cost_basis_adjusted', entry['entry_total'] / entry['quantity']),
                               'quantity': float(holding.quantity),
                               'unrealized_pnl': float(holding.holdings_value) - entry['entry_total']})
         candidates = self._sr_signals.get(day, []) if self._sr_bundle['market_allowed'].get(day, False) else []

@@ -15,14 +15,15 @@ from radar.pit.features import file_hash
 from radar.schema import EXPECTED_COLUMNS, ensure_research_schema
 
 
-def accept_prices(raw: Path, review: dict, master, output: Path) -> dict:
+def accept_prices(raw: Path, review: dict, master, output: Path, *, raw_actions: list[dict] | None = None,
+                  validate_only: bool = False) -> dict:
     """Require scope, hashes, license, adjustment proof and complete real sessions.
 
     Never infer an alias or a settlement. This first batch supports raw OHLCV
     without splits, making it equivalent to split-only research prices within
     these reviewed lifetimes. General factor normalization is deliberately blocked.
     """
-    if output.exists():
+    if output.exists() and not validate_only:
         raise ValueError("external price destination already exists")
     fields = list(EXPECTED_COLUMNS["daily_bars"]) + ["security_id"]
     payloads, evidence = [], []
@@ -46,7 +47,7 @@ def accept_prices(raw: Path, review: dict, master, output: Path) -> dict:
         data = json.loads(artifact.read_text(encoding="utf-8"))
         if digest(data) != item["payload_sha256"]:
             raise ValueError("external raw payload hash mismatch")
-        if item["confidence"] != "verified" or item["adjustment"] != "raw_no_splits":
+        if item["confidence"] != "verified" or item["adjustment"] not in {"raw_no_splits", "raw_reviewed_actions"}:
             raise ValueError("unreviewed price basis/identity")
         if data["license"] != "CC-BY-SA-4.0" or data["provider"] != "post-no-preference/stocks":
             raise ValueError("unexpected price provider/license")
@@ -73,8 +74,23 @@ def accept_prices(raw: Path, review: dict, master, output: Path) -> dict:
             raise ValueError("aggregated prices differ from raw SQL responses")
         start, end = pd.Timestamp(item["valid_from"]), pd.Timestamp(item["valid_to"])
         for split in data["ancillary"]["split"]:
-            if pd.Timestamp(split["ex_date"]) >= start:
+            if item['adjustment'] == 'raw_reviewed_actions' and start <= pd.Timestamp(split['ex_date']) <= end:
+                candidates = [a for a in (raw_actions or []) if a['security_id'] == item['security_id']
+                              and a['effective_date'] == split['ex_date'] and a['event_type'] in {'split', 'reverse_split'}
+                              and a['handling_mode'] == 'native_raw_split' and a['confidence'] == 'verified']
+                ratio = float(split['to_factor']) / float(split['for_factor'])
+                if len(candidates) != 1 or candidates[0]['ratio'] != ratio:
+                    raise ValueError('source split disagrees with reviewed official ratio/date')
+            elif item['adjustment'] != 'raw_reviewed_actions' and pd.Timestamp(split["ex_date"]) >= start:
                 raise ValueError("split normalization requires a separate validated factor importer")
+        if item['adjustment'] == 'raw_reviewed_actions':
+            if raw_actions is None:
+                raise ValueError('raw price acceptance requires reviewed action ledger')
+            for action in raw_actions:
+                if (action['security_id'] == item['security_id'] and action['event_type'] in {'split', 'reverse_split'}
+                        and start <= pd.Timestamp(action['effective_date']) <= end):
+                    if not any(s['ex_date'] == action['effective_date'] for s in data['ancillary']['split']):
+                        raise ValueError('official split missing from source action table')
         bars = pd.DataFrame(data["rows"]).rename(columns={"act_symbol": "symbol"})
         bars["date"] = pd.to_datetime(bars.date)
         if bars.empty or not bars.symbol.eq(item["source_symbol"]).all() or bars.date.duplicated().any():
@@ -100,7 +116,8 @@ def accept_prices(raw: Path, review: dict, master, output: Path) -> dict:
         expected = calendar[(calendar >= start) & (calendar <= end)]
         if not pd.DatetimeIndex(mapped.date).sort_values().equals(expected):
             raise ValueError("external prices missing/extra real exchange sessions")
-        mapped["provider"], mapped["feed"], mapped["adjustment"] = data["provider"], "public_eod", "split"
+        mapped["provider"], mapped["feed"], mapped["adjustment"] = data["provider"], "public_eod", (
+            'raw' if item['adjustment'] == 'raw_reviewed_actions' else 'split')
         mapped["downloaded_at"] = pd.Timestamp(review["source_commit_time"])
         mapped["vwap"], mapped["trade_count"] = np.nan, None
         payloads.append(mapped.reindex(columns=fields))
@@ -109,6 +126,9 @@ def accept_prices(raw: Path, review: dict, master, output: Path) -> dict:
     payload = pd.concat(payloads, ignore_index=True).sort_values(["security_id", "date"])
     if payload.duplicated(["security_id", "date"]).any() or payload.duplicated(["symbol", "date"]).any():
         raise ValueError("overlapping external price series")
+    logical_sha = hashlib.sha256(payload.to_csv(index=False).encode()).hexdigest()
+    if validate_only:
+        return {'review_sha256':digest(review),'rows_sha256':logical_sha,'rows':len(payload)}
     output.parent.mkdir(parents=True, exist_ok=True)
     staging = output.with_suffix(".building.duckdb")
     if staging.exists():
@@ -121,6 +141,7 @@ def accept_prices(raw: Path, review: dict, master, output: Path) -> dict:
         c.execute("CHECKPOINT")
     staging.rename(output)
     manifest = {"database": str(output.resolve()), "database_sha256": file_hash(output),
+                "rows_sha256": logical_sha,
                 "master_output_sha256": file_hash(master.csv_path), "review_sha256": digest(review),
                 "importer_sha256": file_hash(Path(__file__)), "source_version": review["source_version"],
                 "series": evidence, "rows": len(payload), "status": "research_accepted_source_dependent",
@@ -128,5 +149,8 @@ def accept_prices(raw: Path, review: dict, master, output: Path) -> dict:
                 "attribution": "post-no-preference/stocks on DoltHub; reviewed identity binding by Stock Radar",
                 "limitations": ["public EOD source is not exchange-certified consolidated SIP",
                                 "no general split/dividend factor normalization", "no terminal execution model"]}
+    if raw_actions is not None:
+        manifest['raw_actions'] = {'events_sha256':digest(raw_actions), 'events':raw_actions,
+                                   'basis':'raw OHLCV; causal split-only feature transform; native raw holdings splits'}
     output.with_suffix(".manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     return manifest

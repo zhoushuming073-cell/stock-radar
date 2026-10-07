@@ -1,0 +1,15 @@
+{
+  "policy": "pit-final-representative-run-v1",
+  "strategy_ref": "full_strategy2_v1@1.0.0",
+  "split": "validation",
+  "signal_start": "2024-09-30",
+  "signal_end": "2025-09-08",
+  "evaluation_end": "2025-09-22",
+  "selection_reason": "Existing complete frozen Validation contract, one full research year, previously sampled 2025-04-10 and 2025-07-30; PLTR exchange transfer and OSTK/BYON/BBBY mapping complexity. NVDA split enters warm-up. No return-based window choice.",
+  "strategy_configuration": "existing exact strategy defaults; no parameter overrides",
+  "execution": "existing Current Snapshot LEAN defaults, slippage 10 bps, next_open",
+  "evaluation": "existing Scanner evaluation defaults, unchanged",
+  "comparison": "same strategy/config/fees/calendar/capital/sizing/exit/LEAN build; universe mode differs",
+  "fallback": "forbidden",
+  "validity": "retrospective research validation, not Fresh OOS"
+}

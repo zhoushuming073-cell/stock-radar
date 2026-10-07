@@ -78,9 +78,39 @@ def file_hash(path: Path) -> str:
     return h.hexdigest()
 
 
+def causal_identity_features(bars, spy, qqq, ecfg, cfg, *, actions=None, security_id=None):
+    """Unchanged feature formula, recomputed at each *known effective* raw split.
+
+    A future split cannot change any earlier row. Raw execution bars stay raw;
+    only historical windows for features after an effective split are rescaled.
+    Dividend adjustment is not part of this feature convention.
+    """
+    from radar.pit.actions import split_adjust
+    actions = [a for a in (actions or []) if a['security_id'] == security_id
+               and a['event_type'] in {'split', 'reverse_split'}]
+    boundaries = sorted({pd.Timestamp(a['effective_date']) for a in actions
+                         if bars.index.min() <= pd.Timestamp(a['effective_date']) <= bars.index.max()})
+    segments = [bars.index.min(), *boundaries, bars.index.max() + pd.Timedelta(days=1)]
+    parts = []
+    for first, last in zip(segments, segments[1:]):
+        through = bars.loc[bars.index < last].copy()
+        if actions:
+            raw = through.reset_index(names='date');raw['security_id'] = security_id
+            through = split_adjust(raw, actions, str(first.date())).set_index('date')[bars.columns]
+        feature = pd.concat([compute_base_features(through),
+            compute_elasticity_inputs(through, spy, qqq, ecfg),
+            compute_strategy2_features(through, spy, qqq)], axis=1)
+        feature['elasticity_atr_raw'] = feature.atr_pct_20
+        feature['tradability_pass'] = tradability_gate(pd.DataFrame({
+            'close':through.close, 'avg_dollar_volume_20':feature.avg_dollar_volume_20,
+            'history_sessions':through.close.notna().cumsum()}, index=through.index), cfg)
+        parts.append(feature.loc[(feature.index >= first) & (feature.index < last)])
+    return pd.concat(parts).reindex(bars.index)
+
+
 def build_features(source: Path, master: LocalSecurityMaster, config: Path, output: Path,
                    progress=None, *, expected_source_hash: str | None = None,
-                   external_prices: Path | None = None) -> dict:
+                   external_prices: Path | None = None, raw_actions: list[dict] | None = None) -> dict:
     """Refuse replacement; stage only in a new directory outside existing DBs."""
     source, output = source.resolve(), output.resolve()
     if output == source or output.exists():
@@ -158,14 +188,13 @@ def build_features(source: Path, master: LocalSecurityMaster, config: Path, outp
                 raise ValueError("ambiguous security bars within one session")
             indexed = raw.set_index("date")
             bars = indexed[["open", "high", "low", "close", "volume"]].reindex(sessions)
-            feature = pd.concat([compute_base_features(bars),
-                compute_elasticity_inputs(bars, closes["SPY"], closes["QQQ"], ecfg),
-                compute_strategy2_features(bars, closes["SPY"], closes["QQQ"])], axis=1)
-            feature["elasticity_atr_raw"] = feature.atr_pct_20
+            if raw_actions is not None:
+                basis = {r[0] for r in con.execute('SELECT DISTINCT adjustment FROM daily_bars WHERE security_id=?', [identity]).fetchall()}
+                if not basis <= {'raw', 'none', 'unadjusted'}:
+                    raise ValueError('raw action feature build cannot double-adjust split-adjusted bars')
+            feature = causal_identity_features(bars, closes['SPY'], closes['QQQ'], ecfg, cfg,
+                                               actions=raw_actions, security_id=identity)
             observed = bars.close.notna()
-            feature["tradability_pass"] = tradability_gate(pd.DataFrame({
-                "close": bars.close, "avg_dollar_volume_20": feature.avg_dollar_volume_20,
-                "history_sessions": observed.cumsum()}, index=sessions), cfg)
             feature["date"] = sessions.date
             feature["symbol"] = indexed.symbol.reindex(sessions)
             feature["security_id"] = identity
@@ -209,5 +238,9 @@ def build_features(source: Path, master: LocalSecurityMaster, config: Path, outp
                 "builder_code_sha256": file_hash(Path(__file__))}
     if external_manifest is not None:
         manifest["external_prices"] = external_manifest
+    if raw_actions is not None:
+        from radar.pit.builder import digest
+        manifest['raw_actions'] = {'events':raw_actions, 'events_sha256':digest(raw_actions),
+                                   'feature_price_basis':'causal_split_only', 'execution_price_basis':'raw'}
     output.with_suffix(".manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     return manifest

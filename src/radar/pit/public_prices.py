@@ -13,6 +13,7 @@ import re
 import time
 import urllib.parse
 import urllib.request
+import urllib.error
 
 PROVIDER = "post-no-preference/stocks"
 LICENSE = "CC-BY-SA-4.0"
@@ -32,13 +33,22 @@ def capture(url: str, cache: Path, *, attempts: int = 3) -> dict:
             target = cache / (sha + ".raw")
             if target.exists() and target.read_bytes() != raw:
                 raise ValueError("raw cache collision")
-            target.write_bytes(raw)
+            if not target.exists():
+                target.write_bytes(raw)
             receipt = {"url": url, "final_url": final_url, "raw_sha256": sha,
                        "bytes": len(raw), "captured_at": datetime.now(timezone.utc).isoformat()}
             receipt_file = cache / (sha + ".receipt.json")
             if not receipt_file.exists():
                 receipt_file.write_text(json.dumps(receipt, indent=2), encoding="utf-8")
             return receipt
+        except urllib.error.HTTPError as error:
+            if error.code not in {408, 429, 500, 502, 503, 504} or attempt == attempts - 1:
+                raise
+            try:
+                delay = float(error.headers.get('Retry-After', 1 + attempt))
+            except (TypeError, ValueError):
+                delay = 1 + attempt
+            time.sleep(min(max(delay, 1), 30))
         except (OSError, TimeoutError):
             if attempt == attempts - 1:
                 raise
@@ -47,14 +57,38 @@ def capture(url: str, cache: Path, *, attempts: int = 3) -> dict:
 
 
 def query(sql: str, cache: Path) -> tuple[list[dict], dict]:
+    cache.mkdir(parents=True, exist_ok=True)
+    index = cache / ("query-" + hashlib.sha256(sql.encode()).hexdigest() + ".json")
+    if index.exists():
+        saved = json.loads(index.read_text(encoding="utf-8"))
+        raw = (cache / (saved["raw_sha256"] + ".raw")).read_bytes()
+        if hashlib.sha256(raw).hexdigest() != saved["raw_sha256"]:
+            raise ValueError("cached query raw hash mismatch")
+        payload = json.loads(raw)
+        if payload.get("sql_query") != sql or payload.get("query_execution_status") != "Success":
+            raise ValueError("cached SQL failed/truncated/mismatched")
+        return payload["rows"], saved
     receipt = capture(API + "?" + urllib.parse.urlencode({"q": sql}), cache)
-    payload = json.loads((cache / (receipt["raw_sha256"] + ".raw")).read_text(encoding="utf-8"))
+    try:
+        payload = json.loads((cache / (receipt["raw_sha256"] + ".raw")).read_text(encoding="utf-8"))
+    except (ValueError, UnicodeError):
+        quarantine = cache / 'quarantine'
+        quarantine.mkdir(exist_ok=True)
+        (quarantine / (receipt['raw_sha256'] + '.decision.json')).write_text(json.dumps({
+            'receipt':receipt, 'status':'rejected_invalid_json','sql':sql},indent=2),encoding='utf-8')
+        raise ValueError('public SQL payload is not valid JSON')
     # RowLimit means truncated data, even though HTTP status is 200.
     if payload.get("query_execution_status") != "Success":
+        quarantine = cache / 'quarantine'
+        quarantine.mkdir(exist_ok=True)
+        (quarantine / (receipt['raw_sha256'] + '.decision.json')).write_text(json.dumps({
+            'receipt':receipt,'status':'rejected_failed_or_truncated','sql':sql},indent=2),encoding='utf-8')
         raise ValueError("public SQL failed/truncated: " + payload.get("query_execution_message", ""))
     if payload.get("sql_query") != sql:
         raise ValueError("source SQL receipt mismatch")
-    return payload["rows"], {**receipt, "sql": sql}
+    saved = {**receipt, "sql": sql}
+    index.write_text(json.dumps(saved, indent=2), encoding="utf-8")
+    return payload["rows"], saved
 
 
 def acquire_symbol(symbol: str, pin: str, start: str, end: str, cache: Path) -> dict:

@@ -1,0 +1,489 @@
+{
+  "policy": "local-native-event-evidence-v1",
+  "formal_strategy_portfolio": false,
+  "purpose": "Real event accounting goldens; hand-authored test signals, no full Scanner dependency closure and no formal strategy-performance claim. Raw licensed/vendor datasets stay local.",
+  "cases": [
+    {
+      "case": "rename",
+      "native_run_id": "941665ef-55ef-4b52-9baa-33d697e88679",
+      "engine": {
+        "engine": "lean",
+        "commit": "82810ea63d5542f05dc58f9d1db0557cf174d0ea",
+        "launcher_sha256": "9e61821fc8b70f00f24060da5c5ab7e9ee7f1f3ce68dbdf216d8168a94ed7c5a",
+        "engine_sha256": "d456963b1d7f3cbc864a9c4eb62fd9afb70e43dedcb6a44eadf90d62ae7c664c",
+        "python_sha256": "0817a2a657a24c0d5fbb60df56960f42fc66b3039d522ec952dab83e2d869364",
+        "local_patch_sha256": "f73e89086ed1f44f7c3897c6b4cca6df6f456d88127fd9524b502283fe3ed9e0"
+      },
+      "status": "PASS",
+      "manifest_sha256": "a2d4f6cb3fc121b1a6e57a5503d81588e76c2e876b4f4f5f0fc3c2536e550d10",
+      "raw_result_sha256": "ab2027925d263ebecb8eb4e53d6447b9385aa43d7a8e08dbb7dcd77ccda18b79",
+      "normalized_sha256": "9bb471eaf13f367aa4d2cbba1620282bac807cdb6384543d73803d4de5465412",
+      "sessions": 7,
+      "trade_count": 1,
+      "final_equity": 97169.030667,
+      "inputs": {
+        "signal_snapshot": "72c858ea8f8c9d0fbe12dbf6cb21a182318257e0705802488f5bc2663b0837d2",
+        "data_snapshot": "3186b191e6f07eb2ddbb628bb457ee5192b2982dc0c1ffa20395402d77ab87f8",
+        "data_hashes": null,
+        "pit_dataset": {
+          "origin": "Stock Radar generated PIT execution dataset",
+          "source_master_version": "real scoped golden evidence",
+          "dependency_sha256": "3c0ef73fa0914e3b504527907af09eff512e2575afc17081f504b58425139501",
+          "securities": {
+            "FB": {
+              "security_id": "SEC-0001326801-CLASS-A",
+              "maps": "20220606,fb\n20220608,fb\n20501231,meta\n",
+              "factors": "19980102,1,1,1\n20501231,1,1,1\n",
+              "actions": [
+                {
+                  "security_id": "SEC-0001326801-CLASS-A",
+                  "event_type": "symbol_change",
+                  "effective_date": "2022-06-09",
+                  "source": {
+                    "url": "https://www.nasdaqtrader.com/TraderNews.aspx?id=ECA2022-125",
+                    "raw_sha256": "5ee92081f4966749ed40e1d4cae9bc6add4207c5cf115e16d5ca87302227a928",
+                    "source_version": "Nasdaq ECA2022-125",
+                    "license": "public official disclosure; raw retained locally, no blanket redistribution claim"
+                  },
+                  "confidence": "verified",
+                  "terminal_economics": "unresolved_not_enabled",
+                  "old_symbol": "FB",
+                  "new_symbol": "META",
+                  "event_id": "SEC-0001326801-CLASS-A:rename:2022-06-09",
+                  "handling_mode": "same_identity_map"
+                }
+              ],
+              "terminal": null
+            }
+          },
+          "price_basis": "raw",
+          "actions_sha256": "6f0f3cee2fd19af1ddd36c66d8d3eb3a02f6dc823f8775c4d4a0e814bc6d0780",
+          "map_sha256": "966b16d2f12af16a515c72d9b594315f7afc592f27c63e84aaad434167dbd888",
+          "factor_sha256": "bc003f01a49bb0550bfed44b4082dc56495df807303d8a75eeb09aae6a557c83",
+          "price_sha256": "b061d72aac2fcb01a062a463bd6341e0e9960c70972549c28804cdd8cebe8709",
+          "data_index_sha256": "3186b191e6f07eb2ddbb628bb457ee5192b2982dc0c1ffa20395402d77ab87f8"
+        }
+      },
+      "source_metadata": [
+        {
+          "physical_sha256": "f15a59059c9bfd2f4409de2f6558746970372ca7765579f6d48bf2e47e5702f3",
+          "payload_sha256": "b115c0c044e2ad15d22bfff558705dbd3801dd64aea133e208e29d2b769f4646",
+          "provider": "post-no-preference/stocks",
+          "source_version": "vt6qeesk27k07492k5jc5b7p04mf0s6o",
+          "license": "CC-BY-SA-4.0",
+          "license_raw_sha256": "9d4c8edfd801f6f57a67d4660fd7e149e4c9f3273b6931ee4857b73e7ff2d1aa",
+          "queries": [
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+ohlcv+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+date+IN+%28%272022-06-06%27%2C%272022-06-07%27%2C%272022-06-08%27%2C%272022-06-09%27%2C%272022-06-10%27%2C%272022-06-11%27%2C%272022-06-12%27%2C%272022-06-13%27%2C%272022-06-14%27%29+AND+act_symbol%3D%27SPY%27+ORDER+BY+date+LIMIT+100",
+              "raw_sha256": "78eccebd9c7f18af2b5135b96c23d96366495b3996e4f99a501be091c06235ac"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+split+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+act_symbol%3D%27SPY%27",
+              "raw_sha256": "05ad83c4c158ff35407b4094e0b6e8f2ba64fe6b7e86aef5e32c221fe697fe00"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+dividend+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+act_symbol%3D%27SPY%27",
+              "raw_sha256": "d38fd0674bb0a9afdd42983360fc553f1da7ac41a05d965a07851728cb250531"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+symbol+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+act_symbol%3D%27SPY%27",
+              "raw_sha256": "97f8c0894a9a1c16a13f3d8c722f1537ddb77608d86f4c0169e336308cc10903"
+            }
+          ]
+        },
+        {
+          "url": "https://www.nasdaqtrader.com/TraderNews.aspx?id=ECA2022-125",
+          "raw_sha256": "5ee92081f4966749ed40e1d4cae9bc6add4207c5cf115e16d5ca87302227a928",
+          "source_version": "Nasdaq ECA2022-125",
+          "license": "public official disclosure; raw retained locally, no blanket redistribution claim"
+        },
+        {
+          "sha256": "b2565184a372c6ce7d5b448acebad3dfbad0bf51c77b785f5d0a342352d364c3",
+          "provider": "existing local broker research snapshot",
+          "basis": "split-only; no META split in bounded case",
+          "license": "existing user-authorized local data; no public redistribution claim",
+          "residual_risk": "supplier historical identity is not independently vendor-certified"
+        }
+      ]
+    },
+    {
+      "case": "split",
+      "native_run_id": "dbc16a0f-9d8b-4623-94f7-c97fb0bf8054",
+      "engine": {
+        "engine": "lean",
+        "commit": "82810ea63d5542f05dc58f9d1db0557cf174d0ea",
+        "launcher_sha256": "9e61821fc8b70f00f24060da5c5ab7e9ee7f1f3ce68dbdf216d8168a94ed7c5a",
+        "engine_sha256": "d456963b1d7f3cbc864a9c4eb62fd9afb70e43dedcb6a44eadf90d62ae7c664c",
+        "python_sha256": "0817a2a657a24c0d5fbb60df56960f42fc66b3039d522ec952dab83e2d869364",
+        "local_patch_sha256": "f73e89086ed1f44f7c3897c6b4cca6df6f456d88127fd9524b502283fe3ed9e0"
+      },
+      "status": "PASS",
+      "manifest_sha256": "9ff726f841fb26971e398eb02d38e6a06d4628c6582a97ee1b51bae2795ec753",
+      "raw_result_sha256": "e55a31ad3483eba2c74ee8b53be8f050456974b6567e7ad677506edf0c6e3f16",
+      "normalized_sha256": "196009845077742c03d31fb8f271059b041032ae6b0053df97eef85679f9afce",
+      "sessions": 4,
+      "trade_count": 1,
+      "final_equity": 99205.541972,
+      "inputs": {
+        "signal_snapshot": "0a50238a564e0ba19762188482c68a9c5e020a088dc6d2b0cfbd6aa8e3357599",
+        "data_snapshot": "16949af767bf8f40df32a59fb29b5d40eac0165615ed909eb7d6fc4082df5cb0",
+        "data_hashes": null,
+        "pit_dataset": {
+          "origin": "Stock Radar generated PIT execution dataset",
+          "source_master_version": "real scoped golden evidence",
+          "dependency_sha256": "f8a6747cdbc49383aed1646df5b2fee3018de56770e78b3c698242dc79f34407",
+          "securities": {
+            "NVDA": {
+              "security_id": "SEC-0001045810-COMMON",
+              "maps": "20240605,nvda\n20501231,nvda\n",
+              "factors": "19980102,1,0.1,1\n20240607,1,0.1,1208.88\n20501231,1,1,1\n",
+              "actions": [
+                {
+                  "security_id": "SEC-0001045810-COMMON",
+                  "event_type": "split",
+                  "effective_date": "2024-06-10",
+                  "source": {
+                    "url": "https://investor.nvidia.com/files/doc_downloads/2024/06/nvidia-2024-stock-split_faq_investors.pdf",
+                    "raw_sha256": "7f6b7651d7874784cd7666464431395e62a9570a139932183470094c4d51faf3",
+                    "source_version": "issuer split FAQ 2024-06",
+                    "license": "public official disclosure; raw retained locally, no blanket redistribution claim"
+                  },
+                  "confidence": "verified",
+                  "terminal_economics": "unresolved_not_enabled",
+                  "to_factor": 10,
+                  "for_factor": 1,
+                  "legal_effective": "2024-06-07T16:01:00-04:00",
+                  "factor_series_verified": false,
+                  "event_id": "SEC-0001045810-COMMON:split:2024-06-10",
+                  "handling_mode": "native_raw_split",
+                  "ratio": 10
+                }
+              ],
+              "terminal": null
+            }
+          },
+          "price_basis": "raw",
+          "actions_sha256": "df8fd4c10abc12f2f9ede440b70dbecc25ad311891ca41c3e96c08392931898f",
+          "map_sha256": "b116706abef0932f8eb70947a2d8a4da02dad56e573fd44c0f2fdf627be0cadc",
+          "factor_sha256": "b8941596be99a302754dfa7ff443edea18c01e52d9c551976f2a353be1ec111c",
+          "price_sha256": "bf8a254df495f08870f8ccee04914cad413465d851436767fb50b20085ddf1e1",
+          "data_index_sha256": "16949af767bf8f40df32a59fb29b5d40eac0165615ed909eb7d6fc4082df5cb0"
+        }
+      },
+      "source_metadata": [
+        {
+          "physical_sha256": "83a130bb9fce5c4e050e3c74ba0661aea6e2c760ba0f9b4247aac9170a7c4be1",
+          "payload_sha256": "0b58b1dbe9984118670a2ba737c6582a0572bcd0be74350636320e997beebfe6",
+          "provider": "post-no-preference/stocks",
+          "source_version": "vt6qeesk27k07492k5jc5b7p04mf0s6o",
+          "license": "CC-BY-SA-4.0",
+          "license_raw_sha256": "9d4c8edfd801f6f57a67d4660fd7e149e4c9f3273b6931ee4857b73e7ff2d1aa",
+          "queries": [
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+ohlcv+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+date+IN+%28%272024-06-05%27%2C%272024-06-06%27%2C%272024-06-07%27%2C%272024-06-08%27%2C%272024-06-09%27%2C%272024-06-10%27%2C%272024-06-11%27%2C%272024-06-12%27%2C%272024-06-13%27%2C%272024-06-14%27%29+AND+act_symbol%3D%27SPY%27+ORDER+BY+date+LIMIT+100",
+              "raw_sha256": "06497fa57b0330300687ea3345e9391b8e4bdb3abb8b242f168012d617a88600"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+split+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+act_symbol%3D%27SPY%27",
+              "raw_sha256": "05ad83c4c158ff35407b4094e0b6e8f2ba64fe6b7e86aef5e32c221fe697fe00"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+dividend+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+act_symbol%3D%27SPY%27",
+              "raw_sha256": "d38fd0674bb0a9afdd42983360fc553f1da7ac41a05d965a07851728cb250531"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+symbol+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+act_symbol%3D%27SPY%27",
+              "raw_sha256": "97f8c0894a9a1c16a13f3d8c722f1537ddb77608d86f4c0169e336308cc10903"
+            }
+          ]
+        },
+        {
+          "url": "https://investor.nvidia.com/files/doc_downloads/2024/06/nvidia-2024-stock-split_faq_investors.pdf",
+          "raw_sha256": "7f6b7651d7874784cd7666464431395e62a9570a139932183470094c4d51faf3",
+          "source_version": "issuer split FAQ 2024-06",
+          "license": "public official disclosure; raw retained locally, no blanket redistribution claim"
+        },
+        {
+          "physical_sha256": "f201a51b3701b5b1cba0008e791cb42da49871c508111e6a4d7f1dfd39e47841",
+          "payload_sha256": "acad5194f9d96447475d36cfa4fd6f5e8a24e5dc839d1e8d9d468ea378753496",
+          "provider": "post-no-preference/stocks",
+          "source_version": "vt6qeesk27k07492k5jc5b7p04mf0s6o",
+          "license": "CC-BY-SA-4.0",
+          "license_raw_sha256": "9d4c8edfd801f6f57a67d4660fd7e149e4c9f3273b6931ee4857b73e7ff2d1aa",
+          "queries": [
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+ohlcv+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+date+IN+%28%272024-06-05%27%2C%272024-06-06%27%2C%272024-06-07%27%2C%272024-06-08%27%2C%272024-06-09%27%2C%272024-06-10%27%2C%272024-06-11%27%2C%272024-06-12%27%2C%272024-06-13%27%2C%272024-06-14%27%29+AND+act_symbol%3D%27NVDA%27+ORDER+BY+date+LIMIT+100",
+              "raw_sha256": "81d892621cdc954bd06e0bba5449e4b2231e094f8ad64cb1dc86e207d1ba803c"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+split+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+act_symbol%3D%27NVDA%27",
+              "raw_sha256": "0da74ba1d69354e346fb5fd5ca82d2b7450a8517073c47ae3622900e7df4c0da"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+dividend+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+act_symbol%3D%27NVDA%27",
+              "raw_sha256": "177739a2505bbaf307f78a314f479ead59f51d908a8d0ced3b5cd4ea949cde0f"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+symbol+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+act_symbol%3D%27NVDA%27",
+              "raw_sha256": "1077fb5808e0be1783e068309447f4243deb7afb0b90bbadd469613c671cfd2a"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case": "acquisition",
+      "native_run_id": "2f069ac5-cb30-491c-acde-22d913a2f634",
+      "engine": {
+        "engine": "lean",
+        "commit": "82810ea63d5542f05dc58f9d1db0557cf174d0ea",
+        "launcher_sha256": "9e61821fc8b70f00f24060da5c5ab7e9ee7f1f3ce68dbdf216d8168a94ed7c5a",
+        "engine_sha256": "d456963b1d7f3cbc864a9c4eb62fd9afb70e43dedcb6a44eadf90d62ae7c664c",
+        "python_sha256": "0817a2a657a24c0d5fbb60df56960f42fc66b3039d522ec952dab83e2d869364",
+        "local_patch_sha256": "f73e89086ed1f44f7c3897c6b4cca6df6f456d88127fd9524b502283fe3ed9e0"
+      },
+      "status": "PASS",
+      "manifest_sha256": "c1187e248b87638b5ab3f618642d5a24b9408b15894a2a8971e5a189538975fc",
+      "raw_result_sha256": "afca9a5aefc94825ef05a4e39ea32311b5c4fd6d5168389fbb71e31684ac77a4",
+      "normalized_sha256": "3c1ad4185008192956afef63bce2e65cd50e638f10fdcc9f9b2a022f7e0bf405",
+      "sessions": 6,
+      "trade_count": 1,
+      "final_equity": 100132.44168,
+      "inputs": {
+        "signal_snapshot": "631f0d86b0cd7665bfbcd67915707074c4b438d8f78654f391b0de249d3b57c0",
+        "data_snapshot": "ae119de813aef7e5ed033dc3e0cc231061e54598eac541a8d045e2fa50f7b20c",
+        "data_hashes": null,
+        "pit_dataset": {
+          "origin": "Stock Radar generated PIT execution dataset",
+          "source_master_version": "real scoped golden evidence",
+          "dependency_sha256": "fd808d7a19cf5ab188fafa6aa9ca33741ec27e3bfc5526a4f4f411cca5e3df0a",
+          "securities": {
+            "ATVI": {
+              "security_id": "SEC-0000718877-COMMON",
+              "maps": "20231009,atvi\n20231013,atvi\n",
+              "factors": "19980102,1,1,1\n20501231,1,1,1\n",
+              "actions": [
+                {
+                  "security_id": "SEC-0000718877-COMMON",
+                  "event_type": "cash_acquisition",
+                  "effective_date": "2023-10-13",
+                  "source": {
+                    "url": "https://investor.activision.com/static-files/6439fa79-7018-4f4d-adf5-192a2cd2007b",
+                    "raw_sha256": "c2f3d7ce46bddd7e933c75c490231116ff7047bdbdcb4ac123e85e81dbbfddd4",
+                    "source_version": "SEC 8-K 2023-10-13 issuer PDF",
+                    "license": "public official disclosure; raw retained locally, no blanket redistribution claim"
+                  },
+                  "confidence": "verified",
+                  "terminal_economics": "unresolved_not_enabled",
+                  "documented_cash_consideration": 95,
+                  "settlement_model_verified": false,
+                  "event_id": "SEC-0000718877-COMMON:acquisition:2023-10-13",
+                  "handling_mode": "native_cash_entitlement",
+                  "review": {
+                    "settlement_verified": true,
+                    "currency": "USD",
+                    "cash_per_share": 95.0,
+                    "settlement_policy": "cash_entitlement_at_effective_date",
+                    "settlement_date": "2023-10-13",
+                    "last_tradable_session": "2023-10-12",
+                    "settlement_fee": 0,
+                    "scope": "ordinary listed common; no treasury/parent holdings/appraisal election; gross USD cash right; no withholding simulation"
+                  }
+                }
+              ],
+              "terminal": {
+                "security_id": "SEC-0000718877-COMMON",
+                "event_type": "cash_acquisition",
+                "effective_date": "2023-10-13",
+                "source": {
+                  "url": "https://investor.activision.com/static-files/6439fa79-7018-4f4d-adf5-192a2cd2007b",
+                  "raw_sha256": "c2f3d7ce46bddd7e933c75c490231116ff7047bdbdcb4ac123e85e81dbbfddd4",
+                  "source_version": "SEC 8-K 2023-10-13 issuer PDF",
+                  "license": "public official disclosure; raw retained locally, no blanket redistribution claim"
+                },
+                "confidence": "verified",
+                "terminal_economics": "unresolved_not_enabled",
+                "documented_cash_consideration": 95,
+                "settlement_model_verified": false,
+                "event_id": "SEC-0000718877-COMMON:acquisition:2023-10-13",
+                "handling_mode": "native_cash_entitlement",
+                "review": {
+                  "settlement_verified": true,
+                  "currency": "USD",
+                  "cash_per_share": 95.0,
+                  "settlement_policy": "cash_entitlement_at_effective_date",
+                  "settlement_date": "2023-10-13",
+                  "last_tradable_session": "2023-10-12",
+                  "settlement_fee": 0,
+                  "scope": "ordinary listed common; no treasury/parent holdings/appraisal election; gross USD cash right; no withholding simulation"
+                }
+              }
+            }
+          },
+          "price_basis": "raw",
+          "actions_sha256": "492bd4ff5485ea17ddf7566be7b28ef6f82c5ba44b79748a95b3e652677db9fe",
+          "map_sha256": "594db03beeade2390a89118309f1b5cfeae04513ee03f29b131aa2189ccd99c8",
+          "factor_sha256": "bc003f01a49bb0550bfed44b4082dc56495df807303d8a75eeb09aae6a557c83",
+          "price_sha256": "cd2c93417726375444f1364e4024590bdbf4a7193f84b5a751aaafc6c4220dad",
+          "data_index_sha256": "ae119de813aef7e5ed033dc3e0cc231061e54598eac541a8d045e2fa50f7b20c"
+        }
+      },
+      "source_metadata": [
+        {
+          "physical_sha256": "382fd23160fc05146841d768fe2322d75df3305ddd26490920535836bb7c29b1",
+          "payload_sha256": "b47a4a7b808edee6153787d789f349a984355b6904b455d1a23b2435e0f4e0ab",
+          "provider": "post-no-preference/stocks",
+          "source_version": "vt6qeesk27k07492k5jc5b7p04mf0s6o",
+          "license": "CC-BY-SA-4.0",
+          "license_raw_sha256": "9d4c8edfd801f6f57a67d4660fd7e149e4c9f3273b6931ee4857b73e7ff2d1aa",
+          "queries": [
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+ohlcv+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+date+IN+%28%272023-10-09%27%2C%272023-10-10%27%2C%272023-10-11%27%2C%272023-10-12%27%2C%272023-10-13%27%2C%272023-10-14%27%2C%272023-10-15%27%2C%272023-10-16%27%29+AND+act_symbol%3D%27SPY%27+ORDER+BY+date+LIMIT+100",
+              "raw_sha256": "503e5c2778c3ad73f80f4dae19c6b11d7861e775004e6748be3e26ae52183fa1"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+split+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+act_symbol%3D%27SPY%27",
+              "raw_sha256": "05ad83c4c158ff35407b4094e0b6e8f2ba64fe6b7e86aef5e32c221fe697fe00"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+dividend+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+act_symbol%3D%27SPY%27",
+              "raw_sha256": "d38fd0674bb0a9afdd42983360fc553f1da7ac41a05d965a07851728cb250531"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+symbol+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+act_symbol%3D%27SPY%27",
+              "raw_sha256": "97f8c0894a9a1c16a13f3d8c722f1537ddb77608d86f4c0169e336308cc10903"
+            }
+          ]
+        },
+        {
+          "url": "https://investor.activision.com/static-files/6439fa79-7018-4f4d-adf5-192a2cd2007b",
+          "raw_sha256": "c2f3d7ce46bddd7e933c75c490231116ff7047bdbdcb4ac123e85e81dbbfddd4",
+          "source_version": "SEC 8-K 2023-10-13 issuer PDF",
+          "license": "public official disclosure; raw retained locally, no blanket redistribution claim"
+        },
+        {
+          "physical_sha256": "2cad28edeb6a41269eb16389e8339183d01ea17baf69e8b36fd033f66c22e9d2",
+          "payload_sha256": "85f54d6458d18468d8f28cf22a3094f6ee92cca967d06a062af1eeb2d829a7a9",
+          "provider": "post-no-preference/stocks",
+          "source_version": "vt6qeesk27k07492k5jc5b7p04mf0s6o",
+          "license": "CC-BY-SA-4.0",
+          "license_raw_sha256": "9d4c8edfd801f6f57a67d4660fd7e149e4c9f3273b6931ee4857b73e7ff2d1aa",
+          "queries": [
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+ohlcv+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+date+IN+%28%272021-09-01%27%2C%272021-09-02%27%2C%272021-09-03%27%2C%272021-09-04%27%2C%272021-09-05%27%2C%272021-09-06%27%2C%272021-09-07%27%2C%272021-09-08%27%2C%272021-09-09%27%2C%272021-09-10%27%2C%272021-09-11%27%2C%272021-09-12%27%2C%272021-09-13%27%2C%272021-09-14%27%2C%272021-09-15%27%2C%272021-09-16%27%2C%272021-09-17%27%2C%272021-09-18%27%2C%272021-09-19%27%2C%272021-09-20%27%2C%272021-09-21%27%2C%272021-09-22%27%2C%272021-09-23%27%2C%272021-09-24%27%2C%272021-09-25%27%2C%272021-09-26%27%2C%272021-09-27%27%2C%272021-09-28%27%2C%272021-09-29%27%2C%272021-09-30%27%2C%272021-10-01%27%29+AND+act_symbol%3D%27ATVI%27+ORDER+BY+date+LIMIT+100",
+              "raw_sha256": "30eb2707758ec500d27d2a656d2ef7eef94ea535e689f332c35688702373590f"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+ohlcv+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+date+IN+%28%272021-10-02%27%2C%272021-10-03%27%2C%272021-10-04%27%2C%272021-10-05%27%2C%272021-10-06%27%2C%272021-10-07%27%2C%272021-10-08%27%2C%272021-10-09%27%2C%272021-10-10%27%2C%272021-10-11%27%2C%272021-10-12%27%2C%272021-10-13%27%2C%272021-10-14%27%2C%272021-10-15%27%2C%272021-10-16%27%2C%272021-10-17%27%2C%272021-10-18%27%2C%272021-10-19%27%2C%272021-10-20%27%2C%272021-10-21%27%2C%272021-10-22%27%2C%272021-10-23%27%2C%272021-10-24%27%2C%272021-10-25%27%2C%272021-10-26%27%2C%272021-10-27%27%2C%272021-10-28%27%2C%272021-10-29%27%2C%272021-10-30%27%2C%272021-10-31%27%2C%272021-11-01%27%29+AND+act_symbol%3D%27ATVI%27+ORDER+BY+date+LIMIT+100",
+              "raw_sha256": "71cbc84977f78ff4ccb57ac3b16861791543d9a85de5fbe9509eee347db768e0"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+ohlcv+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+date+IN+%28%272021-11-02%27%2C%272021-11-03%27%2C%272021-11-04%27%2C%272021-11-05%27%2C%272021-11-06%27%2C%272021-11-07%27%2C%272021-11-08%27%2C%272021-11-09%27%2C%272021-11-10%27%2C%272021-11-11%27%2C%272021-11-12%27%2C%272021-11-13%27%2C%272021-11-14%27%2C%272021-11-15%27%2C%272021-11-16%27%2C%272021-11-17%27%2C%272021-11-18%27%2C%272021-11-19%27%2C%272021-11-20%27%2C%272021-11-21%27%2C%272021-11-22%27%2C%272021-11-23%27%2C%272021-11-24%27%2C%272021-11-25%27%2C%272021-11-26%27%2C%272021-11-27%27%2C%272021-11-28%27%2C%272021-11-29%27%2C%272021-11-30%27%2C%272021-12-01%27%2C%272021-12-02%27%29+AND+act_symbol%3D%27ATVI%27+ORDER+BY+date+LIMIT+100",
+              "raw_sha256": "4489ec1dd61badeef11d0668e0ebef16a0b3c3a95f8ba6156d0874bd6e38a61c"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+ohlcv+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+date+IN+%28%272021-12-03%27%2C%272021-12-04%27%2C%272021-12-05%27%2C%272021-12-06%27%2C%272021-12-07%27%2C%272021-12-08%27%2C%272021-12-09%27%2C%272021-12-10%27%2C%272021-12-11%27%2C%272021-12-12%27%2C%272021-12-13%27%2C%272021-12-14%27%2C%272021-12-15%27%2C%272021-12-16%27%2C%272021-12-17%27%2C%272021-12-18%27%2C%272021-12-19%27%2C%272021-12-20%27%2C%272021-12-21%27%2C%272021-12-22%27%2C%272021-12-23%27%2C%272021-12-24%27%2C%272021-12-25%27%2C%272021-12-26%27%2C%272021-12-27%27%2C%272021-12-28%27%2C%272021-12-29%27%2C%272021-12-30%27%2C%272021-12-31%27%2C%272022-01-01%27%2C%272022-01-02%27%29+AND+act_symbol%3D%27ATVI%27+ORDER+BY+date+LIMIT+100",
+              "raw_sha256": "2e23a2bbc5fbe1187d67e0f949d79c9402a84d9a39c9acb6e34b9c92bb1ff66a"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+ohlcv+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+date+IN+%28%272022-01-03%27%2C%272022-01-04%27%2C%272022-01-05%27%2C%272022-01-06%27%2C%272022-01-07%27%2C%272022-01-08%27%2C%272022-01-09%27%2C%272022-01-10%27%2C%272022-01-11%27%2C%272022-01-12%27%2C%272022-01-13%27%2C%272022-01-14%27%2C%272022-01-15%27%2C%272022-01-16%27%2C%272022-01-17%27%2C%272022-01-18%27%2C%272022-01-19%27%2C%272022-01-20%27%2C%272022-01-21%27%2C%272022-01-22%27%2C%272022-01-23%27%2C%272022-01-24%27%2C%272022-01-25%27%2C%272022-01-26%27%2C%272022-01-27%27%2C%272022-01-28%27%2C%272022-01-29%27%2C%272022-01-30%27%2C%272022-01-31%27%2C%272022-02-01%27%2C%272022-02-02%27%29+AND+act_symbol%3D%27ATVI%27+ORDER+BY+date+LIMIT+100",
+              "raw_sha256": "01c83c19295238a83611e79eee6d87af99ced9a2c3c38ff20ecf785b47954dae"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+ohlcv+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+date+IN+%28%272022-02-03%27%2C%272022-02-04%27%2C%272022-02-05%27%2C%272022-02-06%27%2C%272022-02-07%27%2C%272022-02-08%27%2C%272022-02-09%27%2C%272022-02-10%27%2C%272022-02-11%27%2C%272022-02-12%27%2C%272022-02-13%27%2C%272022-02-14%27%2C%272022-02-15%27%2C%272022-02-16%27%2C%272022-02-17%27%2C%272022-02-18%27%2C%272022-02-19%27%2C%272022-02-20%27%2C%272022-02-21%27%2C%272022-02-22%27%2C%272022-02-23%27%2C%272022-02-24%27%2C%272022-02-25%27%2C%272022-02-26%27%2C%272022-02-27%27%2C%272022-02-28%27%2C%272022-03-01%27%2C%272022-03-02%27%2C%272022-03-03%27%2C%272022-03-04%27%2C%272022-03-05%27%29+AND+act_symbol%3D%27ATVI%27+ORDER+BY+date+LIMIT+100",
+              "raw_sha256": "0d4db43665b804e4d0becf13295024a1071a4620587b1fb26aba25cc3048ce76"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+ohlcv+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+date+IN+%28%272022-03-06%27%2C%272022-03-07%27%2C%272022-03-08%27%2C%272022-03-09%27%2C%272022-03-10%27%2C%272022-03-11%27%2C%272022-03-12%27%2C%272022-03-13%27%2C%272022-03-14%27%2C%272022-03-15%27%2C%272022-03-16%27%2C%272022-03-17%27%2C%272022-03-18%27%2C%272022-03-19%27%2C%272022-03-20%27%2C%272022-03-21%27%2C%272022-03-22%27%2C%272022-03-23%27%2C%272022-03-24%27%2C%272022-03-25%27%2C%272022-03-26%27%2C%272022-03-27%27%2C%272022-03-28%27%2C%272022-03-29%27%2C%272022-03-30%27%2C%272022-03-31%27%2C%272022-04-01%27%2C%272022-04-02%27%2C%272022-04-03%27%2C%272022-04-04%27%2C%272022-04-05%27%29+AND+act_symbol%3D%27ATVI%27+ORDER+BY+date+LIMIT+100",
+              "raw_sha256": "27b3cc423e8544ba390504b7d61d2f8198d959a04ad7c0a2d9284abcc7f6998d"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+ohlcv+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+date+IN+%28%272022-04-06%27%2C%272022-04-07%27%2C%272022-04-08%27%2C%272022-04-09%27%2C%272022-04-10%27%2C%272022-04-11%27%2C%272022-04-12%27%2C%272022-04-13%27%2C%272022-04-14%27%2C%272022-04-15%27%2C%272022-04-16%27%2C%272022-04-17%27%2C%272022-04-18%27%2C%272022-04-19%27%2C%272022-04-20%27%2C%272022-04-21%27%2C%272022-04-22%27%2C%272022-04-23%27%2C%272022-04-24%27%2C%272022-04-25%27%2C%272022-04-26%27%2C%272022-04-27%27%2C%272022-04-28%27%2C%272022-04-29%27%2C%272022-04-30%27%2C%272022-05-01%27%2C%272022-05-02%27%2C%272022-05-03%27%2C%272022-05-04%27%2C%272022-05-05%27%2C%272022-05-06%27%29+AND+act_symbol%3D%27ATVI%27+ORDER+BY+date+LIMIT+100",
+              "raw_sha256": "72aa66ec2a9e4dde6cec22a537f30d8a9927125083e08fc38f6a7b20ef4f136b"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+ohlcv+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+date+IN+%28%272022-05-07%27%2C%272022-05-08%27%2C%272022-05-09%27%2C%272022-05-10%27%2C%272022-05-11%27%2C%272022-05-12%27%2C%272022-05-13%27%2C%272022-05-14%27%2C%272022-05-15%27%2C%272022-05-16%27%2C%272022-05-17%27%2C%272022-05-18%27%2C%272022-05-19%27%2C%272022-05-20%27%2C%272022-05-21%27%2C%272022-05-22%27%2C%272022-05-23%27%2C%272022-05-24%27%2C%272022-05-25%27%2C%272022-05-26%27%2C%272022-05-27%27%2C%272022-05-28%27%2C%272022-05-29%27%2C%272022-05-30%27%2C%272022-05-31%27%2C%272022-06-01%27%2C%272022-06-02%27%2C%272022-06-03%27%2C%272022-06-04%27%2C%272022-06-05%27%2C%272022-06-06%27%29+AND+act_symbol%3D%27ATVI%27+ORDER+BY+date+LIMIT+100",
+              "raw_sha256": "dfc3de75997578692bd7b58cd97afc63b25561fdec55d811fd47252e064b13c2"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+ohlcv+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+date+IN+%28%272022-06-07%27%2C%272022-06-08%27%2C%272022-06-09%27%2C%272022-06-10%27%2C%272022-06-11%27%2C%272022-06-12%27%2C%272022-06-13%27%2C%272022-06-14%27%2C%272022-06-15%27%2C%272022-06-16%27%2C%272022-06-17%27%2C%272022-06-18%27%2C%272022-06-19%27%2C%272022-06-20%27%2C%272022-06-21%27%2C%272022-06-22%27%2C%272022-06-23%27%2C%272022-06-24%27%2C%272022-06-25%27%2C%272022-06-26%27%2C%272022-06-27%27%2C%272022-06-28%27%2C%272022-06-29%27%2C%272022-06-30%27%2C%272022-07-01%27%2C%272022-07-02%27%2C%272022-07-03%27%2C%272022-07-04%27%2C%272022-07-05%27%2C%272022-07-06%27%2C%272022-07-07%27%29+AND+act_symbol%3D%27ATVI%27+ORDER+BY+date+LIMIT+100",
+              "raw_sha256": "4c3e23352a188dd60146fdb48ac04b387bda26ed812eeecf96cccc3fb6b92f8a"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+ohlcv+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+date+IN+%28%272022-07-08%27%2C%272022-07-09%27%2C%272022-07-10%27%2C%272022-07-11%27%2C%272022-07-12%27%2C%272022-07-13%27%2C%272022-07-14%27%2C%272022-07-15%27%2C%272022-07-16%27%2C%272022-07-17%27%2C%272022-07-18%27%2C%272022-07-19%27%2C%272022-07-20%27%2C%272022-07-21%27%2C%272022-07-22%27%2C%272022-07-23%27%2C%272022-07-24%27%2C%272022-07-25%27%2C%272022-07-26%27%2C%272022-07-27%27%2C%272022-07-28%27%2C%272022-07-29%27%2C%272022-07-30%27%2C%272022-07-31%27%2C%272022-08-01%27%2C%272022-08-02%27%2C%272022-08-03%27%2C%272022-08-04%27%2C%272022-08-05%27%2C%272022-08-06%27%2C%272022-08-07%27%29+AND+act_symbol%3D%27ATVI%27+ORDER+BY+date+LIMIT+100",
+              "raw_sha256": "6c3497cc64e4cf2d75cbb981531399fe35a67965e33ab55abda3e678b391b4b2"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+ohlcv+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+date+IN+%28%272022-08-08%27%2C%272022-08-09%27%2C%272022-08-10%27%2C%272022-08-11%27%2C%272022-08-12%27%2C%272022-08-13%27%2C%272022-08-14%27%2C%272022-08-15%27%2C%272022-08-16%27%2C%272022-08-17%27%2C%272022-08-18%27%2C%272022-08-19%27%2C%272022-08-20%27%2C%272022-08-21%27%2C%272022-08-22%27%2C%272022-08-23%27%2C%272022-08-24%27%2C%272022-08-25%27%2C%272022-08-26%27%2C%272022-08-27%27%2C%272022-08-28%27%2C%272022-08-29%27%2C%272022-08-30%27%2C%272022-08-31%27%2C%272022-09-01%27%2C%272022-09-02%27%2C%272022-09-03%27%2C%272022-09-04%27%2C%272022-09-05%27%2C%272022-09-06%27%2C%272022-09-07%27%29+AND+act_symbol%3D%27ATVI%27+ORDER+BY+date+LIMIT+100",
+              "raw_sha256": "d5811ef9b8dd40270369bc70abbfa188c10541237bb7742045ea0e5aab872e2c"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+ohlcv+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+date+IN+%28%272022-09-08%27%2C%272022-09-09%27%2C%272022-09-10%27%2C%272022-09-11%27%2C%272022-09-12%27%2C%272022-09-13%27%2C%272022-09-14%27%2C%272022-09-15%27%2C%272022-09-16%27%2C%272022-09-17%27%2C%272022-09-18%27%2C%272022-09-19%27%2C%272022-09-20%27%2C%272022-09-21%27%2C%272022-09-22%27%2C%272022-09-23%27%2C%272022-09-24%27%2C%272022-09-25%27%2C%272022-09-26%27%2C%272022-09-27%27%2C%272022-09-28%27%2C%272022-09-29%27%2C%272022-09-30%27%2C%272022-10-01%27%2C%272022-10-02%27%2C%272022-10-03%27%2C%272022-10-04%27%2C%272022-10-05%27%2C%272022-10-06%27%2C%272022-10-07%27%2C%272022-10-08%27%29+AND+act_symbol%3D%27ATVI%27+ORDER+BY+date+LIMIT+100",
+              "raw_sha256": "f58bc7362b960be050a2e805bfa3ebbc22bd501e7b3d02d6fb282220fe4d2672"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+ohlcv+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+date+IN+%28%272022-10-09%27%2C%272022-10-10%27%2C%272022-10-11%27%2C%272022-10-12%27%2C%272022-10-13%27%2C%272022-10-14%27%2C%272022-10-15%27%2C%272022-10-16%27%2C%272022-10-17%27%2C%272022-10-18%27%2C%272022-10-19%27%2C%272022-10-20%27%2C%272022-10-21%27%2C%272022-10-22%27%2C%272022-10-23%27%2C%272022-10-24%27%2C%272022-10-25%27%2C%272022-10-26%27%2C%272022-10-27%27%2C%272022-10-28%27%2C%272022-10-29%27%2C%272022-10-30%27%2C%272022-10-31%27%2C%272022-11-01%27%2C%272022-11-02%27%2C%272022-11-03%27%2C%272022-11-04%27%2C%272022-11-05%27%2C%272022-11-06%27%2C%272022-11-07%27%2C%272022-11-08%27%29+AND+act_symbol%3D%27ATVI%27+ORDER+BY+date+LIMIT+100",
+              "raw_sha256": "ef74525ac41de1ed0767dca43732093b1fd9ac7cb7adb0a9f720bbf5a9eb188b"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+ohlcv+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+date+IN+%28%272022-11-09%27%2C%272022-11-10%27%2C%272022-11-11%27%2C%272022-11-12%27%2C%272022-11-13%27%2C%272022-11-14%27%2C%272022-11-15%27%2C%272022-11-16%27%2C%272022-11-17%27%2C%272022-11-18%27%2C%272022-11-19%27%2C%272022-11-20%27%2C%272022-11-21%27%2C%272022-11-22%27%2C%272022-11-23%27%2C%272022-11-24%27%2C%272022-11-25%27%2C%272022-11-26%27%2C%272022-11-27%27%2C%272022-11-28%27%2C%272022-11-29%27%2C%272022-11-30%27%2C%272022-12-01%27%2C%272022-12-02%27%2C%272022-12-03%27%2C%272022-12-04%27%2C%272022-12-05%27%2C%272022-12-06%27%2C%272022-12-07%27%2C%272022-12-08%27%2C%272022-12-09%27%29+AND+act_symbol%3D%27ATVI%27+ORDER+BY+date+LIMIT+100",
+              "raw_sha256": "c70bc66688d6e81709fab4f1303bb65755c3fcaeda522f628fa520e6f6c44a3f"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+ohlcv+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+date+IN+%28%272022-12-10%27%2C%272022-12-11%27%2C%272022-12-12%27%2C%272022-12-13%27%2C%272022-12-14%27%2C%272022-12-15%27%2C%272022-12-16%27%2C%272022-12-17%27%2C%272022-12-18%27%2C%272022-12-19%27%2C%272022-12-20%27%2C%272022-12-21%27%2C%272022-12-22%27%2C%272022-12-23%27%2C%272022-12-24%27%2C%272022-12-25%27%2C%272022-12-26%27%2C%272022-12-27%27%2C%272022-12-28%27%2C%272022-12-29%27%2C%272022-12-30%27%2C%272022-12-31%27%2C%272023-01-01%27%2C%272023-01-02%27%2C%272023-01-03%27%2C%272023-01-04%27%2C%272023-01-05%27%2C%272023-01-06%27%2C%272023-01-07%27%2C%272023-01-08%27%2C%272023-01-09%27%29+AND+act_symbol%3D%27ATVI%27+ORDER+BY+date+LIMIT+100",
+              "raw_sha256": "80b66862b9872c7f418190f6bebc642a8054d9dc7500591b9e0ea57d21ea3084"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+ohlcv+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+date+IN+%28%272023-01-10%27%2C%272023-01-11%27%2C%272023-01-12%27%2C%272023-01-13%27%2C%272023-01-14%27%2C%272023-01-15%27%2C%272023-01-16%27%2C%272023-01-17%27%2C%272023-01-18%27%2C%272023-01-19%27%2C%272023-01-20%27%2C%272023-01-21%27%2C%272023-01-22%27%2C%272023-01-23%27%2C%272023-01-24%27%2C%272023-01-25%27%2C%272023-01-26%27%2C%272023-01-27%27%2C%272023-01-28%27%2C%272023-01-29%27%2C%272023-01-30%27%2C%272023-01-31%27%2C%272023-02-01%27%2C%272023-02-02%27%2C%272023-02-03%27%2C%272023-02-04%27%2C%272023-02-05%27%2C%272023-02-06%27%2C%272023-02-07%27%2C%272023-02-08%27%2C%272023-02-09%27%29+AND+act_symbol%3D%27ATVI%27+ORDER+BY+date+LIMIT+100",
+              "raw_sha256": "e541379172ade31a47b88ce8d8603afe0de87718e947b8adb3d951be7b3ef9af"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+ohlcv+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+date+IN+%28%272023-02-10%27%2C%272023-02-11%27%2C%272023-02-12%27%2C%272023-02-13%27%2C%272023-02-14%27%2C%272023-02-15%27%2C%272023-02-16%27%2C%272023-02-17%27%2C%272023-02-18%27%2C%272023-02-19%27%2C%272023-02-20%27%2C%272023-02-21%27%2C%272023-02-22%27%2C%272023-02-23%27%2C%272023-02-24%27%2C%272023-02-25%27%2C%272023-02-26%27%2C%272023-02-27%27%2C%272023-02-28%27%2C%272023-03-01%27%2C%272023-03-02%27%2C%272023-03-03%27%2C%272023-03-04%27%2C%272023-03-05%27%2C%272023-03-06%27%2C%272023-03-07%27%2C%272023-03-08%27%2C%272023-03-09%27%2C%272023-03-10%27%2C%272023-03-11%27%2C%272023-03-12%27%29+AND+act_symbol%3D%27ATVI%27+ORDER+BY+date+LIMIT+100",
+              "raw_sha256": "6230f21bc1a2485c4e02053b11a1f2ac34acf604a5b1981a8562a2c6e0549a3d"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+ohlcv+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+date+IN+%28%272023-03-13%27%2C%272023-03-14%27%2C%272023-03-15%27%2C%272023-03-16%27%2C%272023-03-17%27%2C%272023-03-18%27%2C%272023-03-19%27%2C%272023-03-20%27%2C%272023-03-21%27%2C%272023-03-22%27%2C%272023-03-23%27%2C%272023-03-24%27%2C%272023-03-25%27%2C%272023-03-26%27%2C%272023-03-27%27%2C%272023-03-28%27%2C%272023-03-29%27%2C%272023-03-30%27%2C%272023-03-31%27%2C%272023-04-01%27%2C%272023-04-02%27%2C%272023-04-03%27%2C%272023-04-04%27%2C%272023-04-05%27%2C%272023-04-06%27%2C%272023-04-07%27%2C%272023-04-08%27%2C%272023-04-09%27%2C%272023-04-10%27%2C%272023-04-11%27%2C%272023-04-12%27%29+AND+act_symbol%3D%27ATVI%27+ORDER+BY+date+LIMIT+100",
+              "raw_sha256": "d778209a2c65965791efa89372bbe7b514322389f830808f054ec624ba01771f"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+ohlcv+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+date+IN+%28%272023-04-13%27%2C%272023-04-14%27%2C%272023-04-15%27%2C%272023-04-16%27%2C%272023-04-17%27%2C%272023-04-18%27%2C%272023-04-19%27%2C%272023-04-20%27%2C%272023-04-21%27%2C%272023-04-22%27%2C%272023-04-23%27%2C%272023-04-24%27%2C%272023-04-25%27%2C%272023-04-26%27%2C%272023-04-27%27%2C%272023-04-28%27%2C%272023-04-29%27%2C%272023-04-30%27%2C%272023-05-01%27%2C%272023-05-02%27%2C%272023-05-03%27%2C%272023-05-04%27%2C%272023-05-05%27%2C%272023-05-06%27%2C%272023-05-07%27%2C%272023-05-08%27%2C%272023-05-09%27%2C%272023-05-10%27%2C%272023-05-11%27%2C%272023-05-12%27%2C%272023-05-13%27%29+AND+act_symbol%3D%27ATVI%27+ORDER+BY+date+LIMIT+100",
+              "raw_sha256": "d1bc85730e6ed245b1e1194b89c9b47949a9140b563b87cf314fe6f35d353e2d"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+ohlcv+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+date+IN+%28%272023-05-14%27%2C%272023-05-15%27%2C%272023-05-16%27%2C%272023-05-17%27%2C%272023-05-18%27%2C%272023-05-19%27%2C%272023-05-20%27%2C%272023-05-21%27%2C%272023-05-22%27%2C%272023-05-23%27%2C%272023-05-24%27%2C%272023-05-25%27%2C%272023-05-26%27%2C%272023-05-27%27%2C%272023-05-28%27%2C%272023-05-29%27%2C%272023-05-30%27%2C%272023-05-31%27%2C%272023-06-01%27%2C%272023-06-02%27%2C%272023-06-03%27%2C%272023-06-04%27%2C%272023-06-05%27%2C%272023-06-06%27%2C%272023-06-07%27%2C%272023-06-08%27%2C%272023-06-09%27%2C%272023-06-10%27%2C%272023-06-11%27%2C%272023-06-12%27%2C%272023-06-13%27%29+AND+act_symbol%3D%27ATVI%27+ORDER+BY+date+LIMIT+100",
+              "raw_sha256": "76754316a97525d09591f467129009f8e7f9a5208d5ebc30117dcd066c5d1011"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+ohlcv+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+date+IN+%28%272023-06-14%27%2C%272023-06-15%27%2C%272023-06-16%27%2C%272023-06-17%27%2C%272023-06-18%27%2C%272023-06-19%27%2C%272023-06-20%27%2C%272023-06-21%27%2C%272023-06-22%27%2C%272023-06-23%27%2C%272023-06-24%27%2C%272023-06-25%27%2C%272023-06-26%27%2C%272023-06-27%27%2C%272023-06-28%27%2C%272023-06-29%27%2C%272023-06-30%27%2C%272023-07-01%27%2C%272023-07-02%27%2C%272023-07-03%27%2C%272023-07-04%27%2C%272023-07-05%27%2C%272023-07-06%27%2C%272023-07-07%27%2C%272023-07-08%27%2C%272023-07-09%27%2C%272023-07-10%27%2C%272023-07-11%27%2C%272023-07-12%27%2C%272023-07-13%27%2C%272023-07-14%27%29+AND+act_symbol%3D%27ATVI%27+ORDER+BY+date+LIMIT+100",
+              "raw_sha256": "9a359697310770fc918148f7a4b11106ed710f8d944cb6ffcacabfd1a4e1e021"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+ohlcv+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+date+IN+%28%272023-07-15%27%2C%272023-07-16%27%2C%272023-07-17%27%2C%272023-07-18%27%2C%272023-07-19%27%2C%272023-07-20%27%2C%272023-07-21%27%2C%272023-07-22%27%2C%272023-07-23%27%2C%272023-07-24%27%2C%272023-07-25%27%2C%272023-07-26%27%2C%272023-07-27%27%2C%272023-07-28%27%2C%272023-07-29%27%2C%272023-07-30%27%2C%272023-07-31%27%2C%272023-08-01%27%2C%272023-08-02%27%2C%272023-08-03%27%2C%272023-08-04%27%2C%272023-08-05%27%2C%272023-08-06%27%2C%272023-08-07%27%2C%272023-08-08%27%2C%272023-08-09%27%2C%272023-08-10%27%2C%272023-08-11%27%2C%272023-08-12%27%2C%272023-08-13%27%2C%272023-08-14%27%29+AND+act_symbol%3D%27ATVI%27+ORDER+BY+date+LIMIT+100",
+              "raw_sha256": "45d83292a4152ad013fc9d4f5aec66428b60be87e8c6a6a3d61f60ab88ee9d87"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+ohlcv+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+date+IN+%28%272023-08-15%27%2C%272023-08-16%27%2C%272023-08-17%27%2C%272023-08-18%27%2C%272023-08-19%27%2C%272023-08-20%27%2C%272023-08-21%27%2C%272023-08-22%27%2C%272023-08-23%27%2C%272023-08-24%27%2C%272023-08-25%27%2C%272023-08-26%27%2C%272023-08-27%27%2C%272023-08-28%27%2C%272023-08-29%27%2C%272023-08-30%27%2C%272023-08-31%27%2C%272023-09-01%27%2C%272023-09-02%27%2C%272023-09-03%27%2C%272023-09-04%27%2C%272023-09-05%27%2C%272023-09-06%27%2C%272023-09-07%27%2C%272023-09-08%27%2C%272023-09-09%27%2C%272023-09-10%27%2C%272023-09-11%27%2C%272023-09-12%27%2C%272023-09-13%27%2C%272023-09-14%27%29+AND+act_symbol%3D%27ATVI%27+ORDER+BY+date+LIMIT+100",
+              "raw_sha256": "a937fa8f615afb6a53805dab914d0994455d61ac92017429035c99ee87399d39"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+ohlcv+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+date+IN+%28%272023-09-15%27%2C%272023-09-16%27%2C%272023-09-17%27%2C%272023-09-18%27%2C%272023-09-19%27%2C%272023-09-20%27%2C%272023-09-21%27%2C%272023-09-22%27%2C%272023-09-23%27%2C%272023-09-24%27%2C%272023-09-25%27%2C%272023-09-26%27%2C%272023-09-27%27%2C%272023-09-28%27%2C%272023-09-29%27%2C%272023-09-30%27%2C%272023-10-01%27%2C%272023-10-02%27%2C%272023-10-03%27%2C%272023-10-04%27%2C%272023-10-05%27%2C%272023-10-06%27%2C%272023-10-07%27%2C%272023-10-08%27%2C%272023-10-09%27%2C%272023-10-10%27%2C%272023-10-11%27%2C%272023-10-12%27%29+AND+act_symbol%3D%27ATVI%27+ORDER+BY+date+LIMIT+100",
+              "raw_sha256": "04032482d819470ad81ec16d563b2d675109abac9197fd2c2ed9e5dc30cd0239"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+split+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+act_symbol%3D%27ATVI%27",
+              "raw_sha256": "73fcc69d565edf55731d9212f8620e8c973a0089636e0f7c2b8c189fd158ebe1"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+dividend+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+act_symbol%3D%27ATVI%27",
+              "raw_sha256": "05cd3f998254e6d0e4f08ef615b30003e265a89615090eefec9694068b75b2f6"
+            },
+            {
+              "url": "https://www.dolthub.com/api/v1alpha1/post-no-preference/stocks/master?q=SELECT+%2A+FROM+symbol+AS+OF+%27vt6qeesk27k07492k5jc5b7p04mf0s6o%27+WHERE+act_symbol%3D%27ATVI%27",
+              "raw_sha256": "e309c2ff5012562204001ed24f13d0016e01c9354ae80d1201ca01de30ea56bc"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

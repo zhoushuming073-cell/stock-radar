@@ -1,0 +1,20 @@
+{
+  "SEC-0001045810-COMMON:split:2024-06-10": {
+    "factor_verified": true,
+    "validation_scope": "raw native accounting golden 2024-06-05 through 2024-06-10; no full-history dividend completeness claim"
+  },
+  "SEC-0000718877-COMMON:merger:2023-10-13": {
+    "event_type": "cash_acquisition",
+    "settlement_verified": true,
+    "currency": "USD",
+    "cash_per_share": 95.0,
+    "settlement_policy": "cash_entitlement_at_effective_date",
+    "settlement_date": "2023-10-13",
+    "last_tradable_session": "2023-10-12",
+    "settlement_fee": 0,
+    "scope": "gross USD common-share cash right at merger effective date; no treasury/parent holdings/appraisal election; not actual bank payment date or investor tax withholding"
+  },
+  "SEC-0000718877-COMMON:trading_suspension:2023-10-13": {
+    "covered_by": "SEC-0000718877-COMMON:merger:2023-10-13"
+  }
+}
