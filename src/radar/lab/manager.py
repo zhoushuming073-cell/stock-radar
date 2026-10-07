@@ -421,7 +421,8 @@ class RunManager:
                     if study["data_snapshot"] != snapshot or study["split"] != split:
                         raise ValueError("source Scanner dataset does not match")
                     if (study.get("universe_mode", "current_snapshot") != universe_mode or
-                            (study.get("universe_provenance") or {}).get("fingerprint") != provenance.fingerprint):
+                            (study.get("universe_provenance") or {}).get("fingerprint") != provenance.fingerprint or
+                            (study.get("universe_provenance") or {}).get("feature_store_sha256") != provenance.feature_store_sha256):
                         raise ValueError("source Scanner universe does not match")
                     if (study["signal_start"] != window[0] or
                             study["signal_end"] != window[1]):

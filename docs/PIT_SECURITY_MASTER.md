@@ -151,8 +151,9 @@ Missing bars stay missing; labels are not precomputed. The feature sidecar binds
 master CSV, source research database, research config, feature database and
 builder hashes. **Every PIT import**, including older certified masters, needs a
 compatible sidecar before Scanner use. Old symbol-only survivor features are
-rejected. Moving a store requires a reviewed sidecar path update and changes its
-fingerprint.
+rejected. Moving a store requires a reviewed sidecar path update and byte-hash
+verification. Local paths and receipt times are outside the semantic universe
+fingerprint; queued Runs separately bind the exact physical feature DB SHA-256.
 
 `LocalSecurityMaster.observed_on(date)` exposes all observed instruments;
 `eligible_on(date)` supplies the research population. `filter_frame` maps by
@@ -173,3 +174,74 @@ proximity audit is explicitly unverified; it cannot establish terminal value.
 The frozen-strategy comparison examines historical selection only, without
 future returns. See [architecture audit](../reports/pit-initial-audit-2026-10-07.md)
 and [local acceptance](../reports/pit-acceptance-2026-10-07.md).
+
+## Reviewed evidence and external-price enrichment (2026-10-07)
+
+This extends the same contract. `config/pit_trust_evidence.json` records official
+raw-document hashes, document versions, issuer/class/exchange/date scopes,
+confidence and resolution method. `enrich_pit_evidence.py` checks raw evidence
+offline. Only `verified` security-level scopes may merge IDs; candidates,
+conflicting claims and name similarity cannot. `observed_first/observed_last`
+remain separate from actual listing/delisting and from suspension/merger events.
+Unknown classification stays ineligible. No inferred terminal economics enter
+the existing terminal execution provider.
+
+Public prices use explicit network acquisition from
+[post-no-preference/stocks](https://www.dolthub.com/repositories/post-no-preference/stocks),
+with pinned Dolt SQL `AS OF` and hashed raw query receipts. The pinned
+LICENSE.md is CC-BY-SA-4.0; retain attribution/share-alike terms when distributing
+derived prices. Acquisition is quarantine, not acceptance. The reviewed first
+batch is ATVI/TWTR/SPLK raw OHLCV over no-split lifetimes, checked against official
+dated IDs and the real local SPY calendar. General split/dividend normalization
+remains unavailable. Other raw-symbol aliases never automatically bind prices.
+
+Example offline continuation from the retained first build:
+
+```powershell
+$first = 'data/pit/normalized/6d21fe4b24dd17dd9d62863d3870bebe0a0b71f5c36355b3d86fd3f6c433e4fb'
+.venv/Scripts/python.exe -B scripts/enrich_pit_evidence.py --build $first
+# Substitute the printed version; existing immutable destinations are refused.
+$new = 'data/pit/normalized/<printed-version>'
+.venv/Scripts/python.exe -B scripts/accept_pit_public_prices.py --build $new
+.venv/Scripts/python.exe -B scripts/build_pit_features.py --build $new --external-prices "$new/external-prices.duckdb"
+.venv/Scripts/python.exe -B scripts/audit_pit_universe.py --build $new
+.venv/Scripts/python.exe -B scripts/audit_pit_trust.py --build $new --secondary 'data/pit/reports/6d21fe4b24dd17dd9d62863d3870bebe0a0b71f5c36355b3d86fd3f6c433e4fb/auxiliary-evidence.csv'
+.venv/Scripts/python.exe -B scripts/verify_pit_golden_cases.py --build $new
+.venv/Scripts/python.exe -B scripts/compare_pit_scanner.py --build $new
+.venv/Scripts/python.exe -B scripts/prioritize_pit_price_gaps.py --build $new
+```
+
+Only acquisition performs network reads:
+
+```powershell
+.venv/Scripts/python.exe -B scripts/acquire_pit_public_prices.py --symbol ATVI --pin vt6qeesk27k07492k5jc5b7p04mf0s6o --start 2021-09-01 --end 2023-10-12
+```
+
+Raw official disclosures, adjustment/license proof and price query responses
+must already exist with the review-config hashes for offline acceptance. An
+immutable build that already contains the price DB/sidecar should be audited
+directly; use a new directory for fresh replay. `rebind_pit_features.py` is only
+for provenance-only master revisions with identical eligible ID/date mappings,
+source/config/feature bytes and bidirectionally equal external bars. It refuses
+reuse across changed mappings and preserves the original builder provenance.
+
+`pit_database_for` gates both feature and forward-label OHLC reads against the
+same bound database and source hash. Features carry identity history counts;
+Scanner keeps no-price, warm-up, feature-gap and strategy-rejection funnel
+counts separately. Missing bars never remove master membership. Current Snapshot
+keeps its parallel source. General factors, terminal settlement and native PIT
+reconciliation remain required before LEAN execution.
+
+Semantic fingerprints canonicalize content and exclude acquisition/build time,
+receipt-only Stock Radar commit, local database paths, physical DuckDB layout
+and reuse history. Exact physical feature SHA-256 remains separate queued Run
+provenance, checked by workers/consuming manager and actual loaders. Population
+audit JSON binds reporter/evidence/queue hashes; the API serves its six-dimension
+scorecard only when the content and universe binding validate, otherwise reports
+the audit unavailable/stale. Formal readiness never follows from the existence
+of a feature store or a few passing cases.
+
+Installed batch measurements, exceptions and real golden cases are in the
+[new trust acceptance](../reports/pit-data-trust-acceptance-2026-10-07.md).
+[LEAN format design](PIT_LEAN_DATA_DESIGN.md) is non-executable and explicitly
+distinct from QuantConnect official data.

@@ -31,6 +31,22 @@ def available_features(database: Path) -> set[str]:
         connection.close()
 
 
+def pit_database_for(database: Path, universe_provider) -> Path:
+    """One provenance gate for both causal features and host-only label prices."""
+    from radar.pit.features import file_hash
+    store = getattr(universe_provider, "feature_store", None)
+    if not store:
+        raise ValueError("PIT requires an identity-bounded causal feature store")
+    if Path(store["source_database"]).resolve() != Path(database).resolve():
+        raise ValueError("PIT features use another source research database")
+    if file_hash(Path(database)) != store["source_database_sha256"]:
+        raise ValueError("PIT feature source research snapshot changed")
+    target = Path(store["database"])
+    if file_hash(target) != store["database_sha256"]:
+        raise ValueError("PIT feature store changed after building/queuing")
+    return target
+
+
 def load_strategy_segment(
     database: Path, start: pd.Timestamp, end: pd.Timestamp,
     required_features: set[str],
@@ -42,18 +58,7 @@ def load_strategy_segment(
     if universe_provider is not None:
         # An observed PIT universe must not silently inherit survivor-ranked,
         # ticker-rolled features from the old Current Snapshot database.
-        from radar.pit.features import file_hash
-        store = getattr(universe_provider, "feature_store", None)
-        if not store:
-            raise ValueError("PIT requires an identity-bounded causal feature store")
-        if Path(store["source_database"]).resolve() != Path(database).resolve():
-            raise ValueError("PIT features use another source research database")
-        if file_hash(Path(database)) != store["source_database_sha256"]:
-            raise ValueError("PIT feature source research snapshot changed")
-        pit_database = Path(store["database"])
-        if file_hash(pit_database) != store["database_sha256"]:
-            raise ValueError("PIT feature store changed after building/queuing")
-        database = pit_database
+        database = pit_database_for(database, universe_provider)
         identity_features = True
     fields = ENGINE_FEATURES | (required_features - MARKET_FEATURES)
     if universe_provider is not None and "market_breadth" in required_features:
@@ -77,6 +82,12 @@ def load_strategy_segment(
             {asset_join}
             WHERE f.feature_version=? AND f.date BETWEEN ? AND ?
         """, [feature_version, pd.Timestamp(start).date(), pd.Timestamp(end).date()]).df()
+        if identity_features:
+            histories = connection.execute("""SELECT security_id,date,pit_history_sessions FROM (
+                SELECT security_id,date,ROW_NUMBER() OVER (PARTITION BY security_id ORDER BY date) pit_history_sessions
+                FROM daily_bars WHERE security_id IS NOT NULL AND date<=?)
+                WHERE date BETWEEN ? AND ?""", [pd.Timestamp(end).date(), pd.Timestamp(start).date(), pd.Timestamp(end).date()]).df()
+            frame = frame.merge(histories, on=["security_id", "date"], how="left", validate="one_to_one")
         context = None
         if required_features & MARKET_FEATURES:
             benchmark = connection.execute("""
@@ -137,14 +148,22 @@ def _market_context(benchmark: pd.DataFrame, breadth: pd.DataFrame) -> pd.DataFr
         breadth, on="date", how="left", validate="one_to_one")
 
 
-def load_forward_bars(database: Path, start: pd.Timestamp, end: pd.Timestamp) -> pd.DataFrame:
+def load_forward_bars(database: Path, start: pd.Timestamp, end: pd.Timestamp,
+                      universe_provider: PointInTimeUniverseProvider | None = None) -> pd.DataFrame:
     """Host-only OHLC; callers must never pass this frame to a plugin."""
+    identity = ""
+    if universe_provider is not None:
+        database = pit_database_for(database, universe_provider)
+        identity = ",security_id"
     with duckdb.connect(str(database), read_only=True) as connection:
-        bars = connection.execute("""
-            SELECT date,symbol,open,high,low,close FROM daily_bars
+        bars = connection.execute(f"""
+            SELECT date,symbol,open,high,low,close {identity} FROM daily_bars
             WHERE date BETWEEN ? AND ? ORDER BY date,symbol
         """, [pd.Timestamp(start).date(), pd.Timestamp(end).date()]).df()
     bars["date"] = pd.to_datetime(bars["date"])
+    if universe_provider is not None:
+        # Benchmark rows have no stock identity and are not label inputs.
+        bars = universe_provider.filter_frame(bars[bars.security_id.notna()]).reset_index(drop=True)
     return bars
 
 

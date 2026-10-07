@@ -49,6 +49,32 @@ class UniverseProvenance:
         return self.__dict__.copy()
 
 
+def validate_frozen_feature_store(provenance: UniverseProvenance, metadata: dict) -> None:
+    """Semantic universe identity does not replace the queued artifact byte lock."""
+    if provenance.mode == "point_in_time" and provenance.feature_store_sha256 != (
+            metadata.get("universe_provenance") or {}).get("feature_store_sha256"):
+        raise ValueError("queued PIT feature database changed")
+
+
+def semantic_fingerprint(csv: bytes, manifest: dict, feature_store: dict | None) -> str:
+    """Bind deterministic inputs; acquisition time and local paths are receipts.
+
+    DuckDB file layout and reviewed reuse history are also artifact metadata.
+    Workers separately freeze and verify the actual database SHA-256.
+    """
+    source = {k: v for k, v in manifest.items() if k not in {"built_at", "stock_radar_commit"}}
+    features = None
+    if feature_store is not None:
+        features = {k: v for k, v in feature_store.items()
+                    if k not in {"database", "database_sha256", "source_database", "reviewed_reuse"}}
+        if "external_prices" in features:
+            features["external_prices"] = {k: v for k, v in features["external_prices"].items()
+                                            if k not in {"database", "database_sha256"}}
+    payload = json.dumps({"policy": "pit-semantic-fingerprint-v1", "manifest": source,
+                          "features": features}, sort_keys=True, separators=(",", ":")).encode()
+    return hashlib.sha256(csv + b"\0" + payload).hexdigest()
+
+
 class LocalSecurityMaster:
     """Read an imported CSV plus an explicit source coverage manifest."""
 
@@ -113,18 +139,14 @@ class LocalSecurityMaster:
             raise ValueError("security-master eligible must be true/false")
         self.frame["eligible"] = flags.isin({"true", "1"})
         self._validate_intervals()
-        self._fingerprint = hashlib.sha256(
-            self.csv_path.read_bytes() + b"\0" +
-            self.manifest_path.read_bytes()).hexdigest()
         self.feature_store = None
         sidecar = self.csv_path.with_name("security-master-feature-store.json")
         if sidecar.exists():
             self.feature_store = json.loads(sidecar.read_text(encoding="utf-8"))
             if self.feature_store.get("master_output_sha256") != hashlib.sha256(self.csv_path.read_bytes()).hexdigest():
                 raise ValueError("PIT feature store is bound to another security master")
-            self._fingerprint = hashlib.sha256(
-                self.csv_path.read_bytes() + b"\0" + self.manifest_path.read_bytes() +
-                b"\0" + sidecar.read_bytes()).hexdigest()
+        self._fingerprint = semantic_fingerprint(
+            self.csv_path.read_bytes(), self.manifest, self.feature_store)
 
     @property
     def fingerprint(self) -> str:

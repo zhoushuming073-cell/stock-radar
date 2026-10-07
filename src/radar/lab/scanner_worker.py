@@ -20,7 +20,7 @@ from radar.lab.parameters import research_hash
 from radar.lab.scanner import (LABEL_VERSION, build_labels, candidate_metrics,
                                signal_event_flags, validate_frozen_horizon)
 from radar.lab.store import RunStore
-from radar.lab.universe import load_universe
+from radar.lab.universe import load_universe, validate_frozen_feature_store
 from radar.lab.terminal import load_terminal_events, TERMINAL_LABEL_VERSION
 from radar.lab.worker import sha256_file
 from radar.research.pipeline import FEATURE_VERSION
@@ -110,6 +110,17 @@ def scan_frames(plugin, config: dict, feature_frame: pd.DataFrame, bars: pd.Data
             membership_count = len(universe_provider.eligible_on(day))
             funnel["pit_membership"] = membership_count
             funnel["missing_feature_or_price"] = membership_count - len(daily)
+            price_day = pd.to_datetime(bars["date"]).dt.normalize().eq(day)
+            observed_prices = universe_provider.filter_frame(bars.loc[price_day]).reset_index(drop=True)
+            priced = set(observed_prices.security_id)
+            members = set(universe_provider.eligible_on(day).security_id)
+            with_features = set(daily.security_id)
+            history = daily.get("pit_history_sessions", pd.Series(np.nan, index=daily.index))
+            insufficient = history.lt(126)
+            funnel["no_price"] = len(members - priced)
+            funnel["insufficient_warmup"] = int(insufficient.sum())
+            funnel["warmup_unknown"] = int(history.isna().sum())
+            feature_missing = len((members & priced) - with_features)
         tradable = daily["tradability_pass"].fillna(False).astype(bool)
         funnel["tradable"] = int(tradable.sum())
         eligible = daily[daily["tradability_pass"].fillna(False).astype(bool)].copy()
@@ -117,6 +128,8 @@ def scan_frames(plugin, config: dict, feature_frame: pd.DataFrame, bars: pd.Data
             if name in eligible.columns and pd.api.types.is_numeric_dtype(eligible[name]):
                 eligible = eligible[np.isfinite(pd.to_numeric(eligible[name], errors="coerce"))]
         funnel["feature_complete"] = int(len(eligible))
+        if universe_provider is not None:
+            funnel["feature_unavailable"] = feature_missing + int((tradable & ~insufficient).sum()) - len(eligible)
         if not eligible.empty:
             stages = evaluate_filter_diagnostics(plugin, config, eligible)
             surviving = pd.Series(True, index=stages.index)
@@ -136,6 +149,9 @@ def scan_frames(plugin, config: dict, feature_frame: pd.DataFrame, bars: pd.Data
                     })
         ranked, _ = evaluate_selection(plugin, config, eligible, diagnostics=True)
         funnel["final_ranked_candidate"] = int(len(ranked))
+        if universe_provider is not None:
+            funnel["strategy_rejected"] = (membership_count - funnel["no_price"] - funnel["insufficient_warmup"]
+                                            - funnel["feature_unavailable"] - len(ranked))
         funnel_by_day.append(funnel)
         if not ranked.empty:
             diagnostic_columns.update(ranked.attrs.get("diagnostic_columns", []))
@@ -306,6 +322,7 @@ def execute_scanner_run(root: Path, store_path: Path, run_id: str) -> dict:
                 provenance.fingerprint != metadata["resolved_config"]["values"]["dataset"][
                     "universe_fingerprint"]):
             raise ValueError("queued PIT security master changed")
+        validate_frozen_feature_store(provenance, metadata)
         load_args = (database, start, end, set(manifest.required_features) | MARKET_FEATURES)
         frame = load_strategy_segment(*load_args, provider) if provider else (
             load_strategy_segment(*load_args))
@@ -321,7 +338,8 @@ def execute_scanner_run(root: Path, store_path: Path, run_id: str) -> dict:
                              str(coverage["incomplete_signal_sessions"][:20]))
         last = sessions.searchsorted(end, side="right") + metadata["evaluation"]["horizon_sessions"]
         bar_end = min(coverage_end, sessions[min(last, len(sessions)) - 1])
-        bars = load_forward_bars(database, start, bar_end)
+        bars = (load_forward_bars(database, start, bar_end, provider) if provider else
+                load_forward_bars(database, start, bar_end))
         rows, metrics = scan_frames(registration.plugin, metadata["config"], frame, bars,
                                     sessions, start, end, metadata["evaluation"],
                                     progress=report_progress,

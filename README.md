@@ -44,9 +44,10 @@
 **Current stage · 2026-10-07:** research infrastructure and initial local LEAN
 integration accepted; open-source historical PIT reconstruction and an independent
 identity-bounded feature store added. PIT data remains exploratory and incomplete,
-and PIT LEAN execution remains blocked. [PIT acceptance](reports/pit-acceptance-2026-10-07.md)
+and PIT LEAN execution remains blocked. [PIT acceptance](reports/pit-acceptance-2026-10-07.md),
+[reviewed identity / retired-price acceptance](reports/pit-data-trust-acceptance-2026-10-07.md)
 and [development report](reports/development-status-2026-10-06.md)
-documents what works, what is limited and what remains open.
+document what works, what is limited and what remains open.
 
 ### Local LEAN backtests
 

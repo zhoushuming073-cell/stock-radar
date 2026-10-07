@@ -88,3 +88,29 @@ def test_old_security_forward_outcome_cannot_inherit_reused_ticker_prices(tmp_pa
                           evaluation_settings({"horizon_sessions": 2}), {"OLD-SEC": pd.Timestamp("2022-01-03")})
     assert result.iloc[0].label_status == "censored"
     assert result.iloc[0].label is None
+
+
+def test_pit_forward_prices_and_warmup_use_the_bound_identity_store(tmp_path):
+    from radar.lab.data import load_forward_bars
+    master,source,config=fixture(tmp_path)
+    manifest=build_features(source,master,config,tmp_path/'pit.duckdb')
+    (tmp_path/'security-master-feature-store.json').write_text(json.dumps(manifest))
+    master=LocalSecurityMaster(master.csv_path,master.manifest_path)
+    bars=load_forward_bars(source,pd.Timestamp('2022-01-03'),pd.Timestamp('2022-01-06'),master)
+    assert set(bars.security_id)=={'OLD-SEC','NEW-SEC'}
+    assert pd.Timestamp('2022-01-04') not in set(bars.date)
+    frame=load_strategy_segment(source,pd.Timestamp('2022-01-05'),pd.Timestamp('2022-01-06'),{'ret_1'},master)
+    assert list(frame.pit_history_sessions)==[1,2]
+    assert frame.security_id.eq('NEW-SEC').all()
+
+
+def test_feature_reuse_refuses_a_changed_identity_mapping(tmp_path):
+    from radar.pit.features import rebind_identical_features
+    master,source,config=fixture(tmp_path)
+    manifest=build_features(source,master,config,tmp_path/'pit.duckdb')
+    (tmp_path/'security-master-feature-store.json').write_text(json.dumps(manifest))
+    old=LocalSecurityMaster(master.csv_path,master.manifest_path)
+    new=LocalSecurityMaster(master.csv_path,master.manifest_path)
+    assert rebind_identical_features(old,new,config)['database_sha256']==manifest['database_sha256']
+    new.frame.loc[new.frame.security_id.eq('NEW-SEC'),'security_id']='REUSED-ISSUER'
+    with pytest.raises(ValueError,match='input mapping differs'):rebind_identical_features(old,new,config)

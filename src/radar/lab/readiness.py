@@ -29,6 +29,7 @@ def assess_readiness(mode: str, sessions: Sequence[pd.Timestamp],
         "unmatched_master_delistings": 0,
         "terminal_value_policy": "terminal-cash-v1",
         "reasons": [],
+        "data_readiness_scorecard": None,
     }
     if mode != "point_in_time":
         report["reasons"].append("Current Snapshot cannot establish historical universe membership")
@@ -37,6 +38,8 @@ def assess_readiness(mode: str, sessions: Sequence[pd.Timestamp],
         report["reasons"].append("PIT Security Master is unavailable")
         return report
     report["security_master"] = master.provenance().metadata()
+    from radar.pit.quality import scorecard
+    report["data_readiness_scorecard"] = scorecard(master)
     if master.reconstructed:
         report["reasons"].append("open-source reconstructed membership is not source-attested complete")
         report["research_validity"] = "reconstructed_membership_exploratory"
@@ -126,9 +129,15 @@ def local_readiness(root: Path, mode: str, sessions: Sequence[pd.Timestamp]) -> 
     bars = None
     if master is not None and len(sessions):
         from radar.lab.data import load_forward_bars
-        bars = load_forward_bars(root / "data/phase2-research.duckdb",
-                                 min(sessions), max(sessions))
+        try:
+            bars = load_forward_bars(root / "data/phase2-research.duckdb",
+                                     min(sessions), max(sessions), master)
+        except (ValueError, OSError) as error:
+            errors.append(str(error))
     report = assess_readiness(mode, sessions, master, terminal, bars)
+    if master is not None:
+        from radar.pit.quality import local_scorecard
+        report["data_readiness_scorecard"] = local_scorecard(master, root)
     report["reasons"].extend(errors)
     if errors:
         report["formal_pit_ready"] = False

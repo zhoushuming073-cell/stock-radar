@@ -21,7 +21,7 @@ from radar.lab.data import (MARKET_FEATURE_VERSION, available_features,
 from radar.lab.execution import resolve_exit_policy
 from radar.lab.parameters import engine_legacy_fields, research_hash
 from radar.lab.store import RunStore
-from radar.lab.universe import load_universe
+from radar.lab.universe import load_universe, validate_frozen_feature_store
 from radar.lab.terminal import load_terminal_events
 from radar.research.pipeline import FEATURE_VERSION
 from radar.strategy.adapter import make_candidate_selector
@@ -126,6 +126,7 @@ def execute_run(root: Path, store_path: Path, run_id: str) -> dict:
         if metadata.get("resolved_config") and (
                 provenance.fingerprint != values["dataset"]["universe_fingerprint"]):
             raise ValueError("queued PIT security master changed")
+        validate_frozen_feature_store(provenance, metadata)
         load_args = (database, dates[0], dates[2], set(manifest.required_features))
         frame = load_strategy_segment(*load_args, universe_provider) if universe_provider else (
             load_strategy_segment(*load_args))

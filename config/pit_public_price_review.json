@@ -1,0 +1,42 @@
+{
+  "source_version": "vt6qeesk27k07492k5jc5b7p04mf0s6o",
+  "source_commit_time": "2026-10-06T05:30:37.288+00:00",
+  "adjustment_evidence_file": "adjustment-evidence.json",
+  "adjustment_evidence_sha256": "c974a89af7a8f073c2d6dde8fb19da8b5625eea36c691ca0f969f65013bfc6d0",
+  "license_raw_sha256": "9d4c8edfd801f6f57a67d4660fd7e149e4c9f3273b6931ee4857b73e7ff2d1aa",
+  "series": [
+    {
+      "file": "ATVI-85f54d6458d18468d8f28cf22a3094f6ee92cca967d06a062af1eeb2d829a7a9.json",
+      "payload_sha256": "85f54d6458d18468d8f28cf22a3094f6ee92cca967d06a062af1eeb2d829a7a9",
+      "source_symbol": "ATVI",
+      "security_id": "SEC-0000718877-COMMON",
+      "valid_from": "2021-09-01",
+      "valid_to": "2023-10-12",
+      "confidence": "verified",
+      "adjustment": "raw_no_splits",
+      "identity_evidence_catalog": "config/pit_trust_evidence.json"
+    },
+    {
+      "file": "TWTR-00b95b71d6efa3e0226a9d800d4a0a28eefe0e3cf7e88972c74ab0a8625b9627.json",
+      "payload_sha256": "00b95b71d6efa3e0226a9d800d4a0a28eefe0e3cf7e88972c74ab0a8625b9627",
+      "source_symbol": "TWTR",
+      "security_id": "SEC-0001418091-COMMON",
+      "valid_from": "2021-09-01",
+      "valid_to": "2022-10-27",
+      "confidence": "verified",
+      "adjustment": "raw_no_splits",
+      "identity_evidence_catalog": "config/pit_trust_evidence.json"
+    },
+    {
+      "file": "SPLK-0c840377e36be2330e8d26b50d2eb53cf4a6c015a8658073579fa9ea4d92df71.json",
+      "payload_sha256": "0c840377e36be2330e8d26b50d2eb53cf4a6c015a8658073579fa9ea4d92df71",
+      "source_symbol": "SPLK",
+      "security_id": "SEC-0001353283-COMMON",
+      "valid_from": "2021-09-01",
+      "valid_to": "2024-03-15",
+      "confidence": "verified",
+      "adjustment": "raw_no_splits",
+      "identity_evidence_catalog": "config/pit_trust_evidence.json"
+    }
+  ]
+}

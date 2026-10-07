@@ -42,10 +42,11 @@ def main():
         # Only the signal day's OHLC is provided. The production selection
         # path runs; the evaluation layer cannot inspect subsequent sessions.
         bars = load_forward_bars(args.database, day, day)
+        pit_bars = load_forward_bars(args.database, day, day, master)
         current_rows, current_metrics = scan_frames(registration.plugin, registration.config,
             baseline, bars, pd.DatetimeIndex([day]), day, day, evaluation_settings(None))
         pit_rows, pit_metrics = scan_frames(registration.plugin, registration.config,
-            pit, bars, pd.DatetimeIndex([day]), day, day, evaluation_settings(None), universe_provider=master)
+            pit, pit_bars, pd.DatetimeIndex([day]), day, day, evaluation_settings(None), universe_provider=master)
         current = {r["symbol"] for r in current_rows if r["selected"]}
         selected = {r["symbol"] for r in pit_rows if r["selected"]}
         record = {"date": str(day.date()), "pit_membership": len(master.eligible_on(day)),

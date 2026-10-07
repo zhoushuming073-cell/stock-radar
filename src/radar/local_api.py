@@ -110,7 +110,10 @@ def lab_universe_status() -> dict:
     manifest_path = DATA / "security-master-manifest.json"
     if csv_path.exists() and manifest_path.exists():
         try:
-            base["point_in_time"] = LocalSecurityMaster(csv_path, manifest_path).provenance().metadata()
+            master = LocalSecurityMaster(csv_path, manifest_path)
+            base["point_in_time"] = master.provenance().metadata()
+            from radar.pit.quality import local_scorecard
+            base["point_in_time_scorecard"] = local_scorecard(master, ROOT)
             base["point_in_time_available"] = True
         except ValueError as error:
             base["point_in_time_error"] = str(error)

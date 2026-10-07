@@ -344,6 +344,28 @@ def test_scanner_itself_applies_dated_membership_and_counts_missing_features(tmp
     assert metrics["funnel_by_day"][0]["missing_feature_or_price"] == 1
 
 
+def test_pit_funnel_keeps_no_price_warmup_feature_gap_and_strategy_rejection_separate(tmp_path):
+    csv, manifest = tmp_path / "security-master.csv", tmp_path / "security-master-manifest.json"
+    symbols = ["NO_PRICE", "NO_FEATURE", "WARM", "LIQUIDITY", "GOOD"]
+    csv.write_text("security_id,symbol,valid_from,valid_to,listing_date,delisting_date,exchange,security_type,eligible\n" +
+                   "".join(f"{s},{s},2025-01-02,2025-01-02,,,NYSE,common,true\n" for s in symbols))
+    manifest.write_text(json.dumps({"provider":"fixture","source_version":"1","coverage_start":"2025-01-02",
+                                    "coverage_end":"2025-01-02","coverage_complete":True}))
+    provider = LocalSecurityMaster(csv, manifest)
+    day = pd.Timestamp("2025-01-02")
+    features = pd.DataFrame([{"date":day,"symbol":s,"security_name":s,"close":10.,"ret_1":.1,
+                             "tradability_pass":s=="GOOD","pit_history_sessions":50 if s=="WARM" else 200}
+                            for s in symbols[2:]])
+    bars = pd.DataFrame([{"date":day,"symbol":s,"open":10.,"high":10.6,"low":9.9,"close":10.}
+                         for s in symbols[1:]])
+    rows, metrics = scan_frames(ManyCandidates(), {"selection":{"max_candidates":None}},
+        features.set_index(["date","symbol"],drop=False), bars, pd.DatetimeIndex([day]), day, day,
+        evaluation_settings({"horizon_sessions":1}), universe_provider=provider)
+    funnel = metrics["funnel_by_day"][0]
+    assert len(rows) == 1 and rows[0]["symbol"] == "GOOD"
+    assert [funnel[k] for k in ["pit_membership","no_price","insufficient_warmup","feature_unavailable","strategy_rejected","final_ranked_candidate"]] == [5,1,1,1,1,1]
+
+
 def test_market_context_uses_history_through_signal_date_only():
     days = pd.bdate_range("2025-01-02", periods=80)
     original = pd.DataFrame([{"date": day, "symbol": symbol, "close": float(i + 100)}

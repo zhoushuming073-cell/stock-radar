@@ -274,6 +274,7 @@ def write_build(output: Path, frame: pd.DataFrame, report: dict, *, start: date,
                "start": str(start), "end": str(end), "max_stale_days": max_stale_days,
                "output_sha256": output_hash, "identity_evidence": identity_evidence or [],
                "snapshot_index_sha256": digest(report["snapshots"]),
+               "quality_audit_sha256": digest(report),
                "importer_source_sha256": importer_hashes}
     version = digest(content)
     manifest = {

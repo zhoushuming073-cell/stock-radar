@@ -172,6 +172,33 @@ def test_source_fingerprint_and_output_mutation_rejection(tmp_path):
         LocalSecurityMaster(master.csv_path, master.manifest_path)
 
 
+def test_fresh_directory_build_and_receipt_time_are_not_universe_identity(tmp_path):
+    first, _ = build(tmp_path / "first", [snapshot("2022-01-01")])
+    second, _ = build(tmp_path / "second", [snapshot("2022-01-01")])
+    assert first.manifest["source_version"] == second.manifest["source_version"]
+    assert first.csv_path.read_bytes() == second.csv_path.read_bytes()
+    second.manifest["built_at"] = "2099-01-01T00:00:00Z"
+    second.manifest["stock_radar_commit"] = "receipt-only"
+    second.manifest_path.write_text(json.dumps(second.manifest), encoding="utf-8")
+    assert first.fingerprint == LocalSecurityMaster(second.csv_path, second.manifest_path).fingerprint
+
+
+def test_semantic_feature_identity_keeps_separate_queued_database_byte_gate():
+    from radar.lab.universe import semantic_fingerprint, UniverseProvenance, validate_frozen_feature_store
+    manifest = {"source_version": "pinned"}
+    first = {"database": "a.duckdb", "database_sha256": "a", "source_database_sha256": "input",
+             "research_config_sha256": "config", "builder_code_sha256": "code"}
+    second = {**first, "database": "b.duckdb", "database_sha256": "b"}
+    assert semantic_fingerprint(b"csv", manifest, first) == semantic_fingerprint(b"csv", manifest, second)
+    assert semantic_fingerprint(b"csv", manifest, first) != semantic_fingerprint(
+        b"csv", manifest, {**second, "research_config_sha256": "changed"})
+    provenance = UniverseProvenance("point_in_time", "fixture", "v", "fp", None, None,
+                                    "source_dependent", feature_store_sha256="b")
+    with pytest.raises(ValueError, match="feature database changed"):
+        validate_frozen_feature_store(provenance, {"universe_provenance": {"feature_store_sha256": "a"}})
+    validate_frozen_feature_store(provenance, {"universe_provenance": {"feature_store_sha256": "b"}})
+
+
 def test_duplicate_mapping_rejected_even_when_identity_is_identical(tmp_path):
     master, _ = build(tmp_path, [snapshot("2022-01-01")])
     frame = pd.read_csv(master.csv_path)

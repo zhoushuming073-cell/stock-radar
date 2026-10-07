@@ -1,0 +1,19 @@
+security_id,symbol,valid_from,valid_to,listing_date,delisting_date,exchange,security_type,eligible,security_name,resolution_status,type_resolution_status,type_method,first_observed_date,last_observed_date
+OBS-69d660a0afd52ffb8d818dcb,ATVI,2021-09-01,2023-10-16,,,NASDAQ,common,True,Activision Blizzard Inc. Common Stock,unresolved,inferred,explicit_instrument_description,2021-08-31,2023-10-14
+OBS-5184df475c96272f8412d509,BABA,2021-09-01,2026-10-07,,,NYSE,adr,False,Alibaba Group Holding Limited American Depositary Shares each representing eight Ordinary share,unresolved,inferred,explicit_instrument_description,2021-08-31,2026-10-06
+OBS-825b650b51ac3cb0c1549dbf,BBBY,2021-09-01,2023-05-03,,,NASDAQ,common,True,Bed Bath & Beyond Inc. Common Stock,unresolved,inferred,explicit_instrument_description,2021-08-31,2023-05-03
+OBS-d8598ab173a88882f50661f3,BBBY,2025-08-30,2025-09-02,,,NYSE,unknown,False,Bed Bath & Beyond Inc.,unresolved,unresolved,no_native_type_or_instrument_description,2025-08-30,2025-08-30
+OBS-c00eb6e0d303bd5f57618438,BBBY,2025-09-03,2026-08-17,,,NYSE,common,True,Bed Bath & Beyond Inc. Common Stock,unresolved,inferred,explicit_instrument_description,2025-09-03,2026-08-15
+OBS-5ea334a69ebf71ba71b94bcf,BYON,2023-11-07,2023-11-07,,,NYSE,unknown,False,Beyond Inc.,unresolved,unresolved,no_native_type_or_instrument_description,2023-11-07,2023-11-07
+OBS-932c916e1f6ab228dd940d2e,BYON,2023-11-08,2025-08-29,,,NYSE,common,True,Beyond Inc. Common Stock,unresolved,inferred,explicit_instrument_description,2023-11-08,2025-08-29
+SEC-0001326801-CLASS-A,FB,2021-09-01,2021-11-01,,,NASDAQ,common,True,Facebook Inc. Class A Common Stock,verified,inferred,explicit_instrument_description,2021-08-31,2021-10-31
+SEC-0001326801-CLASS-A,FB,2021-11-02,2022-06-08,,,NASDAQ,common,True,Meta Platforms Inc. Class A Common Stock,verified,inferred,explicit_instrument_description,2021-11-02,2022-06-09
+SEC-0001326801-CLASS-A,META,2022-06-09,2022-06-13,,,NASDAQ,common,True,Meta Platforms Inc. Class A Common Stock,verified,inferred,explicit_instrument_description,2022-06-10,2022-06-11
+OBS-59b92cf9f9962b99a0958370,META,2022-06-16,2022-06-16,,,NASDAQ,unknown,False,Meta Platforms Inc.,unresolved,unresolved,no_native_type_or_instrument_description,2022-06-16,2022-06-16
+SEC-0001326801-CLASS-A,META,2022-06-18,2026-10-07,,,NASDAQ,common,True,Meta Platforms Inc. Class A Common Stock,verified,inferred,explicit_instrument_description,2022-06-18,2026-10-06
+OBS-bd703a3f2d5be22db767f991,NVDA,2021-09-01,2026-10-07,,,NASDAQ,common,True,NVIDIA Corporation Common Stock,unresolved,inferred,explicit_instrument_description,2021-08-31,2026-10-06
+OBS-52b9b1ff5db29135662976b9,OSTK,2021-09-01,2023-11-06,,,NASDAQ,common,True,Overstock.com Inc. Common Stock,unresolved,inferred,explicit_instrument_description,2021-08-31,2023-11-05
+OBS-1156bff95b871ec5fac9fd38,PLTR,2021-09-01,2024-11-26,,,NYSE,common,True,Palantir Technologies Inc. Class A Common Stock,unresolved,inferred,explicit_instrument_description,2021-08-31,2024-11-26
+OBS-1156bff95b871ec5fac9fd38,PLTR,2024-11-27,2026-10-07,,,NASDAQ,common,True,Palantir Technologies Inc. Class A Common Stock,unresolved,inferred,explicit_instrument_description,2024-11-27,2026-10-06
+OBS-10307aa771107629a516ba2d,SPLK,2021-09-01,2024-03-19,,,NASDAQ,common,True,Splunk Inc. Common Stock,unresolved,inferred,explicit_instrument_description,2021-08-31,2024-03-19
+OBS-40ce97cc35e5d92efb848c08,TWTR,2021-09-01,2022-10-28,,,NYSE,common,True,Twitter Inc. Common Stock,unresolved,inferred,explicit_instrument_description,2021-08-31,2022-10-28

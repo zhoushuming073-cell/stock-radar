@@ -26,6 +26,50 @@ from radar.schema import RESEARCH_COLUMNS, ensure_research_schema
 PIT_FEATURE_BASIS = "pit-identity-causal-v1"
 
 
+def feature_input_hash(master: LocalSecurityMaster) -> str:
+    columns = ["security_id", "symbol", "valid_from", "valid_to", "listing_date", "delisting_date"]
+    frame = master.frame.loc[master.frame.eligible, columns].sort_values(columns,kind="stable")
+    return hashlib.sha256(frame.to_csv(index=False,lineterminator="\n").encode()).hexdigest()
+
+
+def rebind_identical_features(previous: LocalSecurityMaster, current: LocalSecurityMaster,
+                              config: Path, external_prices: Path | None = None) -> dict:
+    """Reuse only identical causal inputs after a provenance-only master update."""
+    if not previous.feature_store or feature_input_hash(previous) != feature_input_hash(current):
+        raise ValueError("PIT feature input mapping differs; rebuild required")
+    old = previous.feature_store
+    if (old["feature_basis"] != PIT_FEATURE_BASIS or old["formula_version"] != FEATURE_VERSION
+            or old["research_config_sha256"] != file_hash(config)
+            or old["source_database_sha256"] != file_hash(Path(old["source_database"]))
+            or old["database_sha256"] != file_hash(Path(old["database"]))):
+        raise ValueError("PIT reuse source/config/database mismatch")
+    if bool(old.get("external_prices")) != bool(external_prices):
+        raise ValueError("external price reuse inputs differ")
+    new_external = None
+    if external_prices:
+        if file_hash(Path(old['external_prices']['database'])) != old['external_prices']['database_sha256']:
+            raise ValueError("previous external price reuse bytes changed")
+        new_external = json.loads(external_prices.with_suffix('.manifest.json').read_text(encoding='utf-8'))
+        if (new_external['database_sha256'] != file_hash(external_prices)
+                or new_external['master_output_sha256'] != file_hash(current.csv_path)):
+            raise ValueError("external price reuse provenance mismatch")
+        with duckdb.connect() as c:
+            for alias,path in [('old_prices',Path(old['external_prices']['database'])),('new_prices',external_prices)]:
+                c.execute("ATTACH '"+str(path.resolve()).replace("'","''")+"' AS "+alias+" (READ_ONLY)")
+            if c.execute("""SELECT COUNT(*) FROM (
+                (SELECT * FROM old_prices.daily_bars EXCEPT SELECT * FROM new_prices.daily_bars)
+                UNION ALL (SELECT * FROM new_prices.daily_bars EXCEPT SELECT * FROM old_prices.daily_bars))""").fetchone()[0]:
+                raise ValueError("external price reuse content differs")
+    manifest = {**old,"master_output_sha256":file_hash(current.csv_path),
+        "reviewed_reuse":{"previous_master_sha256":file_hash(previous.csv_path),
+                          "feature_input_sha256":feature_input_hash(current),
+                          "rebind_code_sha256":file_hash(Path(__file__)),
+                          "reason":"identical eligible identity/date mappings, source/config and external bar rows"}}
+    if new_external is not None:
+        manifest['external_prices']=new_external
+    return manifest
+
+
 def file_hash(path: Path) -> str:
     h = hashlib.sha256()
     with path.open("rb") as f:
@@ -35,12 +79,20 @@ def file_hash(path: Path) -> str:
 
 
 def build_features(source: Path, master: LocalSecurityMaster, config: Path, output: Path,
-                   progress=None, *, expected_source_hash: str | None = None) -> dict:
+                   progress=None, *, expected_source_hash: str | None = None,
+                   external_prices: Path | None = None) -> dict:
     """Refuse replacement; stage only in a new directory outside existing DBs."""
     source, output = source.resolve(), output.resolve()
     if output == source or output.exists():
         raise ValueError("PIT feature destination must be a new database")
     source_hash = file_hash(source)
+    external_manifest = None
+    if external_prices is not None:
+        external_manifest = json.loads(external_prices.with_suffix(".manifest.json").read_text(encoding="utf-8"))
+        if (external_manifest.get("database_sha256") != file_hash(external_prices)
+                or external_manifest.get("master_output_sha256") != file_hash(master.csv_path)
+                or external_manifest.get("status") != "research_accepted_source_dependent"):
+            raise ValueError("external price provenance/master mismatch")
     if expected_source_hash is not None and source_hash != expected_source_hash:
         raise ValueError("source research snapshot changed")
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -75,6 +127,19 @@ def build_features(source: Path, master: LocalSecurityMaster, config: Path, outp
               AND date<=? AND NOT EXISTS (
                 SELECT 1 FROM daily_bars p WHERE p.symbol=b.symbol AND p.date=b.date)""", [master.coverage_end.date()])
         con.execute("DETACH source_snapshot")
+        if external_prices is not None:
+            escaped_external = str(external_prices.resolve()).replace("'", "''")
+            con.execute(f"ATTACH '{escaped_external}' AS external_source (READ_ONLY)")
+            if con.execute("""SELECT COUNT(*) FROM external_source.daily_bars e JOIN daily_bars b
+                ON e.security_id=b.security_id""").fetchone()[0]:
+                raise ValueError("cannot splice external and legacy series for one identity")
+            if con.execute("""SELECT COUNT(*) FROM external_source.daily_bars e
+                LEFT JOIN pit_mappings m ON e.security_id=m.security_id AND e.symbol=m.symbol
+                    AND e.date BETWEEN m.valid_from AND m.valid_to AND m.eligible
+                WHERE m.security_id IS NULL OR m.resolution_status<>'verified'""").fetchone()[0]:
+                raise ValueError("external bars are outside verified dated identity mappings")
+            con.execute("INSERT INTO daily_bars SELECT * FROM external_source.daily_bars ORDER BY security_id,date")
+            con.execute("DETACH external_source")
         con.unregister("pit_mappings")
         con.execute("CREATE INDEX pit_bar_identity ON daily_bars(security_id)")
         benchmark = con.execute("SELECT date,symbol,close FROM daily_bars WHERE symbol IN ('SPY','QQQ') ORDER BY date").df()
@@ -142,5 +207,7 @@ def build_features(source: Path, master: LocalSecurityMaster, config: Path, outp
                 "formula_version": FEATURE_VERSION, "counts": counts,
                 "limitations": ["no vendor bar identity certification", "missing prices retained in universe audit", "unresolved episodes reset rolling history"],
                 "builder_code_sha256": file_hash(Path(__file__))}
+    if external_manifest is not None:
+        manifest["external_prices"] = external_manifest
     output.with_suffix(".manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     return manifest
