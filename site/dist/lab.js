@@ -7,7 +7,7 @@ const day = s => s ? String(s).slice(0,10) : "—";
 const statusLabel = {queued:"Queued",running:"Running",cancel_requested:"Stopping",completed:"Completed",failed:"Failed",cancelled:"Stopped"};
 const human = {train:"Training",validation:"Validation",test:"Historical Test",fresh_oos:"Fresh OOS"};
 const pitReadiness = run => run.result?.run_metadata?.run_pit_readiness || run.metadata?.run_pit_readiness;
-const runEnvironment = run => run.metadata?.universe_mode === "point_in_time" ? `PIT ${run.metadata?.universe_provenance?.source_version?.slice(0,12)||"—"} · ${pitReadiness(run)?.preflight_ready ? (run.status==="completed" ? "EXECUTED" : "READY") : "BLOCKED"}` : "Current Snapshot";
+const runEnvironment = run => run.metadata?.quality_tier === "research-grade" ? `Research-Grade PIT · ${pitReadiness(run)?.preflight_ready ? (run.status==="completed" ? "EXECUTED" : "READY") : "BLOCKED"}` : run.metadata?.universe_mode === "point_in_time" ? `PIT ${run.metadata?.universe_provenance?.source_version?.slice(0,12)||"—"} · ${pitReadiness(run)?.preflight_ready ? (run.status==="completed" ? "EXECUTED" : "READY") : "BLOCKED"}` : "Current Snapshot";
 const engineLabel = run => run.metadata?.engine==="lean"?"LEAN":"Legacy (archived)";
 const runName = run => run.display_name||run.metadata?.strategy_name||run.metadata?.strategy_id||"Strategy";
 const visibleRuns = () => state.runs.filter(run=>!run.archived_at);
@@ -506,3 +506,21 @@ api("/api/data/status").then(data=>{
   $("system-config").textContent=JSON.stringify(data.settings,null,2);
 }).catch(error=>{$("system-config").textContent=`Configuration unavailable: ${error.message}`});
 refresh();setInterval(()=>{if(document.visibilityState==="visible")refresh()},6000);
+// Separate research tier; strict readiness above retains its existing contract.
+const researchCard=document.createElement("article");
+researchCard.className="card section-card settings-card";
+const researchHeading=document.createElement("h3");
+researchHeading.textContent="Research-Grade PIT Readiness · frozen Validation run";
+const researchStatus=document.createElement("pre");
+researchStatus.id="pit-research-readiness";
+researchStatus.textContent="Loading research-grade readiness…";
+researchCard.append(researchHeading,researchStatus);
+$("settings").append(researchCard);
+api("/api/lab/pit-research-readiness").then(report=>{
+  researchStatus.textContent=JSON.stringify({label:report.label,quality_tier:report.quality_tier,
+    research_pit_ready:report.research_pit_ready,formal_pit_ready:report.formal_pit_ready,
+    dependency_sha256:report.dependency_sha256,scorecard:report.scorecard,
+    scope_counts:report.scope_counts,sensitivity:report.sensitivity,
+    gate_failures:Object.fromEntries(Object.entries(report.reasons_by_gate||{}).map(([gate,reasons])=>
+      [gate,{count:reasons.length,examples:reasons.slice(0,5)}])),fallback:report.fallback},null,2);
+}).catch(error=>{researchStatus.textContent=`Research-Grade PIT BLOCKED: ${error.message}. No fallback.`});

@@ -43,6 +43,15 @@
 
 **当前阶段 · 2026-10-07：** 研究基础设施和本地 LEAN 接入已验收；新增开放历史快照 PIT 重建、独立证券身份边界特征库和按日 Scanner 接入。历史身份、普通股分类及退市行情覆盖仍不完整，PIT LEAN 执行继续拒绝。
 [PIT 数据库验收报告](reports/pit-acceptance-2026-10-07.md)记录数据来源、差异及未完成边界。
+
+最新研究级专项：新增独立 `research-grade` 门禁，保留原严格门禁。
+自动通过2,597个低风险身份，独立接受906,095条原始行情，补回66,236条旧缺价。
+动态历史Core每天暂定1,000只，并保留52–111个资格未知的竞争者；同策略参数的A/B/C
+Scanner已实际计算。真实Research-Grade PIT Native LEAN仍被身份、重大事件、缺价与
+人口不确定性阻塞，不能宣称无幸存者偏差或稳定alpha。System及新增
+`/api/lab/pit-research-readiness`明确显示研究级标签，禁止回退Current；现有常驻服务需
+正常重载才能加载新增接口。[研究级验收报告](reports/pit-research-grade-acceptance-2026-10-07.md)
+包含三层缺口、敏感性结果、证据哈希和15项验收答复。
 [本轮可信度与退出行情验收](reports/pit-data-trust-acceptance-2026-10-07.md)记录 9 个已核验身份、1,462 条真实补价、数据库耦合、六维 readiness 和旧库定时更新例外。
 [开发阶段报告](reports/development-status-2026-10-06.md)说明已完成能力、验收范围、限制和待办。
 网页新回测只使用 LEAN，Stock Radar 保留全部策略/选股逻辑；安装路径可配置，旧版网页已封存到 GitHub 标签。
@@ -439,7 +448,7 @@ $env:STOCK_RADAR_TEST_LEAN = '1'
 Remove-Item Env:STOCK_RADAR_TEST_LEAN
 ```
 
-最近一次记录为 2026-10-07 原生测试在内的 314 项通过。仅运行可移植测试：
+最近一次记录为 2026-10-07 原生测试在内的436项通过；最终研究源绑定修正后另有67项专项通过。仅运行可移植测试：
 
 ```powershell
 & .\.venv\Scripts\python.exe -m pytest

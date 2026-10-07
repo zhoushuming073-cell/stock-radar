@@ -1,0 +1,56 @@
+{
+  "policy": "pit-research-grade-v1",
+  "label": "Research-Grade PIT",
+  "quality_tier": "research-grade",
+  "window": ["2024-09-30", "2025-09-08", "2025-09-22"],
+  "frozen_before_analysis": true,
+  "identity": {
+    "minimum_dated_issuer_observations": 2,
+    "max_reference_age_days": 31,
+    "require_common_description": true,
+    "high_risk_symbols": ["BBBY", "BBBYQ", "OSTK", "BYON", "FB", "META"],
+    "high_risk_name_patterns": ["depositary", "depository", "adr", "ads", "preferred", "warrant", "unit", "class", "bankrupt"]
+  },
+  "prices": {
+    "source": "post-no-preference/stocks",
+    "source_version": "vt6qeesk27k07492k5jc5b7p04mf0s6o",
+    "license": "CC-BY-SA-4.0",
+    "basis": "raw",
+    "jump_ratio_high": 1.8,
+    "jump_ratio_low": 0.55,
+    "volume_ratio_high": 100.0,
+    "split_ratio_tolerance": 0.03,
+    "cross_source_relative_tolerance": 0.03,
+    "forward_fill": false
+  },
+  "core": {
+    "target_size": 1000,
+    "price_floor": 5.0,
+    "minimum_history_sessions": 126,
+    "dollar_volume_lookback": 20,
+    "minimum_avg_dollar_volume": 20000000.0,
+    "minimum_daily_dollar_volume": 5000000.0,
+    "lag_sessions": 1,
+    "unknown_eligibility": "retain as possible rank displacement; never false",
+    "rank": "prior-session mean dollar volume descending; security_id tie break",
+    "classification": "historical common-stock description only"
+  },
+  "sensitivity": {
+    "profiles": ["A", "B", "C"],
+    "candidate_overlap_jaccard_min": 0.8,
+    "win_rate_absolute_difference_max": 0.05,
+    "path_success_absolute_difference_max": 0.05,
+    "mfe_absolute_difference_max": 0.05,
+    "mae_absolute_difference_max": 0.05,
+    "native_return_absolute_difference_max": 0.05,
+    "native_drawdown_absolute_difference_max": 0.05,
+    "average_trade_absolute_difference_max": 0.02,
+    "fee_equity_fraction_difference_max": 0.01,
+    "trade_count_relative_difference_max": 0.25,
+    "interpretation": "paired diagnostic, cannot bound securities missing from every profile"
+  },
+  "ordinary_dividend": {"maximum_portfolio_return_bound": 0.001},
+  "missingness_exception": "requires quantitative selection/rank/holding impact bound and failure-stratum audit",
+  "hard_failures": ["future_input", "wrong_identity", "ticker_reuse_splice", "unhandled_material_action", "fake_price", "filled_price", "synthetic_terminal", "missing_data_exclusion", "result_driven_selection"],
+  "native_condition": "all research preflight gates PASS; strict gate remains independent; no fallback"
+}

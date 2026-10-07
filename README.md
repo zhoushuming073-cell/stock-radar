@@ -44,7 +44,7 @@
 **Current stage · 2026-10-07:** research infrastructure and initial local LEAN
 integration accepted; open-source historical PIT reconstruction and an independent
 identity-bounded feature store added. PIT data remains exploratory and incomplete,
-and the installed formal PIT portfolio remains blocked by specific Run dependencies. [Latest bulk source benchmark](reports/pit-source-breakthrough-acceptance-2026-10-07.md), [PIT data clearance](reports/pit-clearance-acceptance-2026-10-07.md), [Final PIT execution acceptance](reports/pit-final-acceptance-2026-10-07.md), [PIT acceptance](reports/pit-acceptance-2026-10-07.md),
+and the installed formal PIT portfolio remains blocked by specific Run dependencies. [Research-grade PIT acceptance](reports/pit-research-grade-acceptance-2026-10-07.md), [bulk source benchmark](reports/pit-source-breakthrough-acceptance-2026-10-07.md), [PIT data clearance](reports/pit-clearance-acceptance-2026-10-07.md), [Final PIT execution acceptance](reports/pit-final-acceptance-2026-10-07.md), [PIT acceptance](reports/pit-acceptance-2026-10-07.md),
 [reviewed identity / retired-price acceptance](reports/pit-data-trust-acceptance-2026-10-07.md)
 and [development report](reports/development-status-2026-10-06.md)
 document what works, what is limited and what remains open.
@@ -556,6 +556,26 @@ Generated files under `data/` are gitignored.
 - **Validation is non-destructive.** It reads stored bars and flags gaps, missing
   sessions, stale tickers and malformed rows; it does not delete or repair data.
 
+## Research-grade PIT
+
+Research-grade readiness is separate from the retained strict vendor-grade gate.
+Frozen rules automatically accept 2,597 stable identities; an independent raw
+price dataset accepts 906,095 rows, including 66,236 recovered missing rows.
+Historical Core membership uses prior-session liquidity and a cap of 1,000;
+52–111 unknown competitors per day remain visible rather than being excluded
+because their data is missing. Production Scanner diagnostics compare A/B/C
+with the same Strategy 2 parameters and window.
+
+`GET /api/lab/pit-research-readiness` and the System card expose the explicit
+**Research-Grade PIT** label and frozen evidence. Native execution requires
+explicit research-grade inputs and passing gates; it cannot fall back to Current
+Snapshot. Real Validation Native execution remains blocked by unresolved
+identity, material events, prices and membership uncertainty. Scanner diagnostics
+and passing native fixtures do not establish a trustworthy PIT portfolio result.
+The existing local API process needs a normal reload to serve the new route.
+See the [acceptance and scope counts](reports/pit-research-grade-acceptance-2026-10-07.md)
+and [derived evidence](reports/pit-research-grade-evidence-2026-10-07.json).
+
 ## Tests
 
 Portable tests use temporary DuckDB databases and fake providers; they do not
@@ -569,7 +589,8 @@ $env:STOCK_RADAR_TEST_LEAN = '1'
 Remove-Item Env:STOCK_RADAR_TEST_LEAN
 ```
 
-The latest recorded native-inclusive acceptance is 409 passed on 2026-10-07.
+The latest recorded native-inclusive acceptance is 436 passed on 2026-10-07;
+67 targeted tests also passed after the final research source-binding correction.
 For the portable suite:
 
 ```powershell

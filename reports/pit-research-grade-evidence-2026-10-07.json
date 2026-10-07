@@ -1,0 +1,668 @@
+{
+  "policy": "pit-research-grade-v1",
+  "quality_tier": "research-grade",
+  "label": "Research-Grade PIT",
+  "captured_at": "2026-10-07T10:11:45.340659+00:00",
+  "baseline_main": "fcd76096ef1ef2de81de7857df25344ed2769f36",
+  "vendor_dependency": {
+    "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\run-dependencies\\2538efd79fdc64f5479f4345256f4d077e709d475c84a0452be9baa87256febf.json",
+    "sha256": "cf9ae48ad8511280b8b245fc5aca7a15411b6f11c1cc82f6181adab707a08dbf",
+    "dependency_sha256": "2538efd79fdc64f5479f4345256f4d077e709d475c84a0452be9baa87256febf"
+  },
+  "research_dependency": {
+    "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\run-dependencies\\f1b4b2db60ee52a5d8f13426c9a6cd5750b337d0bd96bf05746960b92db0ac3a.json",
+    "sha256": "b72253ded394650f76506ed6fbe97909c52cd6ab81b4b8917e882fadab160446",
+    "dependency_sha256": "f1b4b2db60ee52a5d8f13426c9a6cd5750b337d0bd96bf05746960b92db0ac3a"
+  },
+  "vendor": {
+    "scope": "run",
+    "policy": "pit-run-closure-v1",
+    "dependency_sha256": "2538efd79fdc64f5479f4345256f4d077e709d475c84a0452be9baa87256febf",
+    "formal_pit_ready": false,
+    "preflight_ready": false,
+    "research_validity": "retrospective_pit_blocked",
+    "scorecard": {
+      "Identity": "FAIL",
+      "Membership": "FAIL",
+      "Price": "FAIL",
+      "CorporateAction": "FAIL",
+      "Terminal": "PASS",
+      "LEAN Input": "FAIL",
+      "LEAN Native Execution": "NOT_RUN",
+      "Result Reconciliation": "NOT_RUN"
+    },
+    "required_prices": 2023436,
+    "missing_prices": 435678,
+    "price_coverage": 0.7846840720437909,
+    "security_count": 6421,
+    "signals": 4176
+  },
+  "research": {
+    "scope": "run",
+    "policy": "pit-research-grade-v1",
+    "quality_tier": "research-grade",
+    "label": "Research-Grade PIT",
+    "dependency_sha256": "f1b4b2db60ee52a5d8f13426c9a6cd5750b337d0bd96bf05746960b92db0ac3a",
+    "audit_sha256": "794cda5fb2e53014184b35f75912b14c3a83fae38279647694af70861959df91",
+    "research_pit_ready": false,
+    "preflight_ready": false,
+    "formal_pit_ready": false,
+    "research_validity": "research_grade_pit_blocked",
+    "scorecard": {
+      "Causal integrity": "FAIL",
+      "Research identity": "FAIL",
+      "Research membership": "FAIL",
+      "Research price": "FAIL",
+      "Material corporate actions": "FAIL",
+      "Terminal": "PASS",
+      "LEAN Input": "FAIL",
+      "LEAN Native Execution": "NOT_RUN",
+      "Result Reconciliation": "NOT_RUN"
+    },
+    "scope_counts": {
+      "unresolved_identities": 3819,
+      "missing_prices": 183757,
+      "unhandled_material_actions": 2488,
+      "unhandled_terminals": 0,
+      "unbounded_unknown_members": 1596
+    },
+    "sensitivity": {
+      "status": "FAIL",
+      "stage": "scanner",
+      "failures": [
+        "common missing population/selection impact unbounded",
+        "A/B: candidate overlap",
+        "A/C: candidate overlap",
+        "B/C: candidate overlap"
+      ],
+      "comparisons": [
+        {
+          "pair": [
+            "A",
+            "B"
+          ],
+          "candidate_counts": [
+            4284,
+            3235
+          ],
+          "overlap_jaccard": 0.6169892473118279,
+          "differences": {
+            "win_rate": 0.014937358714774418,
+            "path_success": 0.004836083043653128,
+            "mfe": 0.0054907704494082665,
+            "mae": 0.004278704696584215
+          }
+        },
+        {
+          "pair": [
+            "A",
+            "C"
+          ],
+          "candidate_counts": [
+            4284,
+            1264
+          ],
+          "overlap_jaccard": 0.1799234368353892,
+          "differences": {
+            "win_rate": 0.04315518049695266,
+            "path_success": 0.014693129794471516,
+            "mfe": 0.02987927587240702,
+            "mae": 0.010068056608790427
+          }
+        },
+        {
+          "pair": [
+            "B",
+            "C"
+          ],
+          "candidate_counts": [
+            3235,
+            1264
+          ],
+          "overlap_jaccard": 0.1180417495029821,
+          "differences": {
+            "win_rate": 0.028217821782178243,
+            "path_success": 0.019529212838124643,
+            "mfe": 0.024388505422998752,
+            "mae": 0.0057893519122062115
+          }
+        }
+      ],
+      "interpretation": "paired diagnostic, cannot bound securities missing from every profile"
+    },
+    "fallback": "forbidden"
+  },
+  "research_reason_counts": {
+    "Causal integrity": 2,
+    "Research identity": 3821,
+    "Research membership": 9,
+    "Research price": 2,
+    "Material corporate actions": 3,
+    "Terminal": 0,
+    "LEAN Input": 2
+  },
+  "identity": {
+    "C": 3160,
+    "B": 664,
+    "A": 2597
+  },
+  "accepted_prices": {
+    "database": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\research-grade\\accepted-prices.duckdb",
+    "database_sha256": "1fd1996e88cc91ab25baf9a4f7615478d99506672ed47c028eaecfefd0240545",
+    "quality_tier": "research-grade",
+    "status": "accepted_price_rows; portfolio readiness separate",
+    "rows": 906095,
+    "new_missing_rows_recovered": 66236,
+    "source_version": "vt6qeesk27k07492k5jc5b7p04mf0s6o",
+    "license": "CC-BY-SA-4.0",
+    "attribution": "post-no-preference/stocks on DoltHub (CC-BY-SA-4.0)",
+    "price_basis": "raw",
+    "rules_sha256": "af248df9cdf057a655aa89d7d1522a722cf08a11c5da0c45affca1acd3ce2f09",
+    "dependency_sha256": "2538efd79fdc64f5479f4345256f4d077e709d475c84a0452be9baa87256febf",
+    "identity_risk_sha256": "06aefe53606e1d6ad421d4f5099f1b959ee5fc7e22277e6e8cbe3986d8b0e396",
+    "source_receipts_sha256": "73c92b55836987778cfece7367bffa09869f230b6fe3859eb6934a46eb2fc4bb",
+    "limitations": [
+      "ordinary dividend impact separate",
+      "public EOD not consolidated SIP",
+      "no global class certification",
+      "accepted rows do not certify full features/portfolio",
+      "no mixed legacy/Dolt identity series"
+    ]
+  },
+  "download": {
+    "sessions": 445,
+    "rows": 4798261,
+    "complete": true,
+    "source_version": "vt6qeesk27k07492k5jc5b7p04mf0s6o",
+    "license": "CC-BY-SA-4.0"
+  },
+  "scopes": {
+    "full_historical": {
+      "securities": 6421,
+      "identity_blocked": 3819,
+      "raw_missing": 182786,
+      "legacy_missing": 435678,
+      "material_review_required": 2487
+    },
+    "research_eligible_validation_A": {
+      "securities": 2597,
+      "accepted_price_rows": 906095,
+      "raw_missing": 2119,
+      "material_review_required": 0,
+      "selection_warning": "validation stratum, not a retrospective historical filter"
+    },
+    "actual_legacy_candidates_possible_holdings": {
+      "securities": 1044,
+      "signals": 4176,
+      "identity_blocked": 572,
+      "raw_execution_missing": 46,
+      "material_review_required": 336
+    },
+    "core_provisional": {
+      "admitted_ids": 1448,
+      "possible_ids_including_unknown": 3044,
+      "raw_missing_admitted": 4604,
+      "raw_missing_possible": 173212,
+      "daily_admitted_min": 1000,
+      "daily_admitted_max": 1000,
+      "daily_unknown_min": 52,
+      "daily_unknown_max": 111
+    }
+  },
+  "actual_candidate_scopes": {
+    "A": {
+      "selected_signal_count": 4284,
+      "signals": 4284,
+      "identity_blocked": 529,
+      "missing_execution_prices": 52,
+      "required_execution_prices": 35506,
+      "material_review_required": 275
+    },
+    "B": {
+      "selected_signal_count": 3235,
+      "signals": 3235,
+      "identity_blocked": 196,
+      "missing_execution_prices": 5,
+      "required_execution_prices": 26685,
+      "material_review_required": 176
+    },
+    "C": {
+      "selected_signal_count": 1264,
+      "signals": 1264,
+      "identity_blocked": 150,
+      "missing_execution_prices": 22,
+      "required_execution_prices": 10345,
+      "material_review_required": 36
+    }
+  },
+  "profiles": {
+    "A": {
+      "contract_sha256": "e98ffeb80000c053997b1f00da9b6b7c971c910b9c88e98a50354d22f91ade34",
+      "candidate_count": 4284,
+      "censored_count": 18,
+      "unknown_impact_bounded": false,
+      "win_rate": 0.6931551804969527,
+      "path_success": 0.4829151732377539,
+      "mfe": 0.13656401270494234,
+      "mae": -0.11252139171933859,
+      "native_return": null,
+      "native_drawdown": null,
+      "trade_count": null,
+      "average_trade": null,
+      "fee_equity_fraction": null,
+      "win_rate_definition": "Scanner +5% high touch within 10 sessions; not profitable-trade win rate"
+    },
+    "B": {
+      "contract_sha256": "e98ffeb80000c053997b1f00da9b6b7c971c910b9c88e98a50354d22f91ade34",
+      "candidate_count": 3235,
+      "censored_count": 3,
+      "unknown_impact_bounded": false,
+      "win_rate": 0.6782178217821783,
+      "path_success": 0.48775125628140703,
+      "mfe": 0.13107324225553407,
+      "mae": -0.10824268702275437,
+      "native_return": null,
+      "native_drawdown": null,
+      "trade_count": null,
+      "average_trade": null,
+      "fee_equity_fraction": null,
+      "win_rate_definition": "Scanner +5% high touch within 10 sessions; not profitable-trade win rate"
+    },
+    "C": {
+      "contract_sha256": "e98ffeb80000c053997b1f00da9b6b7c971c910b9c88e98a50354d22f91ade34",
+      "candidate_count": 1264,
+      "censored_count": 4,
+      "unknown_impact_bounded": false,
+      "win_rate": 0.65,
+      "path_success": 0.4682220434432824,
+      "mfe": 0.10668473683253532,
+      "mae": -0.10245333511054816,
+      "native_return": null,
+      "native_drawdown": null,
+      "trade_count": null,
+      "average_trade": null,
+      "fee_equity_fraction": null,
+      "win_rate_definition": "Scanner +5% high touch within 10 sessions; not profitable-trade win rate"
+    }
+  },
+  "sensitivity": {
+    "status": "FAIL",
+    "stage": "scanner",
+    "failures": [
+      "common missing population/selection impact unbounded",
+      "A/B: candidate overlap",
+      "A/C: candidate overlap",
+      "B/C: candidate overlap"
+    ],
+    "comparisons": [
+      {
+        "pair": [
+          "A",
+          "B"
+        ],
+        "candidate_counts": [
+          4284,
+          3235
+        ],
+        "overlap_jaccard": 0.6169892473118279,
+        "differences": {
+          "win_rate": 0.014937358714774418,
+          "path_success": 0.004836083043653128,
+          "mfe": 0.0054907704494082665,
+          "mae": 0.004278704696584215
+        }
+      },
+      {
+        "pair": [
+          "A",
+          "C"
+        ],
+        "candidate_counts": [
+          4284,
+          1264
+        ],
+        "overlap_jaccard": 0.1799234368353892,
+        "differences": {
+          "win_rate": 0.04315518049695266,
+          "path_success": 0.014693129794471516,
+          "mfe": 0.02987927587240702,
+          "mae": 0.010068056608790427
+        }
+      },
+      {
+        "pair": [
+          "B",
+          "C"
+        ],
+        "candidate_counts": [
+          3235,
+          1264
+        ],
+        "overlap_jaccard": 0.1180417495029821,
+        "differences": {
+          "win_rate": 0.028217821782178243,
+          "path_success": 0.019529212838124643,
+          "mfe": 0.024388505422998752,
+          "mae": 0.0057893519122062115
+        }
+      }
+    ],
+    "interpretation": "paired diagnostic, cannot bound securities missing from every profile"
+  },
+  "native_sensitivity": {
+    "status": "FAIL",
+    "stage": "complete",
+    "failures": [
+      "common missing population/selection impact unbounded",
+      "A/B: candidate overlap",
+      "A/B: native_return not measured",
+      "A/B: native_drawdown not measured",
+      "A/B: average_trade not measured",
+      "A/B: fee_equity_fraction not measured",
+      "A/B: trades not measured",
+      "A/C: candidate overlap",
+      "A/C: native_return not measured",
+      "A/C: native_drawdown not measured",
+      "A/C: average_trade not measured",
+      "A/C: fee_equity_fraction not measured",
+      "A/C: trades not measured",
+      "B/C: candidate overlap",
+      "B/C: native_return not measured",
+      "B/C: native_drawdown not measured",
+      "B/C: average_trade not measured",
+      "B/C: fee_equity_fraction not measured",
+      "B/C: trades not measured"
+    ],
+    "comparisons": [
+      {
+        "pair": [
+          "A",
+          "B"
+        ],
+        "candidate_counts": [
+          4284,
+          3235
+        ],
+        "overlap_jaccard": 0.6169892473118279,
+        "differences": {
+          "win_rate": 0.014937358714774418,
+          "path_success": 0.004836083043653128,
+          "mfe": 0.0054907704494082665,
+          "mae": 0.004278704696584215,
+          "native_return": null,
+          "native_drawdown": null,
+          "average_trade": null,
+          "fee_equity_fraction": null
+        },
+        "trade_count_relative_difference": null
+      },
+      {
+        "pair": [
+          "A",
+          "C"
+        ],
+        "candidate_counts": [
+          4284,
+          1264
+        ],
+        "overlap_jaccard": 0.1799234368353892,
+        "differences": {
+          "win_rate": 0.04315518049695266,
+          "path_success": 0.014693129794471516,
+          "mfe": 0.02987927587240702,
+          "mae": 0.010068056608790427,
+          "native_return": null,
+          "native_drawdown": null,
+          "average_trade": null,
+          "fee_equity_fraction": null
+        },
+        "trade_count_relative_difference": null
+      },
+      {
+        "pair": [
+          "B",
+          "C"
+        ],
+        "candidate_counts": [
+          3235,
+          1264
+        ],
+        "overlap_jaccard": 0.1180417495029821,
+        "differences": {
+          "win_rate": 0.028217821782178243,
+          "path_success": 0.019529212838124643,
+          "mfe": 0.024388505422998752,
+          "mae": 0.0057893519122062115,
+          "native_return": null,
+          "native_drawdown": null,
+          "average_trade": null,
+          "fee_equity_fraction": null
+        },
+        "trade_count_relative_difference": null
+      }
+    ],
+    "interpretation": "paired diagnostic, cannot bound securities missing from every profile"
+  },
+  "actions": {
+    "research_no_material_action_pass": 2521,
+    "material_review_required": 2488,
+    "split_security_ids": 603,
+    "disappearance_security_ids": 1327,
+    "anomaly_security_ids": 447,
+    "scans": [
+      "pinned Dolt split/dividend events",
+      "dated primary symbol/name/exchange lifecycle",
+      "FINRA OTC hits (limited OTC scope)",
+      "raw OHLC discontinuity"
+    ],
+    "ordinary_dividend_separate": true,
+    "limitations": [
+      "no vendor complete event attestation",
+      "large distributions require strict review",
+      "risk negative scan is source-dependent; unresolved B/C cannot inherit A pass"
+    ]
+  },
+  "cash": {
+    "possible_events": 21,
+    "portfolio_return_upper_bound": null,
+    "known_exposure_sum": 0.07156455998855304,
+    "large_distribution_flags": [
+      {
+        "security_id": "OBS-eb00426b4531dd228ebc8300",
+        "date": "2025-03-20",
+        "ratio": 0.05479452054794521
+      }
+    ],
+    "bound_definition": "potential cash yield: sum maximum 1/3 allocations at possible entry equity; actual final-equity effect requires holdings/equity/reinvestment paths",
+    "scope": "known reconstructed selected signals only; unknown candidates/execution remain unbounded",
+    "source_version": "vt6qeesk27k07492k5jc5b7p04mf0s6o",
+    "cash_event_rows_in_closure": 17611
+  },
+  "membership": {
+    "population_size": {
+      "min": 5166,
+      "max": 5213,
+      "large_daily_changes": []
+    },
+    "exchange_mapping_counts": {
+      "NASDAQ": 4047,
+      "NYSE": 2146,
+      "AMEX": 308
+    },
+    "future_listing_anomalies": [],
+    "disappearance_episode_count": 1327,
+    "later_disappearance_identity_unresolved": 50,
+    "secondary_nasdaq_days": 235,
+    "secondary_issuer_snapshot_count": 66,
+    "secondary_issuer_coverage_end": "2025-02-28",
+    "limitation": "Nasdaq monthly snapshots cover the window; dated CIK directory stops February 2025. NYSE/AMEX late-window uncertainty not bounded."
+  },
+  "current_scanner": {
+    "average_mae_10": -0.11099739627666455,
+    "average_mfe_10": 0.1322857909995473,
+    "candidate_count": 6981,
+    "censored_candidate_count": 0,
+    "hit_5pct_10d_rate": 0.6824237215298667
+  },
+  "current_native": {
+    "average_loss": -7147.148723429962,
+    "average_win": 5269.203621636916,
+    "benchmark_return": 0.16222810931399878,
+    "cagr": null,
+    "final_equity": 934221.7906461,
+    "initial_capital": 1000000.0,
+    "max_drawdown": -0.477494454041855,
+    "net_pnl": -65778.20935390005,
+    "profit_factor": 0.9661376757356074,
+    "sessions": 245,
+    "sharpe": -0.038827630563246646,
+    "sortino": -0.05705165687557905,
+    "total_fees": 207619.738886,
+    "total_return": -0.0657782093539,
+    "trade_count": 640,
+    "turnover": 92.84563401840384,
+    "win_rate": 0.5671875
+  },
+  "protected_files": [
+    {
+      "path": "data/market.duckdb",
+      "sha256": "0043f66ea4ac75c14d1a65e2765cb314d8cc19299f64abe390fd58e30caad60d",
+      "expected": "0043f66ea4ac75c14d1a65e2765cb314d8cc19299f64abe390fd58e30caad60d",
+      "unchanged": true
+    },
+    {
+      "path": "data/phase2-research-v2-frozen.duckdb",
+      "sha256": "71361753f5d593ba43c090a984b299cc24f309e9345aae0f2c5615bc73341c7e",
+      "expected": "71361753f5d593ba43c090a984b299cc24f309e9345aae0f2c5615bc73341c7e",
+      "unchanged": true
+    },
+    {
+      "path": "data/phase2-research.duckdb",
+      "sha256": "b2565184a372c6ce7d5b448acebad3dfbad0bf51c77b785f5d0a342352d364c3",
+      "expected": "b2565184a372c6ce7d5b448acebad3dfbad0bf51c77b785f5d0a342352d364c3",
+      "unchanged": true
+    },
+    {
+      "path": "data/phase2-source-snapshot.duckdb",
+      "sha256": "f6081cfc1a8bbe5856a5a3659be7ae6dfc3f864cb865ce2d12e2fd67200d0fd9",
+      "expected": "f6081cfc1a8bbe5856a5a3659be7ae6dfc3f864cb865ce2d12e2fd67200d0fd9",
+      "unchanged": true
+    },
+    {
+      "path": "data/security-master.csv",
+      "sha256": "5e6985a5d4a756061cdc2dba3ad27055e7b7beeb1491e11690d5dbe7621ac6c9",
+      "expected": "5e6985a5d4a756061cdc2dba3ad27055e7b7beeb1491e11690d5dbe7621ac6c9",
+      "unchanged": true
+    },
+    {
+      "path": "data/security-master-manifest.json",
+      "sha256": "fa137f66560ed63bcee5bf43a759f65b552e3db611b756446af9fa961ec13559",
+      "expected": "fa137f66560ed63bcee5bf43a759f65b552e3db611b756446af9fa961ec13559",
+      "unchanged": true
+    },
+    {
+      "path": "data/security-master-feature-store.json",
+      "sha256": "e267981e0343752adb1584d77863568f495f07e029391cd2156a22967892e845",
+      "expected": "e267981e0343752adb1584d77863568f495f07e029391cd2156a22967892e845",
+      "unchanged": true
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\normalized\\533905312e4c19ef2f80558d80c06c1b644f3eefc01fbba0c703904f1dc8bdaa\\pit-research.duckdb",
+      "sha256": "9c39a9f99c8fb1985b40c797a74f41dd6073872243b26584c8401347115a00ff",
+      "expected": "9c39a9f99c8fb1985b40c797a74f41dd6073872243b26584c8401347115a00ff",
+      "unchanged": true
+    },
+    {
+      "path": "config/pit_final_run_plan.json",
+      "sha256": "6b1336a9bdfa9438471e057460ade0d945f57e8ae9736b5ecca80fb6667c8fcb",
+      "expected": "6b1336a9bdfa9438471e057460ade0d945f57e8ae9736b5ecca80fb6667c8fcb",
+      "unchanged": true
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\research-grade\\rules-freeze.json",
+      "sha256": "0c895631a8522a1c638a07f49dc5d1cf42582c47e1366dcf70dd1d239203321a"
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\research-grade\\raw-price-receipts.json",
+      "sha256": "73c92b55836987778cfece7367bffa09869f230b6fe3859eb6934a46eb2fc4bb"
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\research-grade\\raw-source.manifest.json",
+      "sha256": "319bbbcb62524dd1d374c87dc63535c78bc472d2bb2a6519cda1a83ae7f98326"
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\research-grade\\identity-risk.json",
+      "sha256": "06aefe53606e1d6ad421d4f5099f1b959ee5fc7e22277e6e8cbe3986d8b0e396"
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\research-grade\\accepted-prices.manifest.json",
+      "sha256": "795a01d14fc1158006eb8afe257e0e1adc12719abf3798fd7c82df519f64b4d0"
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\research-grade\\price-anomalies.json",
+      "sha256": "1d67248fb3560e2456233923cbe5f797821f5cd874bfd8ca69ea1731ce1d9ebc"
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\research-grade\\source-disagreement.json",
+      "sha256": "e403ec609312c31f70466dce7c64e86537adcefb678372d460bd02a3c1602f76"
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\research-grade\\core-universe.json",
+      "sha256": "3fdfbbc55640a9132671beb6affb57ecbd8f10719c27de3b8495ba3ad0fb4b77"
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\research-grade\\membership-evidence.json",
+      "sha256": "02fb7b4e51c7d9f99dccdfdbc239f0b2aee9c1c287296a896564c4921b60b2e6"
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\research-grade\\material-action-risk.json",
+      "sha256": "8291ad27e0212f0801f153e53d7c133ec37ed8ed4eb609314d9a9e561a8259bf"
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\research-grade\\dividend-exposure.json",
+      "sha256": "92398ef108f6f7bceba0df84074120a1afe917728f5f83ba811f28471fd4336b"
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\research-grade\\universe-sensitivity.json",
+      "sha256": "5c7f5e820e94b0268b41caa6ac6826bfe411f027c0c89383afb80bfaf59e449e"
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\research-grade\\scanner-A.json",
+      "sha256": "647749680b138c23f17ae83b8315cf0eafc6a66cb1b55cfb1c3788b824b2f019"
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\research-grade\\scanner-B.json",
+      "sha256": "101830bc7e0ff6aaed6abcccd04ecbf2e26c9ac682f6740280cbe088594dec14"
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\research-grade\\scanner-C.json",
+      "sha256": "535c36b813a1ef8ccb2f093e8f09b2ce3b408d11da9904731742830d0d4b041a"
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\research-grade\\audit.json",
+      "sha256": "df360858b79fa545618562a4982906e38abda0594d79936077db8d936b8c55a4"
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\research-grade\\readiness.json",
+      "sha256": "0636b8c6dca7bf6c382b3f13657d1aa5febc56b1221d18fad87d5daa42a30e6c"
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\research-grade\\research-run-metadata.json",
+      "sha256": "75f4ed267ca675fc414dd1b1aa22b1969134b60e5effa630b1f648370efb1ed5"
+    },
+    {
+      "path": "C:\\Users\\周树铭\\Desktop\\美股策略研究\\stock-radar\\data\\pit\\research-grade\\api-acceptance.json",
+      "sha256": "5bd1034956e008d926f53fbab72b707f3fd4a3616f0bcc6a74496eed1dc3590c"
+    }
+  ],
+  "tests": {
+    "full_passed": 436,
+    "full_seconds": 85.81,
+    "native_included": true,
+    "after_source_guard_fix_passed": 67,
+    "after_source_guard_fix_seconds": 53.17,
+    "warning": "existing websockets deprecation"
+  }
+}

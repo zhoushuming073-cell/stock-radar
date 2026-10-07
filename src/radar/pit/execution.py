@@ -9,12 +9,21 @@ from radar.pit.builder import digest
 from radar.pit.run import require_ready, iso
 
 
-def execution_inputs(manifest: dict):
-    require_ready(manifest)
+def execution_inputs(manifest: dict, *, quality_tier='vendor-grade', research_audit=None, research_rules=None):
+    if quality_tier == 'vendor-grade':
+        require_ready(manifest)
+    elif quality_tier == 'research-grade':
+        from radar.pit.research import require_research_ready
+        if research_audit is None or research_rules is None:
+            raise ValueError('Research-Grade PIT requires its frozen audit and policy; no fallback')
+        require_research_ready(manifest, research_audit, research_rules)
+    else:
+        raise ValueError('unknown PIT quality tier; no fallback')
     identity = {}
     securities = {}
     selected = {s["security_id"] for s in manifest["signals"]}
     selected |= {p["security_id"] for p in manifest["prior_open_positions"]}
+    ordinary_omissions=set((research_audit or {}).get('ordinary_dividend',{}).get('ordinary_event_ids',[])) if quality_tier=='research-grade' else set()
     if manifest["prior_open_positions"]:
         raise ValueError("native execution requires a fresh cash-funded portfolio; prior holdings import is not supported")
     for row in manifest["dependencies"]:
@@ -34,8 +43,10 @@ def execution_inputs(manifest: dict):
         for mapping in mappings[:-1]:
             map_rows.append(f"{iso(mapping['valid_to']).replace('-', '')},{mapping['symbol'].lower()}\n")
         map_rows.append(f"{final.replace('-', '')},{mappings[-1]['symbol'].lower()}\n")
+        actions=[a for a in row['actions'] if not (a['event_id'] in ordinary_omissions
+                 and a['event_type']=='dividend' and a.get('review',{}).get('ordinary_cash_dividend') is True)]
         securities[root] = {"security_id": row["security_id"], "maps": "".join(map_rows),
-                            "actions": row["actions"], "required_sessions": row["required_sessions"],
+                            "actions": actions, "required_sessions": row["required_sessions"],
                             "execution_sessions": row["execution_sessions"], "terminal": terminal,
                             "native_map_end_semantics": "economic lifecycle end, not legal delisting or last tradable session"}
     # Locate the exact frozen feature store. It must contain raw execution prices
@@ -71,4 +82,8 @@ def execution_inputs(manifest: dict):
                "actions_sha256": digest({k: v["actions"] for k, v in securities.items()}),
                "map_sha256": digest({k: v["maps"] for k, v in securities.items()}),
                "factor_sha256": digest({k: v["factors"] for k, v in securities.items()})}
+    if quality_tier == 'research-grade':
+        dataset.update(quality_tier='research-grade', label='Research-Grade PIT',
+                       research_audit_sha256=research_audit['audit_sha256'],
+                       ordinary_dividend_limitation=research_audit.get('ordinary_dividend',{}))
     return signals, prices, dataset

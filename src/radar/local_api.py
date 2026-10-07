@@ -347,6 +347,9 @@ def make_handler(allowed_origins: set[str]):
                     payload = lab_universe_status()
                 elif target.path == "/api/lab/pit-readiness":
                     payload = lab_pit_readiness(parse_qs(target.query).get("split", ["validation"])[0])
+                elif target.path == "/api/lab/pit-research-readiness":
+                    from radar.pit.research import local_research_readiness
+                    payload = local_research_readiness(ROOT)
                 elif target.path == "/api/lab/runs":
                     payload = lab_runs()
                 elif target.path == '/api/lab/engine':
