@@ -37,6 +37,7 @@ its derived evidence and P0 queue follow the `evidence/` layout.
 
 Supporting material:
 - [Initial PIT architecture audit](audit/pit-initial-audit-2026-10-07.md)
+- [LEAN / PIT blocker localization](audit/pit-lean-blocker-localization-2026-10-07.md) — read-only source audit at `412c5e4`: historical request guard, current execution gates and Clone draft behavior; no new tests or Native Run.
 - [Source-breakthrough human scorecard](evidence/source-breakthrough-scorecard-2026-10-07.md)
 - Machine-readable evidence and JSON scorecards live under `evidence/`.
 
