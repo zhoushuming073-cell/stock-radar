@@ -91,5 +91,17 @@
   "vision_model_training": "NOT_STARTED",
   "historical_test": "UNTOUCHED FOR THIS MODEL",
   "fresh_oos": "NOT_RUN",
-  "qc_visual_validation": "NOT_RUN"
+  "qc_visual_validation": "NOT_RUN",
+  "native_lean_tests": [
+    "test_native_golden_parity[False]",
+    "test_native_golden_parity[True]",
+    "test_native_cancellation_stops_child"
+  ],
+  "publication": {
+    "pull_request": 5,
+    "merged": true,
+    "merge_commit": "8f20a8bb843801b3b9bd61fc5f8d2a9fd835a99d",
+    "base_before_merge": "79e42e9296be167b6f925004f0802fa384b4ce72",
+    "verified_head_before_merge": "1f9ab7b4b263ded877644ef6ae87072d7eb1940d"
+  }
 }

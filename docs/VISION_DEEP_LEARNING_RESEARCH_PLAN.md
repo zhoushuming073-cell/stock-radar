@@ -1,7 +1,7 @@
 # Stock Radar — 纯视觉深度学习策略研究计划书
 
 > 版本：Plan v1.0 · 2026-10-08  
-> 状态：**PLANNED / NOT IMPLEMENTED**。本文件是研究路线与阶段验收合同，不代表数据集、标注工具、视觉模型或云端验证已完成。  
+> 状态（2026-10-08）：**P0 IMPLEMENTED / PASS；P1 INFRASTRUCTURE PASS；HUMAN LABELING NOT_STARTED / READY；P2–P5 NOT_STARTED。** PR [#5](https://github.com/zhoushuming073-cell/stock-radar/pull/5) 已通过六个真实本地门禁并合并 main（`8f20a8bb843801b3b9bd61fc5f8d2a9fd835a99d`）。标注基础设施就绪，不代表 Ground Truth、模型或云端视觉检验完成。  
 > 主目标：通过历史 K 线图像与人的审美判断，训练一个能在未知历史时段自主识别潜在有利交易形态、给股票排序的视觉模型。  
 > 边界：与现有规则型 Strategy 2 平行，不用规则分数充当视觉模型答案；不修改现有策略参数、数据库、LEAN 生产接口、QC smoke 或 PIT 门禁。
 
@@ -157,7 +157,18 @@ B 只能用于训练期的独立辅助学习或事后评价；绝不作为 A 的
 | **P4：QC 冻结信号验证** | 合规信号输入、云执行结果、与本地执行差异报告 | 组合执行可复核，明确不宣称独立验证了本地选股 |
 | **P5：QC 原生视觉推理（可选）** | 自有模型在 QC 历史 Universe 上的完整因果回测 | 平台资源、价格口径、模型输入与条款均确认可行 |
 
-阶段按验收推进，不承诺固定日历，也不自动越级。**近期只授权 P0 与 P1 的方案设计；模型训练、云端付费和正式 Test 运行以后分别决定。**
+阶段按验收推进，不承诺固定日历，也不自动越级。**本轮已授权并完成 P0/P1 实现与真实验收；模型训练、云端付费和正式 Test 运行以后分别决定。**
+
+### 当前真实进度 — 2026-10-08
+
+- P0：250张 unique图 /250个security，25个混排重复任务，125组pair；Train/Validation only；60/126窗口；四个隐藏历史消失/收购anchors均参与；样本偏差和泄漏审计 PASS。
+- P1基础设施：本地 Label Studio、单图/双图实际浏览器各10项smoke、撤销/修改/保存、独立导出导入 PASS；632项完整测试通过，含实际Native LEAN回归。
+- Human Ground Truth：正式项目已导入任务，真实人工标注0条；**READY / NOT_STARTED**。所有smoke标签隔离为 NOT HUMAN GROUND TRUTH。
+- 第一批由用户本人完成50张Single +25组Pair后暂停，再检查分布、置信度、标注耗时和重复一致性；不足以直接进入训练。
+- Vision Model Training NOT_STARTED；Historical Test UNTOUCHED FOR THIS MODEL；Fresh OOS NOT_RUN；QC Visual Validation NOT_RUN。
+- Research Infrastructure v1继续FROZEN，Shape READY，General PIT Tier1，Database expansion CLOSED /maintenance ACTIVE；没有修改冻结SVG、Strategy2、LEAN或QC边界。
+
+证据：[真实Pilot验收报告](../reports/vision-p0-p1-pilot-acceptance-2026-10-08.md)、[测试receipt](../reports/evidence/vision-p0-p1-tests-2026-10-08.json)、[操作说明](VISION_LABELING_INFRASTRUCTURE.md)。
 
 ## 12. 人与 Codex 的分工
 
@@ -180,9 +191,9 @@ Codex 负责所有重复性工程：候选抽样、绘图和复现、网页标�
 
 ## 14. 第一轮具体任务边界
 
-**本文件目前只是一份研究计划，不应被视为 Codex 已执行的实现指令。**
+**本文件保留完整研究路线；2026-10-08仅P0/P1已实施并验收。后续阶段不因合并基础设施而自动授权。**
 
-如果随后启动第一轮实施，Codex 应先做 P0/P1：
+第一轮P0/P1已按以下边界实施，验收证据见上：
 
 1. 从当前主分支和唯一当前总账读取真实架构，复用现有历史数据库查询接口和研究分区，不造第二套数据库。
 2. 生成一小批覆盖强势回撤、假企稳、持续下跌及已退市股票的盲态历史 K 线样本。

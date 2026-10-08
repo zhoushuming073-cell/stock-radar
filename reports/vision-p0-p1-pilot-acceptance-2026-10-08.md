@@ -95,7 +95,7 @@ Browser plugin 未提供，因此使用安装好的 Chrome headless + bundled Pl
 
 Native LEAN仅作为原项目回归测试运行；本轮没有执行新的QC视觉验证、模型训练或视觉回测。没有修改冻结 infrastructure、PIT/Shape语义、数据库、生产LEAN或QC smoke。
 
-全部门禁通过后才允许 PR#5 从Draft转Ready并走普通合并路径；如 main 或分支移动必须重新核验，不绕过保护。合并结果以GitHub PR实际状态为准。
+全部门禁通过后，PR#5已从Draft转Ready，重新核验实际main仍为 `79e42e9...`、PR head为 `1f9ab7b...`，通过普通GitHub merge API（含expected head校验）成功合并；未绕过保护。实际merge commit为 **`8f20a8bb843801b3b9bd61fc5f8d2a9fd835a99d`**，本机已fast-forward到该合并版本。研究计划和唯一当前总账在合并后更新。普通push网络间歇失败的文档提交通过连接器逐一核验tree SHA并用expected_sha保护分支更新，未覆盖新提交。
 
 ## 6. 现在怎么开始
 
