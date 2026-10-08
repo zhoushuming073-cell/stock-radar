@@ -22,8 +22,24 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8"]
+dev = [
+    "pytest>=8",
+    "hypothesis>=6",
+    "exchange-calendars>=4.13,<5",
+    "matplotlib>=3.9,<4",
+    "mplfinance==0.12.10b0",
+    "pandera[pandas]>=0.34,<0.35",
+    "Pillow>=10",
+]
 viz = ["plotly>=5.24"]
+vision = [
+    "exchange-calendars>=4.13,<5",
+    "matplotlib>=3.9,<4",
+    "mplfinance==0.12.10b0",
+    "pandera[pandas]>=0.34,<0.35",
+    "Pillow>=10",
+]
+vision-labeling = ["label-studio>=1.23,<2"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
