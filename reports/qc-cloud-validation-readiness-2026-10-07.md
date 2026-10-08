@@ -1,8 +1,8 @@
 # Stock Radar QuantConnect Free Cloud 准备验收 · 2026-10-07
 
-**2026-10-08更新：工程准备完成；两份真实Cloud smoke的五项数据检查均PASS_OBSERVED，但完整日志和Results JSON尚未下载导入，总smoke门禁PARTIAL。Layer1/2/3均NOT_RUN，原Research-Grade PIT仍PARTIAL / BLOCKED。**
+**2026-10-08更新：工程准备完成；两份真实Cloud smoke完整下载已导入，parser验收均PASS，smoke门禁解锁；首日Layer1引擎Completed但回执未验收，后续受平台导出范围限制。Layer1 pilot引擎Completed、数据未验收，Layer2/3 NOT_RUN，原Research-Grade PIT仍PARTIAL / BLOCKED。**
 
-用户已本人登录。Codex已完成项目写入、Cloud构建及FB/META、NVDA两份真实回测；不是本地fixture。结果面板的嵌套窗口拒绝浏览器点击/键盘操作，Windows Computer Use初始化失败，因此完整下载回执尚未取得。网页终端的实际编号、五项检查与PASS结束行已观察并记录，长消息被网页截短，不能冒充完整parser验收。详见[Cloud重测报告](qc-cloud-smoke-validation-2026-10-08.md)。不购买套餐，不依赖API Token。
+用户已本人登录。Codex已完成项目写入、Cloud构建及FB/META、NVDA两份真实回测；不是本地fixture。此前嵌套结果窗口阻止自动下载；用户现已提供四份真实下载文件，完整回执、输入/代码哈希及原生Results JSON已由parser验收。详见[Cloud重测报告](qc-cloud-smoke-validation-2026-10-08.md)。不购买套餐，不依赖API Token。
 
 ## 最新基线与保护边界
 
@@ -26,7 +26,7 @@
 | `cloud/protocol.py` | 8,000字节派生日志预算；begin/end、序号、输入/源码哈希、缺日、重复及原始数据字段检查 |
 | `schemas/`与`evidence.py` | 结构化官方证据；原始响应/HTTP回执哈希、发布时间、CIK/class、实际QC身份回执校验 |
 | 本地测试 | 原有468项保留；新增39项，共507 passed（含Native LEAN），83.78秒；harness定向39 passed，4.71秒 |
-| 真实Cloud | 两个实际编号与五项检查PASS已观察；完整下载回执未导入，总smoke门禁PARTIAL；Layer1/2/3 NOT_RUN |
+| 真实Cloud | 两个实际编号、五项检查、完整回执和哈希均已验收PASS；首日Layer1引擎Completed / 后续HOLD_PLATFORM_EXPORT_SCOPE；Layer1 pilot Completed但未验收，Layer2/3 NOT_RUN |
 
 全套只有既有websockets deprecation warning。实测是本地工程/fixture回归；不意味着真实Strategy2 PIT组合已经运行。小smoke已实测历史行情、身份、映射和拆股访问；大范围QC运行的CPU、内存和人口覆盖仍须pilot核实。
 
@@ -75,4 +75,7 @@ Free配额、网页回测与Tier权限根据本轮查看的[资源文档](https:
 
 先取得并导入已完成的mapping与split完整日志/Results JSON；随后首日Layer1，优先回答unknown竞争者，按冲突生成官方调查；之后Layer2和已验证SID/正式本地基线下的Layer3。本轮没有继续清洗全市场，也没有按将来的QC结果预先豁免P0。
 
-操作入口：[QUANTCONNECT_FREE_VALIDATION.md](../docs/QUANTCONNECT_FREE_VALIDATION.md)。单一状态仍是 **Cloud数据检查PASS_OBSERVED / 完整smoke回执门禁PARTIAL / Layer1–3 NOT_RUN / PIT BLOCKED**。
+操作入口：[QUANTCONNECT_FREE_VALIDATION.md](../docs/QUANTCONNECT_FREE_VALIDATION.md)。单一状态是 **Cloud完整smoke回执门禁PASS / 首日Layer1引擎Completed、数据未验收 / 后续HOLD_PLATFORM_EXPORT_SCOPE / Layer2–3 NOT_RUN / PIT BLOCKED**。
+
+
+平台构建日志曾于QC显示时间4:37:56及4:37:59对 `qc_part_01.py` 发出Terms 2.6警告；随后构建成功并运行完成，但成功构建不等于输出许可。核对[当前QC条款](https://www.quantconnect.com/terms)（v1.4，2026-10-02更新），2.6涵盖参考数据及可重建/近似数据的派生输出，验证用途没有大小或目的豁免；2.6(e)允许自有源码及正常策略回测概要结果。现有身份/P0明细导出流程暂停，后续日期批次也暂缓，需在QC内完成比较或由平台明确具体输出范围。本轮不下载新的QC参考数据或发布身份明细。此限制来自实际平台警告及公开条款核对，不是smoke技术失败。

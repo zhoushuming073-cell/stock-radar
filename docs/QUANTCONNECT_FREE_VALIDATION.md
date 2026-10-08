@@ -1,8 +1,10 @@
 # QuantConnect Free Cloud 操作说明
 
-2026-10-08：用户已本人登录，Codex已运行两份真实smoke。五项数据检查都显示PASS，完整日志和Results JSON尚未导入，后续分层项目仍锁定。详见[实际重测报告](../reports/qc-cloud-smoke-validation-2026-10-08.md)。
+2026-10-08：用户已本人登录，Codex已运行两份真实smoke。四份实际下载文件已导入，完整parser验收两份smoke均PASS。首日Layer1引擎Completed，完整数据比较尚未验收。后续批次及参考数据明细导出因平台实际Terms 2.6警告暂缓。详见[实际重测报告](../reports/qc-cloud-smoke-validation-2026-10-08.md)。
 
-## 当前下载接管步骤（仅在需要手工接管时）
+> 当前限制：以下stage/import/detail流程为原工程复现说明，后续外部参考数据比较暂缓执行。QC最新2.6条款及实际构建警告见报告；应优先在平台内完成比较，或先明确允许导出的输出范围。
+
+## 下载步骤（已完成，保留供复现）
 
 无需重新登录或重建项目。在现有项目的 **Backtests Results** 中选择对应回测：
 

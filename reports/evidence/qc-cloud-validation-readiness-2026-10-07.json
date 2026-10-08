@@ -1,5 +1,5 @@
 {
-  "status": "PARTIAL_CLOUD_SMOKE_RECEIPT_IMPORT_PENDING",
+  "status": "SMOKE_PASS_PILOT_COMPLETED_HOLD_PLATFORM_EXPORT_SCOPE",
   "source_commit": "80b6d95a2c849bb1d64ba67ca0371bcb05a8220a",
   "latest_main_read": "80b6d95a2c849bb1d64ba67ca0371bcb05a8220a",
   "frozen_inputs_semantic_sha256": "3bb8d78981ece5acf36189f964e74fa8e0c770ea00ff419848da516fd1a96caa",
@@ -7,9 +7,9 @@
   "signals": 1264,
   "signal_status": "FROZEN_DIAGNOSTIC_C_NOT_FORMAL_PIT_RELEASE",
   "validation_sessions": 235,
-  "cloud_smoke": "PARTIAL_DATA_CHECKS_PASS_OBSERVED_FULL_RECEIPTS_PENDING",
+  "cloud_smoke": "PASS_FULL_DOWNLOAD_PARSER_VERIFIED",
   "cloud_layers": {
-    "layer1": "NOT_RUN",
+    "layer1": "PILOT_ENGINE_COMPLETED_RECEIPT_NOT_VERIFIED",
     "layer2": "NOT_RUN",
     "layer3": "NOT_RUN"
   },
@@ -72,6 +72,44 @@
       "file SHA256 and modification time"
     ]
   },
-  "staging_refused_missing_smoke_downloads": true,
-  "production_paths_modified_by_this_task": false
+  "staging_refused_missing_smoke_downloads": false,
+  "production_paths_modified_by_this_task": false,
+  "smoke_ready": true,
+  "layer1_pilot": {
+    "run": "layer1-2024-09-30",
+    "project_id": 37482228,
+    "backtest_id": "b5627ae10821bb5f8a72ca77f2decf99",
+    "result_url": "https://www.quantconnect.com/project/37482228/b5627ae10821bb5f8a72ca77f2decf99",
+    "stage_status": "PASS",
+    "preview_only": false,
+    "upload_files": 8,
+    "cloud_status": "COMPLETED_OBSERVED_IN_RESULTS_LIST",
+    "receipt_imported": false,
+    "data_acceptance": "NOT_VERIFIED",
+    "followup": "HOLD_PLATFORM_EXPORT_SCOPE",
+    "source": "quantconnect_cloud_results_list_ui",
+    "requested_qc_display_time": "2026-10-08 04:47:09",
+    "local_screenshot": "quantconnect-validation/results/cloud-pilot-completed-20261008.png"
+  },
+  "platform_export_scope": {
+    "status": "HOLD",
+    "terms_url": "https://www.quantconnect.com/terms",
+    "terms_version": "1.4",
+    "terms_updated": "2026-10-02",
+    "sections": [
+      "2.6(a)",
+      "2.6(b)",
+      "2.6(c)",
+      "2.6(e)",
+      "2.6(f)"
+    ],
+    "observed_build_warning_file": "qc_part_01.py",
+    "warning_qc_display_times": [
+      "4:37:56",
+      "4:37:59"
+    ],
+    "subsequent_builds_succeeded": true,
+    "interpretation": "Reference/security data exports are restricted; summary backtest performance and own source code are permitted. Successful build does not resolve the observed export-scope warning.",
+    "next_action": "Keep further date batches and QC reference/P0 detail exports on hold pending platform clarification or redesign entirely within QC."
+  }
 }

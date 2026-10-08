@@ -1,8 +1,8 @@
 {
   "date": "2026-10-08",
-  "status": "PARTIAL",
-  "cloud_data_checks": "PASS_OBSERVED_IN_CLOUD_TERMINAL",
-  "smoke_release_gate": "BLOCKED_MISSING_FULL_LOG_AND_RESULTS_DOWNLOADS",
+  "status": "PASS",
+  "cloud_data_checks": "PASS_FULL_DOWNLOAD_PARSER_VERIFIED",
+  "smoke_release_gate": "PASS",
   "observations": [
     {
       "run": "smoke-mapping",
@@ -27,11 +27,13 @@
       "summary_sha256": "90e29b88d461c128a3aeb212bae2fef9a28a66e468d5031bc11507a56f237f60",
       "expected_code_hash": "ef71466df2646dbe5ed1b56a6cce3d5381909dcf16b4ee6e60922f557efdbdb4",
       "expected_input_hash": "39bab5c8133e78679c0a434f9af062c5e66d46d9f25ffbd7d4ce820c6ab14f8b",
-      "code_hash_fully_observed": false,
-      "input_hash_fully_observed": false,
-      "receipt_downloaded": false,
-      "results_json_downloaded": false,
-      "receipt_protocol_verified": false
+      "code_hash_fully_observed": true,
+      "input_hash_fully_observed": true,
+      "receipt_downloaded": true,
+      "results_json_downloaded": true,
+      "receipt_protocol_verified": true,
+      "verification_origin": "quantconnect_cloud_download",
+      "receipt_hash": "f15f2e761753ffda76c9b67a1c700374e3e0b6bb4ed203ee5b0c49eac8645b5a"
     },
     {
       "run": "smoke-split",
@@ -56,17 +58,18 @@
       "summary_sha256": "5100768eb8b8381fedfdfdbc82b4b4b22b15735d0e2996053b8e973855d53e22",
       "expected_code_hash": "ef71466df2646dbe5ed1b56a6cce3d5381909dcf16b4ee6e60922f557efdbdb4",
       "expected_input_hash": "385eae113ab2bab022d9e95adbf3ce28a4cacd7c6047b30bca7711c2615e7812",
-      "code_hash_fully_observed": false,
-      "input_hash_fully_observed": false,
-      "receipt_downloaded": false,
-      "results_json_downloaded": false,
-      "receipt_protocol_verified": false
+      "code_hash_fully_observed": true,
+      "input_hash_fully_observed": true,
+      "receipt_downloaded": true,
+      "results_json_downloaded": true,
+      "receipt_protocol_verified": true,
+      "verification_origin": "quantconnect_cloud_download",
+      "receipt_hash": "22f253eb85da5187e4b7761e391066580a6d3c710b562a61a544b0bd43e174eb"
     }
   ],
-  "browser_blocker": "Nested result iframe controls reject pointer/focus actions; Windows Computer Use cannot initialize. No paid API or credential workaround used.",
   "terminal_display_limit": "Final debug summary is below200 characters; full receipt uses Log. Earlier long debug probes were truncated and are retained only as diagnostic observations.",
   "cloud_layers": {
-    "layer1": "NOT_RUN",
+    "layer1": "PILOT_ENGINE_COMPLETED_RECEIPT_NOT_VERIFIED",
     "layer2": "NOT_RUN",
     "layer3": "NOT_RUN"
   },
@@ -162,5 +165,89 @@
       "receipt_protocol_verified": false
     }
   ],
-  "terminal_capture_sha256": "9aabb77c7997c449ef1c0c14a008289e13a1613e3354f7e3a272879b15b46bb0"
+  "terminal_capture_sha256": "9aabb77c7997c449ef1c0c14a008289e13a1613e3354f7e3a272879b15b46bb0",
+  "smoke_ready": true,
+  "download_receipts": [
+    {
+      "run": "smoke-mapping",
+      "layer": "smoke",
+      "input_hash": "39bab5c8133e78679c0a434f9af062c5e66d46d9f25ffbd7d4ce820c6ab14f8b",
+      "code_hash": "ef71466df2646dbe5ed1b56a6cce3d5381909dcf16b4ee6e60922f557efdbdb4",
+      "status": "PASS",
+      "receipt_hash": "f15f2e761753ffda76c9b67a1c700374e3e0b6bb4ed203ee5b0c49eac8645b5a",
+      "origin": "quantconnect_cloud_download",
+      "backtest_id": "3158f5e575fa21e150ff36e066659c55",
+      "log_sha256": "ad7edea0cc7f9a3b86ab0e1615ef69374f1afd8fc8178d4c44105acd5717e5c3",
+      "native_result_sha256": "afe5b13cbbe1e042b9aa998d0f0ff93f2cfc8c4d1c047a49e1a24bc9a18c96f9",
+      "receipt_verified": true,
+      "imported_at": "2026-10-08T04:05:24.763078+00:00",
+      "checks": {
+        "history_access": true,
+        "mapping": true,
+        "security_master": true,
+        "split_history": true,
+        "stable_control": true
+      }
+    },
+    {
+      "run": "smoke-split",
+      "layer": "smoke",
+      "input_hash": "385eae113ab2bab022d9e95adbf3ce28a4cacd7c6047b30bca7711c2615e7812",
+      "code_hash": "ef71466df2646dbe5ed1b56a6cce3d5381909dcf16b4ee6e60922f557efdbdb4",
+      "status": "PASS",
+      "receipt_hash": "22f253eb85da5187e4b7761e391066580a6d3c710b562a61a544b0bd43e174eb",
+      "origin": "quantconnect_cloud_download",
+      "backtest_id": "730eb8a3ad8052280ce66a16b25cd8ec",
+      "log_sha256": "5f08aa9dde73c0d388cedb030100e6a0e0e9f3ca6e53025247cd523cec0f2755",
+      "native_result_sha256": "528161a25b005c40d991b238c27ceaf4dfff581aa808482e3d743a4e071799de",
+      "receipt_verified": true,
+      "imported_at": "2026-10-08T04:05:33.584111+00:00",
+      "checks": {
+        "history_access": true,
+        "mapping": true,
+        "security_master": true,
+        "split_history": true,
+        "stable_control": true
+      }
+    }
+  ],
+  "previous_browser_blocker": "Nested result iframe controls reject pointer/focus actions; Windows Computer Use cannot initialize. No paid API or credential workaround used.",
+  "download_resolution": "User supplied four actual Cloud downloads; Codex imported both full receipts and preserved SHA256-verified original bytes locally.",
+  "layer1_pilot": {
+    "run": "layer1-2024-09-30",
+    "project_id": 37482228,
+    "backtest_id": "b5627ae10821bb5f8a72ca77f2decf99",
+    "result_url": "https://www.quantconnect.com/project/37482228/b5627ae10821bb5f8a72ca77f2decf99",
+    "stage_status": "PASS",
+    "preview_only": false,
+    "upload_files": 8,
+    "cloud_status": "COMPLETED_OBSERVED_IN_RESULTS_LIST",
+    "receipt_imported": false,
+    "data_acceptance": "NOT_VERIFIED",
+    "followup": "HOLD_PLATFORM_EXPORT_SCOPE",
+    "source": "quantconnect_cloud_results_list_ui",
+    "requested_qc_display_time": "2026-10-08 04:47:09",
+    "local_screenshot": "quantconnect-validation/results/cloud-pilot-completed-20261008.png"
+  },
+  "platform_export_scope": {
+    "status": "HOLD",
+    "terms_url": "https://www.quantconnect.com/terms",
+    "terms_version": "1.4",
+    "terms_updated": "2026-10-02",
+    "sections": [
+      "2.6(a)",
+      "2.6(b)",
+      "2.6(c)",
+      "2.6(e)",
+      "2.6(f)"
+    ],
+    "observed_build_warning_file": "qc_part_01.py",
+    "warning_qc_display_times": [
+      "4:37:56",
+      "4:37:59"
+    ],
+    "subsequent_builds_succeeded": true,
+    "interpretation": "Reference/security data exports are restricted; summary backtest performance and own source code are permitted. Successful build does not resolve the observed export-scope warning.",
+    "next_action": "Keep further date batches and QC reference/P0 detail exports on hold pending platform clarification or redesign entirely within QC."
+  }
 }
