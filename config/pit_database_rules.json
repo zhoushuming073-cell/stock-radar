@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "policy": "historical-database-v1",
+  "scope": "observed US exchange-listed candidates; not a complete US census",
+  "fresh_primary_days": 4,
+  "fresh_reference_days": 31,
+  "minimum_issuer_observations": 2,
+  "name_similarity": 0.72,
+  "jump_high": 1.8,
+  "jump_low": 0.55,
+  "long_gap_calendar_days": 10,
+  "audit_seed": "stock-radar-database-2026-10-08-v1",
+  "sample_per_stratum": 50,
+  "tier2": {
+    "confirmed_or_probable_member_days_pct": 95,
+    "identity_A_common_episode_pct": 90,
+    "accepted_raw_common_member_days_pct": 95,
+    "resolved_detected_material_events_pct": 90,
+    "disappeared_history_retention_pct": 100,
+    "minimum_confirmed_terminal_sample": 50,
+    "future_leakage_rows": 0,
+    "reuse_cross_identity_rows": 0
+  },
+  "tier3": "not assessed; requires independently attested historical census and security-class lifecycle completeness",
+  "notes": [
+    "Thresholds fixed before the new database build; not a strategy/run gate.",
+    "A/B/C is full-window audit only, never a historical selection predicate.",
+    "No source disappearance is automatically a delisting or cancellation.",
+    "Unknown membership is nullable, never coerced to False."
+  ]
+}

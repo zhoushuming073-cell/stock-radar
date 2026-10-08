@@ -209,9 +209,11 @@ def test_cloud_smoke_expected_schema_and_false_pass():
 
 
 @requires_local_cache
-def test_preview_layer_cannot_run_without_real_cloud_smoke():
+def test_preview_layer_cannot_run_without_real_cloud_smoke(monkeypatch):
     frozen, campaign = local.verify_frozen()
-    assert not local.smoke_ready()
+    # Real smoke receipts now exist locally. Exercise the missing-prerequisite
+    # branch without depending on, or changing, the user's downloaded evidence.
+    monkeypatch.setattr(local, 'smoke_ready', lambda: False)
     with pytest.raises(ValueError, match='BOTH real Cloud'):
         local.project_input(frozen, campaign['runs'][2], preview=False)
 

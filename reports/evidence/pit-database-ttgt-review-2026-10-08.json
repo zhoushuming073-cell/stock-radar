@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "security_ids": [
+    "OBS-932404de62668359519b7f18"
+  ],
+  "symbol": "TTGT",
+  "start": "2024-12-03",
+  "end": "2026-10-07",
+  "disputed_fact": "Legacy master retains one ID despite new-company common stock trading under unchanged TTGT; dated CIK mapper contains 0001293282 and 0002018064.",
+  "issuer": "Old TechTarget CIK 0001293282 / new TechTarget CIK 0002018064; CIK snapshots are issuer candidates, not class certificates",
+  "share_class": "New company common stock; conversion economics not installed",
+  "exchange": "Nasdaq Global Select Market",
+  "lifecycle_result": "new security / combination; keep issuer episodes separate; quarantine legacy features after boundary",
+  "confidence": "official issuer announcement plus dated issuer candidates; annotation only",
+  "classification": "C",
+  "safe_to_merge": false,
+  "must_remain_separate": true,
+  "evidence": [
+    {
+      "url": "https://investor.informatechtarget.com/news-events/news/News/2024/Creation-of-Informa-TechTarget-the-B2B-Growth-Accelerator-for-the-Technology-Sector/default.aspx",
+      "source_version": "issuer completion release 2024-12-02",
+      "sha256": "0b7c7ece3dccd3f86f661028219e26d478d70621dc1a27a9a267f4b7a406c3cf",
+      "publication_date": "2024-12-02",
+      "retrieved_at": "2026-10-08T05:32:08.313276+00:00",
+      "raw_file": "0b7c7ece3dccd3f86f661028219e26d478d70621dc1a27a9a267f4b7a406c3cf.raw",
+      "excerpt": "common stock will commence on December 3, 2024"
+    }
+  ],
+  "additional_primary_urls": [
+    "https://www.sec.gov/Archives/edgar/data/2018064/000119312524269931/d913820d8k.htm",
+    "https://www.sec.gov/Archives/edgar/data/1293282/000119312524269937/d867151d8k.htm"
+  ],
+  "limitations": [
+    "Direct SEC acquisition returned 403; no SEC raw bytes installed",
+    "Does not authorize ticker-based splice or synthetic cash settlement",
+    "Existing root master unchanged; downstream historical adapter blocks disputed feature exports"
+  ]
+}

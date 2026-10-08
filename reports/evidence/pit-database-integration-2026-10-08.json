@@ -1,0 +1,49 @@
+{
+  "source_version": "bd743ee2310659c839afe1b56fa6ae8fb287d1fc4ed744347ee7db7b83f882c5",
+  "eligible_ids_match_native_on_seeded_dates": {
+    "2021-09-02": true,
+    "2021-11-12": true,
+    "2022-07-01": true,
+    "2022-06-01": true,
+    "2023-01-26": true,
+    "2023-07-06": true,
+    "2024-03-22": true,
+    "2024-05-16": true,
+    "2025-09-02": true,
+    "2025-10-01": true,
+    "2026-01-14": true,
+    "2026-04-20": true
+  },
+  "native_feature_adapter": [
+    {
+      "security_id": "SEC-0000718877-COMMON",
+      "rows": 20,
+      "same_ids_dates": true
+    },
+    {
+      "security_id": "SEC-0001418091-COMMON",
+      "rows": 20,
+      "same_ids_dates": true
+    },
+    {
+      "security_id": "SEC-0001353283-COMMON",
+      "rows": 20,
+      "same_ids_dates": true
+    }
+  ],
+  "ttgt_review_boundary": {
+    "before_new_security": "allowed",
+    "new_security": "reviewed identity discontinuity; rebuild features with separate security identities",
+    "membership_after_boundary": "unknown"
+  },
+  "old_bbby_supplement": {
+    "accepted_raw_rows": 419,
+    "feature_rows": 419,
+    "native_feature_schema_match": true,
+    "tradability_pass_rows": 237,
+    "cross_sectional_rank_rows": 0,
+    "first_date": "2021-09-01",
+    "last_date": "2023-05-02",
+    "history_adapter_rows": 20
+  }
+}

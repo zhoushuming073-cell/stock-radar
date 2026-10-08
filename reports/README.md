@@ -25,6 +25,10 @@ The `reports/` root is intentionally kept small: this index plus the canonical l
 The final research report below retains its explicit user-requested root path;
 its derived evidence and P0 queue follow the `evidence/` layout.
 
+## Reusable PIT database · 2026-10-08
+
+[25-answer database acceptance](pit-database-construction-acceptance-2026-10-08.md) supersedes the earlier P0-only/QC work order for this database branch. The target is a shared historical data foundation for future strategies.88,340 episodes,9,600,753 daily observation rows,906,514 accepted raw rows; old BBBY recovered419 bars/features. Overall **Tier1 Exploratory PIT / PARTIAL**, not Tier2 or maintenance.544 Native-inclusive tests passed; original root/frozen artifacts remain unchanged. [Scorecard](evidence/pit-database-scorecard-2026-10-08.json), [integration evidence](evidence/pit-database-integration-2026-10-08.json), [API contract](../docs/PIT_HISTORICAL_DATABASE.md). QC remains bounded smoke evidence only; no further reference/market export is planned.
+
 ## PIT acceptance chain · 2026-10-07
 
 1. [Initial local PIT reconstruction](acceptance/pit-acceptance-2026-10-07.md) — architecture, pinned data and explicit limitations.

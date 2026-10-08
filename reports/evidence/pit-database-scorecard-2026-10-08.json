@@ -1,0 +1,681 @@
+{
+  "source_version": "bd743ee2310659c839afe1b56fa6ae8fb287d1fc4ed744347ee7db7b83f882c5",
+  "database_sha256": "a41a38992bfd2e0e3fc1a91838725ff9f851bde760ed5aaf6a7fc167abced641",
+  "scope": "observed US exchange-listed candidates; not a complete US census",
+  "coverage": [
+    "2021-09-01",
+    "2026-10-07"
+  ],
+  "counts": {
+    "security_episode": 88340,
+    "ticker_episode": 90339,
+    "daily_population": 9600753,
+    "reference_observation": 1661963,
+    "issuer_evidence": 983583,
+    "evidence_graph": 1514784,
+    "identity_quality": 88339,
+    "accepted_price": 906514,
+    "raw_price_hit": 2269921,
+    "lifecycle_event": 164783,
+    "identity_lifecycle_review_queue": 370531
+  },
+  "sessions": 1280,
+  "rules_sha256": "c6f4e6ec87b966f8b75480fdc88d672abe4f622c13a5b2c56c4a581a80cc55fb",
+  "identity": {
+    "all_ids": 88339,
+    "common_ids": 15262,
+    "all_levels": {
+      "C": 84732,
+      "A": 2375,
+      "B": 1232
+    },
+    "common_levels": {
+      "C": 11655,
+      "A": 2375,
+      "B": 1232
+    },
+    "common_tier2_pass": {
+      "numerator": 2375,
+      "denominator": 15262,
+      "pct": 15.5615
+    },
+    "common_unresolved": {
+      "numerator": 12887,
+      "denominator": 15262,
+      "pct": 84.4385
+    },
+    "ordinary_current_stable": {
+      "numerator": 2372,
+      "denominator": 5286,
+      "pct": 44.8733
+    }
+  },
+  "membership": {
+    "confirmed": {
+      "numerator": 4963139,
+      "denominator": 6929009,
+      "pct": 71.6284
+    },
+    "probable": {
+      "numerator": 1465617,
+      "denominator": 6929009,
+      "pct": 21.1519
+    },
+    "unknown": {
+      "numerator": 500253,
+      "denominator": 6929009,
+      "pct": 7.2197
+    },
+    "conflict": {
+      "numerator": 500253,
+      "denominator": 6929009,
+      "pct": 7.2197
+    },
+    "confirmed_non_member": {
+      "numerator": 0,
+      "denominator": 6929009,
+      "pct": 0.0
+    },
+    "supported": {
+      "numerator": 6428756,
+      "denominator": 6929009,
+      "pct": 92.7803
+    },
+    "denominator_scope": "observed common candidate member-days; absent candidates unknown, not counted as nonmembers"
+  },
+  "population": {
+    "minimum": 6817,
+    "maximum": 8601,
+    "median": 7217.0,
+    "common_minimum": 5161,
+    "common_maximum": 6001,
+    "sessions_with_rows": 1280,
+    "large_daily_changes": []
+  },
+  "replay": [
+    {
+      "date": "2021-09-02",
+      "population": 7902,
+      "common": 5620,
+      "membership_unknown": 0,
+      "later_disappeared": 4221,
+      "exchange": {
+        "NASDAQ": 4485,
+        "NYSE": 3141,
+        "AMEX": 276
+      },
+      "absent_prior_observed_unknown_ids": 30,
+      "absent_common_unknown_ids": 3
+    },
+    {
+      "date": "2021-11-12",
+      "population": 8136,
+      "common": 5775,
+      "membership_unknown": 0,
+      "later_disappeared": 4316,
+      "exchange": {
+        "NASDAQ": 4704,
+        "NYSE": 3154,
+        "AMEX": 278
+      },
+      "absent_prior_observed_unknown_ids": 2149,
+      "absent_common_unknown_ids": 379
+    },
+    {
+      "date": "2022-07-01",
+      "population": 8381,
+      "common": 5979,
+      "membership_unknown": 1354,
+      "later_disappeared": 4324,
+      "exchange": {
+        "NASDAQ": 4945,
+        "NYSE": 3154,
+        "AMEX": 282
+      },
+      "absent_prior_observed_unknown_ids": 14205,
+      "absent_common_unknown_ids": 2551
+    },
+    {
+      "date": "2022-06-01",
+      "population": 8404,
+      "common": 5942,
+      "membership_unknown": 1307,
+      "later_disappeared": 4375,
+      "exchange": {
+        "NASDAQ": 4969,
+        "NYSE": 3152,
+        "AMEX": 283
+      },
+      "absent_prior_observed_unknown_ids": 12039,
+      "absent_common_unknown_ids": 2264
+    },
+    {
+      "date": "2023-01-26",
+      "population": 8070,
+      "common": 5792,
+      "membership_unknown": 1348,
+      "later_disappeared": 3802,
+      "exchange": {
+        "NASDAQ": 4737,
+        "NYSE": 3038,
+        "AMEX": 295
+      },
+      "absent_prior_observed_unknown_ids": 29841,
+      "absent_common_unknown_ids": 4967
+    },
+    {
+      "date": "2023-07-06",
+      "population": 7612,
+      "common": 5293,
+      "membership_unknown": 1254,
+      "later_disappeared": 3205,
+      "exchange": {
+        "NASDAQ": 4378,
+        "NYSE": 2927,
+        "AMEX": 307
+      },
+      "absent_prior_observed_unknown_ids": 39077,
+      "absent_common_unknown_ids": 5920
+    },
+    {
+      "date": "2024-03-22",
+      "population": 7200,
+      "common": 5177,
+      "membership_unknown": 1350,
+      "later_disappeared": 2519,
+      "exchange": {
+        "NASDAQ": 4077,
+        "NYSE": 2820,
+        "AMEX": 303
+      },
+      "absent_prior_observed_unknown_ids": 51229,
+      "absent_common_unknown_ids": 6551
+    },
+    {
+      "date": "2024-05-16",
+      "population": 7136,
+      "common": 5211,
+      "membership_unknown": 1340,
+      "later_disappeared": 2394,
+      "exchange": {
+        "NASDAQ": 4028,
+        "NYSE": 2804,
+        "AMEX": 304
+      },
+      "absent_prior_observed_unknown_ids": 53400,
+      "absent_common_unknown_ids": 6668
+    },
+    {
+      "date": "2025-09-02",
+      "population": 7018,
+      "common": 5209,
+      "membership_unknown": 43,
+      "later_disappeared": 1539,
+      "exchange": {
+        "NASDAQ": 3994,
+        "NYSE": 2735,
+        "AMEX": 289
+      },
+      "absent_prior_observed_unknown_ids": 67791,
+      "absent_common_unknown_ids": 8103
+    },
+    {
+      "date": "2025-10-01",
+      "population": 7041,
+      "common": 5215,
+      "membership_unknown": 43,
+      "later_disappeared": 1481,
+      "exchange": {
+        "NASDAQ": 4022,
+        "NYSE": 2733,
+        "AMEX": 286
+      },
+      "absent_prior_observed_unknown_ids": 68481,
+      "absent_common_unknown_ids": 8218
+    },
+    {
+      "date": "2026-01-14",
+      "population": 7021,
+      "common": 5202,
+      "membership_unknown": 43,
+      "later_disappeared": 1214,
+      "exchange": {
+        "NASDAQ": 4013,
+        "NYSE": 2716,
+        "AMEX": 292
+      },
+      "absent_prior_observed_unknown_ids": 71423,
+      "absent_common_unknown_ids": 8630
+    },
+    {
+      "date": "2026-04-20",
+      "population": 7104,
+      "common": 5187,
+      "membership_unknown": 40,
+      "later_disappeared": 1028,
+      "exchange": {
+        "NASDAQ": 4107,
+        "NYSE": 2705,
+        "AMEX": 292
+      },
+      "absent_prior_observed_unknown_ids": 74286,
+      "absent_common_unknown_ids": 9010
+    }
+  ],
+  "causality": {
+    "future_listing_or_interval_leakage_rows": 0,
+    "accepted_price_cross_identity_rows": 0,
+    "limitations": "Zero detected against installed boundaries only; missing IPO/class evidence cannot certify zero real-world leakage",
+    "reused_or_fragmented_tickers": 4824,
+    "common_ids_with_reuse_or_fragmentation": 8893
+  },
+  "disappeared": {
+    "common_ids": 9976,
+    "history_retained": {
+      "numerator": 9976,
+      "denominator": 9976,
+      "pct": 100.0
+    },
+    "unexplained_end_ids": 9972,
+    "verified_terminal_ids": 4
+  },
+  "price": {
+    "raw_ticker_date_availability": {
+      "numerator": 2259445,
+      "denominator": 6929009,
+      "pct": 32.6085
+    },
+    "legacy_bounded_availability": {
+      "numerator": 5472884,
+      "denominator": 6929009,
+      "pct": 78.9851
+    },
+    "accepted_raw": {
+      "numerator": 906514,
+      "denominator": 6929009,
+      "pct": 13.0829
+    },
+    "feature_presence": {
+      "numerator": 5473303,
+      "denominator": 6929009,
+      "pct": 78.9911
+    },
+    "comparison_conflict_ids": 831,
+    "any_bounded_basis_availability": {
+      "numerator": 5539539,
+      "denominator": 6929009,
+      "pct": 79.9471
+    },
+    "accepted_rows_with_comparison_conflict": 0,
+    "conflict_free_accepted_raw": {
+      "numerator": 906514,
+      "denominator": 6929009,
+      "pct": 13.0829
+    },
+    "denominator_scope": "all observed common member-days across 2021-2026; no liquidity/strategy filter"
+  },
+  "delisted_price": {
+    "disappeared_legacy_bounded": {
+      "numerator": 505052,
+      "denominator": 1924869,
+      "pct": 26.2383
+    },
+    "disappeared_accepted_raw": {
+      "numerator": 67375,
+      "denominator": 1924869,
+      "pct": 3.5002
+    }
+  },
+  "lifecycle": {
+    "detected_material_event_records": 11852,
+    "resolved": {
+      "numerator": 13,
+      "denominator": 11852,
+      "pct": 0.1097
+    },
+    "unresolved": 11839,
+    "by_type": [
+      {
+        "event_type": "listing",
+        "confidence": "verified",
+        "n": 1
+      },
+      {
+        "event_type": "name_change",
+        "confidence": "candidate",
+        "n": 6
+      },
+      {
+        "event_type": "ticker_change",
+        "confidence": "verified",
+        "n": 3
+      },
+      {
+        "event_type": "split",
+        "confidence": "verified",
+        "n": 1
+      },
+      {
+        "event_type": "exchange_transfer",
+        "confidence": "verified",
+        "n": 2
+      },
+      {
+        "event_type": "reverse_split",
+        "confidence": "candidate",
+        "n": 771
+      },
+      {
+        "event_type": "trading_suspension",
+        "confidence": "verified",
+        "n": 4
+      },
+      {
+        "event_type": "split",
+        "confidence": "candidate",
+        "n": 106
+      },
+      {
+        "event_type": "observation_end",
+        "confidence": "candidate",
+        "n": 9972
+      },
+      {
+        "event_type": "class_transition",
+        "confidence": "candidate",
+        "n": 853
+      },
+      {
+        "event_type": "merger",
+        "confidence": "verified",
+        "n": 3
+      },
+      {
+        "event_type": "exchange_transfer",
+        "confidence": "candidate",
+        "n": 131
+      },
+      {
+        "event_type": "new_observation",
+        "confidence": "candidate",
+        "n": 9647
+      }
+    ],
+    "terminal_economics_enabled": 0,
+    "notes": "common-candidate event records include observation-end suspicions; not legal delisting counts; verified event != verified cash settlement"
+  },
+  "survivorship_audit": {
+    "seed": "stock-radar-database-2026-10-08-v1",
+    "strata": {
+      "active_common": {
+        "eligible": 5286,
+        "selected": 50,
+        "shortfall": 0,
+        "ids_sha256": "c8b7a37f3b7b212e755d7dcec7d784850134632b2d270b05a5d507f6bffd05ed"
+      },
+      "verified_listing_cessation": {
+        "eligible": 4,
+        "selected": 4,
+        "shortfall": 46,
+        "ids_sha256": "8c0e6cfb58fc23d5de06bfb5f81f80a831304ab8af230c5f2f217915739e33eb"
+      },
+      "verified_rename": {
+        "eligible": 2,
+        "selected": 2,
+        "shortfall": 48,
+        "ids_sha256": "6d01cb4da034ab1a8499a320702262dd7b48f9f81bfeb38414ccffb2b55a6a2c"
+      },
+      "verified_merger_acquisition": {
+        "eligible": 3,
+        "selected": 3,
+        "shortfall": 47,
+        "ids_sha256": "a27bd6185f573b7c192e1fc584ff7cf23967445cd4af0bee3e08d73299db650f"
+      },
+      "common_reuse_identity_risk": {
+        "eligible": 11655,
+        "selected": 50,
+        "shortfall": 0,
+        "ids_sha256": "f958fc1c12b94106f9683195c6bd1f56540e2ffdf7e728e8819feb00aa052f45"
+      }
+    },
+    "sample_records": 109,
+    "history_retention_pass": {
+      "numerator": 109,
+      "denominator": 109,
+      "pct": 100.0
+    },
+    "research_complete": {
+      "numerator": 19,
+      "denominator": 109,
+      "pct": 17.4312
+    },
+    "rows_sha256": "bad024aef033f66219aa037525ef9e2df5c5b4a512c8fead8fedffd48c083c67",
+    "shortfalls_are_not_fabricated": true
+  },
+  "delisted_survival": {
+    "cases": [
+      {
+        "security_id": "SEC-0000886158-COMMON",
+        "last_eligible_session": "2023-05-02",
+        "membership": true,
+        "native_scanner_mapping": true,
+        "bounded_price_rows": 419,
+        "feature_rows": 419,
+        "pass": true
+      },
+      {
+        "security_id": "SEC-0000718877-COMMON",
+        "last_eligible_session": "2023-10-12",
+        "membership": true,
+        "native_scanner_mapping": true,
+        "bounded_price_rows": 532,
+        "feature_rows": 532,
+        "pass": true
+      },
+      {
+        "security_id": "SEC-0001353283-COMMON",
+        "last_eligible_session": "2024-03-15",
+        "membership": true,
+        "native_scanner_mapping": true,
+        "bounded_price_rows": 638,
+        "feature_rows": 638,
+        "pass": true
+      },
+      {
+        "security_id": "SEC-0001418091-COMMON",
+        "last_eligible_session": "2022-10-27",
+        "membership": true,
+        "native_scanner_mapping": true,
+        "bounded_price_rows": 292,
+        "feature_rows": 292,
+        "pass": true
+      }
+    ],
+    "passed": {
+      "numerator": 4,
+      "denominator": 4,
+      "pct": 100.0
+    },
+    "scope": "verified cessation/M&A; scanner eligibility is mapping eligibility, not an asserted profitable signal"
+  },
+  "review_queue": {
+    "common_reason_counts": {
+      "unexplained_observation_end": 9972,
+      "ticker_reuse_or_unresolved_fragmentation": 8893,
+      "issuer_name_disagreement_or_missing": 6046,
+      "insufficient_dated_issuer_evidence": 5395,
+      "price_continuity_review": 1859,
+      "material_event_unresolved": 1416,
+      "source_price_conflict": 831,
+      "security_class_transition": 618,
+      "unverified_exchange_transfer": 131,
+      "multiple_cik": 22
+    },
+    "common_review_ids": 12887,
+    "other_class_review_ids": 73077,
+    "no_manual_whole_market_review": true
+  },
+  "tier": {
+    "current": "Tier 1 Exploratory PIT",
+    "tier2_checks": {
+      "membership_supported": false,
+      "identity": false,
+      "accepted_raw_prices": false,
+      "material_events": false,
+      "disappeared_retention": true,
+      "future_leakage": true,
+      "reuse_isolation": true,
+      "confirmed_terminal_sample": false
+    },
+    "criteria_met": {
+      "numerator": 3,
+      "denominator": 8,
+      "pct": 37.5
+    },
+    "maintenance": false,
+    "architecture_contract_tests_required": 18,
+    "composite_completion": "not reported: unlike denominators cannot support a meaningful overall completion percentage"
+  },
+  "input_locks_unchanged": {
+    "master": true,
+    "master_manifest": true,
+    "rules": true,
+    "trust": true,
+    "references": true,
+    "reference_evidence": true,
+    "snapshot_audit": true,
+    "accepted_prices": true,
+    "accepted_manifest": true,
+    "raw_prices": true,
+    "raw_manifest": true,
+    "feature_store": true,
+    "external_prices": true,
+    "splits": true,
+    "dividends": true,
+    "disagreements": true,
+    "market_calendar": true,
+    "builder_code": true,
+    "database_code": true
+  },
+  "inherited_official_raw_hashes_verified": {
+    "atvi": true,
+    "twtr": true,
+    "splk": true,
+    "ostk": true,
+    "bbby-new": true,
+    "bbby-old-nasdaq": true,
+    "pltr": true,
+    "nvda": true,
+    "baba": true,
+    "fb": true,
+    "iren-2025": true,
+    "iren-rename": true,
+    "iren-2026": true
+  },
+  "protected_artifacts_unchanged_since_previous_receipt": {
+    "data\\market.duckdb": true,
+    "data\\phase2-research-v2-frozen.duckdb": true,
+    "data\\phase2-research.duckdb": true,
+    "data\\phase2-source-snapshot.duckdb": true,
+    "data\\security-master.csv": true,
+    "data\\security-master-manifest.json": true,
+    "data\\security-master-feature-store.json": true,
+    "data\\pit\\normalized\\533905312e4c19ef2f80558d80c06c1b644f3eefc01fbba0c703904f1dc8bdaa\\pit-research.duckdb": true,
+    "config\\pit_final_run_plan.json": true,
+    "data\\pit\\research-final\\focused-resolutions\\accepted-holding-prices.json": true,
+    "data\\pit\\research-final\\focused-resolutions\\candidate-audit.json": true,
+    "data\\pit\\research-final\\focused-resolutions\\core-rank-stability.json": true,
+    "data\\pit\\research-final\\focused-resolutions\\dated-class-facts.json": true,
+    "data\\pit\\research-final\\focused-resolutions\\inputs.json": true,
+    "data\\pit\\research-final\\focused-resolutions\\missingness-impact.json": true,
+    "data\\pit\\research-final\\focused-resolutions\\priority-queue.json": true,
+    "data\\pit\\research-final\\focused-resolutions\\readiness.json": true,
+    "data\\pit\\research-final\\focused-resolutions\\score-stress.json": true,
+    "data\\pit\\research-final\\identity-safe-bounds\\core-rank-stability.json": true,
+    "data\\pit\\research-final\\identity-safe-bounds\\inputs.json": true,
+    "data\\pit\\research-final\\identity-safe-bounds\\missingness-impact.json": true,
+    "data\\pit\\research-final\\identity-safe-bounds\\readiness.json": true,
+    "data\\pit\\research-final\\identity-safe-bounds\\score-stress.json": true,
+    "data\\pit\\research-final\\rules-freeze.json": true
+  },
+  "audit_code_sha256": "f21240d1d65c2ef65063513f698ac4022f0915b15cf3eeaa857c87655d06a6fd",
+  "source_acquisition": [
+    {
+      "source": "cik",
+      "origin": "SEC",
+      "pin": "7883b83389836f9bba9bdfe53031467235746334",
+      "snapshots": 143,
+      "first_available": "2021-12-26",
+      "latest_available": "2025-02-28"
+    },
+    {
+      "source": "nasdaq",
+      "origin": "NASDAQ",
+      "pin": "3bfa59eee648599edb0f1f7c33755cf3790038be",
+      "snapshots": 33,
+      "first_available": "2024-10-08",
+      "latest_available": "2026-10-01"
+    }
+  ],
+  "targeted_supplement": {
+    "security_id": "SEC-0000886158-COMMON",
+    "rows": 419,
+    "features": 419,
+    "source": {
+      "url": "https://data.alpaca.markets/v2/stocks/bars",
+      "request": {
+        "timeframe": "1Day",
+        "start": "2021-09-01T00:00:00-04:00",
+        "end": "2023-05-02T23:59:59.999999-04:00",
+        "adjustment": "raw",
+        "feed": "sip",
+        "asof": "2023-05-02",
+        "limit": 10000,
+        "sort": "asc",
+        "symbols": "BBBY"
+      },
+      "status": 200,
+      "raw_sha256": "86ff0ef43f339b0566e86fe52358b648038ac53f4c82f0b453e231d8b141738c",
+      "retrieved_at": "2026-10-08T06:03:52.109306+00:00",
+      "source_version": "Alpaca-v2:86ff0ef43f339b0566e86fe52358b648038ac53f4c82f0b453e231d8b141738c",
+      "license": "existing account local research; no raw redistribution"
+    },
+    "benchmark_source": {
+      "url": "https://data.alpaca.markets/v2/stocks/bars",
+      "request": {
+        "timeframe": "1Day",
+        "start": "2021-09-01T00:00:00-04:00",
+        "end": "2023-05-02T23:59:59.999999-04:00",
+        "adjustment": "raw",
+        "feed": "sip",
+        "asof": "2023-05-02",
+        "limit": 10000,
+        "sort": "asc",
+        "symbols": "SPY,QQQ"
+      },
+      "status": 200,
+      "raw_sha256": "be45cd8f9c728c94a3bd00c2ef3bab60791e0b14be58d56dc6480f5d5ef4062d",
+      "retrieved_at": "2026-10-08T06:03:53.957220+00:00",
+      "source_version": "Alpaca-v2:be45cd8f9c728c94a3bd00c2ef3bab60791e0b14be58d56dc6480f5d5ef4062d",
+      "license": "existing account local research; no raw redistribution"
+    },
+    "config_sha256": "ea87411ac10a5b448211651df5e26a58e38166cf5fe5656037e255b6dc52e292",
+    "formula_version": "phase2a_f_v3_asof",
+    "installer_sha256": "e6531cd4018586b41fa7d4aa9fb388f84b303849862a5a83d90712a6cd419006",
+    "limitations": [
+      "cross-sectional ranks not recomputed",
+      "material/terminal economics remain disabled",
+      "does not change root native features"
+    ]
+  },
+  "validation": {
+    "new_test_cases": 37,
+    "requested_contracts_covered": 18,
+    "requested_contracts": 18,
+    "all_tests_passed": 544,
+    "all_tests_seconds": 88.47,
+    "environment": "STOCK_RADAR_TEST_LEAN=1",
+    "warning": "existing websockets.legacy DeprecationWarning",
+    "inspection_notebook_code_cells_executed": true
+  }
+}

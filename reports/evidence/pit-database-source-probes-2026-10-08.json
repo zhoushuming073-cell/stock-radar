@@ -1,0 +1,47 @@
+[
+  {
+    "url": "https://www.sec.gov/Archives/edgar/full-index/2025/QTR1/master.idx",
+    "final_url": "https://www.sec.gov/Archives/edgar/full-index/2025/QTR1/master.idx",
+    "status": 403,
+    "error": "HTTP Error 403: Forbidden",
+    "sha256": "8693a5612ac965112eb838c5e6d6ef34e907b80c229283e5be245cff50f41b59",
+    "bytes": 4818,
+    "captured_at": "2026-10-08T05:14:26.879219+00:00"
+  },
+  {
+    "url": "https://data.sec.gov/submissions/CIK0000718877.json",
+    "final_url": "https://data.sec.gov/submissions/CIK0000718877.json",
+    "status": 403,
+    "error": "HTTP Error 403: Forbidden",
+    "sha256": "a5bcaa8ae57d89355def497248811c7a92d7fc9e965895b493bfa472ba46739c",
+    "bytes": 4819,
+    "captured_at": "2026-10-08T05:14:27.003910+00:00"
+  },
+  {
+    "url": "https://efts.sec.gov/LATEST/search-index?forms=25-NSE&dateRange=custom&startdt=2021-09-01&enddt=2026-10-07&from=0&size=100",
+    "final_url": "https://efts.sec.gov/LATEST/search-index?forms=25-NSE&dateRange=custom&startdt=2021-09-01&enddt=2026-10-07&from=0&size=100",
+    "status": 403,
+    "error": "HTTP Error 403: Forbidden",
+    "sha256": "5b3be6298f098924e8ed061f745fcca4cb7e52dbb349cf1c0847372b9e031e65",
+    "bytes": 4819,
+    "captured_at": "2026-10-08T05:14:27.375144+00:00"
+  },
+  {
+    "url": "https://api.github.com/repos/jadchaar/sec-cik-mapper/commits?per_page=1",
+    "final_url": "https://api.github.com/repos/jadchaar/sec-cik-mapper/commits?per_page=1",
+    "status": 403,
+    "error": "HTTP Error 403: rate limit exceeded",
+    "sha256": "a981262ef3f2e08dc6a2e909f9663b410089befe396a69a92b56dfeff5b32fb2",
+    "bytes": 277,
+    "captured_at": "2026-10-08T05:14:27.279179+00:00"
+  },
+  {
+    "url": "https://api.github.com/repos/datasets/nasdaq-listings/commits?per_page=1",
+    "final_url": "https://api.github.com/repos/datasets/nasdaq-listings/commits?per_page=1",
+    "status": 403,
+    "error": "HTTP Error 403: rate limit exceeded",
+    "sha256": "a981262ef3f2e08dc6a2e909f9663b410089befe396a69a92b56dfeff5b32fb2",
+    "bytes": 277,
+    "captured_at": "2026-10-08T05:14:27.561876+00:00"
+  }
+]
