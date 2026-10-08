@@ -15,6 +15,11 @@ from radar.research.infrastructure import shape_research_universe_v1
 from .contracts import validate_pair_manifest, validate_sample_manifest
 from .render import RENDERER_VERSION, render_blind_png
 
+SINGLE_CHOICES = {"很喜欢", "一般", "不喜欢", "看不懂"}
+REASON_CHOICES = {"下跌未停", "承接明显", "拉升已过", "疑似形态异常"}
+PAIR_CHOICES = {"A更值得继续观察", "B更值得继续观察", "都不好", "难判断"}
+CONFIDENCE_CHOICES = {"高", "中", "低"}
+
 
 @dataclass(frozen=True)
 class VisionPilotConfig:
@@ -72,7 +77,10 @@ def _calendar_guard(dates: pd.Series) -> None:
     unique = pd.DatetimeIndex(pd.to_datetime(dates).dt.normalize().unique()).sort_values()
     if len(unique) == 0:
         raise ValueError("empty decision dates")
-    sessions = calendar.sessions_in_range(unique.min(), unique.max()).tz_localize(None).normalize()
+    sessions = pd.DatetimeIndex(calendar.sessions_in_range(unique.min(), unique.max()))
+    if sessions.tz is not None:
+        sessions = sessions.tz_localize(None)
+    sessions = sessions.normalize()
     invalid = unique.difference(sessions)
     if len(invalid):
         raise ValueError("non-session decision dates: " + ",".join(str(x.date()) for x in invalid[:10]))
@@ -105,7 +113,7 @@ def _deterministic_pool(api, cfg: VisionPilotConfig, target: int) -> pd.DataFram
     ]
     if strata.empty:
         raise ValueError("no eligible visual windows")
-    per = max(1, math.ceil((target * 4) / len(strata)))
+    per = max(2, math.ceil((target * 6) / len(strata)))
     frames: list[pd.DataFrame] = []
     for r in strata.itertuples():
         query = """SELECT security_id,decision_date,length,split_assignment,membership_status,shape_research_status
@@ -119,7 +127,9 @@ def _deterministic_pool(api, cfg: VisionPilotConfig, target: int) -> pd.DataFram
     pool["_order"] = pool.apply(
         lambda r: _opaque_id(cfg.seed, r.security_id, str(r.decision_date), int(r.length), size=64), axis=1
     )
-    return pool.sort_values("_order").drop(columns="_order")
+    # Pilot diversity: one decision window per security. Later active learning may
+    # deliberately revisit the same issuer; P0/P1 should not be dominated by it.
+    return pool.sort_values("_order").drop_duplicates(["security_id"]).drop(columns="_order")
 
 
 def _render_rows(root: Path, api, rows: pd.DataFrame, cfg: VisionPilotConfig, anchor_map: dict[tuple, str]) -> pd.DataFrame:
@@ -182,32 +192,34 @@ def _build_pairs(manifest: pd.DataFrame, cfg: VisionPilotConfig) -> pd.DataFrame
     base["_order"] = base["blind_id"].map(lambda x: _opaque_id(cfg.seed, "pair", x, size=64))
     base = base.sort_values(["split_assignment", "window_length", "_order"])
     pairs: list[dict[str, Any]] = []
+    seen: set[tuple[str, str]] = set()
     for (split, length), group in base.groupby(["split_assignment", "window_length"], sort=True):
         rows = list(group.itertuples(index=False))
-        used: set[int] = set()
-        for i, left in enumerate(rows):
-            if i in used:
-                continue
-            right_index = next(
-                (j for j in range(i + 1, len(rows)) if j not in used and rows[j].security_id != left.security_id),
-                None,
-            )
-            if right_index is None:
-                continue
-            right = rows[right_index]
-            used.update({i, right_index})
-            pair_id = "pair-" + _opaque_id(cfg.seed, left.blind_id, right.blind_id)
-            pairs.append(
-                {
-                    "pair_id": pair_id,
-                    "left_task_id": left.task_id,
-                    "right_task_id": right.task_id,
-                    "left_blind_id": left.blind_id,
-                    "right_blind_id": right.blind_id,
-                    "window_length": int(length),
-                    "split_assignment": str(split),
-                }
-            )
+        if len(rows) < 2:
+            continue
+        for shift in range(1, len(rows)):
+            for i, left in enumerate(rows):
+                right = rows[(i + shift) % len(rows)]
+                if left.security_id == right.security_id:
+                    continue
+                identity = tuple(sorted((str(left.blind_id), str(right.blind_id))))
+                if identity in seen:
+                    continue
+                seen.add(identity)
+                pair_id = "pair-" + _opaque_id(cfg.seed, *identity)
+                pairs.append(
+                    {
+                        "pair_id": pair_id,
+                        "left_task_id": left.task_id,
+                        "right_task_id": right.task_id,
+                        "left_blind_id": left.blind_id,
+                        "right_blind_id": right.blind_id,
+                        "window_length": int(length),
+                        "split_assignment": str(split),
+                    }
+                )
+                if len(pairs) >= cfg.pair_count:
+                    break
             if len(pairs) >= cfg.pair_count:
                 break
         if len(pairs) >= cfg.pair_count:
@@ -218,7 +230,7 @@ def _build_pairs(manifest: pd.DataFrame, cfg: VisionPilotConfig) -> pd.DataFrame
 
 
 def _local_url(cfg: VisionPilotConfig, image_path: str) -> str:
-    return f"{cfg.local_files_prefix}/{image_path}".replace("//images", "/images")
+    return f"{cfg.local_files_prefix}/{image_path}"
 
 
 def build_label_studio_bundle(root: str | Path, config_path: str | Path) -> dict[str, Any]:
@@ -241,15 +253,12 @@ def build_label_studio_bundle(root: str | Path, config_path: str | Path) -> dict
         wanted = max(cfg.single_count - len(anchor_frame), 0)
         pool = _deterministic_pool(api, cfg, max(wanted, cfg.single_count))
         if not anchor_frame.empty:
-            pool = pool[
-                ~pool.set_index(["security_id", "decision_date", "length"]).index.isin(
-                    anchor_frame.set_index(["security_id", "decision_date", "length"]).index
-                )
-            ]
-        selected = pd.concat([anchor_frame, pool.head(wanted)], ignore_index=True)
-        selected = selected.head(cfg.single_count)
+            pool = pool[~pool["security_id"].isin(set(anchor_frame["security_id"].astype(str)))]
+        selected = pd.concat([anchor_frame, pool.head(wanted)], ignore_index=True).head(cfg.single_count)
         if len(selected) != cfg.single_count:
             raise ValueError("could not construct requested pilot")
+        if selected["security_id"].duplicated().any():
+            raise ValueError("P0/P1 pilot must use unique securities before deliberate repeats")
         _calendar_guard(selected["decision_date"])
         manifest = _render_rows(root, api, selected, cfg, anchor_map)
         manifest = _add_repeats(manifest, cfg)
@@ -261,12 +270,7 @@ def build_label_studio_bundle(root: str | Path, config_path: str | Path) -> dict
     manifest.to_json(output / "sample-manifest.jsonl", orient="records", lines=True, date_format="iso")
     pairs.to_parquet(output / "pair-manifest.parquet", index=False)
     singles = [
-        {
-            "data": {
-                "image": _local_url(cfg, str(r.image_path)),
-                "task_id": str(r.task_id),
-            }
-        }
+        {"data": {"image": _local_url(cfg, str(r.image_path)), "task_id": str(r.task_id)}}
         for r in manifest.itertuples(index=False)
     ]
     by_task = manifest.set_index("task_id")
@@ -283,14 +287,19 @@ def build_label_studio_bundle(root: str | Path, config_path: str | Path) -> dict
                 }
             }
         )
-    (output / "label-studio-single-tasks.json").write_text(json.dumps(singles, ensure_ascii=False, indent=2), encoding="utf-8")
-    (output / "label-studio-pair-tasks.json").write_text(json.dumps(pair_tasks, ensure_ascii=False, indent=2), encoding="utf-8")
+    (output / "label-studio-single-tasks.json").write_text(
+        json.dumps(singles, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    (output / "label-studio-pair-tasks.json").write_text(
+        json.dumps(pair_tasks, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
     receipt = {
         "version": cfg.version,
         "infrastructure_hash": fingerprint,
         "renderer_version": RENDERER_VERSION,
         "single_unique": int((manifest["task_kind"] == "single").sum()),
         "single_repeats": int((manifest["task_kind"] == "single_repeat").sum()),
+        "unique_securities": int(manifest.loc[manifest["task_kind"] == "single", "security_id"].nunique()),
         "pairs": len(pairs),
         "allowed_splits": list(cfg.allowed_splits),
         "window_lengths": list(cfg.window_lengths),
@@ -298,7 +307,9 @@ def build_label_studio_bundle(root: str | Path, config_path: str | Path) -> dict
         "strategy2_scores_read": False,
         "unknown_membership_included": False,
     }
-    (output / "bundle-receipt.json").write_text(json.dumps(receipt, ensure_ascii=False, indent=2), encoding="utf-8")
+    (output / "bundle-receipt.json").write_text(
+        json.dumps(receipt, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
     return receipt
 
 
@@ -318,6 +329,11 @@ def _choice_map(annotation: dict[str, Any]) -> dict[str, list[str]]:
     return out
 
 
+def _one(values: dict[str, list[str]], key: str) -> str | None:
+    picked = values.get(key) or []
+    return picked[0] if picked else None
+
+
 def import_label_studio_export(
     export_path: str | Path,
     manifest_path: str | Path,
@@ -328,6 +344,8 @@ def import_label_studio_export(
 ) -> pd.DataFrame:
     """Normalize Label Studio export without joining future outcome labels."""
     tasks = json.loads(Path(export_path).read_text(encoding="utf-8"))
+    if not isinstance(tasks, list):
+        raise ValueError("Label Studio export must be a JSON task list")
     manifest = pd.read_parquet(manifest_path)
     known_single = set(manifest["task_id"].astype(str))
     known_pairs: set[str] = set()
@@ -352,19 +370,21 @@ def import_label_studio_export(
             "updated_at": str(annotation.get("updated_at", "")),
         }
         if key in known_pairs:
-            record.update(
-                {
-                    "preference": (choices.get("preference") or [None])[0],
-                    "confidence": (choices.get("pair_confidence") or [None])[0],
-                }
-            )
+            preference = _one(choices, "preference")
+            confidence = _one(choices, "pair_confidence")
+            if preference not in PAIR_CHOICES or confidence not in CONFIDENCE_CHOICES:
+                raise ValueError("invalid or incomplete pair annotation")
+            record.update({"preference": preference, "confidence": confidence})
         else:
+            overall = _one(choices, "overall_setup")
+            confidence = _one(choices, "confidence")
+            reasons = choices.get("reasons", [])
+            if overall not in SINGLE_CHOICES or confidence not in CONFIDENCE_CHOICES:
+                raise ValueError("invalid or incomplete single annotation")
+            if not set(reasons) <= REASON_CHOICES:
+                raise ValueError("unknown subjective reason")
             record.update(
-                {
-                    "overall_setup": (choices.get("overall_setup") or [None])[0],
-                    "reasons": "|".join(choices.get("reasons", [])),
-                    "confidence": (choices.get("confidence") or [None])[0],
-                }
+                {"overall_setup": overall, "reasons": "|".join(sorted(reasons)), "confidence": confidence}
             )
         rows.append(record)
     result = pd.DataFrame.from_records(rows)
@@ -387,6 +407,8 @@ def repeat_consistency(labels: pd.DataFrame, manifest: pd.DataFrame) -> dict[str
         columns={"task_id": "original_task_id", "blind_id": "repeat_group"}
     )
     mapping = repeats.merge(original, on="repeat_group", how="inner")
+    if labels.empty:
+        return {"repeat_groups": len(mapping), "comparable": 0, "agreement": None}
     values = labels[labels["task_kind"] == "single"].set_index("task_id")["overall_setup"].to_dict()
     pairs = [(values.get(r.original_task_id), values.get(r.task_id)) for r in mapping.itertuples(index=False)]
     comparable = [(a, b) for a, b in pairs if a is not None and b is not None]
