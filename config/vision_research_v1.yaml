@@ -1,4 +1,5 @@
-version: vision-research-p0p1-v1
+version: vision-research-p0p1-v2
+# v2: round-robin split/year/window sampling; interleaved repeat tasks/pairs.
 
 output_dir: data/vision-research/pilot-v1
 

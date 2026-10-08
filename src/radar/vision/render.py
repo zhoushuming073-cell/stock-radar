@@ -8,7 +8,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-RENDERER_VERSION = "mplfinance-blind-v1"
+RENDERER_VERSION = "mplfinance-blind-v2"
 
 
 def _deps():
@@ -30,6 +30,8 @@ def _prepare(window: pd.DataFrame) -> pd.DataFrame:
     missing = [c for c in required if c not in window]
     if missing:
         raise ValueError("missing OHLCV columns: " + ",".join(missing))
+    if set(window) != set(required):
+        raise ValueError('only canonical normalized OHLCV may enter the renderer')
     frame = window[required].copy()
     frame["date"] = pd.to_datetime(frame["date"])
     if frame.empty or frame["date"].duplicated().any() or not frame["date"].is_monotonic_increasing:
@@ -37,6 +39,8 @@ def _prepare(window: pd.DataFrame) -> pd.DataFrame:
     values = frame[["open", "high", "low", "close", "volume"]].to_numpy(dtype=float)
     if not np.isfinite(values).all() or (values[:, :4] <= 0).any() or (values[:, 4] < 0).any():
         raise ValueError("invalid OHLCV")
+    if (frame.high < frame[['open','low','close']].max(axis=1)).any() or (frame.low > frame[['open','close']].min(axis=1)).any():
+        raise ValueError('invalid OHLCV bounds')
     frame = frame.set_index("date").rename(
         columns={"open": "Open", "high": "High", "low": "Low", "close": "Close", "volume": "Volume"}
     )
@@ -71,18 +75,19 @@ def render_blind_png(window: pd.DataFrame, path: str | Path | None = None) -> tu
         axisoff=True,
         returnfig=True,
         figsize=(8, 6),
-        tight_layout=True,
+        tight_layout=False,
         warn_too_much_data=10000,
     )
-    for ax in axes:
+    for i, ax in enumerate(axes):
+        # Fixed canvas and margins protect the first/last candles from cropping.
+        ax.set_position([.035,.30,.93,.665] if i < 2 else [.035,.045,.93,.21])
+        ax.set_xlim(-1,len(frame))
         ax.set_axis_off()
     buf = BytesIO()
     fig.savefig(
         buf,
         format="png",
         dpi=120,
-        bbox_inches="tight",
-        pad_inches=0,
         metadata={"Software": "Stock Radar", "Renderer": RENDERER_VERSION},
     )
     plt.close(fig)

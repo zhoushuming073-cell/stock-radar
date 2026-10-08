@@ -190,7 +190,7 @@ def write_manifest(tmp_path):
 
 def annotation(task_id, overall):
     return {
-        "data": {"task_id": task_id, "image": "/data/local-files/?d=blind.png"},
+        "data": {"task_id": task_id, "image": "/data/local-files/?d=x/images/aaaaaaaaaaaa.png"},
         "annotations": [
             {
                 "completed_by": 1,
