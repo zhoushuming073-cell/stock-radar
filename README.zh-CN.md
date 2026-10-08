@@ -127,6 +127,8 @@ Stock Radar 正在从“追求漂亮历史净值曲线”重新聚焦到 **形�
 
 此前随机盲图 Single/Pair Pilot 继续作为 P0/P1 工程验收证据，但“不加上下文地完成50张Single+25组Pair”不再是当前研究任务。现行主线见 [Quant + Vision Fusion Research Plan v1](docs/QUANT_VISION_FUSION_RESEARCH_PLAN.md)。
 
+[量化研究论文阅读包](docs/literature/README.md)：17 份 PDF、16 篇不同论文，覆盖价格形态、机器学习、因子检验和回测过拟合，附版本说明、来源链接及阅读顺序。
+
 长期目标不是复制一个覆盖所有资产和执行方式的机构级通用交易系统，而是做成一个可复现的 **Personal Quantitative Stock Radar**：把个人交易语言变成机器可以稳定搜索、可以证伪、可以长期积累的数据流程，并作为人工 / GPT 盘前研究的第一层候选生成器。
 ### 主要能力
 

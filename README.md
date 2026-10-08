@@ -129,6 +129,8 @@ Current research branches:
 
 The earlier random blind Single/Pair pilot remains valid P0/P1 engineering evidence, but its 50+25 human-label task is no longer the active research path. See [active Quant+Vision plan](docs/QUANT_VISION_FUSION_RESEARCH_PLAN.md).
 
+[Research literature reading pack](docs/literature/README.md): 17 PDF files covering 16 distinct studies on chart patterns, machine learning, factor testing, and backtest overfitting, with a versioned catalog and source links.
+
 The long-term goal is not to reproduce a universal institutional trading stack. It is to build a reproducible **personal quantitative stock radar** that turns a discretionary selection process into something measurable, falsifiable and useful as the first stage of a human/GPT research workflow.
 ### What it includes
 
