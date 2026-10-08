@@ -1,0 +1,29 @@
+<View>
+  <Header value="只看截止当时的K线和成交量；不知道就选“看不懂”。"/>
+  <View style="max-width:700px;">
+    <Image name="image" value="$image" maxWidth="700px" zoom="true" rotateControl="false"/>
+  </View>
+
+  <Header value="整体感觉"/>
+  <Choices name="overall_setup" toName="image" choice="single" required="true" showInLine="true">
+    <Choice value="很喜欢"/>
+    <Choice value="一般"/>
+    <Choice value="不喜欢"/>
+    <Choice value="看不懂"/>
+  </Choices>
+
+  <Header value="可选原因（不是硬规则，可以不选）"/>
+  <Choices name="reasons" toName="image" choice="multiple" showInLine="true">
+    <Choice value="下跌未停"/>
+    <Choice value="承接明显"/>
+    <Choice value="拉升已过"/>
+    <Choice value="疑似形态异常"/>
+  </Choices>
+
+  <Header value="你对这次判断有多确定"/>
+  <Choices name="confidence" toName="image" choice="single" required="true" showInLine="true">
+    <Choice value="高"/>
+    <Choice value="中"/>
+    <Choice value="低"/>
+  </Choices>
+</View>

@@ -1,0 +1,117 @@
+{
+  "date": "2026-10-08",
+  "commit": "efc092aa6e042e21e56365a0e6c878b8332ba803",
+  "branch": "vision-p0-p1-infrastructure",
+  "infrastructure_hash": "74b765911a8a4f18b2074cd8d9e529b25b54afade15309a148b0ca43340b80be",
+  "config_version": "vision-research-p0p1-v2",
+  "config_sha256": "d1f5d6946186f167d0e0d3f95c94f2660d0c56952ddc0c47b3a44ab0ef0c33ce",
+  "shape_dataset_versions": [
+    "0ee4ddb99d115c467e75967c87a68cb3a55e6357c35f0e298946a5bfa3b51035"
+  ],
+  "renderer_version": "mplfinance-blind-v2",
+  "renderer_dependencies": {
+    "mplfinance": "0.12.10b0",
+    "matplotlib": "3.11.2",
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "Pillow": "12.3.0"
+  },
+  "sampling_policy": "round-robin-split-year-window-v2; one unique security",
+  "sampling_seed": 20261008,
+  "label_schema_version": "human-vision-v1",
+  "artifact_hashes": {
+    "sample-manifest.parquet": "38545a93d21d122f3a93f05850e3199b24081ef86d3f8bd23977a21085d46c50",
+    "pair-manifest.parquet": "5de4db02da367019ccdeb9a8327031df8f6cba6b884681e3094f9f3c83fdb799",
+    "label-studio-single-tasks.json": "8dd1af4859678d257d0dfbd484d58d4ee278b6ca4a167625ea468d468f08fdd1",
+    "label-studio-pair-tasks.json": "c23d9dacd3da341a297d03623d90d92ff3dd579cff350630c70abd2a7ca8b88e"
+  },
+  "canonical_ohlcv_hash_set_sha256": "a80100d2316503ea0819eb5b0bcc84ea73b69e509d546894e1c726f10c955252",
+  "normalized_hash_set_sha256": "063d1b76f66548e84e87f79f6bd14b9a10473266eb2123d089ae8a886a3cc74c",
+  "image_hash_set_sha256": "1002daa976023c9e2b1ad7cbbce2d2139ee55f5a630204e2606510ad05316df0",
+  "sample_counts": {
+    "unique_single": 250,
+    "repeat": 25,
+    "single_tasks": 275,
+    "pairs": 125,
+    "unique_security": 250
+  },
+  "split_counts": {
+    "train": 175,
+    "validation": 75
+  },
+  "window_counts": {
+    "60": 146,
+    "126": 104
+  },
+  "year_counts": {
+    "2021": 23,
+    "2022": 51,
+    "2023": 52,
+    "2024": 74,
+    "2025": 50
+  },
+  "membership_counts": {
+    "confirmed_member": 206,
+    "probable_member": 44
+  },
+  "readiness_counts": {
+    "READY": 129,
+    "READY_WITH_MINOR_UNCERTAINTY": 121
+  },
+  "pair_split_counts": {
+    "train": 63,
+    "validation": 62
+  },
+  "pair_window_counts": {
+    "60": 63,
+    "126": 62
+  },
+  "anchor_coverage": {
+    "requested": 4,
+    "participating": 4,
+    "verified_disappeared": 2,
+    "verified_acquired": 2
+  },
+  "bundle_verifier": {
+    "status": "PASS",
+    "single_tasks": 275,
+    "pairs": 125,
+    "unique_images": 250,
+    "repeats": 25,
+    "splits": [
+      "train",
+      "validation"
+    ],
+    "image_hashes_verified": 275,
+    "canonical_windows_verified": 500,
+    "visible_identity_or_outcome_fields": 0,
+    "dimensions": [
+      960,
+      720
+    ],
+    "source_read_only_and_unchanged": true
+  },
+  "deterministic_rebuild_identical": true,
+  "leakage_checks": {
+    "historical_test_samples": 0,
+    "fresh_oos_samples": 0,
+    "unknown_membership": 0,
+    "visible_identity_fields": 0,
+    "future_outcome_read": false,
+    "strategy2_score_read": false
+  },
+  "manual_review": {
+    "single_count": 20,
+    "pair_count": 10,
+    "leakage": "PASS",
+    "visual_quality": "PASS",
+    "windows": [
+      60,
+      126
+    ],
+    "included_anchors": 4
+  },
+  "human_annotations": 0,
+  "status": "PASS",
+  "privacy": "Aggregate counts and hashes only; private artifacts remain gitignored local data"
+}

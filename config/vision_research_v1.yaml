@@ -1,0 +1,29 @@
+version: vision-research-p0p1-v2
+# v2: round-robin split/year/window sampling; interleaved repeat tasks/pairs.
+
+output_dir: data/vision-research/pilot-v1
+
+pilot:
+  seed: 20261008
+  single_count: 250
+  pair_count: 125
+  repeat_fraction: 0.10
+  window_lengths: [60, 126]
+  allowed_splits: [train, validation]
+
+label_studio:
+  # Run Label Studio with data/ as the local-files document root.
+  document_root: data
+  local_files_prefix: /data/local-files/?d=vision-research/pilot-v1
+
+# These anchors are private sampling strata only. Their ticker/status is never
+# written into Label Studio task data or image filenames.
+anchors:
+  - security_id: SEC-0000886158-COMMON
+    kind: verified_disappeared
+  - security_id: SEC-0001418091-COMMON
+    kind: verified_disappeared
+  - security_id: SEC-0000718877-COMMON
+    kind: verified_acquired
+  - security_id: SEC-0001353283-COMMON
+    kind: verified_acquired

@@ -1,0 +1,26 @@
+<View>
+  <Header value="盲选：只比较图形本身，不猜股票和未来结果。"/>
+  <View style="display:flex; gap:16px;">
+    <View style="width:50%;">
+      <Header value="A"/>
+      <Image name="image_a" value="$image_a" zoom="true" rotateControl="false"/>
+    </View>
+    <View style="width:50%;">
+      <Header value="B"/>
+      <Image name="image_b" value="$image_b" zoom="true" rotateControl="false"/>
+    </View>
+  </View>
+
+  <Choices name="preference" toName="image_a" choice="single" required="true">
+    <Choice value="A更值得继续观察"/>
+    <Choice value="B更值得继续观察"/>
+    <Choice value="都不好"/>
+    <Choice value="难判断"/>
+  </Choices>
+
+  <Choices name="pair_confidence" toName="image_a" choice="single" required="true" showInLine="true">
+    <Choice value="高"/>
+    <Choice value="中"/>
+    <Choice value="低"/>
+  </Choices>
+</View>
