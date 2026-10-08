@@ -1,6 +1,8 @@
 # Vision P0/P1：盲态人工标注基础设施
 
-状态：**代码基建已建立；尚未训练模型。**
+状态：**P0 PASS / P1 INFRASTRUCTURE PASS；正式人工标注 NOT_STARTED；模型训练 NOT_STARTED。**
+
+真实本地 Pilot、测试和 Label Studio 验收见 [2026-10-08 验收报告](../reports/vision-p0-p1-pilot-acceptance-2026-10-08.md)。这表示可以开始人工标注，不表示视觉策略有效或 Ground Truth 已完成。
 
 这套基础设施按 `docs/VISION_DEEP_LEARNING_RESEARCH_PLAN.md` 的 P0/P1 实施。目标不是先追收益，而是先建立可复现、无明显未来泄漏的人工 Ground Truth。
 
@@ -51,7 +53,9 @@ Label Studio 建议使用独立虚拟环境，避免它的大依赖树污染 Sto
 .\scripts\start_vision_label_studio.ps1
 ```
 
-脚本会打开本地 Label Studio，并把 `data/` 设为允许读取的 local-files 根目录。不要把这个服务暴露到公网。
+脚本只监听 `127.0.0.1:8123`，手动打开 `http://localhost:8123`；`data/` 是唯一 local-files 根目录。不要把这个服务暴露到公网。账号与随机密码保存在本机忽略目录 `data/vision-research/label-studio/local-login.json`，不要上传或分享这个文件。
+
+Label Studio 使用独立 Python 3.11 环境。本机已安装；首次在其他电脑安装可用 `-Python311 <实际 python.exe 路径>` 指定 Python 3.11，脚本会核验版本，不会改主研究环境。
 
 ## 4. 生成并验收首轮盲态任务
 
@@ -99,6 +103,7 @@ Label Studio 建议使用独立虚拟环境，避免它的大依赖树污染 Sto
 主要文件：
 
 - `images/<opaque-id>.png`
+- `windows/<opaque-id>-ohlcv.parquet` 和 `windows/<opaque-id>-normalized.parquet`（canonical 输入、独立哈希）
 - `sample-manifest.parquet`
 - `pair-manifest.parquet`
 - `label-studio-single-tasks.json`
@@ -107,9 +112,21 @@ Label Studio 建议使用独立虚拟环境，避免它的大依赖树污染 Sto
 
 图片文件名是哈希化 opaque ID，不包含 ticker / 日期。
 
+抽样 v2 按 split/year/window 分层轮流取样，每个 security 最多一张唯一图；故意重复任务与普通任务混排，ID 外观一致。当前 PNG renderer 为 `mplfinance-blind-v2`，固定 960×720。图像 SHA 绑定依赖环境；canonical OHLCV hash 是底层研究真相。已开始正式人工标注时，生成脚本会拒绝重建同一 bundle，以防任务漂移。
+
 ## 5. 在 Label Studio 标注
 
 建立两个本地项目。
+
+**本机已经配置好，无需再次导入：**
+
+- Single 正式人工项目：`http://localhost:8123/projects/1/data`（275 个任务，含25个重复）。
+- Pair 正式人工项目：`http://localhost:8123/projects/3/data`（125组）。
+- 项目名含 `SMOKE — NOT HUMAN GROUND TRUTH` 的两个项目只用于验收，不用于正式标注。
+
+在正式项目点击 **Label All Tasks** 开始。先做 **50张 Single +25组 Pair**，然后暂停，由 Codex 导出并检查类别、置信度、看不懂/难判断比例、重复图一致性和标注耗时。不要一口气完成全部，不要查股票身份或后来走势。
+
+在其他电脑重建项目时，除了下述模板与 JSON 导入，还须在项目 **Settings → Cloud Storage → Add Source Storage → Local Files** 添加实际的 `data/vision-research/pilot-v1/images` 绝对路径；仅用于图片访问授权，**不要 Sync**，否则会额外生成不符合合同的图片任务。Label Studio 1.23 的本地文件访问要求项目级存储授权，仅设置环境变量不够。参考 [官方本地存储说明](https://labelstud.io/guide/storage.html#Local-storage)。
 
 ### 单图项目
 
@@ -161,12 +178,16 @@ Labeling config：
 从 Label Studio 导出 JSON，然后：
 
 ```powershell
-& .\.venv\Scripts\python.exe scripts\import_vision_labels.py .\data\vision-research\pilot-v1\label-studio-export.json
+& .\.venv\Scripts\python.exe scripts\import_vision_labels.py .\data\vision-research\single-export.json --kind single
+& .\.venv\Scripts\python.exe scripts\import_vision_labels.py .\data\vision-research\pair-export.json --kind pair
 ```
 
 默认写入：
 
-`data/vision-research/pilot-v1/human-labels.parquet`
+- Single：`data/vision-research/pilot-v1/human-single-labels.parquet`
+- Pair：`data/vision-research/pilot-v1/human-pair-labels.parquet`
+
+同一任务重新标注后导入会按 task ID 更新，保留之前的其他标签；不同 label version 不混写。测试导出必须添加 `--smoke`，固定使用 `smoke-vision-v1`，写到独立 `data/vision-research/smoke/smoke-single-labels.parquet` 或 `smoke-pair-labels.parquet`。含 `meta.label_origin=smoke` 的任务不能按正式标签版本导入。
 
 导入器会：
 
@@ -175,6 +196,8 @@ Labeling config：
 - 不连接未来 outcome；
 - 计算重复图的简单自洽率；
 - 保留 label version / 标注时间 / 标注者来源。
+
+Pair 项目只保存偏好和置信度，不产生单图重复一致性。正式一致性仅在用户亲自标注后计算；smoke 的一致性只证明映射机制可用，不代表人的判断质量。
 
 ## 7. 研究纪律
 

@@ -123,7 +123,7 @@ add human-labelled pattern evaluation and calibrate target-hit probabilities:
 Planned research branches:
 
 - **Quant** — structured features, interpretable pattern scores and probability models.
-- **Vision** — a separate future path using standardized candlestick/volume images to test whether visual representations capture structure missed by hand-crafted features.
+- **Vision** — an independent chart/volume research path. Local blind snapshots and Label Studio passed P0/P1 acceptance; human Ground Truth and model training are not started. See [pilot acceptance](reports/vision-p0-p1-pilot-acceptance-2026-10-08.md) and [labeling guide](docs/VISION_LABELING_INFRASTRUCTURE.md).
 - **Fusion** — compare Quant-only, Vision-only and agreement between the two.
 - **Intraday** — candidate-only minute data for support, reversal and execution-confirmation research rather than full-market minute data as the starting point.
 
@@ -175,7 +175,8 @@ remain local.
 - [x] Parameter-grid, stage-ablation, and rolling walk-forward experiments
 - [x] Private Sites integration and unattended local updates
 - [x] Canonical run configuration, Scanner outcome labels, event counts, filter funnel, and local PIT import boundary
-- [ ] Human-labelled chart-snapshot dataset for pattern ground truth
+- [x] Blind chart snapshots and local Label Studio infrastructure (P0/P1 acceptance)
+- [ ] First human Ground Truth batch (50 Single +25 Pair), consistency review and dataset completion
 - [x] Forward-outcome Precision/Lift at configurable Top-K, cooldown event Precision/Lift, MFE/MAE and primary-outcome regime breakdowns
 - [ ] Human-labelled pattern retrieval Precision/Recall and chart ground-truth evaluation
 - [ ] Fixed-horizon target-hit probability research and calibration
