@@ -20,19 +20,21 @@
 - 四个已核验 later-disappeared/acquired security 仅作为隐藏样本 anchor。
 - 真实 identity/date 只写入 gitignored private manifest；任务 JSON 只有 opaque ID 和本地图片地址。
 - Label Studio export 可回收为统一 parquet，并计算重复标注一致性。
+- 新增 `scripts/verify_vision_labeling.py`：生成任务后自动检查图片 hash、任务/manifest 对应、可见字段泄漏、split 边界和 membership 边界。
 
 ## 尚未完成
 
 - 尚未在用户本机安装新增 optional dependencies。
 - 尚未对 540 万级冻结研究底座实际生成首轮 250 张 pilot。
 - 尚未运行新增完整 pytest。
+- 尚未运行 bundle verifier 的真实 pilot 验收。
 - 尚未产生任何人工标签。
 - 尚未评估标注一致性。
 - 尚未训练 M1。
 - 尚未生成未来 outcome 评价。
 - 尚未运行 QC。
 
-因此本报告不能写 P0/P1 PASS，只表示实现骨架已经进入可执行状态。
+因此本报告不能写 P0/P1 PASS，只表示实现骨架已经进入可执行状态。**合并 main 前必须在真实本地冻结数据上完成：全量测试 → pilot 生成 → bundle verifier PASS。**
 
 ## 开源复用边界
 
