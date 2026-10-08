@@ -234,7 +234,7 @@ $env:STOCK_RADAR_TEST_LEAN='1'
     evidence['report_generator']=freeze_file(Path(__file__))
     dump(destination,evidence)
     if source.exists():source.unlink()  # this task's generated intermediate; durable copy just written
-    print(json.dumps({'report':'reports/pit-research-final-acceptance-2026-10-07.md',
+    print(json.dumps({'report':'reports/acceptance/pit-research-final-acceptance-2026-10-07.md',
         'current_symbol_top3':comparisons,'protected_unchanged':len(protected),'full_tests':468},indent=2),flush=True)
 
 
