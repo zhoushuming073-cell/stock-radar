@@ -53,7 +53,7 @@ Label Studio 建议使用独立虚拟环境，避免它的大依赖树污染 Sto
 
 脚本会打开本地 Label Studio，并把 `data/` 设为允许读取的 local-files 根目录。不要把这个服务暴露到公网。
 
-## 4. 生成首轮盲态任务
+## 4. 生成并验收首轮盲态任务
 
 默认配置：
 
@@ -69,11 +69,26 @@ Label Studio 建议使用独立虚拟环境，避免它的大依赖树污染 Sto
 - 每个普通抽样 security 首轮最多一张图；
 - 不读取未来 outcome 或 Strategy 2 score。
 
-执行：
+生成：
 
 ```powershell
 & .\.venv\Scripts\python.exe scripts\prepare_vision_labeling.py
 ```
+
+生成后必须立即验收：
+
+```powershell
+& .\.venv\Scripts\python.exe scripts\verify_vision_labeling.py
+```
+
+只有 verifier 返回 `status: PASS` 后，才把任务导入 Label Studio。验收器会核对：
+
+- task JSON 与私有 manifest 是否一一对应；
+- Label Studio 可见字段里有没有 ticker / security ID / 日期 / future / outcome / Strategy 2 信息；
+- 图片 SHA-256 是否与生成时一致；
+- 是否误用了 Historical Test / Fresh OOS；
+- 是否误纳入 unknown membership；
+- 单图、重复图和 pair 数量是否一致。
 
 输出全部位于：
 
