@@ -1,0 +1,661 @@
+{
+  "source_version": "0ee4ddb99d115c467e75967c87a68cb3a55e6357c35f0e298946a5bfa3b51035",
+  "database_sha256": "b2d11cabf686b473566fbc8623e6afd74fc55bb48baf3a85f9e43d43104e030a",
+  "scope": "Observed US common equity intervals, not complete US market; independent normalized shape research, never strict acceptance",
+  "coverage": [
+    "2021-09-01",
+    "2026-10-07",
+    1280
+  ],
+  "price": {
+    "total_observed_common_member_days": 6929009,
+    "available": {
+      "numerator": 5796676,
+      "denominator": 6929009,
+      "pct": 83.6581
+    },
+    "ready": {
+      "numerator": 5775762,
+      "denominator": 6929009,
+      "pct": 83.3562
+    },
+    "ready_of_available": {
+      "numerator": 5775762,
+      "denominator": 5796676,
+      "pct": 99.6392
+    },
+    "default_supported_ready": {
+      "numerator": 5372282,
+      "denominator": 6929009,
+      "pct": 77.5332
+    },
+    "status": {
+      "MISSING": {
+        "numerator": 1132333,
+        "denominator": 6929009,
+        "pct": 16.3419
+      },
+      "READY_WITH_MINOR_UNCERTAINTY": {
+        "numerator": 1681005,
+        "denominator": 6929009,
+        "pct": 24.2604
+      },
+      "READY": {
+        "numerator": 4094757,
+        "denominator": 6929009,
+        "pct": 59.0959
+      },
+      "QUARANTINED": {
+        "numerator": 20914,
+        "denominator": 6929009,
+        "pct": 0.3018
+      }
+    }
+  },
+  "security": {
+    "total_observed_common_ids": 15262,
+    "any_available": 8828,
+    "any_ready_candle": 8823,
+    "ready_complete_windows": {
+      "20": {
+        "supported": 7381,
+        "including_unknown": 7455
+      },
+      "40": {
+        "supported": 7022,
+        "including_unknown": 7097
+      },
+      "60": {
+        "supported": 6818,
+        "including_unknown": 6895
+      },
+      "126": {
+        "supported": 6159,
+        "including_unknown": 6328
+      }
+    },
+    "quarantined_any": 2025,
+    "entirely_missing": 6434
+  },
+  "membership": {
+    "unknown": {
+      "numerator": 500253,
+      "denominator": 6929009,
+      "pct": 7.2197
+    },
+    "confirmed_member": {
+      "numerator": 4963139,
+      "denominator": 6929009,
+      "pct": 71.6284
+    },
+    "probable_member": {
+      "numerator": 1465617,
+      "denominator": 6929009,
+      "pct": 21.1519
+    }
+  },
+  "windows": [
+    {
+      "length": 20,
+      "split_assignment": "fresh_oos",
+      "including_unknown": 0,
+      "supported": 0
+    },
+    {
+      "length": 20,
+      "split_assignment": "test",
+      "including_unknown": 1084728,
+      "supported": 1079929
+    },
+    {
+      "length": 20,
+      "split_assignment": "train",
+      "including_unknown": 3015847,
+      "supported": 2705603
+    },
+    {
+      "length": 20,
+      "split_assignment": "validation",
+      "including_unknown": 1072511,
+      "supported": 999559
+    },
+    {
+      "length": 40,
+      "split_assignment": "fresh_oos",
+      "including_unknown": 0,
+      "supported": 0
+    },
+    {
+      "length": 40,
+      "split_assignment": "test",
+      "including_unknown": 966275,
+      "supported": 961925
+    },
+    {
+      "length": 40,
+      "split_assignment": "train",
+      "including_unknown": 2883295,
+      "supported": 2578979
+    },
+    {
+      "length": 40,
+      "split_assignment": "validation",
+      "including_unknown": 945446,
+      "supported": 876021
+    },
+    {
+      "length": 60,
+      "split_assignment": "fresh_oos",
+      "including_unknown": 0,
+      "supported": 0
+    },
+    {
+      "length": 60,
+      "split_assignment": "test",
+      "including_unknown": 853891,
+      "supported": 849981
+    },
+    {
+      "length": 60,
+      "split_assignment": "train",
+      "including_unknown": 2757497,
+      "supported": 2458881
+    },
+    {
+      "length": 60,
+      "split_assignment": "validation",
+      "including_unknown": 827512,
+      "supported": 761164
+    },
+    {
+      "length": 126,
+      "split_assignment": "fresh_oos",
+      "including_unknown": 0,
+      "supported": 0
+    },
+    {
+      "length": 126,
+      "split_assignment": "test",
+      "including_unknown": 519687,
+      "supported": 517162
+    },
+    {
+      "length": 126,
+      "split_assignment": "train",
+      "including_unknown": 2372870,
+      "supported": 2107260
+    },
+    {
+      "length": 126,
+      "split_assignment": "validation",
+      "including_unknown": 482965,
+      "supported": 429953
+    }
+  ],
+  "unknown_sensitivity": {
+    "candle_addition": {
+      "numerator": 403480,
+      "denominator": 5372282,
+      "pct": 7.5104
+    },
+    "windows_by_length": {
+      "20": {
+        "exclude_unknown": 4785091,
+        "include_unknown": 5173086,
+        "addition": {
+          "numerator": 387995,
+          "denominator": 4785091,
+          "pct": 8.1084
+        }
+      },
+      "40": {
+        "exclude_unknown": 4416925,
+        "include_unknown": 4795016,
+        "addition": {
+          "numerator": 378091,
+          "denominator": 4416925,
+          "pct": 8.5601
+        }
+      },
+      "60": {
+        "exclude_unknown": 4070026,
+        "include_unknown": 4438900,
+        "addition": {
+          "numerator": 368874,
+          "denominator": 4070026,
+          "pct": 9.0632
+        }
+      },
+      "126": {
+        "exclude_unknown": 3054375,
+        "include_unknown": 3375522,
+        "addition": {
+          "numerator": 321147,
+          "denominator": 3054375,
+          "pct": 10.5143
+        }
+      }
+    },
+    "daily_maximum_addition": 595,
+    "interpretation": "Actual eligible candle/window/count sensitivity only; no strategy returns were run. Includes priced observed unknowns, not fictitious unobserved candidates."
+  },
+  "safety": {
+    "detected_future_boundary_rows": 0,
+    "ready_future_boundary_rows": 0,
+    "issuer_or_reviewed_reuse_ids": 22,
+    "issuer_or_reviewed_reuse_sessions": 14000,
+    "ready_identity_conflict_rows": 0,
+    "no_identity_conflict": {
+      "numerator": 5782676,
+      "denominator": 5796676,
+      "pct": 99.7585
+    },
+    "source_conflict_ids": 167,
+    "suspected_split_sessions": 415,
+    "known_split_events": 980,
+    "known_split_events_with_candles": 825,
+    "known_split_events_with_sane_series": 781,
+    "known_split_official_evidence": 1,
+    "invalid_action_records": 4,
+    "ready_unresolved_split_rows": 0,
+    "visual_nonready_start_or_end": 0,
+    "window_duplicates": 0,
+    "split_boundary_violations": 0,
+    "limits": "Zero detected against installed boundaries is not complete real-world IPO/class attestation; no company outcome enters tensors."
+  },
+  "survivorship": {
+    "later_disappeared": {
+      "population_retained": {
+        "numerator": 9976,
+        "denominator": 9976,
+        "pct": 100.0
+      },
+      "any_ready_candle": {
+        "numerator": 3555,
+        "denominator": 9976,
+        "pct": 35.6355
+      },
+      "supported_20_session_window": {
+        "numerator": 2251,
+        "denominator": 9976,
+        "pct": 22.5642
+      },
+      "ready_sessions": {
+        "numerator": 822889,
+        "denominator": 1924869,
+        "pct": 42.7504
+      }
+    },
+    "verified_listing_cessation": {
+      "population_retained": {
+        "numerator": 4,
+        "denominator": 4,
+        "pct": 100.0
+      },
+      "any_ready_candle": {
+        "numerator": 4,
+        "denominator": 4,
+        "pct": 100.0
+      },
+      "supported_20_session_window": {
+        "numerator": 4,
+        "denominator": 4,
+        "pct": 100.0
+      },
+      "ready_sessions": {
+        "numerator": 1878,
+        "denominator": 1881,
+        "pct": 99.8405
+      }
+    },
+    "verified_acquired": {
+      "population_retained": {
+        "numerator": 3,
+        "denominator": 3,
+        "pct": 100.0
+      },
+      "any_ready_candle": {
+        "numerator": 3,
+        "denominator": 3,
+        "pct": 100.0
+      },
+      "supported_20_session_window": {
+        "numerator": 3,
+        "denominator": 3,
+        "pct": 100.0
+      },
+      "ready_sessions": {
+        "numerator": 1462,
+        "denominator": 1462,
+        "pct": 100.0
+      }
+    }
+  },
+  "material_review_reasons": [
+    {
+      "reason": "issuer_collision_or_reviewed_ticker_reuse",
+      "source_findings": 20333,
+      "ids": 22,
+      "sessions": 14000
+    },
+    {
+      "reason": "major_unexplained_gap",
+      "source_findings": 4805,
+      "ids": 1579,
+      "sessions": 3589
+    },
+    {
+      "reason": "material_source_shape_conflict",
+      "source_findings": 1998,
+      "ids": 167,
+      "sessions": 999
+    },
+    {
+      "reason": "unresolved_split_like",
+      "source_findings": 543,
+      "ids": 351,
+      "sessions": 415
+    },
+    {
+      "reason": "missing_calendar_sessions",
+      "source_findings": 90,
+      "ids": 56,
+      "sessions": 78
+    },
+    {
+      "reason": "class_or_name_boundary",
+      "source_findings": 112,
+      "ids": 57,
+      "sessions": 78
+    },
+    {
+      "reason": "invalid_split_action",
+      "source_findings": 4,
+      "ids": 2,
+      "sessions": 2
+    }
+  ],
+  "review_queue": {
+    "source_findings": 27735,
+    "distinct_ids": 1786
+  },
+  "split_assignments": {
+    "train": [
+      "2021-09-01",
+      "2024-08-29"
+    ],
+    "validation": [
+      "2024-09-30",
+      "2025-09-08"
+    ],
+    "test": [
+      "2025-09-23",
+      "2026-09-14"
+    ],
+    "fresh_oos": [
+      "2026-09-29",
+      "2026-10-07"
+    ]
+  },
+  "rules": {
+    "version": "shape-research-v1",
+    "windows": [
+      20,
+      40,
+      60,
+      126
+    ],
+    "split_like_factors": [
+      0.01,
+      0.02,
+      0.04,
+      0.05,
+      0.1,
+      0.125,
+      0.2,
+      0.25,
+      0.3333333333,
+      0.5,
+      2,
+      3,
+      4,
+      5,
+      8,
+      10,
+      20,
+      25,
+      50,
+      100
+    ],
+    "split_ratio_tolerance": 0.03,
+    "extreme_ratio_high": 1.8,
+    "extreme_ratio_low": 0.55,
+    "maximum_intraday_high_low_ratio": 3.6,
+    "source_intraday_ratio_difference": 0.05,
+    "source_return_relative_difference": 0.1,
+    "volume_ratio_warning": 100,
+    "readiness": {
+      "minimum_available_pct": 75,
+      "minimum_ready_of_available_pct": 80,
+      "minimum_ready_disappeared_ids": 500,
+      "minimum_cessation_samples_retained": 4,
+      "minimum_train_windows_126": 100000,
+      "minimum_validation_windows_126": 10000,
+      "minimum_test_windows_126": 10000,
+      "maximum_installed_boundary_leakage": 0
+    },
+    "threshold_policy": "Gross chart corruption diagnostics, frozen before return evaluation. Readiness is local exploratory shape scope; no vendor completeness or financial performance claim.",
+    "input_policy": "Single source/basis per window; every calendar session required; entire input contained in assigned frozen time split. Split-only legacy inputs are window-normalized, never absolute PIT price or wealth inputs."
+  },
+  "readiness_checks": {
+    "ohlcv_coverage": true,
+    "majority_available_ready": true,
+    "substantive_disappeared_coverage": true,
+    "documented_cessation_cases": true,
+    "train_window_scale": true,
+    "validation_window_scale": true,
+    "test_window_scale": true,
+    "no_leaking_or_conflicted_ready_inputs": true,
+    "locked_sources_and_code_unchanged": true
+  },
+  "shape_research_state": "SHAPE_RESEARCH_READY",
+  "general_pit_tier": "Tier 1 (strict unchanged)",
+  "source_locks_unchanged": {
+    "historical_database": true,
+    "historical_manifest": true,
+    "legacy_ohlcv": true,
+    "raw_ohlcv": true,
+    "raw_manifest": true,
+    "shape_rules": true,
+    "research_config": true,
+    "builder": true,
+    "adapter": true
+  },
+  "samples": [
+    {
+      "security_id": "SEC-0000886158-COMMON",
+      "sample_available": true,
+      "metadata": {
+        "security_id": "SEC-0000886158-COMMON",
+        "series_id": "SEC-0000886158-COMMON|Alpaca SIP|raw",
+        "source": "Alpaca SIP",
+        "basis": "raw",
+        "priority": 2,
+        "historical_ticker": "BBBY",
+        "membership_status": "confirmed_member",
+        "shape_research_status": "READY",
+        "decision_date": "2023-02-03 00:00:00",
+        "length": 126,
+        "window_start": "2022-08-05 00:00:00",
+        "start_session": 234,
+        "start_run": 1.0,
+        "start_ready": true,
+        "supported_membership": true,
+        "session_no": 359,
+        "run_no": 1.0,
+        "shape_research_ready": true,
+        "split_assignment": "train",
+        "window_end": "2023-02-03 00:00:00",
+        "ohlcv_hash": "fde0520238ad84e28ab51d43aeb16f1442697e206ebb2486c1fd295f8584971d",
+        "normalized_hash": "4c5d87a4de16d2b03c5e84e9e95b4a97f3b4e8ab1fc6f4df3804fe20b4faa524",
+        "shape_readiness_status": "READY_WITH_MINOR_UNCERTAINTY",
+        "adjustment_mode": "raw",
+        "source_hash": "86ff0ef43f339b0566e86fe52358b648038ac53f4c82f0b453e231d8b141738c",
+        "dataset_version": "0ee4ddb99d115c467e75967c87a68cb3a55e6357c35f0e298946a5bfa3b51035"
+      },
+      "image": "reports\\evidence\\shape-samples-2026-10-08\\SEC-0000886158-COMMON.svg",
+      "svg_sha256": "67becd0bd71b0b4226f820a7949dacb316a866a766c5315984374d9830dff4d0",
+      "tensor_sha256": "c4ac892ba3efea48a53fd622f7b25c30459696df704bae47953c6cfe854e3845",
+      "repeat_identical": true
+    },
+    {
+      "security_id": "SEC-0000718877-COMMON",
+      "sample_available": true,
+      "metadata": {
+        "security_id": "SEC-0000718877-COMMON",
+        "series_id": "SEC-0000718877-COMMON|legacy:post-no-preference/stocks:public_eod|split",
+        "source": "legacy:post-no-preference/stocks:public_eod",
+        "basis": "split",
+        "priority": 1,
+        "historical_ticker": "ATVI",
+        "membership_status": "confirmed_member",
+        "shape_research_status": "READY",
+        "decision_date": "2023-10-12 00:00:00",
+        "length": 126,
+        "window_start": "2023-04-14 00:00:00",
+        "start_session": 407,
+        "start_run": 0.0,
+        "start_ready": true,
+        "supported_membership": true,
+        "session_no": 532,
+        "run_no": 0.0,
+        "shape_research_ready": true,
+        "split_assignment": "train",
+        "window_end": "2023-10-12 00:00:00",
+        "ohlcv_hash": "74a6c6b88cb29c5732f718da0332b68215326e1c325ea41dafcec4db813282a6",
+        "normalized_hash": "66dd8e069935bcf26fb823170a688410f5165ff9456de4cfefda4302c1d330b6",
+        "shape_readiness_status": "READY",
+        "adjustment_mode": "split",
+        "source_hash": "9c39a9f99c8fb1985b40c797a74f41dd6073872243b26584c8401347115a00ff",
+        "dataset_version": "0ee4ddb99d115c467e75967c87a68cb3a55e6357c35f0e298946a5bfa3b51035"
+      },
+      "image": "reports\\evidence\\shape-samples-2026-10-08\\SEC-0000718877-COMMON.svg",
+      "svg_sha256": "a462903a5dc3d08867a10142f68884537c79bf3537a4ae4c8a37a83e4f06f897",
+      "tensor_sha256": "f81b1880ca3ae6a8ad6221058453be04225ddc5cf4cd5ebd60746edf0d36f982",
+      "repeat_identical": true
+    },
+    {
+      "security_id": "SEC-0001418091-COMMON",
+      "sample_available": true,
+      "metadata": {
+        "security_id": "SEC-0001418091-COMMON",
+        "series_id": "SEC-0001418091-COMMON|legacy:post-no-preference/stocks:public_eod|split",
+        "source": "legacy:post-no-preference/stocks:public_eod",
+        "basis": "split",
+        "priority": 1,
+        "historical_ticker": "TWTR",
+        "membership_status": "confirmed_member",
+        "shape_research_status": "READY",
+        "decision_date": "2022-10-27 00:00:00",
+        "length": 126,
+        "window_start": "2022-04-29 00:00:00",
+        "start_session": 167,
+        "start_run": 0.0,
+        "start_ready": true,
+        "supported_membership": true,
+        "session_no": 292,
+        "run_no": 0.0,
+        "shape_research_ready": true,
+        "split_assignment": "train",
+        "window_end": "2022-10-27 00:00:00",
+        "ohlcv_hash": "b9299002578ac3512f4e9d611207ef89c5d7ae67a59f0a20d9170a06cd43e317",
+        "normalized_hash": "f3146b1bedbb6143ac09379d760bc0769a0906f0ecbb12ededd3c1455054c48c",
+        "shape_readiness_status": "READY_WITH_MINOR_UNCERTAINTY",
+        "adjustment_mode": "split",
+        "source_hash": "9c39a9f99c8fb1985b40c797a74f41dd6073872243b26584c8401347115a00ff",
+        "dataset_version": "0ee4ddb99d115c467e75967c87a68cb3a55e6357c35f0e298946a5bfa3b51035"
+      },
+      "image": "reports\\evidence\\shape-samples-2026-10-08\\SEC-0001418091-COMMON.svg",
+      "svg_sha256": "be324d91331718c437c8b0db24c097e4b963673bf208ea0199756fe2d1bac5b3",
+      "tensor_sha256": "f6df2736afcd6bd577e9ff31afc2f056702689d277ae3e111e136f4ff82fcb55",
+      "repeat_identical": true
+    },
+    {
+      "security_id": "SEC-0001353283-COMMON",
+      "sample_available": true,
+      "metadata": {
+        "security_id": "SEC-0001353283-COMMON",
+        "series_id": "SEC-0001353283-COMMON|legacy:post-no-preference/stocks:public_eod|split",
+        "source": "legacy:post-no-preference/stocks:public_eod",
+        "basis": "split",
+        "priority": 1,
+        "historical_ticker": "SPLK",
+        "membership_status": "confirmed_member",
+        "shape_research_status": "READY",
+        "decision_date": "2024-03-15 00:00:00",
+        "length": 126,
+        "window_start": "2023-09-15 00:00:00",
+        "start_session": 513,
+        "start_run": 0.0,
+        "start_ready": true,
+        "supported_membership": true,
+        "session_no": 638,
+        "run_no": 0.0,
+        "shape_research_ready": true,
+        "split_assignment": "train",
+        "window_end": "2024-03-15 00:00:00",
+        "ohlcv_hash": "64e99051dfb66fda10aa62bb3ee13d70fef445a83908ebbd412a18ff75861614",
+        "normalized_hash": "791d37a90382c4203e34ecb24c9f682495b1295b9230c11e3be768fdb45f9e21",
+        "shape_readiness_status": "READY",
+        "adjustment_mode": "split",
+        "source_hash": "9c39a9f99c8fb1985b40c797a74f41dd6073872243b26584c8401347115a00ff",
+        "dataset_version": "0ee4ddb99d115c467e75967c87a68cb3a55e6357c35f0e298946a5bfa3b51035"
+      },
+      "image": "reports\\evidence\\shape-samples-2026-10-08\\SEC-0001353283-COMMON.svg",
+      "svg_sha256": "14aca03988d971e8def200d1f829e9c13bf93392fdd6d16ce425aa34463be2b0",
+      "tensor_sha256": "829a01a889afbc0413661092d001dd6d8f96f697ed602e6514e00ef0288f4938",
+      "repeat_identical": true
+    },
+    {
+      "security_id": "SEC-0001045810-COMMON",
+      "sample_available": true,
+      "metadata": {
+        "security_id": "SEC-0001045810-COMMON",
+        "series_id": "SEC-0001045810-COMMON|legacy:alpaca:sip|split",
+        "source": "legacy:alpaca:sip",
+        "basis": "split",
+        "priority": 1,
+        "historical_ticker": "NVDA",
+        "membership_status": "confirmed_member",
+        "shape_research_status": "READY",
+        "decision_date": "2026-09-14 00:00:00",
+        "length": 126,
+        "window_start": "2026-03-16 00:00:00",
+        "start_session": 1138,
+        "start_run": 1.0,
+        "start_ready": true,
+        "supported_membership": true,
+        "session_no": 1263,
+        "run_no": 1.0,
+        "shape_research_ready": true,
+        "split_assignment": "test",
+        "window_end": "2026-09-14 00:00:00",
+        "ohlcv_hash": "db1b8b1f61e372065fec0eb9339387ef8a88f67d299c476cec85878d690090f8",
+        "normalized_hash": "ba386352c5347bea6b0cbda1196ea932b9f269f0f7a7dab2a70415401c20483d",
+        "shape_readiness_status": "READY",
+        "adjustment_mode": "split",
+        "source_hash": "9c39a9f99c8fb1985b40c797a74f41dd6073872243b26584c8401347115a00ff",
+        "dataset_version": "0ee4ddb99d115c467e75967c87a68cb3a55e6357c35f0e298946a5bfa3b51035"
+      },
+      "image": "reports\\evidence\\shape-samples-2026-10-08\\SEC-0001045810-COMMON.svg",
+      "svg_sha256": "c52a1261261aa137a75d578493f74f658af9f21b4ca1655d9b84f1e393a28cad",
+      "tensor_sha256": "d695994709aa26019eb2a97ac50c94371d74aff3bfe808e491b5c8f338ecd93f",
+      "repeat_identical": true
+    }
+  ],
+  "strict_accepted_raw_rows": 906514,
+  "no_strategy_or_training_run": true,
+  "qc_exports_or_runs": false,
+  "audit_code_sha256": "0e0180e8efb286640e03d726c20ec04f0f73ad6747b353be6cd7168945b94326",
+  "newly_assessed_raw_member_days": 257137
+}

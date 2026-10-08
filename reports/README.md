@@ -25,7 +25,11 @@ The `reports/` root is intentionally kept small: this index plus the canonical l
 The final research report below retains its explicit user-requested root path;
 its derived evidence and P0 queue follow the `evidence/` layout.
 
-## Reusable PIT database · 2026-10-08
+## Shape Research Layer · 2026-10-08
+
+[22-answer Shape readiness](shape-research-data-readiness-2026-10-08.md): **SHAPE_RESEARCH_READY**, General PIT still Tier1.83.3562% technically safe observed candles; default confirmed/probable5,372,282 /77.5332%;126-session Train/Validation/Test2,107,260 /429,953 /517,162; Fresh OOS0.573 native-inclusive tests passed. [Machine evidence](evidence/shape-research-scorecard-2026-10-08.json), [API and source/cutoff contract](../docs/SHAPE_RESEARCH_DATA_LAYER.md). Stop active vendor-grade expansion, resume local shape/factor research and visual data preparation. Missingness of disappeared IDs and previously viewed Test remain explicit limits; strict production/formal gates and source tables untouched.
+
+## Preserved General PIT database · 2026-10-08
 
 [25-answer database acceptance](pit-database-construction-acceptance-2026-10-08.md) supersedes the earlier P0-only/QC work order for this database branch. The target is a shared historical data foundation for future strategies.88,340 episodes,9,600,753 daily observation rows,906,514 accepted raw rows; old BBBY recovered419 bars/features. Overall **Tier1 Exploratory PIT / PARTIAL**, not Tier2 or maintenance.544 Native-inclusive tests passed; original root/frozen artifacts remain unchanged. [Scorecard](evidence/pit-database-scorecard-2026-10-08.json), [integration evidence](evidence/pit-database-integration-2026-10-08.json), [API contract](../docs/PIT_HISTORICAL_DATABASE.md). QC remains bounded smoke evidence only; no further reference/market export is planned.
 

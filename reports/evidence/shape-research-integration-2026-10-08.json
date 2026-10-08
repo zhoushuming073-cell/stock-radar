@@ -1,0 +1,20 @@
+{
+  "dataset_version": "0ee4ddb99d115c467e75967c87a68cb3a55e6357c35f0e298946a5bfa3b51035",
+  "actual_strategy2_frame_rows": 126,
+  "last_date": "2026-09-14",
+  "native_index_names": [
+    "date",
+    "symbol"
+  ],
+  "unchanged_native_formulas": true,
+  "future_benchmark_mutation_no_effect": true,
+  "last_row_non_null_features": 50,
+  "default_126_universe_on_sample_day": 4406,
+  "including_unknown": 4425,
+  "export_parquet_hash_verified": true,
+  "export_tensor_exact_readback": true,
+  "export_svg_exact_readback": true,
+  "documented_aug29_nvda_window_available": false,
+  "hash_verified_open_seconds": 2.9702,
+  "protected_production_provider_unchanged": true
+}

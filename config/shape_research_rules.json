@@ -1,0 +1,24 @@
+{
+  "version": "shape-research-v1",
+  "windows": [20, 40, 60, 126],
+  "split_like_factors": [0.01, 0.02, 0.04, 0.05, 0.1, 0.125, 0.2, 0.25, 0.3333333333, 0.5, 2, 3, 4, 5, 8, 10, 20, 25, 50, 100],
+  "split_ratio_tolerance": 0.03,
+  "extreme_ratio_high": 1.8,
+  "extreme_ratio_low": 0.55,
+  "maximum_intraday_high_low_ratio": 3.6,
+  "source_intraday_ratio_difference": 0.05,
+  "source_return_relative_difference": 0.1,
+  "volume_ratio_warning": 100,
+  "readiness": {
+    "minimum_available_pct": 75,
+    "minimum_ready_of_available_pct": 80,
+    "minimum_ready_disappeared_ids": 500,
+    "minimum_cessation_samples_retained": 4,
+    "minimum_train_windows_126": 100000,
+    "minimum_validation_windows_126": 10000,
+    "minimum_test_windows_126": 10000,
+    "maximum_installed_boundary_leakage": 0
+  },
+  "threshold_policy": "Gross chart corruption diagnostics, frozen before return evaluation. Readiness is local exploratory shape scope; no vendor completeness or financial performance claim.",
+  "input_policy": "Single source/basis per window; every calendar session required; entire input contained in assigned frozen time split. Split-only legacy inputs are window-normalized, never absolute PIT price or wealth inputs."
+}
