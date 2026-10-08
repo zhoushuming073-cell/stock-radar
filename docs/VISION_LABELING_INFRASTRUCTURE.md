@@ -1,6 +1,8 @@
 # Vision P0/P1：盲态人工标注基础设施
 
-状态：**P0 PASS / P1 INFRASTRUCTURE PASS；正式人工标注 NOT_STARTED；模型训练 NOT_STARTED。**
+> **当前用途更新 · 2026-10-08：** 这套 P0/P1 基建继续保留并复用，但“随机 250 图 / 125 Pair 的人工审美标注”已暂停，不再要求补完旧 50 Single +25 Pair。现行主线见 [Quant + Vision Fusion Research Plan v1](QUANT_VISION_FUSION_RESEARCH_PLAN.md)：下一批正式人工任务应由 Quant 高召回模糊筛选生成，并改用 Observe / Entry Readiness 标签。
+
+状态：**P0 PASS / P1 INFRASTRUCTURE PASS；旧随机 Pilot 正式人工标注 0、PAUSED；Quant-guided 新标注尚未生成；模型训练 NOT_STARTED。**
 
 真实本地 Pilot、测试和 Label Studio 验收见 [2026-10-08 验收报告](../reports/vision-p0-p1-pilot-acceptance-2026-10-08.md)。这表示可以开始人工标注，不表示视觉策略有效或 Ground Truth 已完成。
 
@@ -124,7 +126,7 @@ Label Studio 使用独立 Python 3.11 环境。本机已安装；首次在其他
 - Pair 正式人工项目：`http://localhost:8123/projects/3/data`（125组）。
 - 项目名含 `SMOKE — NOT HUMAN GROUND TRUTH` 的两个项目只用于验收，不用于正式标注。
 
-在正式项目点击 **Label All Tasks** 开始。先做 **50张 Single +25组 Pair**，然后暂停，由 Codex 导出并检查类别、置信度、看不懂/难判断比例、重复图一致性和标注耗时。不要一口气完成全部，不要查股票身份或后来走势。
+旧正式项目仍可用于回归/界面检查，但**不要继续把 50张 Single +25组 Pair 当作当前研究任务**。下一批正式任务将由 Quant-guided candidate pool 重新生成；用户主要标注“观察 / 不观察 / 不确定”，并可独立标注“当前可买 / 等回落或确认 / 不买 / 不确定”。Quant 分数、股票身份、日期和未来结果仍应在人工页面隐藏。
 
 在其他电脑重建项目时，除了下述模板与 JSON 导入，还须在项目 **Settings → Cloud Storage → Add Source Storage → Local Files** 添加实际的 `data/vision-research/pilot-v1/images` 绝对路径；仅用于图片访问授权，**不要 Sync**，否则会额外生成不符合合同的图片任务。Label Studio 1.23 的本地文件访问要求项目级存储授权，仅设置环境变量不够。参考 [官方本地存储说明](https://labelstud.io/guide/storage.html#Local-storage)。
 
