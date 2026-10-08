@@ -1,6 +1,6 @@
 # Vision P0/P1 基建进度 — 2026-10-08
 
-> 历史分支骨架报告，保留原始阶段证据。当前实际验收已完成，见 [真实 Pilot 验收](vision-p0-p1-pilot-acceptance-2026-10-08.md)；不要把下列旧的“尚未完成”当作当前状态。
+> 历史分支骨架报告，保留原始阶段证据。当前实际验收已完成，见 [真实 Pilot 验收](../../acceptance/vision-p0-p1-pilot-acceptance-2026-10-08.md)；不要把下列旧的“尚未完成”当作当前状态。
 
 状态：**IMPLEMENTED ON BRANCH / LOCAL PILOT NOT YET BUILT**
 

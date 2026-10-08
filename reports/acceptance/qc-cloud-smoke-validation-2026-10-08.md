@@ -2,7 +2,7 @@
 
 **两份真实 Cloud smoke 的完整 Logs/Results JSON 已导入，parser 验收均 PASS，smoke 门禁已解锁。首日 Layer1 pilot 引擎 Completed，比较回执尚未验收；后续受平台导出范围限制，正式 PIT 仍 BLOCKED。**
 
-用户已经本人登录，并授权 Codex 重测昨天中断的 Cloud 工作。本轮在现有 QC Python 项目 `37482228` 写入生成脚本、构建并运行，没有使用 paid API/CLI、Object Store 或原始行情导出。机器证据见 [Cloud observations](evidence/qc-cloud-smoke-validation-2026-10-08.json)，工程范围见 [准备验收](qc-cloud-validation-readiness-2026-10-07.md)。
+用户已经本人登录，并授权 Codex 重测昨天中断的 Cloud 工作。本轮在现有 QC Python 项目 `37482228` 写入生成脚本、构建并运行，没有使用 paid API/CLI、Object Store 或原始行情导出。机器证据见 [Cloud observations](../evidence/qc-cloud-smoke-validation-2026-10-08.json)，工程范围见 [准备验收](qc-cloud-validation-readiness-2026-10-07.md)。
 
 ## 实际 Cloud 结果
 
@@ -35,6 +35,6 @@
 
 原有468项测试保留，新增39项；完整Native-inclusive套件 **507 passed，83.78秒**，专项 **39 passed，4.71秒**。新增历史ticker复用回归直接执行smoke初始化，并要求按2022-06-06解析FB、使用历史Symbol订阅、RAW且不fill-forward。日志传输回归模拟Debug的200字符截断，确认完整Log仍能经parser验证，同时短摘要完整可读。只有既有websockets deprecation warning。
 
-本轮复核24项保护文件，23项冻结数据库/规则/PIT证据的SHA-256一致。唯一变化是实时 `data/market.duckdb`：既有Windows任务 `StockRadar-DailyUpdate` 于2026-10-08 08:51:56启动，状态succeeded，新增13,899 bars；文件修改时刻08:55:21与任务窗口一致。[归因及前后哈希](evidence/qc-protected-verification-2026-10-08.json)。本专项未修改策略、参数、数据库、accepted stores、生产LEAN或既有PIT证据，也未回滚既有日更任务。工程freeze semantic hash为 `3bb8d78981ece5acf36189f964e74fa8e0c770ea00ff419848da516fd1a96caa`；C signal hash仍为 `afa1c1d3bc2d05cded3b6874089358f0c1dc81433964a9dbb9ccb9b3a01f002c`。C信号是诊断冻结输入，不是正式PIT release。
+本轮复核24项保护文件，23项冻结数据库/规则/PIT证据的SHA-256一致。唯一变化是实时 `data/market.duckdb`：既有Windows任务 `StockRadar-DailyUpdate` 于2026-10-08 08:51:56启动，状态succeeded，新增13,899 bars；文件修改时刻08:55:21与任务窗口一致。[归因及前后哈希](../evidence/qc-protected-verification-2026-10-08.json)。本专项未修改策略、参数、数据库、accepted stores、生产LEAN或既有PIT证据，也未回滚既有日更任务。工程freeze semantic hash为 `3bb8d78981ece5acf36189f964e74fa8e0c770ea00ff419848da516fd1a96caa`；C signal hash仍为 `afa1c1d3bc2d05cded3b6874089358f0c1dc81433964a9dbb9ccb9b3a01f002c`。C信号是诊断冻结输入，不是正式PIT release。
 
 现阶段结论只覆盖Free账号的小窗口数据/身份/映射/拆股访问。它不能证明整个数据库无幸存者偏差，不能解决每日29–72 unknown competitors，也不能解除真实PIT Native与reconciliation的既有门禁。

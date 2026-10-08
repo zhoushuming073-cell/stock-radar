@@ -41,7 +41,7 @@
 
 ## 项目简介
 
-**本地数据库最终状态 · 2026-10-08：** Research Infrastructure v1 已冻结，Shape Research READY，General PIT Tier 1 作为深度/审计层。主动全市场扩建 CLOSED，维护 ACTIVE，可恢复 Strategy 2 形态/因子研究与视觉训练准备。默认安全 K 线 5,407,961 条，技术 ready 为已观测普通股交易日的 83.8733%；Fresh 决策回看已修正，正式冻结策略 QC 验证仍为 NOT_RUN。[基础设施与统一入口](docs/RESEARCH_INFRASTRUCTURE_V1.md)、[47 项收口报告](reports/research-infrastructure-v1-finalization-2026-10-08.md)。
+**本地数据库最终状态 · 2026-10-08：** Research Infrastructure v1 已冻结，Shape Research READY，General PIT Tier 1 作为深度/审计层。主动全市场扩建 CLOSED，维护 ACTIVE，可恢复 Strategy 2 形态/因子研究与视觉训练准备。默认安全 K 线 5,407,961 条，技术 ready 为已观测普通股交易日的 83.8733%；Fresh 决策回看已修正，正式冻结策略 QC 验证仍为 NOT_RUN。[基础设施与统一入口](docs/RESEARCH_INFRASTRUCTURE_V1.md)、[47 项收口报告](reports/acceptance/research-infrastructure-v1-finalization-2026-10-08.md)。
 
 **当前阶段 · 2026-10-07：** 研究基础设施和本地 LEAN 接入已验收；新增开放历史快照 PIT 重建、独立证券身份边界特征库和按日 Scanner 接入。历史身份、普通股分类及退市行情覆盖仍不完整，PIT LEAN 执行继续拒绝。
 [PIT 数据库验收报告](reports/acceptance/pit-acceptance-2026-10-07.md)记录数据来源、差异及未完成边界。
@@ -57,7 +57,7 @@ Scanner已实际计算。真实Research-Grade PIT Native LEAN仍被身份、重�
 最新决策范围审计：身份安全口径仍有29–72个/日可能竞争者，Full/Core每日Top3重合
 19.9115%；Core实际候选尚有106个未解决身份、12个执行日期及10个事件/价格审查目标。
 已接受10条SMR持仓范围补充行情，未发布新Native输入，正式PIT组合继续NOT_RUN。
-[最终20项验收](reports/pit-research-final-acceptance-2026-10-07.md)与
+[最终20项验收](reports/acceptance/pit-research-final-acceptance-2026-10-07.md)与
 [P0队列](reports/evidence/pit-research-final-priority-2026-10-07.json)给出剩余决策范围，
 不再清洗全市场无关缺口。新审计通过CLI提供，现有API/Native保持原冻结阻塞门禁。
 [本轮可信度与退出行情验收](reports/acceptance/pit-data-trust-acceptance-2026-10-07.md)记录 9 个已核验身份、1,462 条真实补价、数据库耦合、六维 readiness 和旧库定时更新例外。

@@ -4,7 +4,7 @@
 
 状态：**P0 PASS / P1 INFRASTRUCTURE PASS；旧随机 Pilot 正式人工标注 0、PAUSED；Quant-guided 新标注尚未生成；模型训练 NOT_STARTED。**
 
-真实本地 Pilot、测试和 Label Studio 验收见 [2026-10-08 验收报告](../reports/vision-p0-p1-pilot-acceptance-2026-10-08.md)。这表示可以开始人工标注，不表示视觉策略有效或 Ground Truth 已完成。
+真实本地 Pilot、测试和 Label Studio 验收见 [2026-10-08 验收报告](../reports/acceptance/vision-p0-p1-pilot-acceptance-2026-10-08.md)。这表示可以开始人工标注，不表示视觉策略有效或 Ground Truth 已完成。
 
 这套基础设施按 `docs/VISION_DEEP_LEARNING_RESEARCH_PLAN.md` 的 P0/P1 实施。目标不是先追收益，而是先建立可复现、无明显未来泄漏的人工 Ground Truth。
 

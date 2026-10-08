@@ -41,7 +41,7 @@
 
 ## Overview
 
-**Current local database status · 2026-10-08:** Research Infrastructure v1 is **FROZEN**, Shape Research is READY, General PIT is Tier 1 (deep/audit). Broad database expansion is CLOSED; maintenance and local strategy/visual research continue. Supported safe candles: 5,407,961; technical readiness: 83.8733% of observed common member-days. Fresh decision lookback is corrected; formal frozen-strategy QC validation remains NOT_RUN. [Infrastructure and default API](docs/RESEARCH_INFRASTRUCTURE_V1.md), [47-answer finalization](reports/research-infrastructure-v1-finalization-2026-10-08.md).
+**Current local database status · 2026-10-08:** Research Infrastructure v1 is **FROZEN**, Shape Research is READY, General PIT is Tier 1 (deep/audit). Broad database expansion is CLOSED; maintenance and local strategy/visual research continue. Supported safe candles: 5,407,961; technical readiness: 83.8733% of observed common member-days. Fresh decision lookback is corrected; formal frozen-strategy QC validation remains NOT_RUN. [Infrastructure and default API](docs/RESEARCH_INFRASTRUCTURE_V1.md), [47-answer finalization](reports/acceptance/research-infrastructure-v1-finalization-2026-10-08.md).
 
 **Current stage · 2026-10-07:** research infrastructure and initial local LEAN
 integration accepted; open-source historical PIT reconstruction and an independent
@@ -590,7 +590,7 @@ per day; Full/Core daily Top3 overlap is 19.9115%. Core candidates still have
 106 unresolved identities, 12 execution dates and 10 event/price review targets,
 after accepting ten independently checked SMR holding-only rows. Real PIT Native
 remains blocked; identical C/D lists do not prove robustness. See the
-[20-answer final acceptance](reports/pit-research-final-acceptance-2026-10-07.md)
+[20-answer final acceptance](reports/acceptance/pit-research-final-acceptance-2026-10-07.md)
 and [focused P0 queue](reports/evidence/pit-research-final-priority-2026-10-07.json).
 The new decision gate is an independent CLI audit; the existing API and Native
 release route retain their frozen blocked evidence.

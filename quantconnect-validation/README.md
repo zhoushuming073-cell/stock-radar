@@ -2,7 +2,7 @@
 
 Independent validation only. Production Stock Radar does not import this directory.
 
-Status: **PARTIAL**. Both actual Cloud smoke data checks were observed PASS on 2026-10-08; full downloaded receipts remain pending. Layers1–3 are **NOT_RUN**, and their import gate remains locked. See the [actual Cloud report](../reports/qc-cloud-smoke-validation-2026-10-08.md).
+Status: **PARTIAL / HOLD**. Both actual Cloud smoke full Logs/Results downloads were imported and parser-verified PASS on 2026-10-08. The first Layer1 pilot engine completed but its comparison receipt remains unverified; further batches/reference exports are on hold under the documented platform export-scope constraint. Layer2–3 remain **NOT_RUN**, and formal PIT remains **BLOCKED**. See the [actual Cloud report](../reports/acceptance/qc-cloud-smoke-validation-2026-10-08.md).
 
 - `projects/`: two self-contained, single-file Cloud smoke projects.
 - `cloud/`: QC-only data transport and derived-output protocol.
@@ -15,9 +15,9 @@ Status: **PARTIAL**. Both actual Cloud smoke data checks were observed PASS on 2
 - `work/`, `results/`: ignored staging and private actual Cloud downloads.
 
 Run from the repository root with `.venv/Scripts/python.exe -B quantconnect-validation/local.py`.
-After two actual Cloud smoke PASS receipts, stage a run from the campaign. Preview packs deliberately refuse execution until real prerequisites exist. No Object Store writes, paid API/CLI, current-list fallback, or raw QC bar exports.
+Both actual Cloud smoke PASS receipts are now imported. Do not continue the staged reference-export campaign while the documented platform export-scope hold remains in force. Preview packs continue to refuse execution when real prerequisites are absent. No Object Store writes, paid API/CLI, current-list fallback, or raw QC bar exports.
 
 The source snapshots are generated artifacts, not a second strategy owner. If source/config/transport changes, regenerate a new frozen campaign and repeat the applicable Cloud smoke. Never tune parameters to fit a Cloud result.
 
 Full mechanical instructions: [QUANTCONNECT_FREE_VALIDATION.md](../docs/QUANTCONNECT_FREE_VALIDATION.md).
-Readiness/limitations: [acceptance report](../reports/qc-cloud-validation-readiness-2026-10-07.md).
+Readiness/limitations: [acceptance report](../reports/acceptance/qc-cloud-validation-readiness-2026-10-07.md).

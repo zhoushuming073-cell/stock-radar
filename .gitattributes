@@ -14,7 +14,7 @@ tests/test_pit_decision_scope.py text eol=lf
 quantconnect-validation/** text eol=lf
 docs/QUANTCONNECT_FREE_VALIDATION.md text eol=lf
 tests/test_quantconnect_validation.py text eol=lf
-reports/qc-cloud-validation-readiness-2026-10-07.md text eol=lf
+reports/acceptance/qc-cloud-validation-readiness-2026-10-07.md text eol=lf
 # Shape code/input locks and deterministic chart bytes.
 config/shape_research_rules.json text eol=lf
 scripts/build_shape_research.py text eol=lf

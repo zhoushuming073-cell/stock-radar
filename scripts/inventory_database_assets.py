@@ -165,7 +165,7 @@ def inventory(root):
             plan.append(f'| `{a["path"]}` | {a["category"]} | {a["recommended_action"]} | {a["size"]} | {a["reason"]} |')
     plan.extend(['','Dynamic/basename-only references are REVIEW_KEEP. Existing PIT audit scripts remain explicit commands outside runtime, because tests, code locks or report reproduction reference them. Raw directories already constitute cold storage; moving locked raw paths would damage reproducibility.','',
                  'No automatic table/view drop, tracked evidence deletion or all-market data expansion. File-level actions require the recorded pre-hash, exact workspace containment, no published manifest and no live pointer. Results recorded separately.'])
-    (root/'reports/database-cleanup-plan-2026-10-08.md').write_text('\n'.join(plan)+'\n',encoding='utf-8')
+    (root/'reports/archive/plans/database-cleanup-plan-2026-10-08.md').write_text('\n'.join(plan)+'\n',encoding='utf-8')
     print(json.dumps({'assets':len(assets),'categories':dict(groups),'before':out['before']}),flush=True)
     return out
 

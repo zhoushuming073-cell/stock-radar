@@ -17,30 +17,30 @@
 | `evidence/` | Machine-readable evidence, scorecards and supporting derived artifacts |
 | `audit/` | Point-in-time architecture/audit records |
 | `archive/journeys/` | Closed, partial or roadmap journey history; not an active backlog |
+| `archive/reports/` | Superseded non-journey status/report snapshots kept for audit history |
+| `archive/plans/` | Completed or superseded operational plans kept for audit history |
 | `personal-research/` | Owner-authored research reports and preserved research conclusions |
 | `phase2/` | Historical pre-v3 research artifacts and datasets |
 | `current/` | Current stage snapshots that explain the active platform state |
 | `docs/` (repository root) | Contracts and specifications; intentionally outside `reports/` |
 
-The `reports/` root is intentionally kept small: this index plus the canonical ledger.
-The final research report below retains its explicit user-requested root path;
-its derived evidence and P0 queue follow the `evidence/` layout.
+The `reports/` root is intentionally kept small: this index plus the canonical ledger. Dated acceptance/readiness/finalization reports belong under `acceptance/`; superseded non-journey reports and completed operational plans belong under `archive/`.
 
 ## Quant + Vision Fusion research direction · 2026-10-08
 
-[Active plan](../docs/QUANT_VISION_FUSION_RESEARCH_PLAN.md): the current research path is **Quant high-recall candidate generation → Human Observe/Entry labels → Vision M1 → Quant+Vision+Human transition → frozen Quant+Vision**. The random blind Single/Pair Pilot remains valid P0/P1 infrastructure evidence but is no longer the primary human-label dataset path; its formal human Ground Truth remains0. Do not force completion of the old50 Single +25 Pair task. [Direction record](current/quant-vision-fusion-direction-2026-10-08.md), [historical P0/P1 acceptance](vision-p0-p1-pilot-acceptance-2026-10-08.md).
+[Active plan](../docs/QUANT_VISION_FUSION_RESEARCH_PLAN.md): the current research path is **Quant high-recall candidate generation → Human Observe/Entry labels → Vision M1 → Quant+Vision+Human transition → frozen Quant+Vision**. The random blind Single/Pair Pilot remains valid P0/P1 infrastructure evidence but is no longer the primary human-label dataset path; its formal human Ground Truth remains0. Do not force completion of the old50 Single +25 Pair task. [Direction record](current/quant-vision-fusion-direction-2026-10-08.md), [historical P0/P1 acceptance](acceptance/vision-p0-p1-pilot-acceptance-2026-10-08.md).
 
 ## Research Infrastructure v1 · 2026-10-08
 
-[Frozen infrastructure / 47-answer finalization](research-infrastructure-v1-finalization-2026-10-08.md): Shape READY, General PIT Tier 1 deep/audit, expansion CLOSED, maintenance ACTIVE, strategy research READY TO RESUME. 595 native-inclusive tests PASS. Combined ready 83.8733%; supported safe candles 5,407,961; Fresh supported windows 34,491 /33,745 /32,979 /30,462. Formal QC/Fresh strategy evaluation NOT_RUN. [API](../docs/RESEARCH_INFRASTRUCTURE_V1.md), [asset inventory](evidence/database-asset-inventory-2026-10-08.json), [cleanup receipt](evidence/database-cleanup-results-2026-10-08.json).
+[Frozen infrastructure / 47-answer finalization](acceptance/research-infrastructure-v1-finalization-2026-10-08.md): Shape READY, General PIT Tier 1 deep/audit, expansion CLOSED, maintenance ACTIVE, strategy research READY TO RESUME. 595 native-inclusive tests PASS. Combined ready 83.8733%; supported safe candles 5,407,961; Fresh supported windows 34,491 /33,745 /32,979 /30,462. Formal QC/Fresh strategy evaluation NOT_RUN. [API](../docs/RESEARCH_INFRASTRUCTURE_V1.md), [asset inventory](evidence/database-asset-inventory-2026-10-08.json), [cleanup receipt](evidence/database-cleanup-results-2026-10-08.json).
 
 ## Earlier Shape core acceptance · 2026-10-08 (historical snapshot)
 
-[22-answer Shape readiness](shape-research-data-readiness-2026-10-08.md): **SHAPE_RESEARCH_READY**, General PIT still Tier1.83.3562% technically safe observed candles; default confirmed/probable5,372,282 /77.5332%;126-session Train/Validation/Test2,107,260 /429,953 /517,162; Fresh OOS0.573 native-inclusive tests passed. [Machine evidence](evidence/shape-research-scorecard-2026-10-08.json), [API and source/cutoff contract](../docs/SHAPE_RESEARCH_DATA_LAYER.md). Stop active vendor-grade expansion, resume local shape/factor research and visual data preparation. Missingness of disappeared IDs and previously viewed Test remain explicit limits; strict production/formal gates and source tables untouched.
+[22-answer Shape readiness](acceptance/shape-research-data-readiness-2026-10-08.md): **SHAPE_RESEARCH_READY**, General PIT still Tier1.83.3562% technically safe observed candles; default confirmed/probable5,372,282 /77.5332%;126-session Train/Validation/Test2,107,260 /429,953 /517,162; Fresh OOS0.573 native-inclusive tests passed. [Machine evidence](evidence/shape-research-scorecard-2026-10-08.json), [API and source/cutoff contract](../docs/SHAPE_RESEARCH_DATA_LAYER.md). Stop active vendor-grade expansion, resume local shape/factor research and visual data preparation. Missingness of disappeared IDs and previously viewed Test remain explicit limits; strict production/formal gates and source tables untouched.
 
 ## Preserved General PIT database · 2026-10-08
 
-[25-answer database acceptance](pit-database-construction-acceptance-2026-10-08.md) supersedes the earlier P0-only/QC work order for this database branch. The target is a shared historical data foundation for future strategies.88,340 episodes,9,600,753 daily observation rows,906,514 accepted raw rows; old BBBY recovered419 bars/features. Overall **Tier1 Exploratory PIT / PARTIAL**, not Tier2 or maintenance.544 Native-inclusive tests passed; original root/frozen artifacts remain unchanged. [Scorecard](evidence/pit-database-scorecard-2026-10-08.json), [integration evidence](evidence/pit-database-integration-2026-10-08.json), [API contract](../docs/PIT_HISTORICAL_DATABASE.md). QC remains bounded smoke evidence only; no further reference/market export is planned.
+[25-answer database acceptance](acceptance/pit-database-construction-acceptance-2026-10-08.md) supersedes the earlier P0-only/QC work order for this database branch. The target is a shared historical data foundation for future strategies.88,340 episodes,9,600,753 daily observation rows,906,514 accepted raw rows; old BBBY recovered419 bars/features. Overall **Tier1 Exploratory PIT / PARTIAL**, not Tier2 or maintenance.544 Native-inclusive tests passed; original root/frozen artifacts remain unchanged. [Scorecard](evidence/pit-database-scorecard-2026-10-08.json), [integration evidence](evidence/pit-database-integration-2026-10-08.json), [API contract](../docs/PIT_HISTORICAL_DATABASE.md). QC remains bounded smoke evidence only; no further reference/market export is planned.
 
 ## PIT acceptance chain · 2026-10-07
 
@@ -50,8 +50,8 @@ its derived evidence and P0 queue follow the `evidence/` layout.
 4. [Data clearance](acceptance/pit-clearance-acceptance-2026-10-07.md) — IREN continuity and full source probes; Formal PIT remains blocked.
 5. [Bulk-source benchmark / trust ceiling](acceptance/pit-source-breakthrough-acceptance-2026-10-07.md) — large candidate coverage, no false formal admission.
 6. [Research-Grade PIT](acceptance/pit-research-grade-acceptance-2026-10-07.md) — **PARTIAL** research-grade evidence; real Research-Grade Native LEAN remains blocked.
-7. [Final research decision audit](pit-research-final-acceptance-2026-10-07.md) — **PARTIAL / BLOCKED**; identity-safe Core competitors 29–72/day, actual-candidate gates, Top3 and missingness stress, 468 passing tests. [Derived evidence](evidence/pit-research-final-evidence-2026-10-07.json) and [focused P0 queue](evidence/pit-research-final-priority-2026-10-07.json).
-8. [QuantConnect Free Cloud readiness](qc-cloud-validation-readiness-2026-10-07.md) and [2026-10-08 actual Cloud smoke](qc-cloud-smoke-validation-2026-10-08.md) — both complete Cloud smoke receipts imported and parser-verified PASS; first Layer1 pilot engine Completed but receipt unverified; further batches/reference exports HOLD due to actual Terms2.6 warning, Layer2–3 NOT_RUN and PIT BLOCKED. 470 date-project quota checks and507 native-inclusive tests passed. [Web instructions](../docs/QUANTCONNECT_FREE_VALIDATION.md).
+7. [Final research decision audit](acceptance/pit-research-final-acceptance-2026-10-07.md) — **PARTIAL / BLOCKED**; identity-safe Core competitors 29–72/day, actual-candidate gates, Top3 and missingness stress, 468 passing tests. [Derived evidence](evidence/pit-research-final-evidence-2026-10-07.json) and [focused P0 queue](evidence/pit-research-final-priority-2026-10-07.json).
+8. [QuantConnect Free Cloud readiness](acceptance/qc-cloud-validation-readiness-2026-10-07.md) and [2026-10-08 actual Cloud smoke](acceptance/qc-cloud-smoke-validation-2026-10-08.md) — both complete Cloud smoke receipts imported and parser-verified PASS; first Layer1 pilot engine Completed but receipt unverified; further batches/reference exports HOLD due to actual Terms2.6 warning, Layer2–3 NOT_RUN and PIT BLOCKED. 470 date-project quota checks and507 native-inclusive tests passed. [Web instructions](../docs/QUANTCONNECT_FREE_VALIDATION.md).
 
 Supporting material:
 - [Initial PIT architecture audit](audit/pit-initial-audit-2026-10-07.md)
@@ -76,6 +76,6 @@ Supporting material:
 
 - Exactly one active canonical ledger is allowed.
 - New acceptance reports go to `acceptance/`; machine evidence goes to `evidence/`; architecture audits go to `audit/`.
-- Closed or superseded journey records go to `archive/journeys/`; do not leave them in the root.
+- Closed or superseded journey records go to `archive/journeys/`; superseded non-journey reports go to `archive/reports/`; completed operational plans go to `archive/plans/`. Do not leave dated reports in the root.
 - Historical evidence is preserved rather than rewritten to make later results look cleaner.
 - Strategy logic, research parameters and trading assumptions are not changed as part of report housekeeping.

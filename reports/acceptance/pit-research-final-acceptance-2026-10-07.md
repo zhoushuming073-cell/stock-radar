@@ -8,7 +8,7 @@
 
 开始时 main 为 `525ea01fc950540283457488598a01477c8d4908`；收尾重新 fetch 并 fast-forward 至 `b798167fbed8341f21f6cf0c30e843a51f4fa5f6`，保留远端文档目录整理。按用户指定保留本报告的根目录路径，其派生 JSON 与 P0 队列放在 evidence/；没有新建第二份当前总账。
 
-已读取旧 [Research-Grade](acceptance/pit-research-grade-acceptance-2026-10-07.md)、[source breakthrough](acceptance/pit-source-breakthrough-acceptance-2026-10-07.md)、[clearance](acceptance/pit-clearance-acceptance-2026-10-07.md) 与唯一总账，重新核对原始 store、A/B/C、Core、身份、行动与 readiness。旧 Research closure semantic hash 为 `f1b4b2db60ee52a5d8f13426c9a6cd5750b337d0bd96bf05746960b92db0ac3a`；原来源 Dolt pin `vt6qeesk27k07492k5jc5b7p04mf0s6o`，CC-BY-SA-4.0。新 raw 仅留本机，无原始行情再分发。
+已读取旧 [Research-Grade](pit-research-grade-acceptance-2026-10-07.md)、[source breakthrough](pit-source-breakthrough-acceptance-2026-10-07.md)、[clearance](pit-clearance-acceptance-2026-10-07.md) 与唯一总账，重新核对原始 store、A/B/C、Core、身份、行动与 readiness。旧 Research closure semantic hash 为 `f1b4b2db60ee52a5d8f13426c9a6cd5750b337d0bd96bf05746960b92db0ac3a`；原来源 Dolt pin `vt6qeesk27k07492k5jc5b7p04mf0s6o`，CC-BY-SA-4.0。新 raw 仅留本机，无原始行情再分发。
 
 规则 `pit-research-decision-v1` 与物理输入在新分析之前冻结，semantic hash `a75524ab1dc07db301e9ced0385f80b78f437d4ed7bac4c8a90e891111098406`。旧 A/B/C Scanner label 已知，不能声称盲测；本轮未看新 Native 收益，更没有按收益修改阈值。Core 仍是历史普通股、前一 session ≥$5、126 完整 sessions、最近 20 均额 ≥$20m、每个已观察近期 session ≥$5m，前一 session 排名 cap 1000。Strategy、窗口、次日 Open、TP5%、SL−10%、最长10sessions、费用、滑点、max_new 与资本约束均未修改。
 
@@ -59,7 +59,7 @@ CLSK 2024-11-08 Alpaca 的13.57平价记录 volume=0、trade_count=0，是 **quo
 
 分母按候选可能入场后10sessions与退出边界的并集计数，并裁剪至2025-09-22。第一阶段误计的9月23日依赖及其原文件仍保留，最终采用上述分母。C feature 原始行覆盖0缺口；A/B为29/14，不等于所有特征、横截面 ranking、身份与事件都可用。
 
-C 的10个 material review目标为 SATS、NVAX、CPRI、ROOT、SRRK、AKRO、NVTS、CLSK、MSTR、SMLR；前7个是极端价格不连续/疑似split待查，不直接称为确认行动。MSTR与SMLR是2个实际持仓 mapping gap，CLSK是停牌执行问题。完整 ID/date/evidence 见 [P0 队列](evidence/pit-research-final-priority-2026-10-07.json)。不要转回全市场2,488个 material-risk IDs 清洗。
+C 的10个 material review目标为 SATS、NVAX、CPRI、ROOT、SRRK、AKRO、NVTS、CLSK、MSTR、SMLR；前7个是极端价格不连续/疑似split待查，不直接称为确认行动。MSTR与SMLR是2个实际持仓 mapping gap，CLSK是停牌执行问题。完整 ID/date/evidence 见 [P0 队列](../evidence/pit-research-final-priority-2026-10-07.json)。不要转回全市场2,488个 material-risk IDs 清洗。
 
 ## Decision Stability 与 missingness
 
@@ -212,4 +212,4 @@ $env:STOCK_RADAR_TEST_LEAN='1'
 & .\.venv\Scripts\python.exe -B -m pytest -q
 ```
 
-后续数据工作只按 [P0 队列](evidence/pit-research-final-priority-2026-10-07.json)推进，不改变冻结阈值。最新 [机器证据](evidence/pit-research-final-evidence-2026-10-07.json)含逐阶段物理hash；大体量逐日数据与合法来源raw留在本机 data/pit/research-final。未证明成功之前，RESEARCH-03继续OPEN/PARTIAL。
+后续数据工作只按 [P0 队列](../evidence/pit-research-final-priority-2026-10-07.json)推进，不改变冻结阈值。最新 [机器证据](../evidence/pit-research-final-evidence-2026-10-07.json)含逐阶段物理hash；大体量逐日数据与合法来源raw留在本机 data/pit/research-final。未证明成功之前，RESEARCH-03继续OPEN/PARTIAL。

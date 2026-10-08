@@ -6,7 +6,7 @@
 
 起点先 fetch / fast-forward 核实为 `168368de255501de6b45237037f52c3eaa1ea582`，当时工作树干净；提交前再次 fetch，远端未前进。本轮使用实际源文件和 SQL 复算，不套用上一轮数字。
 
-证据：[资产清单](evidence/database-asset-inventory-2026-10-08.json)、[清理计划](database-cleanup-plan-2026-10-08.md)、[清理回执](evidence/database-cleanup-results-2026-10-08.json)、[schema 清单](evidence/database-schema-cleanup-manifest.json)、[代码引用补充](evidence/database-code-cleanup-manifest-2026-10-08.json)、[数据复算](evidence/research-infrastructure-finalization-2026-10-08.json)、[实际接口与导出](evidence/research-infrastructure-integration-2026-10-08.json)、[测试](evidence/research-infrastructure-tests-2026-10-08.json)、[运行合同](../docs/RESEARCH_INFRASTRUCTURE_V1.md)。
+证据：[资产清单](../evidence/database-asset-inventory-2026-10-08.json)、[清理计划](../archive/plans/database-cleanup-plan-2026-10-08.md)、[清理回执](../evidence/database-cleanup-results-2026-10-08.json)、[schema 清单](../evidence/database-schema-cleanup-manifest.json)、[代码引用补充](../evidence/database-code-cleanup-manifest-2026-10-08.json)、[数据复算](../evidence/research-infrastructure-finalization-2026-10-08.json)、[实际接口与导出](../evidence/research-infrastructure-integration-2026-10-08.json)、[测试](../evidence/research-infrastructure-tests-2026-10-08.json)、[运行合同](../../docs/RESEARCH_INFRASTRUCTURE_V1.md)。
 
 ## A. 清理：1–10
 

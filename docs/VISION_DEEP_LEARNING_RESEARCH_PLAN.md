@@ -170,7 +170,7 @@ B 只能用于训练期的独立辅助学习或事后评价；绝不作为 A 的
 - Vision Model Training NOT_STARTED；Historical Test UNTOUCHED FOR THIS MODEL；Fresh OOS NOT_RUN；QC Visual Validation NOT_RUN。
 - Research Infrastructure v1继续FROZEN，Shape READY，General PIT Tier1，Database expansion CLOSED /maintenance ACTIVE；没有修改冻结SVG、Strategy2、LEAN或QC边界。
 
-证据：[真实Pilot验收报告](../reports/vision-p0-p1-pilot-acceptance-2026-10-08.md)、[测试receipt](../reports/evidence/vision-p0-p1-tests-2026-10-08.json)、[操作说明](VISION_LABELING_INFRASTRUCTURE.md)。
+证据：[真实Pilot验收报告](../reports/acceptance/vision-p0-p1-pilot-acceptance-2026-10-08.md)、[测试receipt](../reports/evidence/vision-p0-p1-tests-2026-10-08.json)、[操作说明](VISION_LABELING_INFRASTRUCTURE.md)。
 
 ## 12. 人与 Codex 的分工
 

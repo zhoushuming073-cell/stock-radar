@@ -15,7 +15,7 @@
 - 原始 canonical OHLCV 与 normalized window 各250份，独立保存在本地 Parquet；不把 PNG 当唯一模型数据。
 - 相同输入、config、seed、renderer 在本机重复生成，manifest、pair、task JSON、PNG 哈希与完整 bundle receipt 一致。
 
-完整哈希及依赖版本见 [Pilot machine receipt](evidence/vision-p0-p1-pilot-2026-10-08.json) 和 [Tests machine receipt](evidence/vision-p0-p1-tests-2026-10-08.json)。
+完整哈希及依赖版本见 [Pilot machine receipt](../evidence/vision-p0-p1-pilot-2026-10-08.json) 和 [Tests machine receipt](../evidence/vision-p0-p1-tests-2026-10-08.json)。
 
 ## 2. 实际数量与多样性
 
@@ -107,6 +107,6 @@ Native LEAN仅作为原项目回归测试运行；本轮没有执行新的QC视�
 4. 再到 `http://localhost:8123/projects/3/data` 做 **25组 Pair**，然后暂停，让 Codex 做第一次分布和一致性检查。
 5. 不进入名称含SMOKE的验收项目；不查ticker或后来走势；不确定就选“看不懂/难判断”。
 
-其他机器导入所需模板、JSON、本地图片授权和两类导出命令见 [操作说明](../docs/VISION_LABELING_INFRASTRUCTURE.md)。正式标签只由用户本人产生；Codex负责生成、核验、保存、导出和质量汇总。
+其他机器导入所需模板、JSON、本地图片授权和两类导出命令见 [操作说明](../../docs/VISION_LABELING_INFRASTRUCTURE.md)。正式标签只由用户本人产生；Codex负责生成、核验、保存、导出和质量汇总。
 
 最终阶段：**Human Ground Truth Labeling READY / NOT_STARTED；Vision Model Training NOT_STARTED；Historical Test UNTOUCHED FOR THIS MODEL；Fresh OOS NOT_RUN；QC Visual Validation NOT_RUN。** P2须等待用户第一批真实标注和一致性/分布检查，当前不进入。

@@ -6,11 +6,11 @@
 
 ## 最新基线与保护边界
 
-开始fetch/fast-forward后基线为 `412c5e464e617cf9f15b71f96ad4d481b94b9e4e`。收尾再次fetch/fast-forward至 `80b6d95`，读完新增的[LEAN/PIT只读定位](audit/pit-lean-blocker-localization-2026-10-07.md)；该提交只改文档，生产代码与冻结数据一致。保留[唯一总账](journey-2026-09-30-0651-📌当前总账.md)、[最后研究验收](pit-research-final-acceptance-2026-10-07.md)及最新[evidence](evidence/pit-research-final-evidence-2026-10-07.json)的原结论。
+开始fetch/fast-forward后基线为 `412c5e464e617cf9f15b71f96ad4d481b94b9e4e`。收尾再次fetch/fast-forward至 `80b6d95`，读完新增的[LEAN/PIT只读定位](../audit/pit-lean-blocker-localization-2026-10-07.md)；该提交只改文档，生产代码与冻结数据一致。保留[唯一总账](../journey-2026-09-30-0651-📌当前总账.md)、[最后研究验收](pit-research-final-acceptance-2026-10-07.md)及最新[evidence](../evidence/pit-research-final-evidence-2026-10-07.json)的原结论。
 
 重新读取而非硬编码当前数字：每日29–72 potential unknown Core competitors，1,346 distinct competitors；C实际327候选UID、1,264 signals，106身份未决、12执行security/session缺口、10重大事件/价格审查UID。正式真实PIT Native及reconciliation均NOT_RUN；七项门禁均未获新的PASS。既有研究API/Native门禁未替换，Current结果不作PIT基线。
 
-10月7日准备基线的24项保护哈希保存在 `quantconnect-validation/protected-verification.json`。10月8日复核23项冻结数据库/证据/规则一致，实时market.duckdb因既有每日任务独立更新；当前[核验记录](evidence/qc-protected-verification-2026-10-08.json)保留前后哈希与任务归因。原PIT closure semantic hash仍为 `f1b4b2db60ee52a5d8f13426c9a6cd5750b337d0bd96bf05746960b92db0ac3a`。本专项未修改策略、参数、原数据库、原接受store、原冻结证据与生产LEAN路径；既有每日任务的实时行情更新未回滚。仅新增独立目录、测试和文档导航。
+10月7日准备基线的24项保护哈希保存在 `quantconnect-validation/protected-verification.json`。10月8日复核23项冻结数据库/证据/规则一致，实时market.duckdb因既有每日任务独立更新；当前[核验记录](../evidence/qc-protected-verification-2026-10-08.json)保留前后哈希与任务归因。原PIT closure semantic hash仍为 `f1b4b2db60ee52a5d8f13426c9a6cd5750b337d0bd96bf05746960b92db0ac3a`。本专项未修改策略、参数、原数据库、原接受store、原冻结证据与生产LEAN路径；既有每日任务的实时行情更新未回滚。仅新增独立目录、测试和文档导航。
 
 ## 已交付与实测
 
@@ -75,7 +75,7 @@ Free配额、网页回测与Tier权限根据本轮查看的[资源文档](https:
 
 先取得并导入已完成的mapping与split完整日志/Results JSON；随后首日Layer1，优先回答unknown竞争者，按冲突生成官方调查；之后Layer2和已验证SID/正式本地基线下的Layer3。本轮没有继续清洗全市场，也没有按将来的QC结果预先豁免P0。
 
-操作入口：[QUANTCONNECT_FREE_VALIDATION.md](../docs/QUANTCONNECT_FREE_VALIDATION.md)。单一状态是 **Cloud完整smoke回执门禁PASS / 首日Layer1引擎Completed、数据未验收 / 后续HOLD_PLATFORM_EXPORT_SCOPE / Layer2–3 NOT_RUN / PIT BLOCKED**。
+操作入口：[QUANTCONNECT_FREE_VALIDATION.md](../../docs/QUANTCONNECT_FREE_VALIDATION.md)。单一状态是 **Cloud完整smoke回执门禁PASS / 首日Layer1引擎Completed、数据未验收 / 后续HOLD_PLATFORM_EXPORT_SCOPE / Layer2–3 NOT_RUN / PIT BLOCKED**。
 
 
 平台构建日志曾于QC显示时间4:37:56及4:37:59对 `qc_part_01.py` 发出Terms 2.6警告；随后构建成功并运行完成，但成功构建不等于输出许可。核对[当前QC条款](https://www.quantconnect.com/terms)（v1.4，2026-10-02更新），2.6涵盖参考数据及可重建/近似数据的派生输出，验证用途没有大小或目的豁免；2.6(e)允许自有源码及正常策略回测概要结果。现有身份/P0明细导出流程暂停，后续日期批次也暂缓，需在QC内完成比较或由平台明确具体输出范围。本轮不下载新的QC参考数据或发布身份明细。此限制来自实际平台警告及公开条款核对，不是smoke技术失败。

@@ -15,7 +15,7 @@
 - 优先修复明确的退市案例：旧 BBBY 新增 419 条原始 SIP 行情和 419 条因果特征；沿用既有字段、公式和 research 配置，横截面排名保持 NULL。
 - 保留原 master、原价格/特征库、策略参数、Formal/Native gates 和 QC smoke；没有继续导出 QC reference/market data，也没有启动新的策略 Run。
 
-实现和操作合同：[数据库接口说明](../docs/PIT_HISTORICAL_DATABASE.md)。可复查计算：[audit 脚本](../scripts/audit_pit_database.py)、[inspection notebook](../notebooks/pit_database_inspection.ipynb)。
+实现和操作合同：[数据库接口说明](../../docs/PIT_HISTORICAL_DATABASE.md)。可复查计算：[audit 脚本](../../scripts/audit_pit_database.py)、[inspection notebook](../../notebooks/pit_database_inspection.ipynb)。
 
 ## 完成度与可信度
 
@@ -52,7 +52,7 @@
 
 原始来源分别是 SEC issuer registry 与 Nasdaq 目录。镜像 Git 时间按现有纽约收盘规则转换成可用日期，不伪造为 IPO/上游公告时间。只使用当日已可用的记录，CIK 的 2025-02 终点不会被外推为 2026 年最新 issuer 证明。Nasdaq 镜像和主目录可能有同源关系；多份镜像不是多个独立完整市场证明。Confirmed 仅指已观察 census 内的多证据支持。
 
-SEC master index、submissions 与 Form 25 搜索实际返回 HTTP 403；GitHub API 也返回 rate-limit 403，公开 Git 克隆则成功。失败收据保留于 [来源探测证据](evidence/pit-database-source-probes-2026-10-08.json)。缺少可访问文件不能被解释成没有发生事件。[SEC 官方获取说明](https://www.sec.gov/search-filings/edgar-search-assistance/accessing-edgar-data) 与 [FINRA 官方数据说明](https://developer.finra.org/docs) 已核对；没有把 OTC 事件直接当成美股上市 membership master。
+SEC master index、submissions 与 Form 25 搜索实际返回 HTTP 403；GitHub API 也返回 rate-limit 403，公开 Git 克隆则成功。失败收据保留于 [来源探测证据](../evidence/pit-database-source-probes-2026-10-08.json)。缺少可访问文件不能被解释成没有发生事件。[SEC 官方获取说明](https://www.sec.gov/search-filings/edgar-search-assistance/accessing-edgar-data) 与 [FINRA 官方数据说明](https://developer.finra.org/docs) 已核对；没有把 OTC 事件直接当成美股上市 membership master。
 
 旧的 13 份官方证据原文 SHA-256 全部重新验证。未解析公告可用日期的 legacy 事件保持 `known_on=NULL`，只作回溯事实，不输入历史预测；终止结算经济模型仍未启用。普通股票不要求逐只 no-event certificate。
 
@@ -60,9 +60,9 @@ SEC master index、submissions 与 Form 25 搜索实际返回 HTTP 403；GitHub 
 
 **旧 BBBY：** 先确认旧 issuer `SEC-0000886158-COMMON` 的 Nasdaq 普通股区间和既有官方证据，再取得 2021-09-01–2023-05-02 的 419 个交易日 raw SIP 行情。请求固定 `asof=2023-05-02`，避免使用当前复用 ticker 的实体。Alpaca 的 [官方历史行情参数说明](https://docs.alpaca.markets/us/reference/stockbars) 区分原始/复权口径，并说明历史 asof 用于实体解析。价格和 SPY/QQQ 基准分别缓存、校验分页和 SHA-256。419 条特征使用既有因果公式；237 天通过既有 tradability 条件，横截面排名 0 行有值，不据此宣称策略有收益或可以运行 Native。
 
-**TTGT：** 自动队列发现 CIK `0001293282` / `0002018064` 冲突。官方 issuer [2024-12-02 公告](https://investor.informatechtarget.com/news-events/news/News/2024/Creation-of-Informa-TechTarget-the-B2B-Growth-Accelerator-for-the-Technology-Sector/default.aspx) 说明新公司的普通股于 2024-12-03 开始沿用 TTGT 交易。日期后的旧 ID 特征被隔离，membership 为 unknown；2024-12-02 的历史映射仍可读。没有把新公司股价接到旧公司的历史上，也没有安装未经验证的现金结算。见 [机器审查证据](evidence/pit-database-ttgt-review-2026-10-08.json)。
+**TTGT：** 自动队列发现 CIK `0001293282` / `0002018064` 冲突。官方 issuer [2024-12-02 公告](https://investor.informatechtarget.com/news-events/news/News/2024/Creation-of-Informa-TechTarget-the-B2B-Growth-Accelerator-for-the-Technology-Sector/default.aspx) 说明新公司的普通股于 2024-12-03 开始沿用 TTGT 交易。日期后的旧 ID 特征被隔离，membership 为 unknown；2024-12-02 的历史映射仍可读。没有把新公司股价接到旧公司的历史上，也没有安装未经验证的现金结算。见 [机器审查证据](../evidence/pit-database-ttgt-review-2026-10-08.json)。
 
-12 个种子回放日期上的来源 eligibility ID 集合，与原 `LocalSecurityMaster` 完全一致。ATVI/TWTR/SPLK 各 20 条真实旧特征通过新适配器，ID/date 保持一致；旧 BBBY 的新特征使用同一字段 schema 并通过适配器。见 [实际耦合检查](evidence/pit-database-integration-2026-10-08.json)。新数据库是显式 opt-in，原 `load_universe`、queued Runs 和原 feature store 没有被覆盖。
+12 个种子回放日期上的来源 eligibility ID 集合，与原 `LocalSecurityMaster` 完全一致。ATVI/TWTR/SPLK 各 20 条真实旧特征通过新适配器，ID/date 保持一致；旧 BBBY 的新特征使用同一字段 schema 并通过适配器。见 [实际耦合检查](../evidence/pit-database-integration-2026-10-08.json)。新数据库是显式 opt-in，原 `load_universe`、queued Runs 和原 feature store 没有被覆盖。
 
 24 个之前记录的受保护/活跃数据库及 frozen 产物 hash 均保持一致；本次构建的 19 个输入锁也保持一致。原 QC 两个 smoke PASS 仅留作外部抽查，未用于目录或价格导入。
 
@@ -89,7 +89,7 @@ SEC master index、submissions 与 Form 25 搜索实际返回 HTTP 403；GitHub 
 
 十二个回放日期覆盖每年两个交易日。每日已观察各类证券 6,817–8,601 个，中位数 7,217；普通股区间记录 5,161–6,001 个。按固定 >500 行变化阈值未发现单日异常跃变；这不能证明市场全集没有遗漏。2026-04-20 还有 9,010 个曾为普通股的缺失观察候选 ID 保持 unknown，其中有身份碎片，不能把它们当作仍上市股票，也不能把它们全部视为已退市。
 
-完整回放计数、各交易所分布、各类样本 hash 和所有分母见 [机器 scorecard](evidence/pit-database-scorecard-2026-10-08.json)。逐条 source 观察、详细样本、每日 scorecard 和数据库都在本地 ignored 的版本目录中。
+完整回放计数、各交易所分布、各类样本 hash 和所有分母见 [机器 scorecard](../evidence/pit-database-scorecard-2026-10-08.json)。逐条 source 观察、详细样本、每日 scorecard 和数据库都在本地 ignored 的版本目录中。
 
 ## 25 个验收问题
 

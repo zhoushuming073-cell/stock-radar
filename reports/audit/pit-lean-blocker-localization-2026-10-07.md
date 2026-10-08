@@ -48,7 +48,7 @@
 以下数值来自已提交报告，未在本次重算本地数据：
 
 - [最终工程验收](../acceptance/pit-final-acceptance-2026-10-07.md) 记录 Run 级门禁和有界 native rename / split / cash-entitlement 会计验收；完整正式请求被拒绝，未调用 native，无 Current fallback。
-- [最新研究决策验收](../pit-research-final-acceptance-2026-10-07.md) 记录每日 29–72 个可能改变 Core 的未知竞争者；Core 实际候选仍有 106 个身份未决、12 个执行日期缺口及 10 个事件/价格审查目标。
+- [最新研究决策验收](../acceptance/pit-research-final-acceptance-2026-10-07.md) 记录每日 29–72 个可能改变 Core 的未知竞争者；Core 实际候选仍有 106 个身份未决、12 个执行日期缺口及 10 个事件/价格审查目标。
 - 最新决策范围七门均 FAIL：Causal integrity、Research identity、Research membership、Research price、Material corporate actions、Terminal、LEAN Input。真实 Strategy 2 PIT Native 与 reconciliation 均 NOT_RUN。
 - 最新 Terminal FAIL 对应两个可能持仓身份的 mapping 连续性问题，不能解释为确认发生两次法律退市或拆股。
 - 通用分红和换股并购仍未完成适配；research-grade 普通分红例外需要证据绑定且满足收益影响上界，并非默认豁免。最新报告未授予该例外。

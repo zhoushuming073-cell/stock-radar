@@ -1,6 +1,6 @@
 # Research Infrastructure v1
 
-2026-10-08：`RESEARCH_INFRASTRUCTURE_V1_FROZEN`。本地数据库主动扩建结束，维护继续。当前事实由 [冻结配置](../config/research_infrastructure_v1.json)、[最终报告](../reports/research-infrastructure-v1-finalization-2026-10-08.md) 和唯一 [当前总账](../reports/journey-2026-09-30-0651-📌当前总账.md) 管理。
+2026-10-08：`RESEARCH_INFRASTRUCTURE_V1_FROZEN`。本地数据库主动扩建结束，维护继续。当前事实由 [冻结配置](../config/research_infrastructure_v1.json)、[最终报告](../reports/acceptance/research-infrastructure-v1-finalization-2026-10-08.md) 和唯一 [当前总账](../reports/journey-2026-09-30-0651-📌当前总账.md) 管理。
 
 本地负责规则、形态、特征、视觉样本、图表及 exploratory 策略研究。QuantConnect Cloud 后续使用自己的历史 Universe、Security Master、行情和 LEAN，独立验证冻结策略。General PIT 保持 Tier 1，供深度调查与审计；Shape Research 为 READY。本轮正式 QC 策略验证、模型训练和 Fresh 收益评估均为 NOT_RUN。
 

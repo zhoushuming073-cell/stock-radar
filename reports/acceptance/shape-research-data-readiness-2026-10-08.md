@@ -110,10 +110,10 @@ review queue 共 27,735 个 source/date finding、1,786 个不同 ID。不是全
 
 ## 实现、测试与证据
 
-实现和复现命令见 [Shape 数据层契约](../docs/SHAPE_RESEARCH_DATA_LAYER.md)。量化证据见 [完整机器 scorecard](evidence/shape-research-scorecard-2026-10-08.json)，[已执行 inspection notebook](../notebooks/shape_research_inspection.ipynb)。本地版本 **0ee4ddb99d115c467e75967c87a68cb3a55e6357c35f0e298946a5bfa3b51035**；数据库 SHA256 **b2d11cabf686b473566fbc8623e6afd74fc55bb48baf3a85f9e43d43104e030a**。九项代码/规则/数据源锁全部通过；原 strict 数据库 SHA256 仍为 a41a38992bfd2e0e3fc1a91838725ff9f851bde760ed5aaf6a7fc167abced641。五个样本的图像/tensor hashes 在 evidence 中。
+实现和复现命令见 [Shape 数据层契约](../../docs/SHAPE_RESEARCH_DATA_LAYER.md)。量化证据见 [完整机器 scorecard](../evidence/shape-research-scorecard-2026-10-08.json)，[已执行 inspection notebook](../../notebooks/shape_research_inspection.ipynb)。本地版本 **0ee4ddb99d115c467e75967c87a68cb3a55e6357c35f0e298946a5bfa3b51035**；数据库 SHA256 **b2d11cabf686b473566fbc8623e6afd74fc55bb48baf3a85f9e43d43104e030a**。九项代码/规则/数据源锁全部通过；原 strict 数据库 SHA256 仍为 a41a38992bfd2e0e3fc1a91838725ff9f851bde760ed5aaf6a7fc167abced641。五个样本的图像/tensor hashes 在 evidence 中。
 
 新增 **29 项测试**覆盖实际批量 SQL 分类、旧 accepted 和指针不变、OHLC 错误、未知 split、raw known split、复权不重复调整、ticker reuse、已知 issuer 边界、future IPO、退市历史、未来 feature/benchmark/visual 拒绝、SVG/tensor 确定性、split 隔离、边界坏行、Fresh OOS、混合口径、unknown、ordinary 自动通过、material-only queue、多源冲突与非永久拉黑。**完整 native-inclusive suite：573 passed，1 个既有 websockets.legacy 弃用警告，94.86 秒。**
 
-[实际耦合与导出回读](evidence/shape-research-integration-2026-10-08.json)：NVDA 126 行原公式特征输出 `(date,symbol)`，末行 50 个非空字段；篡改 T 之后 SPY/QQQ 完全不影响结果。2026-09-14 默认 126-session Universe 4,406 个 ID，加入 unknown 为 4,425。BBBY Train 样本 parquet/hash、npy/tensor、SVG 逐字节回读一致；read-only 散列核验打开约 2.97 秒。2024-08-29 的 NVDA 126-session 窗口不通过，API 如实拒绝；普通 ticker 没有白名单豁免。
+[实际耦合与导出回读](../evidence/shape-research-integration-2026-10-08.json)：NVDA 126 行原公式特征输出 `(date,symbol)`，末行 50 个非空字段；篡改 T 之后 SPY/QQQ 完全不影响结果。2026-09-14 默认 126-session Universe 4,406 个 ID，加入 unknown 为 4,425。BBBY Train 样本 parquet/hash、npy/tensor、SVG 逐字节回读一致；read-only 散列核验打开约 2.97 秒。2024-08-29 的 NVDA 126-session 窗口不通过，API 如实拒绝；普通 ticker 没有白名单豁免。
 
 用户摘要：完整通用 PIT 仍为 Tier 1，但已有 **83.36%** 的观测历史 K 线达到 Shape 标准；默认成员范围可用 **537 万条**。现在可以研究 Strategy 2 的形态因素、准备视觉训练数据。仍需关注后来消失证券的缺价和真实候选的生命周期，Fresh OOS 样本尚未形成；不再把供应商级数据库完整性当成形态研究的总前置条件。
