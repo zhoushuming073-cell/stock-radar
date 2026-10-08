@@ -120,12 +120,14 @@ add human-labelled pattern evaluation and calibrate target-hit probabilities:
 - false falling-knife / post-signal new-low rate
 - stability across years, bull/bear regimes and volatility environments
 
-Planned research branches:
+Current research branches:
 
-- **Quant** — structured features, interpretable pattern scores and probability models.
-- **Vision** — an independent chart/volume research path. Local blind snapshots and Label Studio passed P0/P1 acceptance; human Ground Truth and model training are not started. See [pilot acceptance](reports/vision-p0-p1-pilot-acceptance-2026-10-08.md) and [labeling guide](docs/VISION_LABELING_INFRASTRUCTURE.md).
-- **Fusion** — compare Quant-only, Vision-only and agreement between the two.
+- **Quant** — broad, high-recall fuzzy candidate generation from structured price/volume features; it should narrow the search space without deciding the final answer.
+- **Human → Vision** — the human labels Quant-generated candidate charts with **Observe / Do not observe / Uncertain** and an independent **Buy now / Wait / Do not buy / Uncertain** entry-readiness label. Vision M1 then learns this chart judgment from images only.
+- **Fusion** — gradually move from Quant + Vision + Human active-learning review to a frozen **Quant + Vision** system. Formal comparisons must include Quant-only, Vision-only and Quant+Vision on the same universe/splits/outcomes.
 - **Intraday** — candidate-only minute data for support, reversal and execution-confirmation research rather than full-market minute data as the starting point.
+
+The earlier random blind Single/Pair pilot remains valid P0/P1 engineering evidence, but its 50+25 human-label task is no longer the active research path. See [active Quant+Vision plan](docs/QUANT_VISION_FUSION_RESEARCH_PLAN.md).
 
 The long-term goal is not to reproduce a universal institutional trading stack. It is to build a reproducible **personal quantitative stock radar** that turns a discretionary selection process into something measurable, falsifiable and useful as the first stage of a human/GPT research workflow.
 ### What it includes
@@ -176,15 +178,18 @@ remain local.
 - [x] Private Sites integration and unattended local updates
 - [x] Canonical run configuration, Scanner outcome labels, event counts, filter funnel, and local PIT import boundary
 - [x] Blind chart snapshots and local Label Studio infrastructure (P0/P1 acceptance)
-- [ ] First human Ground Truth batch (50 Single +25 Pair), consistency review and dataset completion
+- [x] Retire random-blind 50 Single +25 Pair as the primary labeling task after human trial; keep it as infrastructure evidence
+- [ ] Build Quant-guided Human Labeling v1 (wide candidate generator + Observe / Entry-Readiness labels)
+- [ ] Train initial image-only Vision M1 from Quant-guided human labels
+- [ ] Quant + Vision + Human active-learning transition, then freeze Quant + Vision
 - [x] Forward-outcome Precision/Lift at configurable Top-K, cooldown event Precision/Lift, MFE/MAE and primary-outcome regime breakdowns
-- [ ] Human-labelled pattern retrieval Precision/Recall and chart ground-truth evaluation
+- [ ] Compare Quant-only vs Vision-only vs Quant+Vision under one universe/split/outcome contract
 - [ ] Fixed-horizon target-hit probability research and calibration
 - [ ] Learned market-regime conditioning beyond implemented descriptive breakdowns
 - [ ] One-click latest-session Daily Scanner (current Scanner processes historical research splits)
 - [ ] Full PIT / corporate-action / settlement realism for native execution
 - [ ] Candidate-only intraday data for support / reversal / execution studies
-- [ ] Quant vs Vision vs Fusion research branch
+- [ ] Quant-guided Human → Vision → Quant+Vision Fusion research branch (active)
 - [ ] Point-in-time candidate/context log for future GPT-assisted second-stage review
 - [ ] Fresh untouched out-of-sample period for validating claimed strategy improvement
 - [ ] Broker execution / live trading — intentionally not implemented
@@ -614,4 +619,3 @@ For the portable suite:
 
 `pyproject.toml` sets `testpaths = ["tests"]` and `pythonpath = ["src"]`, so a bare
 `pytest` from the project root works too.
-
