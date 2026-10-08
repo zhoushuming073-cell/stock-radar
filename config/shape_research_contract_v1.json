@@ -1,0 +1,25 @@
+{
+  "version": "shape-research-v1",
+  "purpose": "Local rule, feature and visual research",
+  "price_basis": "one homogeneous source and raw/split basis per window; live split append requires matching historical overlap",
+  "membership_policy": "confirmed + probable by default; unknown preserved, explicit sensitivity only",
+  "identity_policy": "dated ID/ticker intervals; no issuer/predecessor/successor splice; known conflicts quarantined",
+  "split_policy": "raw effective<=T factors once; split series never double-adjusted; unresolved jumps quarantined",
+  "missing_policy": "all requested market sessions required; no forward fill or synthetic prices",
+  "quarantine_policy": "only complete safe windows; later clean history can recover",
+  "delisted_policy": "historical intervals retained independent of current survival",
+  "provenance_policy": "row source hashes and ordered window hash; frozen manifests preserved",
+  "future_policy": "bars/benchmarks/input metadata<=decision; labels never enter input; no Test rebranding",
+  "train_validation_test_policy": "entire input contained in unchanged frozen signal split",
+  "fresh_oos_policy": "decision>=2026-09-29; pre-F lookback allowed; input<=decision; pre-F model and parameter freeze mandatory for evaluation",
+  "fresh_oos_status": "data preparation is allowed without model freeze; evaluation is unavailable until a verifiable pre-F freeze exists",
+  "tensor_policy": "five OHLCV channels; price divided by first close, volume by within-window maximum; metadata excluded",
+  "determinism_policy": "same identity/source/date/length/contract gives identical numeric input and SVG",
+  "research_relevant_disappeared": {
+    "minimum_supported_potential_sessions": 20,
+    "minimum_priced_observations": 5,
+    "median_dollar_volume_floor": 50000,
+    "price_floor": 0,
+    "scope": "Broad historically dated research qualification, not Strategy 2 or a runtime survival filter. Unpriced potential episodes remain eligibility-unknown."
+  }
+}

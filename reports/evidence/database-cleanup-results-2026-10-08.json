@@ -1,0 +1,524 @@
+{
+  "measured_at": "2026-10-08T09:35:03.897036+00:00",
+  "measurement": "logical file bytes including .git/.venv; before final receipt/report and Git commit",
+  "baseline_commit": "168368de255501de6b45237037f52c3eaa1ea582",
+  "asset_count_before": 22032,
+  "reviewed_categories": {
+    "A": 2289,
+    "B": 15587,
+    "C": 4142,
+    "E": 8,
+    "D": 6
+  },
+  "schema_objects_audited": 6888,
+  "before": {
+    "repo_bytes": 63599064859,
+    "data_bytes": 63188178186,
+    "archive_bytes": 0,
+    "temp_cache_bytes": 3088308038,
+    "active_research_database_bytes": 4757401600,
+    "fresh_sidecar_bytes": 0
+  },
+  "after": {
+    "repo_bytes": 63655705808,
+    "data_bytes": 58429383190,
+    "archive_bytes": 4758858696,
+    "temp_cache_bytes": 3088308038,
+    "active_research_database_bytes": 4757401600,
+    "fresh_sidecar_bytes": 50868224
+  },
+  "deleted_file_count": 0,
+  "deleted_bytes": 0,
+  "disk_space_freed": 0,
+  "archived_file_count": 3,
+  "archived_bytes": 4758857898,
+  "archived": [
+    {
+      "original": "data/pit/shape-research/versions/25137ad2123ffc57cc7873dcd0dab5307152e61f036d39b12900b4c3315c507e/manifest.json",
+      "destination": "archive/legacy-pit/shape-25137ad2123ffc57cc7873dcd0dab5307152e61f036d39b12900b4c3315c507e/manifest.json",
+      "bytes": 5211,
+      "sha256": "9cf5ea9e490626016c979cc402fb9bd36b5cfbf07d6ad97349957cd2d2ba3056",
+      "hash_verified": true,
+      "external_consumers": [],
+      "action": "ARCHIVED"
+    },
+    {
+      "original": "data/pit/shape-research/versions/25137ad2123ffc57cc7873dcd0dab5307152e61f036d39b12900b4c3315c507e/shape.duckdb",
+      "destination": "archive/legacy-pit/shape-25137ad2123ffc57cc7873dcd0dab5307152e61f036d39b12900b4c3315c507e/shape.duckdb",
+      "bytes": 4758712320,
+      "sha256": "335c2138751066f7aa378376d7110dea42bbaa02b77749f52aa138f1b5f38a80",
+      "hash_verified": true,
+      "external_consumers": [],
+      "action": "ARCHIVED"
+    },
+    {
+      "original": "data/pit/shape-research/versions/25137ad2123ffc57cc7873dcd0dab5307152e61f036d39b12900b4c3315c507e/unknown-sensitivity-daily.csv",
+      "destination": "archive/legacy-pit/shape-25137ad2123ffc57cc7873dcd0dab5307152e61f036d39b12900b4c3315c507e/unknown-sensitivity-daily.csv",
+      "bytes": 140367,
+      "sha256": "14fcb9bfa3d0d54b461f931d8fec44a79c0025270237c85522a1368566ce165b",
+      "hash_verified": true,
+      "external_consumers": [],
+      "action": "ARCHIVED"
+    }
+  ],
+  "in_place_tables_removed": 0,
+  "in_place_views_removed": 0,
+  "scripts_archived": 0,
+  "scripts_deleted": 0,
+  "blocked": [
+    {
+      "path": "data/pit/construction/versions/32b31d12b438e36f8ac6c011c30b71e4d0031020f94cb9f75cedc87fa2f9b84c/historical.duckdb",
+      "bytes": 360984576,
+      "sha256": "cee20772cb751cd893b4f6d72fb6951df8b77e101f6492b8d1856df1149ac352",
+      "desired_action": "DELETE",
+      "action": "POLICY_BLOCKED_KEEP",
+      "reason": "Unpublished failed construction output; no manifest, no exact consumer, inputs preserved",
+      "runtime_dependency": false,
+      "runtime_dependency_basis": "no published manifest/current pointer; named versions have no exact external consumer"
+    },
+    {
+      "path": "data/pit/construction/versions/924c3baf08c52747255ffe26d76ecb304e24b45219d3a1a74873e5df14d9b2c5/historical.duckdb",
+      "bytes": 721956864,
+      "sha256": "c00a0d25f9ed904ee354a19e3f2761c567fa2ed9668ff74d2caaa4e5b7b109eb",
+      "desired_action": "DELETE",
+      "action": "POLICY_BLOCKED_KEEP",
+      "reason": "Unpublished failed construction output; no manifest, no exact consumer, inputs preserved",
+      "runtime_dependency": false,
+      "runtime_dependency_basis": "no published manifest/current pointer; named versions have no exact external consumer"
+    },
+    {
+      "path": "data/pit/construction/versions/bc2c80335de6ebbc19e9eb6fc78b0499b751ecd97afe5fdec051b3c51b1b97ac/dividends.json",
+      "bytes": 4110839,
+      "sha256": "fffb9ddd62b606a1938d135fb2d90ed7310e4441a7bbf95c0cec0cd73d1b71b6",
+      "desired_action": "DELETE",
+      "action": "POLICY_BLOCKED_KEEP",
+      "reason": "Unpublished failed construction output; no manifest, no exact consumer, inputs preserved",
+      "runtime_dependency": false,
+      "runtime_dependency_basis": "no published manifest/current pointer; named versions have no exact external consumer"
+    },
+    {
+      "path": "data/pit/construction/versions/bc2c80335de6ebbc19e9eb6fc78b0499b751ecd97afe5fdec051b3c51b1b97ac/historical.duckdb",
+      "bytes": 988295168,
+      "sha256": "6046cc308c48e77dca1f0fd68e40ddbe961423a1e981a4d695696180823716e8",
+      "desired_action": "DELETE",
+      "action": "POLICY_BLOCKED_KEEP",
+      "reason": "Unpublished failed construction output; no manifest, no exact consumer, inputs preserved",
+      "runtime_dependency": false,
+      "runtime_dependency_basis": "no published manifest/current pointer; named versions have no exact external consumer"
+    },
+    {
+      "path": "data/pit/construction/versions/bc2c80335de6ebbc19e9eb6fc78b0499b751ecd97afe5fdec051b3c51b1b97ac/rules.json",
+      "bytes": 1243,
+      "sha256": "c6f4e6ec87b966f8b75480fdc88d672abe4f622c13a5b2c56c4a581a80cc55fb",
+      "desired_action": "DELETE",
+      "action": "POLICY_BLOCKED_KEEP",
+      "reason": "Unpublished failed construction output; no manifest, no exact consumer, inputs preserved",
+      "runtime_dependency": false,
+      "runtime_dependency_basis": "no published manifest/current pointer; named versions have no exact external consumer"
+    },
+    {
+      "path": "data/pit/shape-research/versions/7414e7f0e59204b92bf368b7ac2b989405b7095a6c03b3480688b14c75b3d348/shape.duckdb",
+      "bytes": 268185600,
+      "sha256": "5e208b787bfba8c9778cf094e3290ab2d0005a1396a21fb7c327c159a534665f",
+      "desired_action": "DELETE",
+      "action": "POLICY_BLOCKED_KEEP",
+      "reason": "Prior blocked deletion scope; do not retry or bypass approval policy",
+      "runtime_dependency": false,
+      "runtime_dependency_basis": "no published manifest/current pointer; named versions have no exact external consumer"
+    },
+    {
+      "path": "data/pit/shape-research/versions/e1d74eb75b90412a4756748e3a1300f674c2add72a2d7a2ec7d5f86d0f3b6671/shape.duckdb",
+      "bytes": 3622055936,
+      "sha256": "5219e47bec16617bba2237af4aa2889565a836afd80dc211b249631dd9a7d959",
+      "desired_action": "DELETE",
+      "action": "POLICY_BLOCKED_KEEP",
+      "reason": "Prior blocked deletion scope; do not retry or bypass approval policy",
+      "runtime_dependency": false,
+      "runtime_dependency_basis": "no published manifest/current pointer; named versions have no exact external consumer"
+    },
+    {
+      "path": "data/pit/shape-research/versions/e1d74eb75b90412a4756748e3a1300f674c2add72a2d7a2ec7d5f86d0f3b6671/shape.duckdb.wal",
+      "bytes": 6969158,
+      "sha256": "85774ca59147628dd2bde7e544184b561888cf6baeea3a59ba6514208ea7a5e4",
+      "desired_action": "DELETE",
+      "action": "POLICY_BLOCKED_KEEP",
+      "reason": "Prior blocked deletion scope; do not retry or bypass approval policy",
+      "runtime_dependency": false,
+      "runtime_dependency_basis": "no published manifest/current pointer; named versions have no exact external consumer"
+    },
+    {
+      "path": "data/pit/shape-research/versions/e1d74eb75b90412a4756748e3a1300f674c2add72a2d7a2ec7d5f86d0f3b6671/shape.duckdb.tmp/duckdb_temp_storage_DEFAULT-0.tmp",
+      "bytes": 1048576000,
+      "sha256": "c021a8ab3fef99a5ecf2228549921538c3cfc015d20c425cf84330c7124c2319",
+      "desired_action": "DELETE",
+      "action": "POLICY_BLOCKED_KEEP",
+      "reason": "Prior blocked deletion scope; do not retry or bypass approval policy",
+      "runtime_dependency": false,
+      "runtime_dependency_basis": "no published manifest/current pointer; named versions have no exact external consumer"
+    },
+    {
+      "path": "data/pit/shape-research/versions/e1d74eb75b90412a4756748e3a1300f674c2add72a2d7a2ec7d5f86d0f3b6671/shape.duckdb.tmp/duckdb_temp_storage_DEFAULT-1.tmp",
+      "bytes": 1242562560,
+      "sha256": "0ccc2cfaa78007cd1e9dbabd43e1f801b8d296b3ae7397ec504178ea8db067bb",
+      "desired_action": "DELETE",
+      "action": "POLICY_BLOCKED_KEEP",
+      "reason": "Prior blocked deletion scope; do not retry or bypass approval policy",
+      "runtime_dependency": false,
+      "runtime_dependency_basis": "no published manifest/current pointer; named versions have no exact external consumer"
+    },
+    {
+      "path": "data/pit/shape-research/versions/e1d74eb75b90412a4756748e3a1300f674c2add72a2d7a2ec7d5f86d0f3b6671/shape.duckdb.tmp/duckdb_temp_storage_S32K-0.tmp",
+      "bytes": 131072000,
+      "sha256": "fb6098ed24dd77839f722ea5ea46bbb712f477e841707586e59de8dafed35fad",
+      "desired_action": "DELETE",
+      "action": "POLICY_BLOCKED_KEEP",
+      "reason": "Prior blocked deletion scope; do not retry or bypass approval policy",
+      "runtime_dependency": false,
+      "runtime_dependency_basis": "no published manifest/current pointer; named versions have no exact external consumer"
+    },
+    {
+      "path": "data/pit/shape-research/versions/e1d74eb75b90412a4756748e3a1300f674c2add72a2d7a2ec7d5f86d0f3b6671/shape.duckdb.tmp/duckdb_temp_storage_S64K-0.tmp",
+      "bytes": 136052736,
+      "sha256": "b68c1185dd5c343e91668b7022297c2a39675c1398c8c3e14cffc491b47665cd",
+      "desired_action": "DELETE",
+      "action": "POLICY_BLOCKED_KEEP",
+      "reason": "Prior blocked deletion scope; do not retry or bypass approval policy",
+      "runtime_dependency": false,
+      "runtime_dependency_basis": "no published manifest/current pointer; named versions have no exact external consumer"
+    },
+    {
+      "path": "data/pit/shape-research/versions/e1d74eb75b90412a4756748e3a1300f674c2add72a2d7a2ec7d5f86d0f3b6671/shape.duckdb.tmp/duckdb_temp_storage_S96K-0.tmp",
+      "bytes": 393216000,
+      "sha256": "945c9642d83947dfc98fc676018d01841dda735006cf87f136a36043428f5f50",
+      "desired_action": "DELETE",
+      "action": "POLICY_BLOCKED_KEEP",
+      "reason": "Prior blocked deletion scope; do not retry or bypass approval policy",
+      "runtime_dependency": false,
+      "runtime_dependency_basis": "no published manifest/current pointer; named versions have no exact external consumer"
+    },
+    {
+      "path": "data/pit/shape-research/versions/e1d74eb75b90412a4756748e3a1300f674c2add72a2d7a2ec7d5f86d0f3b6671/shape.duckdb.tmp/duckdb_temp_storage_S96K-1.tmp",
+      "bytes": 129859584,
+      "sha256": "a8834ee6df73a461aa06a9f5db14ea85f3af24b6b34c25ed7ec50a8f0f8bd0bc",
+      "desired_action": "DELETE",
+      "action": "POLICY_BLOCKED_KEEP",
+      "reason": "Prior blocked deletion scope; do not retry or bypass approval policy",
+      "runtime_dependency": false,
+      "runtime_dependency_basis": "no published manifest/current pointer; named versions have no exact external consumer"
+    }
+  ],
+  "blocked_bytes": 9053898264,
+  "actual_rejection": "Exact audited 32b31d.../historical.duckdb Remove-Item command returned blocked by policy; no command executed or alternative delete attempted",
+  "protected_hash_checks": {
+    "data/pit/construction/versions/bd743ee2310659c839afe1b56fa6ae8fb287d1fc4ed744347ee7db7b83f882c5/historical.duckdb": {
+      "before": "a41a38992bfd2e0e3fc1a91838725ff9f851bde760ed5aaf6a7fc167abced641",
+      "after": "a41a38992bfd2e0e3fc1a91838725ff9f851bde760ed5aaf6a7fc167abced641",
+      "unchanged": true
+    },
+    "data/pit/construction/versions/bd743ee2310659c839afe1b56fa6ae8fb287d1fc4ed744347ee7db7b83f882c5/manifest.json": {
+      "before": "0456d29d371b95ae98f6fd382092f553d069528a08342eeee89a4819c99327cf",
+      "after": "0456d29d371b95ae98f6fd382092f553d069528a08342eeee89a4819c99327cf",
+      "unchanged": true
+    },
+    "data/pit/normalized/533905312e4c19ef2f80558d80c06c1b644f3eefc01fbba0c703904f1dc8bdaa/pit-research.duckdb": {
+      "before": "9c39a9f99c8fb1985b40c797a74f41dd6073872243b26584c8401347115a00ff",
+      "after": "9c39a9f99c8fb1985b40c797a74f41dd6073872243b26584c8401347115a00ff",
+      "unchanged": true,
+      "comparison_basis": "prior current QC protection receipt"
+    },
+    "data/pit/research-grade/raw-source.duckdb": {
+      "before": "d12951f22c899a93246ff77762e835ef7bc103fb2bf3b85a6a06bc5617387644",
+      "after": "d12951f22c899a93246ff77762e835ef7bc103fb2bf3b85a6a06bc5617387644",
+      "unchanged": true
+    },
+    "data/pit/research-grade/raw-source.manifest.json": {
+      "before": "319bbbcb62524dd1d374c87dc63535c78bc472d2bb2a6519cda1a83ae7f98326",
+      "after": "319bbbcb62524dd1d374c87dc63535c78bc472d2bb2a6519cda1a83ae7f98326",
+      "unchanged": true
+    },
+    "config/shape_research_rules.json": {
+      "before": "4369249e98627af14597eff120ac674c3b39295ddf1f6b05f3155b806f720ac3",
+      "after": "4369249e98627af14597eff120ac674c3b39295ddf1f6b05f3155b806f720ac3",
+      "unchanged": true
+    },
+    "config/research.yaml": {
+      "before": "ea87411ac10a5b448211651df5e26a58e38166cf5fe5656037e255b6dc52e292",
+      "after": "ea87411ac10a5b448211651df5e26a58e38166cf5fe5656037e255b6dc52e292",
+      "unchanged": true
+    },
+    "scripts/build_shape_research.py": {
+      "before": "b7afc35bf614f9768741da6cdfc2e084da750ee96fe0b2df0425362c5d45d93b",
+      "after": "b7afc35bf614f9768741da6cdfc2e084da750ee96fe0b2df0425362c5d45d93b",
+      "unchanged": true
+    },
+    "src/radar/pit/shape.py": {
+      "before": "62e9e3655d4565352d147d66cb22c6ecfadd4ec944941c48e5e6cf225e7ab401",
+      "after": "62e9e3655d4565352d147d66cb22c6ecfadd4ec944941c48e5e6cf225e7ab401",
+      "unchanged": true
+    },
+    "data/pit/shape-research/versions/0ee4ddb99d115c467e75967c87a68cb3a55e6357c35f0e298946a5bfa3b51035/shape.duckdb": {
+      "before": "b2d11cabf686b473566fbc8623e6afd74fc55bb48baf3a85f9e43d43104e030a",
+      "after": "b2d11cabf686b473566fbc8623e6afd74fc55bb48baf3a85f9e43d43104e030a",
+      "unchanged": true
+    },
+    "data/pit/shape-research/versions/0ee4ddb99d115c467e75967c87a68cb3a55e6357c35f0e298946a5bfa3b51035/manifest.json": {
+      "before": "9672f317908ef4a548d7b8dad9a5017648a38d628a9d058d57d5a3f117276b85",
+      "after": "9672f317908ef4a548d7b8dad9a5017648a38d628a9d058d57d5a3f117276b85",
+      "unchanged": true
+    },
+    "data/market.duckdb": {
+      "before": "bda524c59617a678bdc5fa6219961770dc02425f6cc75a443a48f8d1633644f0",
+      "after": "bda524c59617a678bdc5fa6219961770dc02425f6cc75a443a48f8d1633644f0",
+      "unchanged": true,
+      "comparison_basis": "prior current QC protection receipt"
+    },
+    "config/shape_research_contract_v1.json": {
+      "before": "f713c22539467efdb42381e71f921ba6366502d2b79363ca6d5c6bc6b2a65120",
+      "after": "f713c22539467efdb42381e71f921ba6366502d2b79363ca6d5c6bc6b2a65120",
+      "unchanged": true
+    },
+    "scripts/build_fresh_shape_windows.py": {
+      "before": "d3732b09315c4238ad89eabc69a5cd92d4482c0361b8a700a58759e774271fa1",
+      "after": "d3732b09315c4238ad89eabc69a5cd92d4482c0361b8a700a58759e774271fa1",
+      "unchanged": true
+    },
+    "data/phase2-research.duckdb": {
+      "before": "b2565184a372c6ce7d5b448acebad3dfbad0bf51c77b785f5d0a342352d364c3",
+      "after": "b2565184a372c6ce7d5b448acebad3dfbad0bf51c77b785f5d0a342352d364c3",
+      "unchanged": true,
+      "comparison_basis": "prior current QC protection receipt"
+    },
+    "src/radar/strategy/full_strategy2.py": {
+      "baseline_git_normalized_sha256": "d130b0d32f85bd5c1fd9a0ad0cae1f420652890bc8919bee0e2451e779b0fa04",
+      "current_normalized_sha256": "d130b0d32f85bd5c1fd9a0ad0cae1f420652890bc8919bee0e2451e779b0fa04",
+      "current_physical_sha256": "d130b0d32f85bd5c1fd9a0ad0cae1f420652890bc8919bee0e2451e779b0fa04",
+      "unchanged": true,
+      "comparison_basis": "Git baseline content and normalized newlines; baseline physical bytes were not recorded for this runtime source"
+    },
+    "src/radar/features/base.py": {
+      "baseline_git_normalized_sha256": "8bb4b0fbf57e63333800b1ba22a05313be2343171374c648e1d3aceb9b8bc531",
+      "current_normalized_sha256": "8bb4b0fbf57e63333800b1ba22a05313be2343171374c648e1d3aceb9b8bc531",
+      "current_physical_sha256": "1b6cf67c8ad4929edc4990fb7ee7d819c3587e374cbc54784081b5ed42d2ad33",
+      "unchanged": true,
+      "comparison_basis": "Git baseline content and normalized newlines; baseline physical bytes were not recorded for this runtime source"
+    },
+    "src/radar/features/strategy2.py": {
+      "baseline_git_normalized_sha256": "d8fab59e6a6f1026231964cbc135d3d875fff17e0b487f730ec99cfa24c86d2e",
+      "current_normalized_sha256": "d8fab59e6a6f1026231964cbc135d3d875fff17e0b487f730ec99cfa24c86d2e",
+      "current_physical_sha256": "c0e3db7d18145dd731eee614777ef204c2b811f5a86ff656e9061458304879fb",
+      "unchanged": true,
+      "comparison_basis": "Git baseline content and normalized newlines; baseline physical bytes were not recorded for this runtime source"
+    },
+    "data/security-master.csv": {
+      "before": "5e6985a5d4a756061cdc2dba3ad27055e7b7beeb1491e11690d5dbe7621ac6c9",
+      "after": "5e6985a5d4a756061cdc2dba3ad27055e7b7beeb1491e11690d5dbe7621ac6c9",
+      "unchanged": true,
+      "comparison_basis": "prior current QC protection receipt"
+    },
+    "data/security-master-manifest.json": {
+      "before": "fa137f66560ed63bcee5bf43a759f65b552e3db611b756446af9fa961ec13559",
+      "after": "fa137f66560ed63bcee5bf43a759f65b552e3db611b756446af9fa961ec13559",
+      "unchanged": true,
+      "comparison_basis": "prior current QC protection receipt"
+    },
+    "config/pit_database_rules.json": {
+      "before": "d744ae5c6ae193b09dca46646359582bb4da61169f557674126eceb8dd764e72",
+      "after": "d744ae5c6ae193b09dca46646359582bb4da61169f557674126eceb8dd764e72",
+      "unchanged": true
+    },
+    "config/pit_trust_evidence.json": {
+      "before": "074602c1e570e8435c52bc3e5897ecad12fc189d4701d9d2dd6e348427ec1559",
+      "after": "074602c1e570e8435c52bc3e5897ecad12fc189d4701d9d2dd6e348427ec1559",
+      "unchanged": true
+    },
+    "data/pit/construction/references/observations.parquet": {
+      "before": "46269e56b64aedb75f4997baf1818569178347372ecebae8523cf5c842138592",
+      "after": "46269e56b64aedb75f4997baf1818569178347372ecebae8523cf5c842138592",
+      "unchanged": true
+    },
+    "data/pit/construction/references/evidence.json": {
+      "before": "b05c4fd3c97ab3e4500ab67d6c20d92e447886f8907ffee6781b7db9851595d5",
+      "after": "b05c4fd3c97ab3e4500ab67d6c20d92e447886f8907ffee6781b7db9851595d5",
+      "unchanged": true
+    },
+    "data/pit/normalized/533905312e4c19ef2f80558d80c06c1b644f3eefc01fbba0c703904f1dc8bdaa/snapshot-audit.json": {
+      "before": "57601034eecf3d705edbdb01d43b7316b83023d73189aaed773f654aee309060",
+      "after": "57601034eecf3d705edbdb01d43b7316b83023d73189aaed773f654aee309060",
+      "unchanged": true
+    },
+    "data/pit/research-grade/accepted-prices.duckdb": {
+      "before": "1fd1996e88cc91ab25baf9a4f7615478d99506672ed47c028eaecfefd0240545",
+      "after": "1fd1996e88cc91ab25baf9a4f7615478d99506672ed47c028eaecfefd0240545",
+      "unchanged": true
+    },
+    "data/pit/research-grade/accepted-prices.manifest.json": {
+      "before": "795a01d14fc1158006eb8afe257e0e1adc12719abf3798fd7c82df519f64b4d0",
+      "after": "795a01d14fc1158006eb8afe257e0e1adc12719abf3798fd7c82df519f64b4d0",
+      "unchanged": true
+    },
+    "data/pit/normalized/533905312e4c19ef2f80558d80c06c1b644f3eefc01fbba0c703904f1dc8bdaa/external-prices.duckdb": {
+      "before": "84733c6f6aa708d91fbd40c3961c71fdbcb1c23f5b4261d546ded1e99a754f39",
+      "after": "84733c6f6aa708d91fbd40c3961c71fdbcb1c23f5b4261d546ded1e99a754f39",
+      "unchanged": true
+    },
+    "data/pit/research-grade/split-scan.json": {
+      "before": "caf6f86a32f136aca35d90f61cfb021e13deade8a1b3438a3c95676f40e691dd",
+      "after": "caf6f86a32f136aca35d90f61cfb021e13deade8a1b3438a3c95676f40e691dd",
+      "unchanged": true
+    },
+    "data/pit/research-grade/dividend-scan.json": {
+      "before": "8324805cf9be59481cfe78a09eac58dc36186c5490f98af8ca1ac99dc6f9966b",
+      "after": "8324805cf9be59481cfe78a09eac58dc36186c5490f98af8ca1ac99dc6f9966b",
+      "unchanged": true
+    },
+    "data/pit/research-grade/source-disagreement.json": {
+      "before": "e403ec609312c31f70466dce7c64e86537adcefb678372d460bd02a3c1602f76",
+      "after": "e403ec609312c31f70466dce7c64e86537adcefb678372d460bd02a3c1602f76",
+      "unchanged": true
+    },
+    "scripts/build_pit_database.py": {
+      "before": "ca5ac625832e6f0f7b0f4d4fc4c40746d52f851289cfb68e0a43451a1704132d",
+      "after": "ca5ac625832e6f0f7b0f4d4fc4c40746d52f851289cfb68e0a43451a1704132d",
+      "unchanged": true
+    },
+    "src/radar/pit/database.py": {
+      "before": "36c196592f47cb51fbf744ed5c92058bf3d6a64bdb904162b034346b0b201bf9",
+      "after": "36c196592f47cb51fbf744ed5c92058bf3d6a64bdb904162b034346b0b201bf9",
+      "unchanged": true
+    },
+    "data/phase2-research-v2-frozen.duckdb": {
+      "before": "71361753f5d593ba43c090a984b299cc24f309e9345aae0f2c5615bc73341c7e",
+      "after": "71361753f5d593ba43c090a984b299cc24f309e9345aae0f2c5615bc73341c7e",
+      "unchanged": true,
+      "comparison_basis": "prior current QC protection receipt"
+    },
+    "data/phase2-source-snapshot.duckdb": {
+      "before": "f6081cfc1a8bbe5856a5a3659be7ae6dfc3f864cb865ce2d12e2fd67200d0fd9",
+      "after": "f6081cfc1a8bbe5856a5a3659be7ae6dfc3f864cb865ce2d12e2fd67200d0fd9",
+      "unchanged": true,
+      "comparison_basis": "prior current QC protection receipt"
+    },
+    "data/security-master-feature-store.json": {
+      "before": "e267981e0343752adb1584d77863568f495f07e029391cd2156a22967892e845",
+      "after": "e267981e0343752adb1584d77863568f495f07e029391cd2156a22967892e845",
+      "unchanged": true,
+      "comparison_basis": "prior current QC protection receipt"
+    },
+    "config/pit_final_run_plan.json": {
+      "before": "6b1336a9bdfa9438471e057460ade0d945f57e8ae9736b5ecca80fb6667c8fcb",
+      "after": "6b1336a9bdfa9438471e057460ade0d945f57e8ae9736b5ecca80fb6667c8fcb",
+      "unchanged": true,
+      "comparison_basis": "prior current QC protection receipt"
+    },
+    "data/pit/research-final/focused-resolutions/accepted-holding-prices.json": {
+      "before": "e2552c3aadce2428d0ab88a5b233ed2215da041d49e8d6c5cf3d5f9eb40e1054",
+      "after": "e2552c3aadce2428d0ab88a5b233ed2215da041d49e8d6c5cf3d5f9eb40e1054",
+      "unchanged": true,
+      "comparison_basis": "prior current QC protection receipt"
+    },
+    "data/pit/research-final/focused-resolutions/candidate-audit.json": {
+      "before": "ccefedaea62f859273f5cf6852dfff12aff0f7453b7f63eb7fedbcafaf838e1c",
+      "after": "ccefedaea62f859273f5cf6852dfff12aff0f7453b7f63eb7fedbcafaf838e1c",
+      "unchanged": true,
+      "comparison_basis": "prior current QC protection receipt"
+    },
+    "data/pit/research-final/focused-resolutions/core-rank-stability.json": {
+      "before": "ae738b7e210ae154cdc91f767d7006f013afa22b6aeb0ecf7e8a3672495693cb",
+      "after": "ae738b7e210ae154cdc91f767d7006f013afa22b6aeb0ecf7e8a3672495693cb",
+      "unchanged": true,
+      "comparison_basis": "prior current QC protection receipt"
+    },
+    "data/pit/research-final/focused-resolutions/dated-class-facts.json": {
+      "before": "933598fdf7a28bef1b8f4b9c66c7b9ee386086b0103544e64bc3d3cf817c7808",
+      "after": "933598fdf7a28bef1b8f4b9c66c7b9ee386086b0103544e64bc3d3cf817c7808",
+      "unchanged": true,
+      "comparison_basis": "prior current QC protection receipt"
+    },
+    "data/pit/research-final/focused-resolutions/inputs.json": {
+      "before": "f72f1cb88fa48f19808f58e3e7eed35830818b65331e38b984b26b9c54fd5b6d",
+      "after": "f72f1cb88fa48f19808f58e3e7eed35830818b65331e38b984b26b9c54fd5b6d",
+      "unchanged": true,
+      "comparison_basis": "prior current QC protection receipt"
+    },
+    "data/pit/research-final/focused-resolutions/missingness-impact.json": {
+      "before": "fcfabbbd11192f827f60a2f2202ae055ab4bc94c268417eb6261f5cc970afde1",
+      "after": "fcfabbbd11192f827f60a2f2202ae055ab4bc94c268417eb6261f5cc970afde1",
+      "unchanged": true,
+      "comparison_basis": "prior current QC protection receipt"
+    },
+    "data/pit/research-final/focused-resolutions/priority-queue.json": {
+      "before": "85e4e7150c38ec65334f48fc6f3b37616b13e9c306b463c823a34bbe9f37c79e",
+      "after": "85e4e7150c38ec65334f48fc6f3b37616b13e9c306b463c823a34bbe9f37c79e",
+      "unchanged": true,
+      "comparison_basis": "prior current QC protection receipt"
+    },
+    "data/pit/research-final/focused-resolutions/readiness.json": {
+      "before": "44a765c2772ec46285428e7edc041b505c3603b7f7561972cea540add9766724",
+      "after": "44a765c2772ec46285428e7edc041b505c3603b7f7561972cea540add9766724",
+      "unchanged": true,
+      "comparison_basis": "prior current QC protection receipt"
+    },
+    "data/pit/research-final/focused-resolutions/score-stress.json": {
+      "before": "e78fe4d82eb6314ebc88b3c2094d462724aeeaa38072160cbfe8df70a0d77035",
+      "after": "e78fe4d82eb6314ebc88b3c2094d462724aeeaa38072160cbfe8df70a0d77035",
+      "unchanged": true,
+      "comparison_basis": "prior current QC protection receipt"
+    },
+    "data/pit/research-final/identity-safe-bounds/core-rank-stability.json": {
+      "before": "467ab4d690a482d1f2daa8690b0cfe7da2806b55bff31138d0e7b44d2d504fd4",
+      "after": "467ab4d690a482d1f2daa8690b0cfe7da2806b55bff31138d0e7b44d2d504fd4",
+      "unchanged": true,
+      "comparison_basis": "prior current QC protection receipt"
+    },
+    "data/pit/research-final/identity-safe-bounds/inputs.json": {
+      "before": "599cfb4bf7a5d58c2fde6375a028a0d906849702f6c2454c77ea164eb06ed430",
+      "after": "599cfb4bf7a5d58c2fde6375a028a0d906849702f6c2454c77ea164eb06ed430",
+      "unchanged": true,
+      "comparison_basis": "prior current QC protection receipt"
+    },
+    "data/pit/research-final/identity-safe-bounds/missingness-impact.json": {
+      "before": "9059bc3762cdead194566648a58b5a471a2fd2b0087634c292103789a88dc197",
+      "after": "9059bc3762cdead194566648a58b5a471a2fd2b0087634c292103789a88dc197",
+      "unchanged": true,
+      "comparison_basis": "prior current QC protection receipt"
+    },
+    "data/pit/research-final/identity-safe-bounds/readiness.json": {
+      "before": "cdafcd7b5f8f2046d59fac222ffadcf850426c15a8f3a5d7a5401dffba0e7c95",
+      "after": "cdafcd7b5f8f2046d59fac222ffadcf850426c15a8f3a5d7a5401dffba0e7c95",
+      "unchanged": true,
+      "comparison_basis": "prior current QC protection receipt"
+    },
+    "data/pit/research-final/identity-safe-bounds/score-stress.json": {
+      "before": "07ec9128b547817d19716fae84e00170584a1dcea788fde636f44c0da0048bc4",
+      "after": "07ec9128b547817d19716fae84e00170584a1dcea788fde636f44c0da0048bc4",
+      "unchanged": true,
+      "comparison_basis": "prior current QC protection receipt"
+    },
+    "data/pit/research-final/rules-freeze.json": {
+      "before": "5b157a9aafb483708eb69edac2d928743afb3d08d7e5c0307dc8116b5e718ccf",
+      "after": "5b157a9aafb483708eb69edac2d928743afb3d08d7e5c0307dc8116b5e718ccf",
+      "unchanged": true,
+      "comparison_basis": "prior current QC protection receipt"
+    }
+  },
+  "new_failed_builds_retained": [
+    {
+      "path": "data/pit/shape-research/fresh-oos/d252229cf2febda6a31a4c26c8d70fbcc864ee5bb714c2e0b9fb40572a241f01/fresh.duckdb",
+      "bytes": 36974592,
+      "sha256": "32d92bf075279988d2c3edecc9cd7afcb7f5e55988b5286f7f0c5b6555bd41a1",
+      "action": "REVIEW_KEEP",
+      "reason": "New unpublished build failure; no deletion retry in blocked cleanup session"
+    },
+    {
+      "path": "data/pit/shape-research/fresh-oos/ddcf12e67590fb60ff52ea3c3da9220a0748f4a7310b68711110a1bf1939674a/fresh.duckdb",
+      "bytes": 14168064,
+      "sha256": "87ae726dd063eca2043243fe9314fc5a68a878a1f284778dd94fca6df22cb821",
+      "action": "REVIEW_KEEP",
+      "reason": "New unpublished build failure; no deletion retry in blocked cleanup session"
+    }
+  ],
+  "code_cleanup": "Existing scripts have tests/report/code locks or uncertain dynamic consumers; retained explicit audit commands, absent from automatic production dispatch. No unverifiable obsolete importer deleted.",
+  "raw_cold_storage": "Pinned raw paths retained in existing data/pit/raw cold directories; no automatic runtime scan",
+  "archive_runtime_policy": "Excluded from package imports, pytest testpaths, daily update, Scanner, Shape, LEAN; no recursive archive discovery",
+  "strict_accepted_raw_rows": 906514
+}

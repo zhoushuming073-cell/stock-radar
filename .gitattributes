@@ -23,3 +23,13 @@ scripts/export_shape_window.py text eol=lf
 src/radar/pit/shape.py text eol=lf
 tests/test_shape_research.py text eol=lf
 reports/evidence/shape-samples-*/*.svg -text
+# Frozen infrastructure physical locks must survive a Windows checkout.
+config/shape_research_contract_v1.json text eol=lf
+config/research_infrastructure_v1.json text eol=lf
+src/radar/research/infrastructure.py text eol=lf
+scripts/build_fresh_shape_windows.py text eol=lf
+scripts/finalize_research_infrastructure.py text eol=lf
+scripts/inventory_database_assets.py text eol=lf
+scripts/verify_research_infrastructure.py text eol=lf
+scripts/record_database_cleanup_results.py text eol=lf
+tests/test_research_infrastructure.py text eol=lf

@@ -1,5 +1,7 @@
 # Shape Research Layer v1
 
+当前研究主入口和 Fresh 修正以 [Research Infrastructure v1](RESEARCH_INFRASTRUCTURE_V1.md) 为准；原 core、来源锁及历史统计保留。
+
 这是一套独立、显式调用的本地研究数据层。严格 HistoricalDatabase、accepted raw、Security Master、Scanner 默认数据源、Web UI、日更、Native LEAN 和 QC 验证状态保持原样。Shape READY 不会自动释放正式投资组合 Run。
 
 目标是可以使用的历史 K 线窗口，而非供应商级身份档案。General PIT Tier 1 与 Shape Research READY 可以并存。未来收益、QC 选股结果、当前公司是否存活不参与窗口通过判定。
@@ -50,9 +52,10 @@ split-only vendor 历史价格可能因 T 之后拆股乘上一个常数，历�
 ## 研究接口与现有代码耦合
 
 ```python
-from radar.pit.shape import ShapeResearchDatabase, tensor, render_svg
+from radar.pit.shape import tensor, render_svg
+from radar.research.infrastructure import shape_research_universe_v1
 
-with ShapeResearchDatabase.current(root) as db:
+with shape_research_universe_v1(root) as db:
     universe = db.universe_on("2026-09-14", length=126)
     # 普通历史 OHLCV，字段 date/symbol/open/high/low/close/volume/basis/source。
     w = db.window("SEC-0001045810-COMMON", "2026-09-14", 126)
@@ -60,7 +63,7 @@ with ShapeResearchDatabase.current(root) as db:
     svg = render_svg(w.normalized)
     features = db.feature_window("SEC-0001045810-COMMON", "2026-09-14")
     # 从现有 compute_base_features / compute_strategy2_features 复用原公式，
-    # 保持原参数和 (date,symbol) 索引；基准数据截断 <= T，无 forward fill。
+    # 保持原参数和 (date,symbol) 索引；调用前基准数据截断 <= T；新主入口拒绝未来基准行，无 forward fill。
     s2 = db.strategy2_feature_window(security_id, T, spy_close, qqq_close)
 ```
 
@@ -84,7 +87,7 @@ metadata 保留内部 ID、当时 ticker、decision date、window start/end、OH
 
 沿用 research-splits-v1 的原 signal 日期：Train 2021-09-01–2024-08-29；Validation 2024-09-30–2025-09-08；Test 2025-09-23–2026-09-14。原十 session forward-label embargo/evaluation end 保留。输入窗口必须完全在对应 signal 区间；跨区间窗口不借之前 Train 的 K 线作为 Validation/Test 输入，因此相邻窗口不会随机分配到不同 split。
 
-Fresh OOS 在原 Test evaluation end 2026-09-28 后；目前只观测至 2026-10-07，不足 20 session，因此所有四种长度 Fresh OOS 样本均为 0。不要借用 Test 窗口补 OOS。未运行 Fresh OOS，不表示失败，也不代表已有新鲜独立验证。`training_tensor` / `assert_training_split` 只接受 Train；Validation/Test 用于各自冻结流程，不用于拟合。API 无法替用户阻止外部训练程序滥用，所以训练入口仍应调用该 guard。
+2026-10-08 收口修正：Fresh OOS 决策从 2026-09-29 开始，允许使用该日前已经发生的 lookback；仍禁止决策之后的输入。固定 core 的旧 visual index 保留原完整区间规则，新主入口通过只读取已有本地行情的 sidecar 提供 20/40/60/126 session Fresh 决策窗口 34,491 /33,745 /32,979 /30,462。正式评估仍需真实 pre-F 模型/参数冻结回执；本轮没有声称这类记录存在，没有策略 Fresh 收益评估。不能将旧 Test 重新命名；现在冻结的新模型需后续新的决策期。`training_tensor` / `assert_training_split` 只接受 Train；Validation/Test 用于各自冻结流程，不用于拟合。API 无法替用户阻止外部训练程序滥用，所以训练入口仍应调用该 guard。
 
 同一 split 内窗口大量重叠，不是独立观测数。统计检验按时间/证券分组，不能把上百万窗口当成上百万独立试验。现有项目已看过的 Test 仍是 exploratory；本次冻结数据层不能让它重新变成从未看过的 OOS。
 

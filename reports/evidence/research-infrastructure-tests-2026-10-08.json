@@ -1,0 +1,14 @@
+{
+  "command": ".venv/Scripts/python.exe -B -m pytest -q",
+  "environment": {
+    "STOCK_RADAR_TEST_LEAN": "1"
+  },
+  "passed": 595,
+  "failed": 0,
+  "skipped": 0,
+  "warnings": 1,
+  "duration_seconds": 79.79,
+  "result": "PASS",
+  "new_pollution_and_cleanup_cases": 22,
+  "warning": "existing websockets.legacy deprecation"
+}

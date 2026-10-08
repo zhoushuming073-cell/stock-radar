@@ -1,0 +1,88 @@
+{
+  "imported_modules": [
+    "radar.strategy.full_strategy2",
+    "radar.lab.scanner_worker",
+    "radar.daily_update",
+    "radar.local_api",
+    "radar.lean.integration",
+    "radar.pit.database"
+  ],
+  "formal_qc_run": "NOT_RUN",
+  "model_training": "NOT_RUN",
+  "fresh_outcomes_read": false,
+  "constructor_lazy": true,
+  "profile_semantic_hash": "74b765911a8a4f18b2074cd8d9e529b25b54afade15309a148b0ca43340b80be",
+  "fresh_windows": [
+    {
+      "length": 20,
+      "decision": "2026-09-29",
+      "universe_count": 4953,
+      "security_id": "OBS-0009111975d5afd5fa89c9bb",
+      "window_start": "2026-09-01",
+      "ohlcv_hash": "1c6cdbc3c2d965415d7b0a0b38524e14ed68465e535fef5153e019f53a97b492",
+      "repeat_svg_identical": true,
+      "missing_freeze_denied": true
+    },
+    {
+      "length": 40,
+      "decision": "2026-09-29",
+      "universe_count": 4838,
+      "security_id": "OBS-0009111975d5afd5fa89c9bb",
+      "window_start": "2026-08-04",
+      "ohlcv_hash": "bb1ea7c663f203cb7b23b589e87dcd1e980fc4fdb194e6b1c57ecc1bf3b73cd8",
+      "repeat_svg_identical": true,
+      "missing_freeze_denied": true
+    },
+    {
+      "length": 60,
+      "decision": "2026-09-29",
+      "universe_count": 4737,
+      "security_id": "OBS-0009111975d5afd5fa89c9bb",
+      "window_start": "2026-07-07",
+      "ohlcv_hash": "e265f5da92e54fdef8687b4e93124d3ec347c0d9e73fba44608a48e3f3a732bc",
+      "repeat_svg_identical": true,
+      "missing_freeze_denied": true
+    },
+    {
+      "length": 126,
+      "decision": "2026-09-29",
+      "universe_count": 4369,
+      "security_id": "OBS-00146dacdb863d60a6e3a105",
+      "window_start": "2026-03-31",
+      "ohlcv_hash": "f8101e57b14d486d9100e954c214122386d2c4e4f2780828ebd6158134cca4e3",
+      "repeat_svg_identical": true,
+      "missing_freeze_denied": true
+    }
+  ],
+  "visual_export": {
+    "directory": "data/pit/shape-research/samples/001836a05ce4c5d1b8a674a7fb942376f35611e1cf960509c32299e4e0871df9",
+    "files": {
+      "candles.svg": "448ba9eb08ff730f123574791fc9cd3206af8d1371c5c9c1ce0c5d62e7383628",
+      "metadata.json": "c21a8da981a2459f2bde1a8d2bcac7f1de7ad730ce1529110204c17995f19798",
+      "normalized.parquet": "f4f25108047f66439b3687f7e5ef6093130eb25ab404a6ae2a75fd23d631058c",
+      "ohlcv.parquet": "50e7747be0ba894aa020be9fcdd9a17e3c9e94a3666dc4e77489840866546fa7",
+      "tensor.npy": "8eb33b8d9ae62034e8fed16323dff723daa15ac07e21fa00110cc245e8d6bc8b"
+    },
+    "parquet_tensor_svg_readback": "PASS",
+    "split_assignment": "fresh_oos",
+    "training_allowed": false
+  },
+  "shape_strategy2_features": {
+    "rows": 126,
+    "native_index": [
+      "date",
+      "symbol"
+    ],
+    "last_date": "2026-09-29",
+    "formulas": "unchanged",
+    "absolute_execution_gates": "not fabricated from normalized values"
+  },
+  "existing_candidate_pipeline": {
+    "date": "2023-02-03",
+    "input_rows": 8406,
+    "selected_rows": 3,
+    "loader": "load_strategy_segment",
+    "selector": "rank_full_strategy2",
+    "scope": "original Current Snapshot; compatibility only, no performance or PIT claim"
+  }
+}

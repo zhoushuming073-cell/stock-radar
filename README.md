@@ -41,6 +41,8 @@
 
 ## Overview
 
+**Current local database status · 2026-10-08:** Research Infrastructure v1 is **FROZEN**, Shape Research is READY, General PIT is Tier 1 (deep/audit). Broad database expansion is CLOSED; maintenance and local strategy/visual research continue. Supported safe candles: 5,407,961; technical readiness: 83.8733% of observed common member-days. Fresh decision lookback is corrected; formal frozen-strategy QC validation remains NOT_RUN. [Infrastructure and default API](docs/RESEARCH_INFRASTRUCTURE_V1.md), [47-answer finalization](reports/research-infrastructure-v1-finalization-2026-10-08.md).
+
 **Current stage · 2026-10-07:** research infrastructure and initial local LEAN
 integration accepted; open-source historical PIT reconstruction and an independent
 identity-bounded feature store added. PIT data remains exploratory and incomplete,

@@ -1,0 +1,73 @@
+{
+  "version": "Research Infrastructure v1",
+  "status": "RESEARCH_INFRASTRUCTURE_V1_FROZEN",
+  "creation_date": "2026-10-08T09:30:25.690958+00:00",
+  "semantic_hash": "74b765911a8a4f18b2074cd8d9e529b25b54afade15309a148b0ca43340b80be",
+  "semantics": {
+    "version": "research-infrastructure-v1",
+    "shape_rule_version": "shape-research-v1",
+    "core_database_sha256": "b2d11cabf686b473566fbc8623e6afd74fc55bb48baf3a85f9e43d43104e030a",
+    "fresh_database_sha256": "433b2448b8baa33ba5c5c238ad3853c07804626a3326fef16dabb6617f576673",
+    "contract_semantic_hash": "5841adc14e45c5044f7fa5f382a0bfba1cb52a32359250008cda0349bc0a4856",
+    "membership_policy": "confirmed + probable by default; unknown preserved, explicit sensitivity only",
+    "price_basis": "one homogeneous source and raw/split basis per window; live split append requires matching historical overlap",
+    "fresh_start": "2026-09-29",
+    "fresh_oos_policy": "decision>=2026-09-29; pre-F lookback allowed; input<=decision; pre-F model and parameter freeze mandatory for evaluation",
+    "frozen_splits": {
+      "train": [
+        "2021-09-01",
+        "2024-08-29"
+      ],
+      "validation": [
+        "2024-09-30",
+        "2025-09-08"
+      ],
+      "test": [
+        "2025-09-23",
+        "2026-09-14"
+      ],
+      "fresh_oos": [
+        "2026-09-29",
+        "2026-10-07"
+      ]
+    },
+    "visual_dataset_version": "shape-visual-v1-with-fresh-decision-lookback",
+    "research_api_code_sha256": "dd8d72ad9aa8d639c9420a0ac02d085ac600368699630974f3967889d9b47a4b"
+  },
+  "core_directory": "data/pit/shape-research/versions/0ee4ddb99d115c467e75967c87a68cb3a55e6357c35f0e298946a5bfa3b51035",
+  "fresh_directory": "data/pit/shape-research/fresh-oos/bab1f4e7c8f6dd125d1e47c8367de6b884024450a30055c1cb556a6214487295",
+  "rules_hash": "4369249e98627af14597eff120ac674c3b39295ddf1f6b05f3155b806f720ac3",
+  "contract_file_sha256": "f713c22539467efdb42381e71f921ba6366502d2b79363ca6d5c6bc6b2a65120",
+  "source_manifests": [
+    "data\\pit\\shape-research\\versions\\0ee4ddb99d115c467e75967c87a68cb3a55e6357c35f0e298946a5bfa3b51035\\manifest.json",
+    "data\\pit\\shape-research\\fresh-oos\\bab1f4e7c8f6dd125d1e47c8367de6b884024450a30055c1cb556a6214487295\\manifest.json"
+  ],
+  "source_manifest_hashes": [
+    "9672f317908ef4a548d7b8dad9a5017648a38d628a9d058d57d5a3f117276b85",
+    "95e797f7c2b5b43a8e64a72c4617248c9af66d6725fa24adbae7e3ebcb4c8688"
+  ],
+  "tests": {
+    "command": ".venv/Scripts/python.exe -B -m pytest -q",
+    "environment": {
+      "STOCK_RADAR_TEST_LEAN": "1"
+    },
+    "passed": 595,
+    "failed": 0,
+    "skipped": 0,
+    "warnings": 1,
+    "duration_seconds": 79.79,
+    "result": "PASS",
+    "new_pollution_and_cleanup_cases": 22,
+    "warning": "existing websockets.legacy deprecation"
+  },
+  "database_expansion": "CLOSED",
+  "database_maintenance": "ACTIVE",
+  "known_limitations": [
+    "Observed common intervals, not complete US history",
+    "Fragmented identities and eligibility-unknown missing episodes remain",
+    "Split candidates lack complete announcement publication PIT",
+    "Absolute split prices are not PIT execution prices",
+    "Previously viewed Test stays exploratory",
+    "No pre-2026-09-29 model/parameter freeze is asserted; Fresh data preparation only"
+  ]
+}

@@ -1,0 +1,603 @@
+{
+  "price": {
+    "READY": {
+      "numerator": 4113916,
+      "denominator": 6929009,
+      "pct": 59.3724
+    },
+    "QUARANTINED": {
+      "numerator": 21226,
+      "denominator": 6929009,
+      "pct": 0.3063
+    },
+    "READY_WITH_MINOR_UNCERTAINTY": {
+      "numerator": 1697670,
+      "denominator": 6929009,
+      "pct": 24.5009
+    },
+    "MISSING": {
+      "numerator": 1096197,
+      "denominator": 6929009,
+      "pct": 15.8204
+    }
+  },
+  "technical_ready": {
+    "numerator": 5811586,
+    "denominator": 6929009,
+    "pct": 83.8733
+  },
+  "supported_safe_candles": 5407961,
+  "any_safe_security_ids": 8823,
+  "available": {
+    "numerator": 5832812,
+    "denominator": 6929009,
+    "pct": 84.1796
+  },
+  "fresh_window_counts": [
+    [
+      20,
+      34491,
+      34636
+    ],
+    [
+      40,
+      33745,
+      33883
+    ],
+    [
+      60,
+      32979,
+      33117
+    ],
+    [
+      126,
+      30462,
+      30593
+    ]
+  ],
+  "fresh_candidate_rows": 36136,
+  "fresh_quarantined_rows": 312,
+  "fresh_bridge_conflict_ids": 5,
+  "fresh_price_end": "2026-10-07",
+  "fresh_formal_evaluation": "NOT_RUN; no verified pre-F model/parameter freeze receipt asserted",
+  "network_downloads": 0,
+  "core_database_unchanged": true,
+  "visual_windows": [
+    {
+      "length": 20,
+      "split_assignment": "test",
+      "supported": 1079929,
+      "including_unknown": 1084728
+    },
+    {
+      "length": 20,
+      "split_assignment": "train",
+      "supported": 2705603,
+      "including_unknown": 3015847
+    },
+    {
+      "length": 20,
+      "split_assignment": "validation",
+      "supported": 999559,
+      "including_unknown": 1072511
+    },
+    {
+      "length": 40,
+      "split_assignment": "test",
+      "supported": 961925,
+      "including_unknown": 966275
+    },
+    {
+      "length": 40,
+      "split_assignment": "train",
+      "supported": 2578979,
+      "including_unknown": 2883295
+    },
+    {
+      "length": 40,
+      "split_assignment": "validation",
+      "supported": 876021,
+      "including_unknown": 945446
+    },
+    {
+      "length": 60,
+      "split_assignment": "test",
+      "supported": 849981,
+      "including_unknown": 853891
+    },
+    {
+      "length": 60,
+      "split_assignment": "train",
+      "supported": 2458881,
+      "including_unknown": 2757497
+    },
+    {
+      "length": 60,
+      "split_assignment": "validation",
+      "supported": 761164,
+      "including_unknown": 827512
+    },
+    {
+      "length": 126,
+      "split_assignment": "test",
+      "supported": 517162,
+      "including_unknown": 519687
+    },
+    {
+      "length": 126,
+      "split_assignment": "train",
+      "supported": 2107260,
+      "including_unknown": 2372870
+    },
+    {
+      "length": 126,
+      "split_assignment": "validation",
+      "supported": 429953,
+      "including_unknown": 482965
+    },
+    {
+      "length": 20,
+      "split_assignment": "fresh_oos",
+      "supported": 34491,
+      "including_unknown": 34636
+    },
+    {
+      "length": 40,
+      "split_assignment": "fresh_oos",
+      "supported": 33745,
+      "including_unknown": 33883
+    },
+    {
+      "length": 60,
+      "split_assignment": "fresh_oos",
+      "supported": 32979,
+      "including_unknown": 33117
+    },
+    {
+      "length": 126,
+      "split_assignment": "fresh_oos",
+      "supported": 30462,
+      "including_unknown": 30593
+    }
+  ],
+  "supported_safe_security_ids": 8773,
+  "research_windows": [
+    {
+      "length": 20,
+      "supported": 5178242.0,
+      "including_unknown": 5589194.0
+    },
+    {
+      "length": 40,
+      "supported": 4976214.0,
+      "including_unknown": 5387891.0
+    },
+    {
+      "length": 60,
+      "supported": 4789547.0,
+      "including_unknown": 5202289.0
+    },
+    {
+      "length": 126,
+      "supported": 4256368.0,
+      "including_unknown": 4658543.0
+    }
+  ],
+  "latest_supported_universe": [
+    {
+      "decision_date": "2026-10-07",
+      "length": 20,
+      "security_ids": 4876
+    },
+    {
+      "decision_date": "2026-10-07",
+      "length": 40,
+      "security_ids": 4774
+    },
+    {
+      "decision_date": "2026-10-07",
+      "length": 60,
+      "security_ids": 4661
+    },
+    {
+      "decision_date": "2026-10-07",
+      "length": 126,
+      "security_ids": 4321
+    }
+  ],
+  "survivorship": {
+    "all_observed_disappeared": {
+      "total_ids": 9976,
+      "available_ohlcv_ids": {
+        "numerator": 3560,
+        "denominator": 9976,
+        "pct": 35.6856
+      },
+      "shape_ready_ids": {
+        "numerator": 3555,
+        "denominator": 9976,
+        "pct": 35.6355
+      },
+      "sessions": 1924869,
+      "safe_sessions": {
+        "numerator": 822924,
+        "denominator": 1924869,
+        "pct": 42.7522
+      },
+      "missing_sessions": {
+        "numerator": 1095987,
+        "denominator": 1924869,
+        "pct": 56.9383
+      },
+      "quarantined_sessions": {
+        "numerator": 5958,
+        "denominator": 1924869,
+        "pct": 0.3095
+      },
+      "windows": {
+        "20": {
+          "numerator": 2251,
+          "denominator": 9976,
+          "pct": 22.5642
+        },
+        "40": {
+          "numerator": 1952,
+          "denominator": 9976,
+          "pct": 19.567
+        },
+        "60": {
+          "numerator": 1824,
+          "denominator": 9976,
+          "pct": 18.2839
+        },
+        "126": {
+          "numerator": 1465,
+          "denominator": 9976,
+          "pct": 14.6852
+        }
+      },
+      "missing_date_range": [
+        "2021-09-01",
+        "2026-10-05",
+        7643
+      ]
+    },
+    "research_relevant_disappeared": {
+      "total_ids": 2212,
+      "available_ohlcv_ids": {
+        "numerator": 2212,
+        "denominator": 2212,
+        "pct": 100.0
+      },
+      "shape_ready_ids": {
+        "numerator": 2212,
+        "denominator": 2212,
+        "pct": 100.0
+      },
+      "sessions": 1250196,
+      "safe_sessions": {
+        "numerator": 802380,
+        "denominator": 1250196,
+        "pct": 64.1803
+      },
+      "missing_sessions": {
+        "numerator": 443997,
+        "denominator": 1250196,
+        "pct": 35.5142
+      },
+      "quarantined_sessions": {
+        "numerator": 3819,
+        "denominator": 1250196,
+        "pct": 0.3055
+      },
+      "windows": {
+        "20": {
+          "numerator": 2135,
+          "denominator": 2212,
+          "pct": 96.519
+        },
+        "40": {
+          "numerator": 1932,
+          "denominator": 2212,
+          "pct": 87.3418
+        },
+        "60": {
+          "numerator": 1814,
+          "denominator": 2212,
+          "pct": 82.0072
+        },
+        "126": {
+          "numerator": 1462,
+          "denominator": 2212,
+          "pct": 66.094
+        }
+      },
+      "missing_date_range": [
+        "2021-09-01",
+        "2026-10-05",
+        1035
+      ]
+    },
+    "potential_but_eligibility_unknown": {
+      "total_ids": 3463,
+      "available_ohlcv_ids": {
+        "numerator": 161,
+        "denominator": 3463,
+        "pct": 4.6491
+      },
+      "shape_ready_ids": {
+        "numerator": 158,
+        "denominator": 3463,
+        "pct": 4.5625
+      },
+      "sessions": 623257,
+      "safe_sessions": {
+        "numerator": 4790,
+        "denominator": 623257,
+        "pct": 0.7685
+      },
+      "missing_sessions": {
+        "numerator": 617323,
+        "denominator": 623257,
+        "pct": 99.0479
+      },
+      "quarantined_sessions": {
+        "numerator": 1144,
+        "denominator": 623257,
+        "pct": 0.1836
+      },
+      "windows": {
+        "20": {
+          "numerator": 116,
+          "denominator": 3463,
+          "pct": 3.3497
+        },
+        "40": {
+          "numerator": 20,
+          "denominator": 3463,
+          "pct": 0.5775
+        },
+        "60": {
+          "numerator": 10,
+          "denominator": 3463,
+          "pct": 0.2888
+        },
+        "126": {
+          "numerator": 3,
+          "denominator": 3463,
+          "pct": 0.0866
+        }
+      },
+      "missing_date_range": [
+        "2021-09-01",
+        "2026-09-22",
+        3351
+      ]
+    },
+    "known_acquired": {
+      "total_ids": 3,
+      "available_ohlcv_ids": {
+        "numerator": 3,
+        "denominator": 3,
+        "pct": 100.0
+      },
+      "shape_ready_ids": {
+        "numerator": 3,
+        "denominator": 3,
+        "pct": 100.0
+      },
+      "sessions": 1462,
+      "safe_sessions": {
+        "numerator": 1462,
+        "denominator": 1462,
+        "pct": 100.0
+      },
+      "missing_sessions": {
+        "numerator": 0,
+        "denominator": 1462,
+        "pct": 0.0
+      },
+      "quarantined_sessions": {
+        "numerator": 0,
+        "denominator": 1462,
+        "pct": 0.0
+      },
+      "windows": {
+        "20": {
+          "numerator": 3,
+          "denominator": 3,
+          "pct": 100.0
+        },
+        "40": {
+          "numerator": 3,
+          "denominator": 3,
+          "pct": 100.0
+        },
+        "60": {
+          "numerator": 3,
+          "denominator": 3,
+          "pct": 100.0
+        },
+        "126": {
+          "numerator": 3,
+          "denominator": 3,
+          "pct": 100.0
+        }
+      },
+      "missing_date_range": [
+        null,
+        null,
+        0
+      ]
+    },
+    "known_exchange_cessation": {
+      "total_ids": 4,
+      "available_ohlcv_ids": {
+        "numerator": 4,
+        "denominator": 4,
+        "pct": 100.0
+      },
+      "shape_ready_ids": {
+        "numerator": 4,
+        "denominator": 4,
+        "pct": 100.0
+      },
+      "sessions": 1881,
+      "safe_sessions": {
+        "numerator": 1878,
+        "denominator": 1881,
+        "pct": 99.8405
+      },
+      "missing_sessions": {
+        "numerator": 0,
+        "denominator": 1881,
+        "pct": 0.0
+      },
+      "quarantined_sessions": {
+        "numerator": 3,
+        "denominator": 1881,
+        "pct": 0.1595
+      },
+      "windows": {
+        "20": {
+          "numerator": 4,
+          "denominator": 4,
+          "pct": 100.0
+        },
+        "40": {
+          "numerator": 4,
+          "denominator": 4,
+          "pct": 100.0
+        },
+        "60": {
+          "numerator": 4,
+          "denominator": 4,
+          "pct": 100.0
+        },
+        "126": {
+          "numerator": 4,
+          "denominator": 4,
+          "pct": 100.0
+        }
+      },
+      "missing_date_range": [
+        null,
+        null,
+        0
+      ]
+    },
+    "known_bankrupt_terminated": {
+      "total_ids": 0,
+      "available_ohlcv_ids": {
+        "numerator": 0,
+        "denominator": 0,
+        "pct": null
+      },
+      "shape_ready_ids": {
+        "numerator": 0,
+        "denominator": 0,
+        "pct": null
+      },
+      "sessions": 0,
+      "safe_sessions": {
+        "numerator": 0,
+        "denominator": 0,
+        "pct": null
+      },
+      "missing_sessions": {
+        "numerator": 0,
+        "denominator": 0,
+        "pct": null
+      },
+      "quarantined_sessions": {
+        "numerator": 0,
+        "denominator": 0,
+        "pct": null
+      },
+      "windows": {
+        "20": {
+          "numerator": 0,
+          "denominator": 0,
+          "pct": null
+        },
+        "40": {
+          "numerator": 0,
+          "denominator": 0,
+          "pct": null
+        },
+        "60": {
+          "numerator": 0,
+          "denominator": 0,
+          "pct": null
+        },
+        "126": {
+          "numerator": 0,
+          "denominator": 0,
+          "pct": null
+        }
+      },
+      "missing_date_range": [
+        null,
+        null,
+        0
+      ]
+    }
+  },
+  "survivorship_definition": {
+    "rules": {
+      "minimum_supported_potential_sessions": 20,
+      "minimum_priced_observations": 5,
+      "median_dollar_volume_floor": 50000,
+      "price_floor": 0,
+      "scope": "Broad historically dated research qualification, not Strategy 2 or a runtime survival filter. Unpriced potential episodes remain eligibility-unknown."
+    },
+    "not_a_runtime_survival_filter": true,
+    "eligibility_unknown_is_not_illiquid": true,
+    "limitations": "Qualification needs some actual price/liquidity evidence; retain independent membership-potential unresolved cohort to avoid a tautologically complete denominator."
+  },
+  "research_relevant_missing_by_year": [
+    [
+      2021,
+      50712,
+      624
+    ],
+    [
+      2022,
+      163759,
+      701
+    ],
+    [
+      2023,
+      169093,
+      781
+    ],
+    [
+      2024,
+      1570,
+      242
+    ],
+    [
+      2025,
+      29821,
+      806
+    ],
+    [
+      2026,
+      29042,
+      354
+    ]
+  ],
+  "ready_safety": {
+    "core_future": 0,
+    "core_identity": 0,
+    "core_split": 0,
+    "fresh_boundary": 0,
+    "fresh_identity": 0,
+    "fresh_extreme": 0,
+    "fresh_bridge": 0
+  },
+  "profile_semantic_hash": "74b765911a8a4f18b2074cd8d9e529b25b54afade15309a148b0ca43340b80be",
+  "contract_semantic_hash": "5841adc14e45c5044f7fa5f382a0bfba1cb52a32359250008cda0349bc0a4856",
+  "core_database_sha256": "b2d11cabf686b473566fbc8623e6afd74fc55bb48baf3a85f9e43d43104e030a",
+  "fresh_database_sha256": "433b2448b8baa33ba5c5c238ad3853c07804626a3326fef16dabb6617f576673"
+}

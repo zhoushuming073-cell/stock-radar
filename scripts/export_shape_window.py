@@ -6,15 +6,17 @@ from pathlib import Path
 
 import numpy as np
 
-from radar.pit.shape import ShapeResearchDatabase, render_svg, tensor
+from radar.pit.shape import render_svg, tensor
+from radar.research.infrastructure import shape_research_universe_v1
 
 
 def export(root, security_id, decision_date, length, output=None, include_unknown=False):
-    with ShapeResearchDatabase.current(root) as db:
+    with shape_research_universe_v1(root) as db:
         w=db.window(security_id,decision_date,length,include_unknown=include_unknown)
+        w.metadata['infrastructure_semantic_hash']=db.fingerprint
         # Identical candles can belong to different securities: retain each
         # binding separately rather than overwrite metadata keyed by price hash.
-        binding={k:w.metadata[k] for k in ("security_id","decision_date","length","source","adjustment_mode","dataset_version","split_assignment","ohlcv_hash")}
+        binding={k:w.metadata[k] for k in ("security_id","decision_date","length","source","adjustment_mode","dataset_version","split_assignment","ohlcv_hash","infrastructure_semantic_hash")}
         sample_key=sha256(json.dumps(binding,sort_keys=True,default=str).encode()).hexdigest()
         directory=Path(output) if output else Path(root)/"data/pit/shape-research/samples"/sample_key
         directory.mkdir(parents=True,exist_ok=True)

@@ -23,3 +23,5 @@ site/.git/
 data/*
 !data/.gitkeep
 alpacakey.txt
+/archive/legacy-pit/*
+!/archive/legacy-pit/README.md

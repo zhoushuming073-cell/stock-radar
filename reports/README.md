@@ -25,7 +25,11 @@ The `reports/` root is intentionally kept small: this index plus the canonical l
 The final research report below retains its explicit user-requested root path;
 its derived evidence and P0 queue follow the `evidence/` layout.
 
-## Shape Research Layer · 2026-10-08
+## Research Infrastructure v1 · 2026-10-08
+
+[Frozen infrastructure / 47-answer finalization](research-infrastructure-v1-finalization-2026-10-08.md): Shape READY, General PIT Tier 1 deep/audit, expansion CLOSED, maintenance ACTIVE, strategy research READY TO RESUME. 595 native-inclusive tests PASS. Combined ready 83.8733%; supported safe candles 5,407,961; Fresh supported windows 34,491 /33,745 /32,979 /30,462. Formal QC/Fresh strategy evaluation NOT_RUN. [API](../docs/RESEARCH_INFRASTRUCTURE_V1.md), [asset inventory](evidence/database-asset-inventory-2026-10-08.json), [cleanup receipt](evidence/database-cleanup-results-2026-10-08.json).
+
+## Earlier Shape core acceptance · 2026-10-08 (historical snapshot)
 
 [22-answer Shape readiness](shape-research-data-readiness-2026-10-08.md): **SHAPE_RESEARCH_READY**, General PIT still Tier1.83.3562% technically safe observed candles; default confirmed/probable5,372,282 /77.5332%;126-session Train/Validation/Test2,107,260 /429,953 /517,162; Fresh OOS0.573 native-inclusive tests passed. [Machine evidence](evidence/shape-research-scorecard-2026-10-08.json), [API and source/cutoff contract](../docs/SHAPE_RESEARCH_DATA_LAYER.md). Stop active vendor-grade expansion, resume local shape/factor research and visual data preparation. Missingness of disappeared IDs and previously viewed Test remain explicit limits; strict production/formal gates and source tables untouched.
 
