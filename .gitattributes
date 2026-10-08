@@ -11,3 +11,7 @@ src/radar/pit/decision.py text eol=lf
 src/radar/pit/decision_bounds.py text eol=lf
 tests/test_pit_decision_bounds.py text eol=lf
 tests/test_pit_decision_scope.py text eol=lf
+quantconnect-validation/** text eol=lf
+docs/QUANTCONNECT_FREE_VALIDATION.md text eol=lf
+tests/test_quantconnect_validation.py text eol=lf
+reports/qc-cloud-validation-readiness-2026-10-07.md text eol=lf

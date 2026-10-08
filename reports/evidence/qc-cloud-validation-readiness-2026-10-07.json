@@ -1,0 +1,77 @@
+{
+  "status": "PARTIAL_CLOUD_SMOKE_RECEIPT_IMPORT_PENDING",
+  "source_commit": "80b6d95a2c849bb1d64ba67ca0371bcb05a8220a",
+  "latest_main_read": "80b6d95a2c849bb1d64ba67ca0371bcb05a8220a",
+  "frozen_inputs_semantic_sha256": "3bb8d78981ece5acf36189f964e74fa8e0c770ea00ff419848da516fd1a96caa",
+  "signal_sha256": "afa1c1d3bc2d05cded3b6874089358f0c1dc81433964a9dbb9ccb9b3a01f002c",
+  "signals": 1264,
+  "signal_status": "FROZEN_DIAGNOSTIC_C_NOT_FORMAL_PIT_RELEASE",
+  "validation_sessions": 235,
+  "cloud_smoke": "PARTIAL_DATA_CHECKS_PASS_OBSERVED_FULL_RECEIPTS_PENDING",
+  "cloud_layers": {
+    "layer1": "NOT_RUN",
+    "layer2": "NOT_RUN",
+    "layer3": "NOT_RUN"
+  },
+  "cloud_backtest_ids": [
+    "3158f5e575fa21e150ff36e066659c55",
+    "730eb8a3ad8052280ce66a16b25cd8ec"
+  ],
+  "local_pit_native": "NOT_RUN",
+  "local_pit_reconciliation": "NOT_RUN",
+  "pit_release": "BLOCKED",
+  "manual_cases_expected": null,
+  "quota": {
+    "status": "PASS",
+    "checked_date_projects": 470,
+    "max_with_default_notebook": 23,
+    "max_encoded_input_bytes": 65157,
+    "max_project_file_bytes": 30010
+  },
+  "tests": {
+    "native_inclusive_passed": 507,
+    "native_inclusive_seconds": 83.78,
+    "original_tests_retained": 468,
+    "new_tests": 39,
+    "final_harness_passed": 39,
+    "final_harness_seconds": 4.71,
+    "warning": "existing websockets deprecation"
+  },
+  "protected_physical_files": 24,
+  "protected_verification": "quantconnect-validation/protected-verification.json",
+  "old_pit_dependency": "f1b4b2db60ee52a5d8f13426c9a6cd5750b337d0bd96bf05746960b92db0ac3a",
+  "production_paths_modified": false,
+  "strategy_parameters_modified": false,
+  "qc_raw_data_exported": false,
+  "object_store_write_used": false,
+  "paid_api_or_cli_used": false,
+  "login_handoff": "User personally signs in; Codex handles project staging, run, import and investigation",
+  "primary_gate": "Local Core vs independently constructed QC Core; Full/Core overlap is not primary external gate",
+  "existing_local_accepted_candidate_ids": 221,
+  "binding_policy": "Reuse previously accepted local identity only if actual dated QC CIK/class/SID agrees; investigate unresolved/conflicting cases only",
+  "user_login_reported": true,
+  "cloud_smoke_evidence": "reports/evidence/qc-cloud-smoke-validation-2026-10-08.json",
+  "protected_files_checked": 24,
+  "protected_files_unchanged": 23,
+  "protected_current_verification": "reports/evidence/qc-protected-verification-2026-10-08.json",
+  "independent_live_market_update": {
+    "task_name": "StockRadar-DailyUpdate",
+    "task_last_run_local": "2026-10-08 08:51:56",
+    "task_last_result": 0,
+    "started_at": "2026-10-08T00:51:58.526778+00:00",
+    "finished_at": "2026-10-08T00:56:28.927673+00:00",
+    "target_date": "2026-10-07",
+    "state": "succeeded",
+    "bars_inserted": 13899,
+    "bars_updated": 0,
+    "changed_path": "data/market.duckdb",
+    "modified_by_cloud_validation_task": false,
+    "evidence_sources": [
+      "Windows Get-ScheduledTaskInfo",
+      "data/daily-update-status.json",
+      "file SHA256 and modification time"
+    ]
+  },
+  "staging_refused_missing_smoke_downloads": true,
+  "production_paths_modified_by_this_task": false
+}

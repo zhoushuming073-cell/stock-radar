@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Stock Radar scoped QC conflict evidence",
+  "type": "object",
+  "required": ["local_uid", "date", "local_interpretation", "qc_interpretation", "official_evidence", "issuer_cik", "share_class", "ticker_history", "exchange", "material_action", "confidence", "changes_core", "changes_candidate", "changes_trade", "use"],
+  "properties": {
+    "local_uid": {"type": "string"},
+    "date": {"type": "string", "format": "date"},
+    "local_interpretation": {"type": "object"},
+    "qc_interpretation": {"type": "object"},
+    "issuer_cik": {"type": "string", "pattern": "^[0-9]{10}$"},
+    "share_class": {"type": "string"},
+    "ticker_history": {"type": "array"},
+    "exchange": {"type": "string"},
+    "material_action": {"type": ["object", "null"]},
+    "confidence": {"enum": ["verified", "partial", "unresolved"]},
+    "changes_core": {"type": ["boolean", "null"]},
+    "changes_candidate": {"type": ["boolean", "null"]},
+    "changes_trade": {"type": ["boolean", "null"]},
+    "use": {"enum": ["asof_decision", "retrospective_validation"]},
+    "official_evidence": {"type": "array", "items": {
+      "type": "object",
+      "required": ["url", "publisher_type", "source_date", "published_at", "captured_sha256", "issuer_cik", "share_class", "assertion", "supports_qc_sid"],
+      "properties": {
+        "url": {"type": "string", "format": "uri"},
+        "publisher_type": {"enum": ["SEC", "issuer", "exchange", "FINRA"]},
+        "source_date": {"type": "string", "format": "date"},
+        "published_at": {"type": "string"},
+        "captured_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "issuer_cik": {"type": "string"}, "share_class": {"type": "string"},
+        "assertion": {"type": "string"}, "supports_qc_sid": {"type": ["string", "null"]},
+        "issuer_domain_verified": {"type": "boolean"},
+        "payload_path": {"type": "string"}, "http_receipt_path": {"type": "string"},
+        "primary_excerpt": {"type": "string", "minLength": 40}
+      }
+    }}
+  }
+}

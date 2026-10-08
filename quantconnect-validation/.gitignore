@@ -1,0 +1,5 @@
+results/*
+!results/README.md
+__pycache__/
+*.pyc
+work/

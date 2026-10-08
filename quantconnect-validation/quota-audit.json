@@ -1,0 +1,3299 @@
+{
+  "status": "PASS",
+  "checked_date_projects": 470,
+  "max_with_default_notebook": 23,
+  "max_encoded_input_bytes": 65157,
+  "max_project_file_bytes": 30010,
+  "rows": [
+    {
+      "run": "layer1-2024-09-30",
+      "encoded_input_bytes": 59212,
+      "parts": 2,
+      "upload_files": 8,
+      "with_default_notebook": 9
+    },
+    {
+      "run": "layer1-2024-10-01",
+      "encoded_input_bytes": 59017,
+      "parts": 2,
+      "upload_files": 8,
+      "with_default_notebook": 9
+    },
+    {
+      "run": "layer1-2024-10-02",
+      "encoded_input_bytes": 59237,
+      "parts": 2,
+      "upload_files": 8,
+      "with_default_notebook": 9
+    },
+    {
+      "run": "layer1-2024-10-03",
+      "encoded_input_bytes": 59765,
+      "parts": 2,
+      "upload_files": 8,
+      "with_default_notebook": 9
+    },
+    {
+      "run": "layer1-2024-10-04",
+      "encoded_input_bytes": 60490,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-10-07",
+      "encoded_input_bytes": 60229,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-10-08",
+      "encoded_input_bytes": 59877,
+      "parts": 2,
+      "upload_files": 8,
+      "with_default_notebook": 9
+    },
+    {
+      "run": "layer1-2024-10-09",
+      "encoded_input_bytes": 59575,
+      "parts": 2,
+      "upload_files": 8,
+      "with_default_notebook": 9
+    },
+    {
+      "run": "layer1-2024-10-10",
+      "encoded_input_bytes": 60022,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-10-11",
+      "encoded_input_bytes": 60422,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-10-14",
+      "encoded_input_bytes": 61510,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-10-15",
+      "encoded_input_bytes": 60217,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-10-16",
+      "encoded_input_bytes": 60572,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-10-17",
+      "encoded_input_bytes": 60469,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-10-18",
+      "encoded_input_bytes": 60518,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-10-21",
+      "encoded_input_bytes": 60553,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-10-22",
+      "encoded_input_bytes": 60099,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-10-23",
+      "encoded_input_bytes": 61059,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-10-24",
+      "encoded_input_bytes": 60657,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-10-25",
+      "encoded_input_bytes": 61134,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-10-28",
+      "encoded_input_bytes": 61539,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-10-29",
+      "encoded_input_bytes": 60102,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-10-30",
+      "encoded_input_bytes": 60384,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-10-31",
+      "encoded_input_bytes": 60374,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-11-01",
+      "encoded_input_bytes": 60229,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-11-04",
+      "encoded_input_bytes": 60760,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-11-05",
+      "encoded_input_bytes": 61312,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-11-06",
+      "encoded_input_bytes": 60912,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-11-07",
+      "encoded_input_bytes": 60702,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-11-08",
+      "encoded_input_bytes": 60847,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-11-11",
+      "encoded_input_bytes": 60870,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-11-12",
+      "encoded_input_bytes": 60652,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-11-13",
+      "encoded_input_bytes": 60658,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-11-14",
+      "encoded_input_bytes": 61363,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-11-15",
+      "encoded_input_bytes": 60522,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-11-18",
+      "encoded_input_bytes": 60948,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-11-19",
+      "encoded_input_bytes": 60462,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-11-20",
+      "encoded_input_bytes": 60795,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-11-21",
+      "encoded_input_bytes": 60897,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-11-22",
+      "encoded_input_bytes": 60793,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-11-25",
+      "encoded_input_bytes": 60830,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-11-26",
+      "encoded_input_bytes": 60059,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-11-27",
+      "encoded_input_bytes": 60365,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-11-29",
+      "encoded_input_bytes": 60585,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-12-02",
+      "encoded_input_bytes": 61137,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-12-03",
+      "encoded_input_bytes": 60818,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-12-04",
+      "encoded_input_bytes": 61765,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-12-05",
+      "encoded_input_bytes": 61488,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-12-06",
+      "encoded_input_bytes": 61573,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-12-09",
+      "encoded_input_bytes": 61299,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-12-10",
+      "encoded_input_bytes": 61007,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-12-11",
+      "encoded_input_bytes": 60820,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-12-12",
+      "encoded_input_bytes": 61023,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-12-13",
+      "encoded_input_bytes": 61192,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-12-16",
+      "encoded_input_bytes": 61993,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-12-17",
+      "encoded_input_bytes": 61324,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-12-18",
+      "encoded_input_bytes": 61148,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-12-19",
+      "encoded_input_bytes": 61507,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-12-20",
+      "encoded_input_bytes": 61939,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-12-23",
+      "encoded_input_bytes": 63147,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-12-24",
+      "encoded_input_bytes": 62949,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-12-26",
+      "encoded_input_bytes": 61957,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-12-27",
+      "encoded_input_bytes": 60774,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-12-30",
+      "encoded_input_bytes": 61350,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2024-12-31",
+      "encoded_input_bytes": 61482,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-01-02",
+      "encoded_input_bytes": 62189,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-01-03",
+      "encoded_input_bytes": 63417,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-01-06",
+      "encoded_input_bytes": 62157,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-01-07",
+      "encoded_input_bytes": 60774,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-01-08",
+      "encoded_input_bytes": 61395,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-01-10",
+      "encoded_input_bytes": 61027,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-01-13",
+      "encoded_input_bytes": 61685,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-01-14",
+      "encoded_input_bytes": 61543,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-01-15",
+      "encoded_input_bytes": 60794,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-01-16",
+      "encoded_input_bytes": 61143,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-01-17",
+      "encoded_input_bytes": 61713,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-01-21",
+      "encoded_input_bytes": 61472,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-01-22",
+      "encoded_input_bytes": 60910,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-01-23",
+      "encoded_input_bytes": 61590,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-01-24",
+      "encoded_input_bytes": 61850,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-01-27",
+      "encoded_input_bytes": 61597,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-01-28",
+      "encoded_input_bytes": 61729,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-01-29",
+      "encoded_input_bytes": 61490,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-01-30",
+      "encoded_input_bytes": 61889,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-01-31",
+      "encoded_input_bytes": 61075,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-02-03",
+      "encoded_input_bytes": 61530,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-02-04",
+      "encoded_input_bytes": 61525,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-02-05",
+      "encoded_input_bytes": 61832,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-02-06",
+      "encoded_input_bytes": 62107,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-02-07",
+      "encoded_input_bytes": 62660,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-02-10",
+      "encoded_input_bytes": 62179,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-02-11",
+      "encoded_input_bytes": 61199,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-02-12",
+      "encoded_input_bytes": 61428,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-02-13",
+      "encoded_input_bytes": 61434,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-02-14",
+      "encoded_input_bytes": 62285,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-02-18",
+      "encoded_input_bytes": 62509,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-02-19",
+      "encoded_input_bytes": 61570,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-02-20",
+      "encoded_input_bytes": 61632,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-02-21",
+      "encoded_input_bytes": 62079,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-02-24",
+      "encoded_input_bytes": 62119,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-02-25",
+      "encoded_input_bytes": 61422,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-02-26",
+      "encoded_input_bytes": 61815,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-02-27",
+      "encoded_input_bytes": 61315,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-02-28",
+      "encoded_input_bytes": 62998,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-03-03",
+      "encoded_input_bytes": 62070,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-03-04",
+      "encoded_input_bytes": 61775,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-03-05",
+      "encoded_input_bytes": 61752,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-03-06",
+      "encoded_input_bytes": 61364,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-03-07",
+      "encoded_input_bytes": 61882,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-03-10",
+      "encoded_input_bytes": 61812,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-03-11",
+      "encoded_input_bytes": 61857,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-03-12",
+      "encoded_input_bytes": 61453,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-03-13",
+      "encoded_input_bytes": 61790,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-03-14",
+      "encoded_input_bytes": 62360,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-03-17",
+      "encoded_input_bytes": 63019,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-03-18",
+      "encoded_input_bytes": 61827,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-03-19",
+      "encoded_input_bytes": 62642,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-03-20",
+      "encoded_input_bytes": 62000,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-03-21",
+      "encoded_input_bytes": 62460,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-03-24",
+      "encoded_input_bytes": 62472,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-03-25",
+      "encoded_input_bytes": 62109,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-03-26",
+      "encoded_input_bytes": 61957,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-03-27",
+      "encoded_input_bytes": 61744,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-03-28",
+      "encoded_input_bytes": 61725,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-03-31",
+      "encoded_input_bytes": 61910,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-04-01",
+      "encoded_input_bytes": 63964,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-04-02",
+      "encoded_input_bytes": 62942,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-04-03",
+      "encoded_input_bytes": 61429,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-04-04",
+      "encoded_input_bytes": 61573,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-04-07",
+      "encoded_input_bytes": 61540,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-04-08",
+      "encoded_input_bytes": 61863,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-04-09",
+      "encoded_input_bytes": 61777,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-04-10",
+      "encoded_input_bytes": 61537,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-04-11",
+      "encoded_input_bytes": 62459,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-04-14",
+      "encoded_input_bytes": 62204,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-04-15",
+      "encoded_input_bytes": 61969,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-04-16",
+      "encoded_input_bytes": 61108,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-04-17",
+      "encoded_input_bytes": 62438,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-04-21",
+      "encoded_input_bytes": 61989,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-04-22",
+      "encoded_input_bytes": 63068,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-04-23",
+      "encoded_input_bytes": 62394,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-04-24",
+      "encoded_input_bytes": 63068,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-04-25",
+      "encoded_input_bytes": 62004,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-04-28",
+      "encoded_input_bytes": 62344,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-04-29",
+      "encoded_input_bytes": 61794,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-04-30",
+      "encoded_input_bytes": 61555,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-05-01",
+      "encoded_input_bytes": 61310,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-05-02",
+      "encoded_input_bytes": 61493,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-05-05",
+      "encoded_input_bytes": 61340,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-05-06",
+      "encoded_input_bytes": 61284,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-05-07",
+      "encoded_input_bytes": 61209,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-05-08",
+      "encoded_input_bytes": 61143,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-05-09",
+      "encoded_input_bytes": 61277,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-05-12",
+      "encoded_input_bytes": 61833,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-05-13",
+      "encoded_input_bytes": 61530,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-05-14",
+      "encoded_input_bytes": 61574,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-05-15",
+      "encoded_input_bytes": 62035,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-05-16",
+      "encoded_input_bytes": 62190,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-05-19",
+      "encoded_input_bytes": 62522,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-05-20",
+      "encoded_input_bytes": 61853,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-05-21",
+      "encoded_input_bytes": 61162,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-05-22",
+      "encoded_input_bytes": 61807,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-05-23",
+      "encoded_input_bytes": 61810,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-05-27",
+      "encoded_input_bytes": 62232,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-05-28",
+      "encoded_input_bytes": 62399,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-05-29",
+      "encoded_input_bytes": 62469,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-05-30",
+      "encoded_input_bytes": 61789,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-06-02",
+      "encoded_input_bytes": 62530,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-06-03",
+      "encoded_input_bytes": 62940,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-06-04",
+      "encoded_input_bytes": 62679,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-06-05",
+      "encoded_input_bytes": 62577,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-06-06",
+      "encoded_input_bytes": 63029,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-06-09",
+      "encoded_input_bytes": 62679,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-06-10",
+      "encoded_input_bytes": 62779,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-06-11",
+      "encoded_input_bytes": 62417,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-06-12",
+      "encoded_input_bytes": 62417,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-06-13",
+      "encoded_input_bytes": 62769,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-06-16",
+      "encoded_input_bytes": 63300,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-06-17",
+      "encoded_input_bytes": 62767,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-06-18",
+      "encoded_input_bytes": 63740,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-06-20",
+      "encoded_input_bytes": 63740,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-06-23",
+      "encoded_input_bytes": 64017,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-06-24",
+      "encoded_input_bytes": 63990,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-06-25",
+      "encoded_input_bytes": 63114,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-06-26",
+      "encoded_input_bytes": 63823,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-06-27",
+      "encoded_input_bytes": 63569,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-06-30",
+      "encoded_input_bytes": 63789,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-07-01",
+      "encoded_input_bytes": 63529,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-07-02",
+      "encoded_input_bytes": 64237,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-07-03",
+      "encoded_input_bytes": 64315,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-07-07",
+      "encoded_input_bytes": 64368,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-07-08",
+      "encoded_input_bytes": 64504,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-07-09",
+      "encoded_input_bytes": 64694,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-07-10",
+      "encoded_input_bytes": 64233,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-07-11",
+      "encoded_input_bytes": 64087,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-07-14",
+      "encoded_input_bytes": 64470,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-07-15",
+      "encoded_input_bytes": 63367,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-07-16",
+      "encoded_input_bytes": 64140,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-07-17",
+      "encoded_input_bytes": 64168,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-07-18",
+      "encoded_input_bytes": 64432,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-07-21",
+      "encoded_input_bytes": 64250,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-07-22",
+      "encoded_input_bytes": 63795,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-07-23",
+      "encoded_input_bytes": 63782,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-07-24",
+      "encoded_input_bytes": 64032,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-07-25",
+      "encoded_input_bytes": 64175,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-07-28",
+      "encoded_input_bytes": 64489,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-07-29",
+      "encoded_input_bytes": 64130,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-07-30",
+      "encoded_input_bytes": 63987,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-07-31",
+      "encoded_input_bytes": 63883,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-08-01",
+      "encoded_input_bytes": 64517,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-08-04",
+      "encoded_input_bytes": 64807,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-08-05",
+      "encoded_input_bytes": 63564,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-08-06",
+      "encoded_input_bytes": 63273,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-08-07",
+      "encoded_input_bytes": 63204,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-08-08",
+      "encoded_input_bytes": 63444,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-08-11",
+      "encoded_input_bytes": 63735,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-08-12",
+      "encoded_input_bytes": 64227,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-08-13",
+      "encoded_input_bytes": 63982,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-08-14",
+      "encoded_input_bytes": 64054,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-08-15",
+      "encoded_input_bytes": 64269,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-08-18",
+      "encoded_input_bytes": 64283,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-08-19",
+      "encoded_input_bytes": 63814,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-08-20",
+      "encoded_input_bytes": 64015,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-08-21",
+      "encoded_input_bytes": 63868,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-08-22",
+      "encoded_input_bytes": 65157,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-08-25",
+      "encoded_input_bytes": 63510,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-08-26",
+      "encoded_input_bytes": 63660,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-08-27",
+      "encoded_input_bytes": 62762,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-08-28",
+      "encoded_input_bytes": 62804,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-08-29",
+      "encoded_input_bytes": 62939,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-09-02",
+      "encoded_input_bytes": 63379,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-09-03",
+      "encoded_input_bytes": 62310,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-09-04",
+      "encoded_input_bytes": 63393,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-09-05",
+      "encoded_input_bytes": 63190,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer1-2025-09-08",
+      "encoded_input_bytes": 63085,
+      "parts": 3,
+      "upload_files": 9,
+      "with_default_notebook": 10
+    },
+    {
+      "run": "layer2-2024-09-30",
+      "encoded_input_bytes": 59212,
+      "parts": 2,
+      "upload_files": 21,
+      "with_default_notebook": 22
+    },
+    {
+      "run": "layer2-2024-10-01",
+      "encoded_input_bytes": 59017,
+      "parts": 2,
+      "upload_files": 21,
+      "with_default_notebook": 22
+    },
+    {
+      "run": "layer2-2024-10-02",
+      "encoded_input_bytes": 59237,
+      "parts": 2,
+      "upload_files": 21,
+      "with_default_notebook": 22
+    },
+    {
+      "run": "layer2-2024-10-03",
+      "encoded_input_bytes": 59765,
+      "parts": 2,
+      "upload_files": 21,
+      "with_default_notebook": 22
+    },
+    {
+      "run": "layer2-2024-10-04",
+      "encoded_input_bytes": 60490,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-10-07",
+      "encoded_input_bytes": 60229,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-10-08",
+      "encoded_input_bytes": 59877,
+      "parts": 2,
+      "upload_files": 21,
+      "with_default_notebook": 22
+    },
+    {
+      "run": "layer2-2024-10-09",
+      "encoded_input_bytes": 59575,
+      "parts": 2,
+      "upload_files": 21,
+      "with_default_notebook": 22
+    },
+    {
+      "run": "layer2-2024-10-10",
+      "encoded_input_bytes": 60022,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-10-11",
+      "encoded_input_bytes": 60422,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-10-14",
+      "encoded_input_bytes": 61510,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-10-15",
+      "encoded_input_bytes": 60217,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-10-16",
+      "encoded_input_bytes": 60572,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-10-17",
+      "encoded_input_bytes": 60469,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-10-18",
+      "encoded_input_bytes": 60518,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-10-21",
+      "encoded_input_bytes": 60553,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-10-22",
+      "encoded_input_bytes": 60099,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-10-23",
+      "encoded_input_bytes": 61059,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-10-24",
+      "encoded_input_bytes": 60657,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-10-25",
+      "encoded_input_bytes": 61134,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-10-28",
+      "encoded_input_bytes": 61539,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-10-29",
+      "encoded_input_bytes": 60102,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-10-30",
+      "encoded_input_bytes": 60384,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-10-31",
+      "encoded_input_bytes": 60374,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-11-01",
+      "encoded_input_bytes": 60229,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-11-04",
+      "encoded_input_bytes": 60760,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-11-05",
+      "encoded_input_bytes": 61312,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-11-06",
+      "encoded_input_bytes": 60912,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-11-07",
+      "encoded_input_bytes": 60702,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-11-08",
+      "encoded_input_bytes": 60847,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-11-11",
+      "encoded_input_bytes": 60870,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-11-12",
+      "encoded_input_bytes": 60652,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-11-13",
+      "encoded_input_bytes": 60658,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-11-14",
+      "encoded_input_bytes": 61363,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-11-15",
+      "encoded_input_bytes": 60522,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-11-18",
+      "encoded_input_bytes": 60948,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-11-19",
+      "encoded_input_bytes": 60462,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-11-20",
+      "encoded_input_bytes": 60795,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-11-21",
+      "encoded_input_bytes": 60897,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-11-22",
+      "encoded_input_bytes": 60793,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-11-25",
+      "encoded_input_bytes": 60830,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-11-26",
+      "encoded_input_bytes": 60059,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-11-27",
+      "encoded_input_bytes": 60365,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-11-29",
+      "encoded_input_bytes": 60585,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-12-02",
+      "encoded_input_bytes": 61137,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-12-03",
+      "encoded_input_bytes": 60818,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-12-04",
+      "encoded_input_bytes": 61765,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-12-05",
+      "encoded_input_bytes": 61488,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-12-06",
+      "encoded_input_bytes": 61573,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-12-09",
+      "encoded_input_bytes": 61299,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-12-10",
+      "encoded_input_bytes": 61007,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-12-11",
+      "encoded_input_bytes": 60820,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-12-12",
+      "encoded_input_bytes": 61023,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-12-13",
+      "encoded_input_bytes": 61192,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-12-16",
+      "encoded_input_bytes": 61993,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-12-17",
+      "encoded_input_bytes": 61324,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-12-18",
+      "encoded_input_bytes": 61148,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-12-19",
+      "encoded_input_bytes": 61507,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-12-20",
+      "encoded_input_bytes": 61939,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-12-23",
+      "encoded_input_bytes": 63147,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-12-24",
+      "encoded_input_bytes": 62949,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-12-26",
+      "encoded_input_bytes": 61957,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-12-27",
+      "encoded_input_bytes": 60774,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-12-30",
+      "encoded_input_bytes": 61350,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2024-12-31",
+      "encoded_input_bytes": 61482,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-01-02",
+      "encoded_input_bytes": 62189,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-01-03",
+      "encoded_input_bytes": 63417,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-01-06",
+      "encoded_input_bytes": 62157,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-01-07",
+      "encoded_input_bytes": 60774,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-01-08",
+      "encoded_input_bytes": 61395,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-01-10",
+      "encoded_input_bytes": 61027,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-01-13",
+      "encoded_input_bytes": 61685,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-01-14",
+      "encoded_input_bytes": 61543,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-01-15",
+      "encoded_input_bytes": 60794,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-01-16",
+      "encoded_input_bytes": 61143,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-01-17",
+      "encoded_input_bytes": 61713,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-01-21",
+      "encoded_input_bytes": 61472,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-01-22",
+      "encoded_input_bytes": 60910,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-01-23",
+      "encoded_input_bytes": 61590,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-01-24",
+      "encoded_input_bytes": 61850,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-01-27",
+      "encoded_input_bytes": 61597,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-01-28",
+      "encoded_input_bytes": 61729,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-01-29",
+      "encoded_input_bytes": 61490,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-01-30",
+      "encoded_input_bytes": 61889,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-01-31",
+      "encoded_input_bytes": 61075,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-02-03",
+      "encoded_input_bytes": 61530,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-02-04",
+      "encoded_input_bytes": 61525,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-02-05",
+      "encoded_input_bytes": 61832,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-02-06",
+      "encoded_input_bytes": 62107,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-02-07",
+      "encoded_input_bytes": 62660,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-02-10",
+      "encoded_input_bytes": 62179,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-02-11",
+      "encoded_input_bytes": 61199,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-02-12",
+      "encoded_input_bytes": 61428,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-02-13",
+      "encoded_input_bytes": 61434,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-02-14",
+      "encoded_input_bytes": 62285,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-02-18",
+      "encoded_input_bytes": 62509,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-02-19",
+      "encoded_input_bytes": 61570,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-02-20",
+      "encoded_input_bytes": 61632,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-02-21",
+      "encoded_input_bytes": 62079,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-02-24",
+      "encoded_input_bytes": 62119,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-02-25",
+      "encoded_input_bytes": 61422,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-02-26",
+      "encoded_input_bytes": 61815,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-02-27",
+      "encoded_input_bytes": 61315,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-02-28",
+      "encoded_input_bytes": 62998,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-03-03",
+      "encoded_input_bytes": 62070,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-03-04",
+      "encoded_input_bytes": 61775,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-03-05",
+      "encoded_input_bytes": 61752,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-03-06",
+      "encoded_input_bytes": 61364,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-03-07",
+      "encoded_input_bytes": 61882,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-03-10",
+      "encoded_input_bytes": 61812,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-03-11",
+      "encoded_input_bytes": 61857,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-03-12",
+      "encoded_input_bytes": 61453,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-03-13",
+      "encoded_input_bytes": 61790,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-03-14",
+      "encoded_input_bytes": 62360,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-03-17",
+      "encoded_input_bytes": 63019,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-03-18",
+      "encoded_input_bytes": 61827,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-03-19",
+      "encoded_input_bytes": 62642,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-03-20",
+      "encoded_input_bytes": 62000,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-03-21",
+      "encoded_input_bytes": 62460,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-03-24",
+      "encoded_input_bytes": 62472,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-03-25",
+      "encoded_input_bytes": 62109,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-03-26",
+      "encoded_input_bytes": 61957,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-03-27",
+      "encoded_input_bytes": 61744,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-03-28",
+      "encoded_input_bytes": 61725,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-03-31",
+      "encoded_input_bytes": 61910,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-04-01",
+      "encoded_input_bytes": 63964,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-04-02",
+      "encoded_input_bytes": 62942,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-04-03",
+      "encoded_input_bytes": 61429,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-04-04",
+      "encoded_input_bytes": 61573,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-04-07",
+      "encoded_input_bytes": 61540,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-04-08",
+      "encoded_input_bytes": 61863,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-04-09",
+      "encoded_input_bytes": 61777,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-04-10",
+      "encoded_input_bytes": 61537,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-04-11",
+      "encoded_input_bytes": 62459,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-04-14",
+      "encoded_input_bytes": 62204,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-04-15",
+      "encoded_input_bytes": 61969,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-04-16",
+      "encoded_input_bytes": 61108,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-04-17",
+      "encoded_input_bytes": 62438,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-04-21",
+      "encoded_input_bytes": 61989,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-04-22",
+      "encoded_input_bytes": 63068,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-04-23",
+      "encoded_input_bytes": 62394,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-04-24",
+      "encoded_input_bytes": 63068,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-04-25",
+      "encoded_input_bytes": 62004,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-04-28",
+      "encoded_input_bytes": 62344,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-04-29",
+      "encoded_input_bytes": 61794,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-04-30",
+      "encoded_input_bytes": 61555,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-05-01",
+      "encoded_input_bytes": 61310,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-05-02",
+      "encoded_input_bytes": 61493,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-05-05",
+      "encoded_input_bytes": 61340,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-05-06",
+      "encoded_input_bytes": 61284,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-05-07",
+      "encoded_input_bytes": 61209,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-05-08",
+      "encoded_input_bytes": 61143,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-05-09",
+      "encoded_input_bytes": 61277,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-05-12",
+      "encoded_input_bytes": 61833,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-05-13",
+      "encoded_input_bytes": 61530,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-05-14",
+      "encoded_input_bytes": 61574,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-05-15",
+      "encoded_input_bytes": 62035,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-05-16",
+      "encoded_input_bytes": 62190,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-05-19",
+      "encoded_input_bytes": 62522,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-05-20",
+      "encoded_input_bytes": 61853,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-05-21",
+      "encoded_input_bytes": 61162,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-05-22",
+      "encoded_input_bytes": 61807,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-05-23",
+      "encoded_input_bytes": 61810,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-05-27",
+      "encoded_input_bytes": 62232,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-05-28",
+      "encoded_input_bytes": 62399,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-05-29",
+      "encoded_input_bytes": 62469,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-05-30",
+      "encoded_input_bytes": 61789,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-06-02",
+      "encoded_input_bytes": 62530,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-06-03",
+      "encoded_input_bytes": 62940,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-06-04",
+      "encoded_input_bytes": 62679,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-06-05",
+      "encoded_input_bytes": 62577,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-06-06",
+      "encoded_input_bytes": 63029,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-06-09",
+      "encoded_input_bytes": 62679,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-06-10",
+      "encoded_input_bytes": 62779,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-06-11",
+      "encoded_input_bytes": 62417,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-06-12",
+      "encoded_input_bytes": 62417,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-06-13",
+      "encoded_input_bytes": 62769,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-06-16",
+      "encoded_input_bytes": 63300,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-06-17",
+      "encoded_input_bytes": 62767,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-06-18",
+      "encoded_input_bytes": 63740,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-06-20",
+      "encoded_input_bytes": 63740,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-06-23",
+      "encoded_input_bytes": 64017,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-06-24",
+      "encoded_input_bytes": 63990,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-06-25",
+      "encoded_input_bytes": 63114,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-06-26",
+      "encoded_input_bytes": 63823,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-06-27",
+      "encoded_input_bytes": 63569,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-06-30",
+      "encoded_input_bytes": 63789,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-07-01",
+      "encoded_input_bytes": 63529,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-07-02",
+      "encoded_input_bytes": 64237,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-07-03",
+      "encoded_input_bytes": 64315,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-07-07",
+      "encoded_input_bytes": 64368,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-07-08",
+      "encoded_input_bytes": 64504,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-07-09",
+      "encoded_input_bytes": 64694,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-07-10",
+      "encoded_input_bytes": 64233,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-07-11",
+      "encoded_input_bytes": 64087,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-07-14",
+      "encoded_input_bytes": 64470,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-07-15",
+      "encoded_input_bytes": 63367,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-07-16",
+      "encoded_input_bytes": 64140,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-07-17",
+      "encoded_input_bytes": 64168,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-07-18",
+      "encoded_input_bytes": 64432,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-07-21",
+      "encoded_input_bytes": 64250,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-07-22",
+      "encoded_input_bytes": 63795,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-07-23",
+      "encoded_input_bytes": 63782,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-07-24",
+      "encoded_input_bytes": 64032,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-07-25",
+      "encoded_input_bytes": 64175,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-07-28",
+      "encoded_input_bytes": 64489,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-07-29",
+      "encoded_input_bytes": 64130,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-07-30",
+      "encoded_input_bytes": 63987,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-07-31",
+      "encoded_input_bytes": 63883,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-08-01",
+      "encoded_input_bytes": 64517,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-08-04",
+      "encoded_input_bytes": 64807,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-08-05",
+      "encoded_input_bytes": 63564,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-08-06",
+      "encoded_input_bytes": 63273,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-08-07",
+      "encoded_input_bytes": 63204,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-08-08",
+      "encoded_input_bytes": 63444,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-08-11",
+      "encoded_input_bytes": 63735,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-08-12",
+      "encoded_input_bytes": 64227,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-08-13",
+      "encoded_input_bytes": 63982,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-08-14",
+      "encoded_input_bytes": 64054,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-08-15",
+      "encoded_input_bytes": 64269,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-08-18",
+      "encoded_input_bytes": 64283,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-08-19",
+      "encoded_input_bytes": 63814,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-08-20",
+      "encoded_input_bytes": 64015,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-08-21",
+      "encoded_input_bytes": 63868,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-08-22",
+      "encoded_input_bytes": 65157,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-08-25",
+      "encoded_input_bytes": 63510,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-08-26",
+      "encoded_input_bytes": 63660,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-08-27",
+      "encoded_input_bytes": 62762,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-08-28",
+      "encoded_input_bytes": 62804,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-08-29",
+      "encoded_input_bytes": 62939,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-09-02",
+      "encoded_input_bytes": 63379,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-09-03",
+      "encoded_input_bytes": 62310,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-09-04",
+      "encoded_input_bytes": 63393,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-09-05",
+      "encoded_input_bytes": 63190,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    },
+    {
+      "run": "layer2-2025-09-08",
+      "encoded_input_bytes": 63085,
+      "parts": 3,
+      "upload_files": 22,
+      "with_default_notebook": 23
+    }
+  ]
+}

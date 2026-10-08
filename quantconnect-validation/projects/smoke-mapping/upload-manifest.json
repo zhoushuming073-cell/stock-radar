@@ -1,0 +1,35 @@
+{
+  "run": {
+    "id": "smoke-mapping",
+    "layer": "smoke",
+    "case": "FB",
+    "dates": [
+      "2022-06-06",
+      "2022-06-13"
+    ],
+    "input_hash": "39bab5c8133e78679c0a434f9af062c5e66d46d9f25ffbd7d4ce820c6ab14f8b",
+    "code_hash": "ef71466df2646dbe5ed1b56a6cce3d5381909dcf16b4ee6e60922f557efdbdb4"
+  },
+  "input_hash": "39bab5c8133e78679c0a434f9af062c5e66d46d9f25ffbd7d4ce820c6ab14f8b",
+  "cloud_executed": false,
+  "preview_only": false,
+  "quota": {
+    "upload_files": 1,
+    "reserved_notebook": 1,
+    "total_with_notebook": 2,
+    "max_file_bytes": 16500,
+    "file_bytes": {
+      "main.py": 16500
+    },
+    "limits": {
+      "files": 25,
+      "file_bytes_conservative": 32000
+    }
+  },
+  "upload": {
+    "main.py": "b93c5956ee19bcca0bfd61aef66a8e0e9ef7124e5e4ec8918505fa733ccd230a"
+  },
+  "local_uid_dictionary": {},
+  "signal_hash": null,
+  "smoke_verified": false
+}

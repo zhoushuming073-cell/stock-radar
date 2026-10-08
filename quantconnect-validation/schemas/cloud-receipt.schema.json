@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Stock Radar derived QC Cloud receipt",
+  "type": "object",
+  "required": ["run", "layer", "records", "status", "receipt_hash", "input_hash", "code_hash"],
+  "properties": {
+    "run": {"type": "string"},
+    "layer": {"enum": ["smoke", "layer1", "layer1-detail", "layer2", "layer3", "layer3-detail"]},
+    "status": {"enum": ["PASS", "PARTIAL", "FAIL"]},
+    "receipt_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "input_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "code_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "records": {"type": "array", "items": {"type": "object"}},
+    "origin": {"const": "quantconnect_cloud_download"},
+    "backtest_id": {"type": "string"},
+    "receipt_verified": {"type": "boolean"}
+  },
+  "$comment": "protocol.py enforces begin/end, sequential records, hash binding, smoke fields, complete dates and no raw market keys. JSON schema alone cannot authenticate Cloud provenance. Actual downloads remain private and paired with native Results JSON."
+}

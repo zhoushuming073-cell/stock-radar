@@ -1,0 +1,170 @@
+{
+  "status": "FROZEN_SCOPE_UNCHANGED_LIVE_MARKET_UPDATED_INDEPENDENTLY",
+  "files": [
+    {
+      "path": "data\\market.duckdb",
+      "sha256": "0043f66ea4ac75c14d1a65e2765cb314d8cc19299f64abe390fd58e30caad60d",
+      "unchanged": false,
+      "current_sha256": "bda524c59617a678bdc5fa6219961770dc02425f6cc75a443a48f8d1633644f0"
+    },
+    {
+      "path": "data\\phase2-research-v2-frozen.duckdb",
+      "sha256": "71361753f5d593ba43c090a984b299cc24f309e9345aae0f2c5615bc73341c7e",
+      "unchanged": true,
+      "current_sha256": "71361753f5d593ba43c090a984b299cc24f309e9345aae0f2c5615bc73341c7e"
+    },
+    {
+      "path": "data\\phase2-research.duckdb",
+      "sha256": "b2565184a372c6ce7d5b448acebad3dfbad0bf51c77b785f5d0a342352d364c3",
+      "unchanged": true,
+      "current_sha256": "b2565184a372c6ce7d5b448acebad3dfbad0bf51c77b785f5d0a342352d364c3"
+    },
+    {
+      "path": "data\\phase2-source-snapshot.duckdb",
+      "sha256": "f6081cfc1a8bbe5856a5a3659be7ae6dfc3f864cb865ce2d12e2fd67200d0fd9",
+      "unchanged": true,
+      "current_sha256": "f6081cfc1a8bbe5856a5a3659be7ae6dfc3f864cb865ce2d12e2fd67200d0fd9"
+    },
+    {
+      "path": "data\\security-master.csv",
+      "sha256": "5e6985a5d4a756061cdc2dba3ad27055e7b7beeb1491e11690d5dbe7621ac6c9",
+      "unchanged": true,
+      "current_sha256": "5e6985a5d4a756061cdc2dba3ad27055e7b7beeb1491e11690d5dbe7621ac6c9"
+    },
+    {
+      "path": "data\\security-master-manifest.json",
+      "sha256": "fa137f66560ed63bcee5bf43a759f65b552e3db611b756446af9fa961ec13559",
+      "unchanged": true,
+      "current_sha256": "fa137f66560ed63bcee5bf43a759f65b552e3db611b756446af9fa961ec13559"
+    },
+    {
+      "path": "data\\security-master-feature-store.json",
+      "sha256": "e267981e0343752adb1584d77863568f495f07e029391cd2156a22967892e845",
+      "unchanged": true,
+      "current_sha256": "e267981e0343752adb1584d77863568f495f07e029391cd2156a22967892e845"
+    },
+    {
+      "path": "data\\pit\\normalized\\533905312e4c19ef2f80558d80c06c1b644f3eefc01fbba0c703904f1dc8bdaa\\pit-research.duckdb",
+      "sha256": "9c39a9f99c8fb1985b40c797a74f41dd6073872243b26584c8401347115a00ff",
+      "unchanged": true,
+      "current_sha256": "9c39a9f99c8fb1985b40c797a74f41dd6073872243b26584c8401347115a00ff"
+    },
+    {
+      "path": "config\\pit_final_run_plan.json",
+      "sha256": "6b1336a9bdfa9438471e057460ade0d945f57e8ae9736b5ecca80fb6667c8fcb",
+      "unchanged": true,
+      "current_sha256": "6b1336a9bdfa9438471e057460ade0d945f57e8ae9736b5ecca80fb6667c8fcb"
+    },
+    {
+      "path": "data\\pit\\research-final\\focused-resolutions\\accepted-holding-prices.json",
+      "sha256": "e2552c3aadce2428d0ab88a5b233ed2215da041d49e8d6c5cf3d5f9eb40e1054",
+      "unchanged": true,
+      "current_sha256": "e2552c3aadce2428d0ab88a5b233ed2215da041d49e8d6c5cf3d5f9eb40e1054"
+    },
+    {
+      "path": "data\\pit\\research-final\\focused-resolutions\\candidate-audit.json",
+      "sha256": "ccefedaea62f859273f5cf6852dfff12aff0f7453b7f63eb7fedbcafaf838e1c",
+      "unchanged": true,
+      "current_sha256": "ccefedaea62f859273f5cf6852dfff12aff0f7453b7f63eb7fedbcafaf838e1c"
+    },
+    {
+      "path": "data\\pit\\research-final\\focused-resolutions\\core-rank-stability.json",
+      "sha256": "ae738b7e210ae154cdc91f767d7006f013afa22b6aeb0ecf7e8a3672495693cb",
+      "unchanged": true,
+      "current_sha256": "ae738b7e210ae154cdc91f767d7006f013afa22b6aeb0ecf7e8a3672495693cb"
+    },
+    {
+      "path": "data\\pit\\research-final\\focused-resolutions\\dated-class-facts.json",
+      "sha256": "933598fdf7a28bef1b8f4b9c66c7b9ee386086b0103544e64bc3d3cf817c7808",
+      "unchanged": true,
+      "current_sha256": "933598fdf7a28bef1b8f4b9c66c7b9ee386086b0103544e64bc3d3cf817c7808"
+    },
+    {
+      "path": "data\\pit\\research-final\\focused-resolutions\\inputs.json",
+      "sha256": "f72f1cb88fa48f19808f58e3e7eed35830818b65331e38b984b26b9c54fd5b6d",
+      "unchanged": true,
+      "current_sha256": "f72f1cb88fa48f19808f58e3e7eed35830818b65331e38b984b26b9c54fd5b6d"
+    },
+    {
+      "path": "data\\pit\\research-final\\focused-resolutions\\missingness-impact.json",
+      "sha256": "fcfabbbd11192f827f60a2f2202ae055ab4bc94c268417eb6261f5cc970afde1",
+      "unchanged": true,
+      "current_sha256": "fcfabbbd11192f827f60a2f2202ae055ab4bc94c268417eb6261f5cc970afde1"
+    },
+    {
+      "path": "data\\pit\\research-final\\focused-resolutions\\priority-queue.json",
+      "sha256": "85e4e7150c38ec65334f48fc6f3b37616b13e9c306b463c823a34bbe9f37c79e",
+      "unchanged": true,
+      "current_sha256": "85e4e7150c38ec65334f48fc6f3b37616b13e9c306b463c823a34bbe9f37c79e"
+    },
+    {
+      "path": "data\\pit\\research-final\\focused-resolutions\\readiness.json",
+      "sha256": "44a765c2772ec46285428e7edc041b505c3603b7f7561972cea540add9766724",
+      "unchanged": true,
+      "current_sha256": "44a765c2772ec46285428e7edc041b505c3603b7f7561972cea540add9766724"
+    },
+    {
+      "path": "data\\pit\\research-final\\focused-resolutions\\score-stress.json",
+      "sha256": "e78fe4d82eb6314ebc88b3c2094d462724aeeaa38072160cbfe8df70a0d77035",
+      "unchanged": true,
+      "current_sha256": "e78fe4d82eb6314ebc88b3c2094d462724aeeaa38072160cbfe8df70a0d77035"
+    },
+    {
+      "path": "data\\pit\\research-final\\identity-safe-bounds\\core-rank-stability.json",
+      "sha256": "467ab4d690a482d1f2daa8690b0cfe7da2806b55bff31138d0e7b44d2d504fd4",
+      "unchanged": true,
+      "current_sha256": "467ab4d690a482d1f2daa8690b0cfe7da2806b55bff31138d0e7b44d2d504fd4"
+    },
+    {
+      "path": "data\\pit\\research-final\\identity-safe-bounds\\inputs.json",
+      "sha256": "599cfb4bf7a5d58c2fde6375a028a0d906849702f6c2454c77ea164eb06ed430",
+      "unchanged": true,
+      "current_sha256": "599cfb4bf7a5d58c2fde6375a028a0d906849702f6c2454c77ea164eb06ed430"
+    },
+    {
+      "path": "data\\pit\\research-final\\identity-safe-bounds\\missingness-impact.json",
+      "sha256": "9059bc3762cdead194566648a58b5a471a2fd2b0087634c292103789a88dc197",
+      "unchanged": true,
+      "current_sha256": "9059bc3762cdead194566648a58b5a471a2fd2b0087634c292103789a88dc197"
+    },
+    {
+      "path": "data\\pit\\research-final\\identity-safe-bounds\\readiness.json",
+      "sha256": "cdafcd7b5f8f2046d59fac222ffadcf850426c15a8f3a5d7a5401dffba0e7c95",
+      "unchanged": true,
+      "current_sha256": "cdafcd7b5f8f2046d59fac222ffadcf850426c15a8f3a5d7a5401dffba0e7c95"
+    },
+    {
+      "path": "data\\pit\\research-final\\identity-safe-bounds\\score-stress.json",
+      "sha256": "07ec9128b547817d19716fae84e00170584a1dcea788fde636f44c0da0048bc4",
+      "unchanged": true,
+      "current_sha256": "07ec9128b547817d19716fae84e00170584a1dcea788fde636f44c0da0048bc4"
+    },
+    {
+      "path": "data\\pit\\research-final\\rules-freeze.json",
+      "sha256": "5b157a9aafb483708eb69edac2d928743afb3d08d7e5c0307dc8116b5e718ccf",
+      "unchanged": true,
+      "current_sha256": "5b157a9aafb483708eb69edac2d928743afb3d08d7e5c0307dc8116b5e718ccf"
+    }
+  ],
+  "verified_on": "2026-10-08",
+  "unchanged_count": 23,
+  "checked_count": 24,
+  "independent_change": {
+    "task_name": "StockRadar-DailyUpdate",
+    "task_last_run_local": "2026-10-08 08:51:56",
+    "task_last_result": 0,
+    "started_at": "2026-10-08T00:51:58.526778+00:00",
+    "finished_at": "2026-10-08T00:56:28.927673+00:00",
+    "target_date": "2026-10-07",
+    "state": "succeeded",
+    "bars_inserted": 13899,
+    "bars_updated": 0,
+    "changed_path": "data/market.duckdb",
+    "modified_by_cloud_validation_task": false,
+    "evidence_sources": [
+      "Windows Get-ScheduledTaskInfo",
+      "data/daily-update-status.json",
+      "file SHA256 and modification time"
+    ]
+  }
+}
