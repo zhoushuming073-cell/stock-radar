@@ -1,7 +1,9 @@
 # Stock Radar — 纯视觉深度学习策略研究计划书
 
+> **2026-10-08 路线迁移：** 本文件保留为纯视觉研究的历史基线与 P0/P1 基建合同。人工实际试标后，随机盲图“审美偏好”不再作为当前主训练路线；现行主线已迁移到 [Quant + Vision Fusion Research Plan v1](QUANT_VISION_FUSION_RESEARCH_PLAN.md)：**Quant 高召回候选 → Human 标签 → Vision 学习 → Quant+Vision+Human 过渡 → Quant+Vision 自动化**。旧 P0/P1 基建继续复用，历史验收不撤销。
+
 > 版本：Plan v1.0 · 2026-10-08  
-> 状态（2026-10-08）：**P0 IMPLEMENTED / PASS；P1 INFRASTRUCTURE PASS；HUMAN LABELING NOT_STARTED / READY；P2–P5 NOT_STARTED。** PR [#5](https://github.com/zhoushuming073-cell/stock-radar/pull/5) 已通过六个真实本地门禁并合并 main（`8f20a8bb843801b3b9bd61fc5f8d2a9fd835a99d`）。标注基础设施就绪，不代表 Ground Truth、模型或云端视觉检验完成。  
+> 状态（2026-10-08）：**P0 IMPLEMENTED / PASS；P1 INFRASTRUCTURE PASS；RANDOM BLIND HUMAN LABELING PAUSED；ACTIVE PATH = QUANT + VISION FUSION v1。** PR [#5](https://github.com/zhoushuming073-cell/stock-radar/pull/5) 已通过六个真实本地门禁并合并 main（`8f20a8bb843801b3b9bd61fc5f8d2a9fd835a99d`）。标注基础设施就绪，不代表 Ground Truth、模型或云端视觉检验完成。  
 > 主目标：通过历史 K 线图像与人的审美判断，训练一个能在未知历史时段自主识别潜在有利交易形态、给股票排序的视觉模型。  
 > 边界：与现有规则型 Strategy 2 平行，不用规则分数充当视觉模型答案；不修改现有策略参数、数据库、LEAN 生产接口、QC smoke 或 PIT 门禁。
 
@@ -163,8 +165,8 @@ B 只能用于训练期的独立辅助学习或事后评价；绝不作为 A 的
 
 - P0：250张 unique图 /250个security，25个混排重复任务，125组pair；Train/Validation only；60/126窗口；四个隐藏历史消失/收购anchors均参与；样本偏差和泄漏审计 PASS。
 - P1基础设施：本地 Label Studio、单图/双图实际浏览器各10项smoke、撤销/修改/保存、独立导出导入 PASS；632项完整测试通过，含实际Native LEAN回归。
-- Human Ground Truth：正式项目已导入任务，真实人工标注0条；**READY / NOT_STARTED**。所有smoke标签隔离为 NOT HUMAN GROUND TRUTH。
-- 第一批由用户本人完成50张Single +25组Pair后暂停，再检查分布、置信度、标注耗时和重复一致性；不足以直接进入训练。
+- Human Ground Truth：旧随机 Pilot 正式人工标注仍为0条；**PAUSED / SUPERSEDED AS PRIMARY PATH**。所有smoke标签仍隔离为 NOT HUMAN GROUND TRUTH。
+- 人工实际试标发现随机图“谁更值得观察/谁未来更有潜力”问题过于模糊，因此不再要求补完50张Single+25组Pair。当前先构建 Quant-guided Human Labeling v1：由 Quant 宽筛历史候选，再由用户标注 Observe 与独立 Entry Readiness。
 - Vision Model Training NOT_STARTED；Historical Test UNTOUCHED FOR THIS MODEL；Fresh OOS NOT_RUN；QC Visual Validation NOT_RUN。
 - Research Infrastructure v1继续FROZEN，Shape READY，General PIT Tier1，Database expansion CLOSED /maintenance ACTIVE；没有修改冻结SVG、Strategy2、LEAN或QC边界。
 
@@ -210,4 +212,4 @@ Codex 负责所有重复性工程：候选抽样、绘图和复现、网页标�
 
 成功是：一个只看历史当时可见 K 线与成交量图的冻结模型，在未来没见过的股票与市场时段中，持续选出比同一时点可交易基准更有利的候选；其提升经得起数据污染检查、交易成本、年度切片和最终独立验证。如果做不到，应有清楚可复查的否证结论。
 
-**当前决定：保留规则 Strategy 2 为独立研究线；纯视觉研究线先从人的盲评和可重复数据集开始。**
+**当前决定：保留规则 Strategy 2；视觉基础设施继续复用，但主路线迁移到 Quant-guided Human Labeling → Vision → Quant+Vision Fusion。随机盲图人工审美不再是当前下一步。**

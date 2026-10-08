@@ -5,7 +5,8 @@
 ## Current source of truth
 
 - **📌 当前总账:** [Canonical status / active backlog](journey-2026-09-30-0651-📌当前总账.md) — the only active project ledger.
-- **Current development-stage snapshot:** [2026-10-06 · Research + local LEAN integration](current/development-status-2026-10-06.md).
+- **Current research-direction snapshot:** [2026-10-08 · Quant + Vision Fusion](current/quant-vision-fusion-direction-2026-10-08.md).
+- **Earlier development-stage snapshot:** [2026-10-06 · Research + local LEAN integration](current/development-status-2026-10-06.md) — retained for engineering history.
 - When a dated report conflicts with the canonical ledger, the canonical ledger wins for current status. Dated reports remain audit evidence.
 
 ## Directory layout
@@ -24,6 +25,10 @@
 The `reports/` root is intentionally kept small: this index plus the canonical ledger.
 The final research report below retains its explicit user-requested root path;
 its derived evidence and P0 queue follow the `evidence/` layout.
+
+## Quant + Vision Fusion research direction · 2026-10-08
+
+[Active plan](../docs/QUANT_VISION_FUSION_RESEARCH_PLAN.md): the current research path is **Quant high-recall candidate generation → Human Observe/Entry labels → Vision M1 → Quant+Vision+Human transition → frozen Quant+Vision**. The random blind Single/Pair Pilot remains valid P0/P1 infrastructure evidence but is no longer the primary human-label dataset path; its formal human Ground Truth remains0. Do not force completion of the old50 Single +25 Pair task. [Direction record](current/quant-vision-fusion-direction-2026-10-08.md), [historical P0/P1 acceptance](vision-p0-p1-pilot-acceptance-2026-10-08.md).
 
 ## Research Infrastructure v1 · 2026-10-08
 

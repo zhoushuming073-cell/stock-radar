@@ -118,12 +118,14 @@ Stock Radar 正在从“追求漂亮历史净值曲线”重新聚焦到 **形�
 - False Falling-Knife / signal 后继续创新低比例
 - 按年份、牛熊环境与波动状态拆分后的稳定性
 
-计划保留几条独立研究路线：
+当前研究路线：
 
-- **Quant**：结构化数值特征、可解释的形态分数与目标命中概率模型。
-- **Vision**：未来单独研究标准化 K 线 / 成交量图像，检验纯视觉表示是否能捕捉手工因子遗漏的结构。
-- **Fusion**：比较 Quant-only、Vision-only，以及两者共识候选。
+- **Quant**：用连续、宽松、高召回的价格/成交量因子先把全市场压缩成候选池；这一阶段 Quant 负责“找题”，不是直接给最终答案。
+- **Human → Vision**：用户对 Quant 候选图标注 **观察 / 不观察 / 不确定**，并独立标注 **当前可买 / 等回落或确认 / 不买 / 不确定**；Vision M1 只看图像，学习人工难以写成规则的判断。
+- **Fusion**：先经历 Quant + Vision + Human 的主动学习过渡，再逐步让人工退出逐笔决策，最终冻结为 **Quant + Vision**。正式比较必须包含 Quant-only、Vision-only、Quant+Vision。
 - **Intraday**：只对日线候选补充分钟数据，用于研究承接、转强与执行确认，而不是一开始就下载全市场多年分钟数据。
+
+此前随机盲图 Single/Pair Pilot 继续作为 P0/P1 工程验收证据，但“不加上下文地完成50张Single+25组Pair”不再是当前研究任务。现行主线见 [Quant + Vision Fusion Research Plan v1](docs/QUANT_VISION_FUSION_RESEARCH_PLAN.md)。
 
 长期目标不是复制一个覆盖所有资产和执行方式的机构级通用交易系统，而是做成一个可复现的 **Personal Quantitative Stock Radar**：把个人交易语言变成机器可以稳定搜索、可以证伪、可以长期积累的数据流程，并作为人工 / GPT 盘前研究的第一层候选生成器。
 ### 主要能力
@@ -171,15 +173,19 @@ run，并在现有网页显示曲线、持仓、交易和引擎审计。上述�
 - [x] 参数网格、阶段消融与 rolling walk-forward 实验
 - [x] 私有 Sites 集成与无人值守本地更新
 - [x] Scanner Research 候选快照、前瞻标签与候选质量指标
-- [ ] 建立人工标注的 K 线 snapshot 数据集，作为形态 Ground Truth
+- [x] 建立盲态 K 线 snapshot / Label Studio 基础设施（P0/P1）
+- [x] 随机盲图 50 Single +25 Pair 不再作为主训练任务；保留为工程证据
+- [ ] 构建 Quant-guided Human Labeling v1（宽候选池 + Observe / Entry Readiness）
+- [ ] 用真实人工标签训练首版 image-only Vision M1
+- [ ] 进入 Quant + Vision + Human 主动学习过渡，并最终冻结 Quant + Vision
 - [x] 前瞻结果 Precision/Lift、可配置 Top-K、cooldown 事件 Precision/Lift、MFE/MAE 与 primary outcome 环境分层
-- [ ] 基于人工形态标签的检索 Precision/Recall 与图形 Ground Truth 验证
+- [ ] 同一 universe / split / outcome 下比较 Quant-only、Vision-only、Quant+Vision
 - [ ] 固定窗口的目标命中概率研究与概率校准
 - [ ] 超出已有描述性分层的市场环境条件化模型
 - [ ] 独立的一键最新交易日 Daily Scanner（当前 Scanner 为历史区间研究）
 - [ ] LEAN 完整 PIT / 公司行动 / 真实结算模拟
 - [ ] candidate-only 分钟数据，用于承接 / 转强 / 执行研究
-- [ ] Quant vs Vision vs Fusion 对照研究
+- [ ] Quant-guided Human → Vision → Quant+Vision Fusion 对照研究（当前主线）
 - [ ] 为未来 GPT 二筛保存 point-in-time 候选与上下文研究日志
 - [ ] 使用全新、未查看过的样本外区间验证策略改进
 - [ ] 券商执行 / 实盘交易——有意不实现
