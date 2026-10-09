@@ -89,7 +89,7 @@ Stock Radar 是一个个人美股量化研究系统，围绕一个非常具体�
 
 ## 研究方向
 
-Stock Radar 正在从“追求漂亮历史净值曲线”重新聚焦到 **形态量化（pattern quantification）**。
+Stock Radar 已将研究主线更新为 **价格结构学习 + 真实未来收益监督（Price Structure & Outcome-Supervised Learning）**，而不是追求漂亮的历史净值曲线。详见[新版研究计划 v2](docs/PRICE_STRUCTURE_OUTCOME_LEARNING_PLAN.md)。人工审美标签不再承担主训练真值，PNG 图像 CNN 保留为文献基准，不再是唯一或首选输入。
 
 实际工作流希望变成：
 
@@ -101,31 +101,24 @@ Stock Radar 正在从“追求漂亮历史净值曲线”重新聚焦到 **形�
 → 必要时再做分时确认
 ```
 
-当前核心研究问题是：
+当前研究问题：
 
-1. “前期很强、跌下来很多、开始跌不动、附近有承接、可能准备向上扩张”这类主观盘感，能否被翻译成可测量的市场特征？
-2. 量化系统筛出来的股票，是否真的和人工看图时认为“符合形态”的股票一致？
-3. 在完全不看新闻和基本面的情况下，这些候选是否已经显著富集了未来固定窗口内的有利走势？
-4. 后续加入 GPT 的新闻、催化、基本面和盘前复核后，是否还能提供可测量的增量价值？
+1. Quant 能否用宽松、因果的标准从全市场生成候选，同时通过候选池外对照暴露漏检？
+2. 模型直接读取过去标准化 OHLCV 多尺度时序，用**后几个交易日的真实收益/风险结果**监督，能否学到上涨、回撤、支撑位徘徊和末端位置的有效结构？
+3. 在相同股票池、切分和预测标签下，数值时序 1D CNN/TCN 是否胜过 Quant/LightGBM 和 A01 风格图像 CNN？
+4. Fusion 是否提供扣除费用后仍稳定存在的样本外增量，而不是因为调参多才显得优秀？
 
-历史回测继续作为 **验证工具**。Scanner 已实现前瞻结果 Precision/Lift、MFE/MAE 和描述性环境分层；
-下一阶段检验这些指标的有效性与稳定性，补充人工形态标签评价和概率校准：
+Scanner 已有 Precision/Lift、MFE/MAE 等前瞻评价。v2 将研究“固定期限内先触及上涨目标还是风险阈值”（初始假设：T+1 参考开盘入场，10 日内 +5% 先于 -3%）、再次创新低、概率校准及不同环境稳定性。这些是待检验目标，**不是已证实收益**。
 
-- Precision@5 / Precision@10 / Precision@20
-- 相对 eligible universe 基础命中率的 Lift@K
-- 未来固定窗口达到 +3%、+5%、+8%、+10% 的校准概率
-- MFE / MAE 与 time-to-target
-- False Falling-Knife / signal 后继续创新低比例
-- 按年份、牛熊环境与波动状态拆分后的稳定性
+当前路线：
 
-当前研究路线：
+- **Quant**：宽松、因果地筛选和连续打分，同时保留中低分、边界样本以及普通合格股票对照。
+- **Sequence（主研究）**：标准化 OHLCV 原始数字时序 → 小型 1D CNN/TCN → 由未来真实市场结果监督。最近 1/3/5 日位置是否最重要，需要消融检验。
+- **Image（文献对照）**：保留 A01 风格价格/成交量图 CNN，同期同标签公平比较；不直接照搬未授权论文代码/图表。
+- **Fusion**：Quant-only、Sequence-only、Image-only、融合进行统一比较；人工转做错误审计，不再提供主要监督标签。
+- **Intraday**：日线模型通过必要门禁后，再对少量候选进行分钟级确认和执行研究。
 
-- **Quant**：用连续、宽松、高召回的价格/成交量因子先把全市场压缩成候选池；这一阶段 Quant 负责“找题”，不是直接给最终答案。
-- **Human → Vision**：用户对 Quant 候选图标注 **观察 / 不观察 / 不确定**，并独立标注 **当前可买 / 等回落或确认 / 不买 / 不确定**；Vision M1 只看图像，学习人工难以写成规则的判断。
-- **Fusion**：先经历 Quant + Vision + Human 的主动学习过渡，再逐步让人工退出逐笔决策，最终冻结为 **Quant + Vision**。正式比较必须包含 Quant-only、Vision-only、Quant+Vision。
-- **Intraday**：只对日线候选补充分钟数据，用于研究承接、转强与执行确认，而不是一开始就下载全市场多年分钟数据。
-
-此前随机盲图 Single/Pair Pilot 继续作为 P0/P1 工程验收证据，但“不加上下文地完成50张Single+25组Pair”不再是当前研究任务。现行主线见 [Quant + Vision Fusion Research Plan v1](docs/QUANT_VISION_FUSION_RESEARCH_PLAN.md)。
+此前随机盲图 Single/Pair Pilot 继续作为 P0/P1 工程验收证据，但“不加上下文地完成50张Single+25组Pair”不再是当前研究任务。现行主线见[价格结构与真实收益监督研究计划 v2](docs/PRICE_STRUCTURE_OUTCOME_LEARNING_PLAN.md)，旧版 [Quant + Vision / Human v1](docs/QUANT_VISION_FUSION_RESEARCH_PLAN.md) 保留作为历史设计。
 
 [量化研究论文阅读包](docs/literature/README.md)：17 份 PDF、16 篇不同论文，覆盖价格形态、机器学习、因子检验和回测过拟合，附版本说明、来源链接及阅读顺序。
 
@@ -177,17 +170,17 @@ run，并在现有网页显示曲线、持仓、交易和引擎审计。上述�
 - [x] Scanner Research 候选快照、前瞻标签与候选质量指标
 - [x] 建立盲态 K 线 snapshot / Label Studio 基础设施（P0/P1）
 - [x] 随机盲图 50 Single +25 Pair 不再作为主训练任务；保留为工程证据
-- [ ] 构建 Quant-guided Human Labeling v1（宽候选池 + Observe / Entry Readiness）
-- [ ] 用真实人工标签训练首版 image-only Vision M1
-- [ ] 进入 Quant + Vision + Human 主动学习过渡，并最终冻结 Quant + Vision
+- [ ] 完成 v2 的因果 Quant 采样、全市场对照和 T+1 后续收益标签契约
+- [ ] 统一实现 Quant/LightGBM、原始时序和 A01 风格图像基准
+- [ ] 用真实未来行情训练时序模型，并做末端位置消融和概率校准
 - [x] 前瞻结果 Precision/Lift、可配置 Top-K、cooldown 事件 Precision/Lift、MFE/MAE 与 primary outcome 环境分层
-- [ ] 同一 universe / split / outcome 下比较 Quant-only、Vision-only、Quant+Vision
+- [ ] 同一 universe / split / outcome 对比 Quant、Sequence、Image、Fusion
 - [ ] 固定窗口的目标命中概率研究与概率校准
 - [ ] 超出已有描述性分层的市场环境条件化模型
 - [ ] 独立的一键最新交易日 Daily Scanner（当前 Scanner 为历史区间研究）
 - [ ] LEAN 完整 PIT / 公司行动 / 真实结算模拟
 - [ ] candidate-only 分钟数据，用于承接 / 转强 / 执行研究
-- [ ] Quant-guided Human → Vision → Quant+Vision Fusion 对照研究（当前主线）
+- [ ] 推进 v2 价格结构与未来结果监督阶段 S0–S6（新主线）
 - [ ] 为未来 GPT 二筛保存 point-in-time 候选与上下文研究日志
 - [ ] 使用全新、未查看过的样本外区间验证策略改进
 - [ ] 券商执行 / 实盘交易——有意不实现

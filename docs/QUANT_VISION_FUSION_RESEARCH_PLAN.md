@@ -1,7 +1,9 @@
+> **历史文档 / SUPERSEDED（2026-10-09）**：本文件完整保留 2026-10-08 的 Human → Vision 方案用于研究演变追溯。当前正式研究路径已改为[价格结构与真实未来收益监督 v2](./PRICE_STRUCTURE_OUTCOME_LEARNING_PLAN.md)：取消人工偏好主标签，以历史真实未来结果训练，原始数值时序优先、A01 图像 CNN 为基准。以下为历史原文，**不是当前实施指令**。
+
 # Stock Radar — Quant + Vision Fusion Research Plan v1
 
 > 日期：2026-10-08  
-> 状态：**ACTIVE RESEARCH DIRECTION**  
+> 状态：**SUPERSEDED ON 2026-10-09 — HISTORICAL DESIGN, NOT ACTIVE**  
 > 取代：把“随机盲图人工审美 → 纯视觉模型”作为主线的旧方案。旧 P0/P1 基建与验收继续保留并复用。  
 > 数据底座：Research Infrastructure v1（FROZEN）  
 > 数据库状态：Shape Research READY；General PIT Tier 1 deep/audit；Database expansion CLOSED；maintenance ACTIVE。
