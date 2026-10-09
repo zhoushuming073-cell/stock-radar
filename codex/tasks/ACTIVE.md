@@ -20,8 +20,8 @@ Actual current main.py is StockRadarDataValidation, not Q2 v1.2. QC Terms3.3(b)(
 restrict browser automation; use human free-IDE upload/click, not hidden requests.
 No remote upload/build/run performed.838 tests pass with real Native fixtures;
 12 real local symbols/2,616 bars give exact source parity;5,207 protected files
-unchanged. Git fetch also failed network connection;
-cached main remains2db3f5c. Report local tests separately from actual Cloud results.
+unchanged. Initial fetch failed; retry succeeded and local/remote main remain
+2db3f5c. Source branch pushed; no merge. Report local tests separately from Cloud.
 
 ## Preserved v1.2 implementation status
 

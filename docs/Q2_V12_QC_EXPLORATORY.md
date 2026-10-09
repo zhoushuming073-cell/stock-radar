@@ -12,8 +12,9 @@ belongs to the previous project code, not this package.
 
 QC Terms3.3(b)(x) restrict automatic access to officially provided interfaces;
 the free route here is human web-IDE control. Do not use browser scripting or
-hidden session endpoints to bypass this boundary. Git fetch also failed to
-connect; cached main is2db3f5c, not a fresh remote verification.
+hidden session endpoints to bypass this boundary. Initial Git fetch failed;
+the retry succeeded and local/remote main both remain2db3f5c. The source branch
+is pushed; main has not been merged.
 
 This authorization does not release Q1's blocked experiment or merge Draft PR15.
 It does not authorize paid resources, raw QC exports, parameter optimization,

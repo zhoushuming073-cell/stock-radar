@@ -102,7 +102,7 @@
     "boundary": "Human free web IDE control; QC Terms 3.3(b)(x)"
   },
   "git": {
-    "fetch": "NETWORK_FAILED",
+    "fetch": "RETRY_SUCCESS",
     "cached_main": "2db3f5cbdd50bf1efcbb406240f4d55765c162c7",
     "main_merged": false
   }
