@@ -1,3 +1,5 @@
+> **现行研究路径更新（2026-10-09）**：唯一 ACTIVE 方案为 [Quant + Vision 双阶段监督 + 结果学习 v3](QUANT_VISION_DUAL_STAGE_RESEARCH_PLAN.md)。v1 的 Quant→Human→Vision 保留为历史设计，v3 在此基础上增设右区后揭示复盘及独立 Y 结果监督。先前顶部所述“当前 v2”仅为当时历史状态，已经再次被 v3 取代。不要按 v1/v2 的旧指令开展新训练。
+
 > **历史文档 / SUPERSEDED（2026-10-09）**：本文件完整保留 2026-10-08 的 Human → Vision 方案用于研究演变追溯。当前正式研究路径已改为[价格结构与真实未来收益监督 v2](./PRICE_STRUCTURE_OUTCOME_LEARNING_PLAN.md)：取消人工偏好主标签，以历史真实未来结果训练，原始数值时序优先、A01 图像 CNN 为基准。以下为历史原文，**不是当前实施指令**。
 
 # Stock Radar — Quant + Vision Fusion Research Plan v1
