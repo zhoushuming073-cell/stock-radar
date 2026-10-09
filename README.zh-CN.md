@@ -164,20 +164,17 @@ run，并在现有网页显示曲线、持仓、交易和引擎审计。上述�
 - [x] 私有 Sites 集成与无人值守本地更新
 - [x] Scanner Research 候选快照、前瞻标签与候选质量指标
 - [x] 建立盲态 K 线 snapshot / Label Studio 基础设施（P0/P1）
-- [x] 随机盲图 50 Single +25 Pair 不再作为主训练任务；保留为工程证据
-- [ ] 调和 Draft PR #7 的 Quant 候选/人工标签代码与 v3，保留已有私有标签
-- [ ] 开发仅过去左区 SVG + 后揭示未来右区 SVG、独立盲态/复盘标签合同
-- [ ] 实现独立客观 Y 标签生成（T+1 开盘、缺价、同日先后歧义）
-- [x] 前瞻结果 Precision/Lift、可配置 Top-K、cooldown 事件 Precision/Lift、MFE/MAE 与 primary outcome 环境分层
-- [ ] 同一 universe / split / outcome 对比 Quant、Sequence、Vision-H、Vision-Y、Fusion
-- [ ] 固定窗口的目标命中概率研究与概率校准
-- [ ] 超出已有描述性分层的市场环境条件化模型
-- [ ] 独立的一键最新交易日 Daily Scanner（当前 Scanner 为历史区间研究）
-- [ ] LEAN 完整 PIT / 公司行动 / 真实结算模拟
-- [ ] candidate-only 分钟数据，用于承接 / 转强 / 执行研究
-- [ ] 完成 v3 D1/D2/D3 真实本地验收，再单独授权深度学习训练
-- [ ] 为未来 GPT 二筛保存 point-in-time 候选与上下文研究日志
-- [ ] 使用全新、未查看过的样本外区间验证策略改进
+- [x] 完成双阶段 SVG / H_blind / H_review / Y_future 工程验收
+- [x] 实现 Q1 fuzzy-shape-v1 候选生成
+- [ ] 按新的统一比较合同检查 / 修正 Q1 的候选质量
+- [ ] 完成 Q2 parallel-channel-v1（Draft PR #10）的真实全市场工程与形态验收
+- [ ] 建立 Quant-only Q1/Q2/Q3 可比基线
+- [ ] 建立 Vision-only 传统 ML 与 Deep Learning 基线
+- [ ] 建立 Quant+Vision 传统 ML 与 Deep Learning Fusion 基线
+- [ ] 三大类使用同一 causal universe / split / outcome / execution 合同比较
+- [ ] 仅在方法冻结后进行正式 held-out 评估
+- [ ] 积累真正新的 OOS，再用 LEAN/QC 做执行层验证
+- [ ] 只有日线选择器被证明有价值后再研究 candidate-only 分时与 GPT 新闻/基本面二筛
 - [ ] 券商执行 / 实盘交易——有意不实现
 
 ## 系统架构
