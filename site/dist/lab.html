@@ -36,6 +36,15 @@
     </header>
     <div id="notice" class="notice" hidden role="status"></div>
     <section id="scanner" class="page active">
+      <div class="toolbar"><label>Daily Quant version<select data-quant-version aria-label="Daily Quant version"><option value="v1.1">Q1 / Q2 v1.1 baseline</option><option value="v1.2">Q2 v1.2 · High-beta liquid channel</option></select></label></div>
+      <section class="card section-card" id="q2-high-beta" hidden>
+        <div class="card-head"><h3>Q2 v1.2 · High-beta liquid channel</h3><a href="./index.html">Market data / update</a></div>
+        <div class="toolbar"><label>Display<select data-high-beta-top aria-label="Q2 v1.2 display count"><option>10</option><option selected>20</option><option>50</option><option>100</option></select></label><button data-high-beta-run class="primary" type="button">Run Q2 v1.2 Scanner</button><button data-high-beta-refresh class="secondary" type="button">Refresh</button></div>
+        <p class="helper">Beta ≥ 2.0 · ADV20 ≥ $50M · clear weekly/monthly range · low support location. A watch candidate is not an entry signal. ★ Preferred beta/liquidity tier. <a href="./high-beta-review.html">Blind quality review</a></p>
+        <p data-high-beta-status class="helper" role="status">Choose Q2 v1.2 to load its independent snapshot.</p>
+        <div data-high-beta-table class="table-wrap"></div>
+        <details><summary>Admission funnel, frozen defaults and provenance</summary><pre data-high-beta-audit></pre></details>
+      </section>
       <section class="card section-card" id="daily-quant"><div class="card-head"><h3>Latest-session Quant watchlist</h3><a href="./index.html">Market data / update</a></div><div class="toolbar"><button data-daily-method="all" type="button" class="secondary active">Q1 / Q2 / Overlap</button><button data-daily-method="q1" type="button" class="secondary">Q1</button><button data-daily-method="q2" type="button" class="secondary">Q2</button><label>Display<select data-daily-top aria-label="Daily watchlist count"><option>10</option><option selected>20</option><option>50</option><option>100</option></select></label><button data-daily-run class="primary" type="button">Run Daily Scanner</button><button data-daily-refresh class="secondary" type="button">Refresh watchlist</button></div><p data-daily-status class="helper" role="status">Loading watchlist…</p><div data-daily-table class="table-wrap"></div><details><summary>Watchlist provenance and exclusions</summary><pre data-daily-audit></pre></details></section>
       <div class="page-heading"><h2>Research · Scanner</h2><p>Filter, score, and rank each trading day. The local engine adds future labels afterward; no positions are opened.</p></div>
       <div class="toolbar scanner-toolbar">
@@ -89,4 +98,5 @@
   <dialog id="rename-run-dialog" class="run-dialog"><form method="dialog" id="rename-run-form"><h3>Rename run</h3><p class="helper">This changes the display name only. Saved run results and settings remain intact.</p><label for="rename-run-name">Display name</label><input id="rename-run-name" name="name" maxlength="80" required autocomplete="off"><div class="dialog-actions"><button type="button" id="cancel-rename-run" class="text-button">Cancel</button><button type="submit" class="primary">Save name</button></div></form></dialog>
 </body>
 <script src="./daily-quant.js"></script>
+<script src="./high-beta.js"></script>
 </html>

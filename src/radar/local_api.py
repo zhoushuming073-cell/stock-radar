@@ -343,6 +343,29 @@ def make_handler(allowed_origins: set[str]):
                 elif target.path == '/api/research/daily/status':
                     from radar.research.daily_job import status
                     payload = status()
+                elif target.path == '/api/research/high-beta':
+                    from radar.research.high_beta.daily import latest
+                    payload = latest(ROOT, int(parse_qs(target.query).get('top', ['20'])[0]))
+                elif target.path == '/api/research/high-beta/status':
+                    from radar.research.high_beta.job import status
+                    payload = status()
+                elif target.path == '/api/research/high-beta/review':
+                    import base64, hashlib
+                    directory = DATA / 'research/high-beta-channel-v1.2/review'
+                    manifest_bytes = (directory/'manifest.json').read_bytes()
+                    review = json.loads(manifest_bytes)
+                    if review.get('version') != 'q2-v1.2-blind-shape-qa-v1' or not 1 <= len(review['tasks']) <= 50:
+                        raise ValueError('invalid blind review manifest')
+                    tasks = []
+                    for task in review['tasks']:
+                        name = task['image_file']
+                        if not re.fullmatch(r'[0-9a-f]{16}', task['id']) or not re.fullmatch(r'[0-9a-f]{16}\.png', name):
+                            raise ValueError('invalid review image reference')
+                        image = (directory/name).read_bytes()
+                        if hashlib.sha256(image).hexdigest() != task['image_sha256']:
+                            raise ValueError('review image hash mismatch')
+                        tasks.append({'id': task['id'], 'image': 'data:image/png;base64,'+base64.b64encode(image).decode()})
+                    payload = {'manifest_hash': hashlib.sha256(manifest_bytes).hexdigest(), 'tasks': tasks}
                 elif target.path == "/api/lab/strategies":
                     payload = lab_strategies()
                 elif target.path == "/api/lab/parameter-schema":
@@ -457,7 +480,7 @@ def make_handler(allowed_origins: set[str]):
             target = urlsplit(self.path).path
             if target not in {"/api/data/sync", "/api/lab/import", "/api/lab/run", "/api/lab/timeline", "/api/lab/cancel",
                               "/api/lab/uninstall", "/api/lab/run/rename", "/api/lab/run/archive", "/api/lab/run/restore",
-                              "/api/lab/experiment", "/api/lab/scanner/run", "/api/lab/export", '/api/research/daily/run'}:
+                              "/api/lab/experiment", "/api/lab/scanner/run", "/api/lab/export", '/api/research/daily/run', '/api/research/high-beta/run'}:
                 self._json(HTTPStatus.NOT_FOUND, {"error": "not found"})
                 return
             try:
@@ -466,10 +489,13 @@ def make_handler(allowed_origins: set[str]):
                 if not 0 < length <= maximum:
                     raise ValueError("invalid request size")
                 body = self.rfile.read(length)
-                if target == '/api/research/daily/run':
+                if target in {'/api/research/daily/run', '/api/research/high-beta/run'}:
                     if self.headers.get('Content-Type', '').split(';', 1)[0] != 'application/json' or json.loads(body) != {}:
                         raise ValueError('Daily Scanner takes an empty JSON object')
-                    from radar.research.daily_job import start
+                    if target == '/api/research/high-beta/run':
+                        from radar.research.high_beta.job import start
+                    else:
+                        from radar.research.daily_job import start
                     payload = start(ROOT)
                 elif target == "/api/data/sync":
                     if self.headers.get("Content-Type", "").split(";", 1)[0] != "application/json":

@@ -1,14 +1,28 @@
 # Active Codex task
 
-**Status: ACTIVE — close Q1 execution dependencies, re-run frozen local LEAN, then QC Cloud**
+**Status: Q2 v1.2 engineering implemented; blind human QA and normal API reload pending. Independent Draft; do not merge.**
+
+## Latest authorized work — Q2 v1.2, 2026-10-09
+
+[Draft PR #15](https://github.com/zhoushuming073-cell/stock-radar/pull/15) is open/unmerged, stacked on PR13; first implementation commit `3c9cd745910b8730066aca343ce91b107eb1c3a0`.
+
+Direct user request authorizes [High-beta liquid channel v1.2](2026-10-09-q2-v1.2-high-beta-liquid-channel.md), independent of frozen Q2 v1.1 and Q1. Branch `feature/q2-v1.2-high-beta-liquid-channel` is stacked on parent PR13 closure commit `6d4aa9e82a07f71b98e78cc4c54bf04055b6a334`. Do not merge main or overwrite frozen results.
+
+Actual completed-session current-pool scan:13,199 coarse assets,4,837 supported common listings,4,550 valid inputs,226 joint Beta/ADV gates,1 channel/low-support watch candidate (AMBA),0 early reversals. Six known positive preferences pass market gates but fail structural gates; potential excessive screening needs blind human review, not six-ticker tuning. Twenty unseen anonymous tripanels generated privately; developer rendering/browser QA is not user judgment. Formal human shape-QA labels0.
+
+Final regression809 PASS/0fail/0error/0skip with actual Native LEAN fixtures, one existing warning. Frozen Q1 execution dependencies remain0/3 accepted; Q1 study and QC Cloud NOT_RUN. Full protection/serial-parallel evidence and environment limitations are in [v1.2 acceptance](../../reports/acceptance/q2-v1.2-high-beta-channel-2026-10-09.md).
+
+Normal8765 API reload was rejected by tool automatic approval twice, even after explicit user authorization. Production API was not killed; new UI verified against a temporary real8776 backend, then that temporary service stopped. Normal use needs user restart/reboot and new endpoint health confirmation. Keep the PR Draft; human quality acceptance and complete trusted sector coverage are pending. No return study, model training, Test/Fresh efficacy, Cloud/paid/broker execution or main merge is authorized.
+
+## Preserved parent Q1 closure work order
 
 ## Actual execution checkpoint — 2026-10-09
 
 **PARTIAL / BLOCKED_LOCAL_EXECUTION** on Draft PR[#13](https://github.com/zhoushuming073-cell/stock-radar/pull/13). Q1 parity, hardened Q2, actual Daily CLI/API/browser workflow, full756-test Native-inclusive regression and real Q2 Train/Validation Native runs completed. Q1 Train/Validation are blocked by three frozen execution dependencies (missing forward prices or unsafe price/identity); no substitutions or weaker gates. QC Cloud NOT_RUN; main not merged; Draft10 not closed. [Acceptance](../../reports/acceptance/q1-q2-quant-infrastructure-backtest-2026-10-09.md), [current ledger](../../reports/journey-2026-09-30-0651-📌当前总账.md).
 
-Continue only within this work order to resolve those trustworthy execution inputs and repeat the unchanged local study. Do not infer permission for training, Q3/date/weight optimization, data-gate relaxation, frozen database mutation or Cloud jobs before mandatory local PASS.
+The parent work order reached its explicit trustworthy-evidence BLOCKED stop condition. Its frozen experiment remains unchanged. New v1.2 authorization above does not authorize training, Q3/date/weight optimization, data-gate relaxation, frozen database mutation or Cloud jobs before mandatory local PASS.
 
-Current work order:
+Preserved parent work order:
 [2026-10-09 Q1 execution closure + QC Cloud follow-up](2026-10-09-q1-execution-closure-qc-cloud.md)
 
 Parent implementation:

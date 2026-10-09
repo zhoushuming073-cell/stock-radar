@@ -1,0 +1,38 @@
+version: high-beta-liquid-channel-v1.2
+# Shape priors registered before this version's first market scan; no return tuning.
+settings:
+  beta_minimum: 2.0
+  adv20_minimum: 50000000.0
+  preferred_beta: 2.5
+  preferred_adv20: 100000000.0
+  beta_min_samples_126: 105
+  beta_min_samples_60: 50
+  return_outlier_limit: 0.5
+  benchmark_outlier_limit: 0.2
+  variance_floor: 0.000000000001
+  min_daily_bars: 205
+  weekly_windows: [12, 16, 20, 26]
+  monthly_windows: [9, 12, 15, 18]
+  channel_width_min_log: 0.12
+  channel_width_max_log: 1.0
+  drift_reference_sessions: 126
+  minimum_reference_drift: -0.10
+  maximum_reference_drift: 0.18
+  min_full_swings: 1.5
+  minimum_clarity: 62.0
+  max_band_disagreement: 0.35
+  max_position_disagreement: 0.20
+  max_drift_disagreement: 0.12
+  preferred_position: 0.30
+  maximum_watch_position: 0.45
+  breakdown_fraction: 0.08
+  last_day_extension: 0.08
+  five_day_extension: 0.15
+
+limitations:
+  - Volume and price must be from the same Alpaca SIP raw or joint split adjustment.
+  - Current listing snapshots are not certified historical security membership.
+  - Historical use requires separately certified identity and price-volume evidence.
+  - Amount is close times consolidated daily volume, not exact intraday traded notional.
+  - Funding preference is an OHLCV proxy, never verified institutional inflow.
+  - No sector preference, ticker rule, future outcome, automatic gate relaxation or broker action.
