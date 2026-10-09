@@ -46,3 +46,7 @@ Not authorized:
 Codex start instruction:
 
 > Synchronize stock-radar main, read AGENTS.md, the Research Master Guide, canonical ledger and codex/tasks/ACTIVE.md. Then continue Draft PR #13 from its actual checkpoint. Resolve only the Q1 trusted execution dependencies under the unchanged frozen study, re-run local LEAN, and touch QC Cloud only after every mandatory local gate passes. Report actual evidence only.
+
+## Execution closure outcome — 2026-10-09
+
+**BLOCKED_TRUST_ACCEPTANCE** stop condition reached: acquired evidence does not establish accepted dated identity/event/homogeneous price supplements. Original Q1 preflights remain2 Train /1 Validation failures;0/3 dependencies accepted. 778 tests pass with Native opt-in,5,207 protected files unchanged, Q2 integrity and complete Daily recomputation/browser regression PASS. Cloud NOT_RUN; PR13 Draft/unmerged. See acceptance §8. New user-authorized Q2 v1.2 development must remain separate from the frozen PR13 experiment.

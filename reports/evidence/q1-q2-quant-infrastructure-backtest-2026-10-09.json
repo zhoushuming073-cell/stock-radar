@@ -1447,5 +1447,260 @@
   },
   "fresh_oos": "NOT_RUN",
   "historical_test": "NOT_RUN",
-  "vision_training": "NOT_RUN"
+  "vision_training": "NOT_RUN",
+  "execution_closure_followup": {
+    "version": "q1-execution-closure-followup-v1",
+    "date": "2026-10-09",
+    "synchronized_main": "2db3f5c",
+    "checkpoint_before_followup": "77424fc5afb69098ef8eabd1931a28e3bdf86f6e",
+    "status": "BLOCKED_TRUST_ACCEPTANCE",
+    "tests": {
+      "tests": 778,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "native_opt_in": true,
+    "native_strategy_q1": "NOT_RUN_DATA_BLOCKED",
+    "protected": {
+      "protected_files": 5207,
+      "changed_count": 0,
+      "changes": []
+    },
+    "private_worksheet_sha256": "b6db2de118e5026b1b91b4c45e87d1014de0cda397f5f48bdbf6573d2e6c2b37",
+    "private_source_review_sha256": "74e4becdec1e944b6bc2ba4dea49188fbefbdb01a14016dea7dc29ceb559f3a3",
+    "dependency_before_after": {
+      "before": 3,
+      "after": 3,
+      "accepted_supplements": 0,
+      "original_missing_sessions": 16,
+      "original_unsafe_sessions": 1
+    },
+    "source_findings": [
+      {
+        "split": "train",
+        "class": "ten_missing_prices",
+        "required": 12,
+        "same_sip_download_required": 12,
+        "original_overlap_exact_ohlcv": 2,
+        "continuity_acceptance": "NOT_ESTABLISHED",
+        "adjustment_action_evidence": "EXCHANGE_CAPTURED",
+        "status": "UNACCEPTED"
+      },
+      {
+        "split": "train",
+        "class": "unsafe_price",
+        "required": 12,
+        "same_sip_exact_ohlcv": 12,
+        "unsafe_cause": "major_unexplained_gap; no identity/class conflict flag",
+        "issuer_event_evidence": "CAPTURED",
+        "validated_safety_acceptance": "NOT_ESTABLISHED",
+        "status": "UNACCEPTED"
+      },
+      {
+        "split": "validation",
+        "class": "six_missing_prices",
+        "original_pinned_provider_missing_found": 2,
+        "original_pinned_provider_still_missing": 4,
+        "alternative_sip_has_all_six_missing": true,
+        "overlap_ohlc_exact": true,
+        "overlap_volume_exact": false,
+        "alias_evidence": "OFFICIAL_SEC_WEB_REVIEW; direct raw capture HTTP403",
+        "dated_alias_and_homogeneous_source_acceptance": "NOT_ESTABLISHED",
+        "status": "UNACCEPTED"
+      }
+    ],
+    "frozen_regression": {
+      "freeze_sha256": "7a175ee6fe9b5815207e5d1a964213cf005a11b4cbd4b16e27856f3f46a96efd",
+      "kernel_sha256": "4e5d9f15e7002977a74d67d1637c24a2da28c0cf11414696dece2090485962a8",
+      "preflight": [
+        {
+          "split": "train",
+          "method": "q1",
+          "status": "BLOCKED",
+          "selected_signals": 310,
+          "candidate_snapshot": "9dfc4379abc2cc39de306661bcd3938f0f28ebc8980886a5f678e24740070b15",
+          "failures": 2
+        },
+        {
+          "split": "train",
+          "method": "q2",
+          "status": "READY_EXPLORATORY_PROXY_ONLY",
+          "selected_signals": 25,
+          "candidate_snapshot": "9dfc4379abc2cc39de306661bcd3938f0f28ebc8980886a5f678e24740070b15",
+          "failures": 0
+        },
+        {
+          "split": "validation",
+          "method": "q1",
+          "status": "BLOCKED",
+          "selected_signals": 320,
+          "candidate_snapshot": "f3c2342ccde64976c428d664458d1e83588192c8e51f2787a94ed7f701fc5f81",
+          "failures": 1
+        },
+        {
+          "split": "validation",
+          "method": "q2",
+          "status": "READY_EXPLORATORY_PROXY_ONLY",
+          "selected_signals": 59,
+          "candidate_snapshot": "f3c2342ccde64976c428d664458d1e83588192c8e51f2787a94ed7f701fc5f81",
+          "failures": 0
+        }
+      ],
+      "q2_artifacts": [
+        {
+          "split": "train",
+          "native_run_id": "5067f9b0-cad9-4d6b-bbb8-c157542401ae",
+          "raw_sha256": "7f4a0cb237fb7a86c8b4cde0dcb60382e594c7f31dab2829e798741d1374f829",
+          "raw_bytes_verified": true,
+          "metrics": {
+            "initial_capital": 1000000.0,
+            "final_equity": 1013393.882455,
+            "total_return": 0.01339388245499995,
+            "cagr": null,
+            "max_drawdown": -0.05518546969515703,
+            "sharpe": 0.6742835106148364,
+            "sortino": 0.7156350838402898,
+            "trade_count": 14,
+            "win_rate": 0.6428571428571429,
+            "average_win": 6018.054416555554,
+            "average_loss": -8153.7214587999915,
+            "profit_factor": 1.3285342164968006,
+            "turnover": 2.58235302785834,
+            "total_fees": 2143.972935,
+            "net_pnl": 13393.882454999955,
+            "benchmark_return": 0.044614253453074904,
+            "sessions": 41
+          },
+          "journals": {
+            "daily.jsonl": "5dd138bb80639a9b924df6c0f7ed7dccfea051d8f08a477e36df34ed3bf2ec4a",
+            "fills.jsonl": "a259cba6a83374390845dba166395f7b9294909d46317c615913550c37de3c42",
+            "trades.jsonl": "bda720a02277dc03a02a645e4faf404db61158b5d054dd554d2315945fa7d0db",
+            "completed.json": "3723a3e5a469587bb36569f34fa77674c5b8ae7e9748fbd88f519520477de5c5",
+            "signals.json": "3d022b814c7304fdd3eada4731393fa6b7631d3cb65c668bfed7919204e45678",
+            "source-prices.csv": "0e262b84a0dc7f7de6e7e240c686a95176c5076b02ca8fe4dccac091f35b8fd8"
+          }
+        },
+        {
+          "split": "validation",
+          "native_run_id": "ee1dad79-e2cb-4395-bf0b-1eb13c54f1af",
+          "raw_sha256": "42f9153d03e4b111373c4a006160d84553653698c8b13b0f51b7b9fa86a92f2c",
+          "raw_bytes_verified": true,
+          "metrics": {
+            "initial_capital": 1000000.0,
+            "final_equity": 974036.9256088,
+            "total_return": -0.025963074391199936,
+            "cagr": null,
+            "max_drawdown": -0.07759031554109885,
+            "sharpe": -0.7682203069572888,
+            "sortino": -1.4236812586570935,
+            "trade_count": 27,
+            "win_rate": 0.48148148148148145,
+            "average_win": 3049.2203315230777,
+            "average_loss": -4685.924192928568,
+            "profit_factor": 0.6042391559693316,
+            "turnover": 4.222866049141135,
+            "total_fees": 6327.291284,
+            "net_pnl": -25963.074391199974,
+            "benchmark_return": 0.046866285554935994,
+            "sessions": 42
+          },
+          "journals": {
+            "daily.jsonl": "8e9be367abc22175d45233476be8bb55813ccb62c0893f5f4beb7ecbf95fc487",
+            "fills.jsonl": "4f325de84a9cdf95f7243fe80b77201df7470b89fb56aecd7c43d51ffb6285af",
+            "trades.jsonl": "23adb704483be7b5d9ab2f9f93a938b8a60cc9bc5601754c0c76a99e96276358",
+            "completed.json": "f2648344161d2645ae28b86102221a2a4a75224f2b7febaf6a928e1b70426ee5",
+            "signals.json": "4bcb37fa16f740ffa9a6d7cac06bd736f322588e2dd9c8df359d0d0415842970",
+            "source-prices.csv": "715be80abe1a7d9db26a43560e9948f8376d6229d51e29fe3282a5da40488822"
+          }
+        }
+      ]
+    },
+    "q2_reconciliation": [
+      {
+        "split": "train",
+        "method": "q2",
+        "native_run_id": "5067f9b0-cad9-4d6b-bbb8-c157542401ae",
+        "daily_points": 41,
+        "native_fills": 28,
+        "closed_trades": 14,
+        "maximum_positions": 5,
+        "max_cash_reconciliation_error": 3.4924596548080444e-10,
+        "initial_final_cash_and_equity_reconciled": true,
+        "all_holds_ten_sessions": true,
+        "raw_result_sha256": "7f4a0cb237fb7a86c8b4cde0dcb60382e594c7f31dab2829e798741d1374f829"
+      },
+      {
+        "split": "validation",
+        "method": "q2",
+        "native_run_id": "ee1dad79-e2cb-4395-bf0b-1eb13c54f1af",
+        "daily_points": 42,
+        "native_fills": 54,
+        "closed_trades": 27,
+        "maximum_positions": 10,
+        "max_cash_reconciliation_error": 2.3283064365386963e-10,
+        "initial_final_cash_and_equity_reconciled": true,
+        "all_holds_ten_sessions": true,
+        "raw_result_sha256": "42f9153d03e4b111373c4a006160d84553653698c8b13b0f51b7b9fa86a92f2c"
+      }
+    ],
+    "daily_regression": {
+      "as_of": "2026-10-08",
+      "latest_completed_session": "2026-10-08",
+      "freshness": "CURRENT",
+      "universe_count": 13199,
+      "q1_counts": {
+        "qualified": 2999,
+        "wait": 110,
+        "watch": 5378
+      },
+      "q2_counts": {
+        "wait": 213,
+        "watch": 6
+      },
+      "overlap_count": 211,
+      "data_hash": "f77f5d318a63c2af85d18f61a343a2a78df0fd7dd8d7705cc6c327b59901c633",
+      "code_hash": "4e5d9f15e7002977a74d67d1637c24a2da28c0cf11414696dece2090485962a8",
+      "config_hashes": {
+        "q1": "822e228637a3ac7bc8f08833a9e41945c0724b1b36f83807482f616dcc523a5c",
+        "q2": "02e504553554e79c8492fff89fa6d20061aeb858d53850e5e137a93d6c18fe2d"
+      },
+      "snapshot_hash": "ece16721fd8212b5921783084021a04c3cc8e08bc0578513d452040912c0ddac",
+      "same_input_full_recomputation_exact": true,
+      "market_database_read_only": true,
+      "broker_actions": 0
+    },
+    "browser_regression": {
+      "browser": "Installed Chrome via existing Playwright (Browser plugin unavailable)",
+      "url": "http://127.0.0.1:4174/lab.html#scanner",
+      "title": "Stock Radar 路 Strategy Lab",
+      "viewport": "1600x1000",
+      "status": "As of 2026-10-08 路 CURRENT 路 latest completed 2026-10-08 路 eligible 13199 路 Q1 qualified 2999 路 Q2 qualified 0 路 overlap 211. Research only.",
+      "q2_rows": 20,
+      "errors": [],
+      "bad": [],
+      "chartErrors": [],
+      "interactions": [
+        "Q1/Q2/all tab filtering",
+        "Top20 -> Top10",
+        "structure details",
+        "existing market chart opens chosen symbol"
+      ],
+      "real_data": true,
+      "not_blank": true
+    },
+    "qc_cloud": {
+      "mode": null,
+      "status": "NOT_RUN_LOCAL_GATE_BLOCKED",
+      "project_ids": [],
+      "backtest_ids": []
+    },
+    "release": {
+      "pr": 13,
+      "draft": true,
+      "merged": false,
+      "pr10_closed": false
+    },
+    "next_dependency": "A source-bound verified dated identity/price/event supplement that closes the exact original dependencies without switching units or weakening safety."
+  }
 }

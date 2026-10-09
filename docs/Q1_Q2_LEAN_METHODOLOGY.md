@@ -15,3 +15,7 @@ The fixed-horizon execution adapter is separate from `radar.lean.algorithm`: the
 Result schema and existing UI are retained. Metrics include Native equity/drawdown, return, SPY benchmark, Sharpe/Sortino where computable, fees, turnover, trade count/win rate and trade-return distribution. CAGR is null for pilots shorter than252 sessions. Cost addback uses actual filled quantities and is labeled attribution, not a no-cost counterfactual portfolio. Candidate MFE/MAE/Precision/Lift/event cooldown are separate post-selection analytics; they do not drive execution.
 
 Train runs before Validation; dates and reserved final10-session windows are listed in [research contract](Q1_Q2_QUANT_RESEARCH.md). Historical Test/Fresh are not evaluated. A sparse Q2 portfolio is a result to report, not justification to tune its gate.
+
+## Private execution dependency audit
+
+Run `.venv\Scripts\python.exe scripts/audit_quant_execution_closure.py` from the repository root. It verifies the existing frozen receipt/kernel, reconstructs exact ten-session dependencies and writes an immutable content-addressed private worksheet. The printed counts are diagnostics, not a price-acceptance certificate. Original-byte hashes, full OHLCV comparisons, dated security continuity and corporate actions must bind to a validated versioned supplement before execution; matching closes or a news explanation alone cannot clear existing safety flags. No source/basis conversion or frozen-database edit is performed.

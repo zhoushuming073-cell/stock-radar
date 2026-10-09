@@ -89,3 +89,25 @@ Native subscription logs can request files outside supplied possible holding win
 Local Daily watchlist is technically usable on this branch. Whole work order is not READY/PASS; PR13 remains Draft and main is not merged. Draft10 stays open until an accepted replacement merges. Next research decision: resolve the frozen Q1 execution/terminal-price dependencies with trusted source evidence under the unchanged study, then repeat the local gate. Do not drop hard candidates, tune for profit, start Vision/Fusion or bypass Cloud gates.
 
 [Aggregate machine evidence](../evidence/q1-q2-quant-infrastructure-backtest-2026-10-09.json).
+
+## 8. Q1 execution closure follow-up — 2026-10-09
+
+**Outcome: BLOCKED_TRUST_ACCEPTANCE; PR13 remains Draft.** Latest main `2db3f5c` was fast-forwarded locally and merged into the existing PR branch. The original receipt `7a175ee6fe9b5815207e5d1a964213cf005a11b4cbd4b16e27856f3f46a96efd` and kernel `4e5d9f15e7002977a74d67d1637c24a2da28c0cf11414696dece2090485962a8` still verify. Earlier sections record the previous checkpoint, not this follow-up's new test totals.
+
+The new read-only dependency auditor reconstructs every exact selected T+1..T+10 requirement. Content-addressed worksheets, raw acquisition receipts, official event captures and comparisons remain in ignored local storage. It does not install prices, merge observed identities or turn downloads into accepted fills.
+
+| Original dependency | Actual follow-up evidence | Acceptance remaining |
+| --- | --- | --- |
+| Train: ten missing sessions | Original SIP provider returned all12 required days; two overlapping sessions match all OHLCV fields. Exchange reverse-split evidence captured; raw/split unit difference explicitly identified. | Dated identity continuation beyond the original observed episode and a bound, validated supplement are not installed. |
+| Train: one unsafe session | Original SIP replays all12 required OHLCV exactly; issuer event release captured. The original flag is a major unexplained gap, **not** an identity/class conflict. | An event explanation does not itself clear the existing safety classification. No validated acceptance override installed. |
+| Validation: six missing sessions | Pinned original provider has only two successor-symbol days and zero old-symbol days. Alternative SIP raw data has all six missing days; overlapping OHLC prices match but volumes do not. Official SEC continuity documents were reviewed; direct original-byte capture returns403. | Four original-provider days remain unavailable; dated security-level alias and consistent source/basis acceptance are unresolved. Matching closes do not establish full source equivalence. |
+
+**Accepted dependencies:0/3.** The original frozen preflights were genuinely re-executed read-only: Q1 Train retains2 failures, Validation1; selected signals310/320 unchanged. Before/after accepted execution blocker count3→3. No Q1 Native strategy run/repetition or metrics were fabricated. Candidate semantic hashes match prior historical audits; Q2 preflights still pass. No mixed-source splice, silent adjusted/raw conversion, identity flag promotion, candidate substitution or database mutation occurred.
+
+Q2 actual raw Native JSON hashes were re-read and matched the prior summaries; daily/fill/trade/completion/signal/price journals were hashed. All83 daily cash observations/82 fills re-reconcile, all41 trades hold ten sessions, ending positions empty. Prior Train+1.3394% / Validation−2.5963% remain unchanged; prior independent Train repeat evidence remains intact. No new Q2 optimization run was generated.
+
+Daily full real-market recomputation reproduced the **complete snapshot exactly**, hash `ece16721fd8212b5921783084021a04c3cc8e08bc0578513d452040912c0ddac`. Current completed session/asof2026-10-08,13,199 eligible current assets, Q1 Qualified2,999, Q2 Qualified0 / Watch6 / Wait213, overlap211. Installed Chrome1600×1000 retested Q1/Q2/All, Top20→10, details and chart navigation; zero page/resource errors. This remains a current equity-like watchlist, not historical membership or a broker workflow.
+
+Final follow-up full pytest: **778 passed,0 failed,0 errors,0 skipped**, Native opt-in actually executed,119.45seconds. Includes22 new boundary/audit cases for session horizons, provenance/basis, unsafe identities, exact OHLCV overlap, duplicate daily timestamps, future isolation and hash/path tampering. One existing websockets deprecation warning. **5,207 protected files:0 changed.** Original Q1/Q2 source/config/date/cost receipt verifies. No Human/Vision/Strategy2/frozen infrastructure mutation.
+
+**QC Cloud: NOT_RUN_LOCAL_GATE_BLOCKED**, Mode/project/backtest IDs absent; no staging or Cloud strategy invocation. PR13 and PR10 stay Draft/unmerged. This is the work order's explicit BLOCKED stop condition, not full research PASS. Next dependency remains trusted dated identity/price/event acceptance for the original frozen Q1 inputs. The independently authorized Q2 v1.2 work must use a separate branch/version and preserve this checkpoint.

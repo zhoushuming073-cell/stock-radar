@@ -13,3 +13,7 @@ The active work order requires all mandatory local engineering, real candidate/d
 Use new strategy projects `SR-Q1-Fuzzy-Quant-v1` and `SR-Q2-Channel-Quant-v1` only after the gate. Existing mapping/split smoke projects and old data-export campaign are independent historical evidence. Their passes are not Q1/Q2 strategy validation. Project/backtest IDs, mode, actual completion and artifacts must appear in the dated acceptance report if execution occurs.
 
 The dated acceptance report is authoritative for this task's actual Cloud status. This file specifies the boundary and does not claim that a Cloud project has run.
+
+## Execution closure follow-up — 2026-10-09
+
+Actual read-only preflight still blocks Q1 (Train2 / Validation1). New source downloads and official events have not established accepted homogeneous execution dependencies. 778 Native-inclusive tests pass, Q2 artifacts reconcile and Daily recomputes exactly; these do not replace missing Q1 strategy acceptance. Cloud remains **NOT_RUN_LOCAL_GATE_BLOCKED**, no Mode/project/backtest IDs. PR13 remains Draft.
