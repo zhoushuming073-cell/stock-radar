@@ -27,3 +27,4 @@ data/*
 alpacakey.txt
 /archive/legacy-pit/*
 !/archive/legacy-pit/README.md
+.local/

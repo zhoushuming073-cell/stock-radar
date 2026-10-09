@@ -1,0 +1,30 @@
+<View>
+  <Style>.htx-header { font-size:16px !important; line-height:1.4 !important; margin:10px 0 !important; }</Style>
+  <Header value="只看最后一根 K 线收盘时已知的信息；下一交易日开盘价尚未知。"/>
+  <View style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start">
+    <View style="flex:3;min-width:500px">
+      <Image name="chart" value="$image" zoom="true" zoomControl="true" rotateControl="false"/>
+    </View>
+    <View style="flex:1;min-width:300px">
+      <Header value="我愿不愿意加入未来几天的重点观察名单？"/>
+      <Choices name="observe" toName="chart" choice="single" required="true" showInLine="true">
+        <Choice value="观察"/><Choice value="不观察"/><Choice value="不确定"/>
+      </Choices>
+      <Header value="最早只能下一交易日开盘执行：当前是否具备合理入场条件？"/>
+      <Choices name="entry" toName="chart" choice="single" required="true" showInLine="true">
+        <Choice value="当前可买"/><Choice value="等回落或进一步确认"/><Choice value="不买"/><Choice value="不确定"/>
+      </Choices>
+      <Header value="置信度"/>
+      <Choices name="confidence" toName="chart" choice="single" required="true" showInLine="true">
+        <Choice value="高"/><Choice value="中"/><Choice value="低"/>
+      </Choices>
+      <Header value="原因（可不选；承接只是图形判断）"/>
+      <Choices name="reasons" toName="chart" choice="multiple" showInLine="true">
+        <Choice value="前期强势"/><Choice value="回撤较充分"/><Choice value="下跌尚未结束"/>
+        <Choice value="出现承接迹象"/><Choice value="已经开始转强"/><Choice value="尚未真正转强"/>
+        <Choice value="最近涨得过多"/><Choice value="当前价格偏贵"/><Choice value="当前价格位置合理"/>
+        <Choice value="形态凌乱"/><Choice value="无法判断"/>
+      </Choices>
+    </View>
+  </View>
+</View>

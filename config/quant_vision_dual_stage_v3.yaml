@@ -1,0 +1,16 @@
+version: dual-stage-v3
+source_bundle: data/vision-research/quant-guided-v1/ready
+output: .local/vision-dual-stage-v3
+allowed_splits: [train, validation]
+horizon: 10
+target: 0.05
+adverse: -0.03
+fee_bps: 0
+slippage_bps: 0
+policy: >-
+  Fixed research hypotheses, no Y-based selection or weight optimization.
+  Relative vendor-basis open proxy; not a certified executable PIT fill.
+  Missing/zero-volume/unsafe/session gaps censor; split horizons unavailable.
+  Horizon outside frozen Train/Validation bounds is not read.
+  Neither hit is separate; intraday double-hit ambiguous, adverse-first sensitivity.
+  Existing v1 outputs and labels remain immutable. No automatic label migration.

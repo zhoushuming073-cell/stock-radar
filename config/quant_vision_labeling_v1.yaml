@@ -1,0 +1,55 @@
+version: quant-guided-v1
+feature_version: fuzzy-shape-v1
+seed: 20261009
+output_dir: data/vision-research/quant-guided-v1/ready
+window_lengths: [60, 126]
+allowed_splits: [train, validation]
+single_count: 300
+repeat_fraction: 0.10
+scan:
+  # All historically eligible securities on every 20th supported session.
+  # Bounded temporal coverage, not a census of every US stock-day.
+  session_stride: 20
+sampling:
+  quotas: {high: 90, medium: 70, boundary: 50, conflict: 60, control: 30}
+  # One security/known issuer across the ENTIRE batch eliminates overlapping windows.
+  minimum_security_cooldown: 126
+scores:
+  weights: {strength: 0.22, pullback: 0.18, exhaustion: 0.18, support_proxy: 0.14, turning: 0.14, entry_location: 0.14}
+  strength_rise: [0.05, 0.60]
+  pullback_depth: [0.03, 0.15, 0.45, 0.75]
+  pullback_duration: [2, 8, 50, 110]
+  last_day_extension: [0.03, 0.12]
+  rebound_extension: [0.10, 0.45]
+  ma_extension: [0.03, 0.20]
+  five_day_extension: [0.06, 0.25]
+  high_score: 65
+  medium_score: 50
+  boundary_score: 35
+  conflict_shape_score: 55
+  conflict_extension_score: 45
+  # Untuned shape-intuition knots; NOT fitted to returns or labels.
+  concentration: [0.35, 0.85]
+  low_breakdown: [0.04, 0.20]
+  exhaustion_ratio: [0.6, 1.8]
+  low_stabilization: [-0.08, 0.02]
+  down_volume: [0.6, 1.8]
+  up_down_volume: [0.5, 1.8]
+  wick: [0.1, 0.5]
+  support_close_location: [0.25, 0.75]
+  green_fraction: [0.2, 0.8]
+  turning_close_location: [0.3, 0.8]
+  turning_return: [-0.06, 0.04]
+  local_breakout: [-0.10, 0.01]
+  concentration_penalty: 0.35
+  pullback_depth_weight: 0.65
+  breakdown_penalty: 0.40
+  exhaustion_weights: [0.25, 0.25, 0.25, 0.25]
+  support_weights: [0.25, 0.25, 0.25, 0.25]
+  turning_weights: [0.25, 0.25, 0.25, 0.25]
+  extension_weights: [0.25, 0.25, 0.25, 0.25]
+anchors:
+  - {security_id: SEC-0000886158-COMMON, kind: verified_disappeared}
+  - {security_id: SEC-0001418091-COMMON, kind: verified_disappeared}
+  - {security_id: SEC-0000718877-COMMON, kind: verified_acquired}
+  - {security_id: SEC-0001353283-COMMON, kind: verified_acquired}
