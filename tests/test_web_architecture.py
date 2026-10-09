@@ -64,6 +64,35 @@ def test_api_health_and_cors(api):
     assert headers["Access-Control-Allow-Origin"] == ORIGIN
 
 
+def test_high_beta_api_version_is_separate_and_run_cannot_change_parameters(api,monkeypatch):
+    from radar.research.high_beta import daily,job
+    invoked=[]
+    monkeypatch.setattr(daily,'latest',lambda root,top: {'version':'high-beta-liquid-channel-v1.2','top':top})
+    monkeypatch.setattr(job,'start',lambda root: invoked.append(root) or {'state':'running'})
+    assert request(api,'/api/research/high-beta?top=50')[2]['top']==50
+    assert request(api,'/api/research/high-beta/run',method='POST',data=b'{}',content_type='application/json')[2]['state']=='running'
+    with pytest.raises(HTTPError) as error:
+        request(api,'/api/research/high-beta/run',method='POST',data=b'{"beta_minimum":1}',content_type='application/json')
+    assert error.value.code==400 and len(invoked)==1
+
+
+def test_blind_review_api_never_emits_identity_or_machine_verdict(api,monkeypatch,tmp_path):
+    import hashlib
+    monkeypatch.setattr(local_api,'DATA',tmp_path)
+    directory=tmp_path/'research/high-beta-channel-v1.2/review';directory.mkdir(parents=True)
+    name='a'*16;image=b'unit-image';(directory/(name+'.png')).write_bytes(image)
+    review={'version':'q2-v1.2-blind-shape-qa-v1','tasks':[{'id':name,'image_file':name+'.png',
+        'image_sha256':hashlib.sha256(image).hexdigest(),'symbol':'SECRET','machine_score':99}]}
+    (directory/'manifest.json').write_text(json.dumps(review))
+    result=request(api,'/api/research/high-beta/review')[2]
+    assert set(result)=={'manifest_hash','tasks'} and set(result['tasks'][0])=={'id','image'}
+    assert 'SECRET' not in json.dumps(result) and 'machine_score' not in json.dumps(result)
+    (directory/(name+'.png')).write_bytes(b'tampered')
+    with pytest.raises(HTTPError):request(api,'/api/research/high-beta/review')
+    review['tasks'][0]['image_file']='../outside.png';(directory/'manifest.json').write_text(json.dumps(review))
+    with pytest.raises(HTTPError):request(api,'/api/research/high-beta/review')
+
+
 @pytest.mark.parametrize('route', ['run', 'timeline', 'experiment'])
 def test_web_rejects_legacy_execution(api, route):
     with pytest.raises(HTTPError) as rejected:

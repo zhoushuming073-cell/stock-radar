@@ -4,6 +4,8 @@
 
 <h1 align="center">📡 Stock Radar</h1>
 
+> **2026-10-09 独立 Draft：** 新增 Q2 `high-beta-liquid-channel-v1.2`，先按 Beta / SIP成交额硬门槛筛选，再判断反复震荡通道和日线入场准备。真实当前池扫描：226只过市场门槛，1只观察待确认，0只初步入场。809项完整回归通过，包含真实 Native LEAN。盲态人工图形复核与常用API重载仍待完成；不代表收益验证通过。冻结Q1/Q2 v1.1保持不变。[使用说明](docs/Q2_HIGH_BETA_CHANNEL_V1_2.md) · [真实验收](reports/acceptance/q2-v1.2-high-beta-channel-2026-10-09.md)。
+
 <p align="center">
   <img src="./docs/repo-banner.webp" alt="Stock Radar 仓库横幅" width="100%">
 </p>

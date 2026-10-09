@@ -1,0 +1,6 @@
+# Read only by diagnostic / blind-QA scripts, NEVER by the market selector.
+version: q2-v1.2-user-preference-diagnostics-v1
+as_of: '2026-10-08'
+positive_preferences: [SOFI, RIOT, APLD, IONQ, IREN, ACHR]
+negative_preferences: [ULCC, QDEL, NRC, ISOU, FLR, INBK]
+scope: Known preferences are diagnostic examples, not ground truth or ticker selection rules.

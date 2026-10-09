@@ -1,0 +1,80 @@
+{
+  "schema_version": "q2-v1.2-acceptance-v1",
+  "status": "ENGINEERING_PASS_HUMAN_QA_AND_PRODUCTION_RELOAD_PENDING",
+  "as_of": "2026-10-08",
+  "version": "high-beta-liquid-channel-v1.2",
+  "snapshot_hash": "ce15c48d4a74968259764996d24aece9dbec661b125d62822c8500f7849be5ad",
+  "code_hash": "084db6d1f722dd0ce2f3fa3581f0b0fbf07675305357a78ed8135bdde7df850e",
+  "config_hash": "f0372f01d2798c6ca3d77ddceb4f48615e3e0c0d1400c4e1a6093528b885984c",
+  "data_hash": "216c006356393758845a9739e03394ac817ebaaccbdfc57fcaab361be72dfcde",
+  "funnel": {
+    "beta_qualified": 589,
+    "both_market_gates": 226,
+    "channel_qualified": 1,
+    "common_listing_supported": 4837,
+    "early_reversal": 0,
+    "liquidity_qualified": 1227,
+    "near_support": 1,
+    "total_current_eligible_assets": 13199,
+    "valid_market_data": 4550,
+    "watch_or_pending": 1
+  },
+  "reasons": {
+    "beta_below_minimum": 3871,
+    "channel_windows_disagree": 8,
+    "extreme_return_quarantine": 437,
+    "falling_wait_not_entry": 1,
+    "identity_untrusted": 8362,
+    "inadequate history or missing decision session": 284,
+    "liquidity_below_minimum": 3323,
+    "missing_exchange_sessions": 3,
+    "no_clear_channel": 217,
+    "stabilization_pending": 1
+  },
+  "same_input_serial_parallel": true,
+  "baseline": {
+    "counts": {
+      "wait": 213,
+      "watch": 6
+    },
+    "nonrejected": 219,
+    "overlap_count": 1,
+    "unchanged_hash": "ece16721fd8212b5921783084021a04c3cc8e08bc0578513d452040912c0ddac"
+  },
+  "tests": {
+    "passed": 809,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "native_lean": "ACTUALLY_EXECUTED_REGRESSION_FIXTURES",
+    "warning_count": 1,
+    "seconds": 165.394
+  },
+  "protected_files": 5207,
+  "protected_changed": 0,
+  "freeze_sha256": "7a175ee6fe9b5815207e5d1a964213cf005a11b4cbd4b16e27856f3f46a96efd",
+  "frozen_selector_sha256": "4e5d9f15e7002977a74d67d1637c24a2da28c0cf11414696dece2090485962a8",
+  "blind_review": {
+    "tasks": 20,
+    "formal_human_judgments": 0,
+    "manifest_sha256": "fa90efe0cab3ca7a5393e5384d0220928164631149d5e0fabc5380a5179c056b",
+    "renderer": "mplfinance-blind-v2",
+    "human_quality_acceptance": "PENDING"
+  },
+  "browser": {
+    "actual_real_api": 8776,
+    "frontend": 4174,
+    "viewport": "1600x1000",
+    "page_errors": 0,
+    "resource_4xx": 0,
+    "formal_labels_written": 0,
+    "production_reload": "BLOCKED_TOOL_POLICY_EVEN_AFTER_USER_AUTHORIZATION",
+    "temporary_service": "STOPPED_AFTER_QA"
+  },
+  "v12_portfolio_efficacy": "NOT_RUN",
+  "qc_cloud": "NOT_RUN",
+  "historical_test_fresh_efficacy": "NOT_RUN",
+  "trained_models": 0,
+  "sector_classification": "UNKNOWN_NO_TRUSTED_DATASET",
+  "q1_execution_dependencies_accepted": 0
+}

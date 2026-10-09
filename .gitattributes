@@ -54,3 +54,7 @@ config/parallel_channel_v1.yaml text eol=lf
 config/quant_research_v1.yaml text eol=lf
 src/radar/lean/export.py text eol=lf
 src/radar/research/quant_diagnostics.py text eol=lf
+src/radar/research/high_beta/*.py text eol=lf
+config/high_beta_channel_v1_2.yaml text eol=lf
+scripts/scan_high_beta_channel.py text eol=lf
+tests/test_high_beta_channel.py text eol=lf

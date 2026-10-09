@@ -26,6 +26,8 @@
   <sub>Research-only · Local-first · Reproducible · No broker execution</sub>
 </p>
 
+> **2026-10-09 independent Draft:** Q2 `high-beta-liquid-channel-v1.2` adds hard SPY beta / SIP dollar-volume gates and repeated-channel / daily-readiness diagnostics. Real current-pool scan:226 market admissions,1 waiting candidate,0 early reversals.809 Native-inclusive tests pass. Blind human quality review and normal API reload remain pending; profitability is not established. Frozen Q1/Q2 v1.1 stay unchanged. [Guide](docs/Q2_HIGH_BETA_CHANNEL_V1_2.md) · [Actual acceptance](reports/acceptance/q2-v1.2-high-beta-channel-2026-10-09.md).
+
 > [!IMPORTANT]
 > Stock Radar is research software only. **Nothing in this repository places broker orders.** The project is being refocused from a general-purpose backtesting platform toward a personal quantitative stock-selection research system. The primary question is not how high a historical portfolio return can be, but whether subjective setup language can be translated into causal, reproducible market features that consistently enrich favorable forward outcomes. Existing backtest results do **not** establish a deployable trading edge; the previously viewed Test slice is exploratory rather than fresh out-of-sample evidence.
 
