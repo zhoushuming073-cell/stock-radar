@@ -26,13 +26,50 @@ def long_prefix(rows,decision,length=430):
     if list(pd.to_datetime(x.date))!=list(dates):raise ValueError('incomplete_long_prefix')
     return x
 
-def scan_historical(root,split,start,end,output,progress=None):
+def score_security(payload):
+    """Pure per-security operation, also used for serial/parallel parity checks."""
+    from types import SimpleNamespace
+    fields,raw,all_actions,stamp,contract,cfg1,cfg2=payload
+    r=SimpleNamespace(**fields);day=pd.Timestamp(stamp)
+    if r.membership_status not in MEMBERS:raise ValueError('untrusted identity membership crossed frozen gate')
+    prefix=raw.loc[(raw.date>=r.window_start)&(raw.date<=day)].copy()
+    if len(prefix)!=126 or not prefix.shape_research_ready.all():raise ValueError('frozen index unsafe')
+    normalization_actions=[a for a in all_actions if pd.Timestamp(a['date'])<=day]
+    f=normalize_window(prefix,day,normalization_actions)
+    flags=['BOUNDED_SHAPE_RESEARCH_NOT_FORMAL_PIT_EXECUTION']
+    if (prefix.shape_research_status!='READY').any():flags.append('MINOR_UNCERTAINTY')
+    if not r.security_id.startswith('SEC-'):flags.append('ISSUER_ALIAS_UNKNOWN')
+    provenance={'domain':'frozen_shape_research_v1','data_contract':contract,
+                'series_id':r.series_id,'source':r.source,'basis':r.basis,
+                'window_hash':canonical_hash(prefix),'code_hash':code_hash_cached}
+    one=q1(f,stamp,cfg1,security_id=r.security_id,symbol=r.historical_ticker,
+           provenance={**provenance,'config_hash':fingerprint(cfg1['scores'])},quality_flags=flags)
+    try:
+        long=long_prefix(raw,stamp);lf=normalize_window(long,day,normalization_actions)
+        two=q2(lf,stamp,cfg2,security_id=r.security_id,symbol=r.historical_ticker,
+               provenance={**provenance,'window_hash':canonical_hash(long),'config_hash':fingerprint(cfg2.__dict__)},
+               quality_flags=flags,historical=True)
+        return one,two,None
+    except ValueError as e:return one,None,str(e)
+
+
+def scan_historical(root,split,start,end,output,progress=None,workers=4):
     if split not in {'train','validation'}:raise ValueError('only Train/Validation authorized in this task')
     root=Path(root);output=Path(output)
     if not output.resolve().is_relative_to((root/'data').resolve()):raise ValueError('private historical output required')
     cfg1,cfg2=configurations(root);day0=require_session(start);day1=require_session(end)
     if day1<day0:raise ValueError('reversed interval')
-    with ResearchInfrastructure(root) as api:
+    if isinstance(workers,bool) or not isinstance(workers,int) or not 1<=workers<=4:raise ValueError('workers must be1..4')
+    from contextlib import ExitStack
+    from concurrent.futures import ProcessPoolExecutor
+    import multiprocessing,sys
+    # Windows children use pythonw to keep background runs silent. Workers never
+    # open a database: the parent sends only frozen causal price prefixes.
+    quiet=Path(getattr(sys,'_base_executable',sys.executable)).with_name('pythonw.exe')
+    if sys.platform=='win32' and quiet.exists():multiprocessing.set_executable(str(quiet))
+    with ExitStack() as stack:
+        api=stack.enter_context(ResearchInfrastructure(root))
+        pool=stack.enter_context(ProcessPoolExecutor(max_workers=workers)) if workers>1 else None
         bounds=api.profile['semantics']['frozen_splits'][split]
         if not bounds[0]<=day0<=day1<=bounds[1]:raise ValueError('interval crosses frozen split')
         c=api.core.connection;contract=api.fingerprint
@@ -55,33 +92,18 @@ def scan_historical(root,split,start,end,output,progress=None):
         for count,day in enumerate(calendar().sessions_in_range(day0,day1),1):
             stamp=str(day.date());eligible=idx.loc[idx.decision_date==day]
             scores={'q1':[],'q2':[]};exclusions={'q1':Counter(),'q2':Counter()}
-            for r in eligible.itertuples(index=False):
-                if r.membership_status not in MEMBERS:raise ValueError('untrusted identity membership crossed frozen gate')
-                raw=groups[r.series_id]
-                prefix=raw.loc[(raw.date>=r.window_start)&(raw.date<=day)].copy()
-                if len(prefix)!=126 or not prefix.shape_research_ready.all():raise ValueError('frozen index unsafe')
-                normalization_actions=[a for a in actions.get(r.security_id,[]) if pd.Timestamp(a['date'])<=day]
-                f=normalize_window(prefix,day,normalization_actions)
-                flags=['BOUNDED_SHAPE_RESEARCH_NOT_FORMAL_PIT_EXECUTION']
-                if (prefix.shape_research_status!='READY').any():flags.append('MINOR_UNCERTAINTY')
-                if not r.security_id.startswith('SEC-'):flags.append('ISSUER_ALIAS_UNKNOWN')
-                provenance={'domain':'frozen_shape_research_v1','data_contract':contract,
-                            'series_id':r.series_id,'source':r.source,'basis':r.basis,
-                            'window_hash':canonical_hash(prefix),'code_hash':code_hash_cached}
-                one=q1(f,stamp,cfg1,security_id=r.security_id,symbol=r.historical_ticker,
-                       provenance={**provenance,'config_hash':fingerprint(cfg1['scores'])},quality_flags=flags)
+            payloads=((r,groups[r['series_id']].loc[groups[r['series_id']].date<=day],
+                       actions.get(r['security_id'],[]),stamp,contract,cfg1,cfg2) for r in eligible.to_dict('records'))
+            outcomes=pool.map(score_security,payloads,chunksize=16) if pool else map(score_security,payloads)
+            for one,two,reason in outcomes:
                 distributions['q1'].append(one.score)
                 if one.status!='rejected':scores['q1'].append(one)
                 else:exclusions['q1'][one.reason_codes[0]]+=1
-                try:
-                    long=long_prefix(raw,stamp);lf=normalize_window(long,day,normalization_actions)
-                    two=q2(lf,stamp,cfg2,security_id=r.security_id,symbol=r.historical_ticker,
-                           provenance={**provenance,'window_hash':canonical_hash(long),'config_hash':fingerprint(cfg2.__dict__)},
-                           quality_flags=flags,historical=True)
+                if two is not None:
                     distributions['q2'].append(two.score)
                     if two.status!='rejected':scores['q2'].append(two)
                     else:exclusions['q2'][two.reason_codes[0]]+=1
-                except ValueError as e:exclusions['q2'][str(e)]+=1
+                else:exclusions['q2'][reason]+=1
             overlap=set()
             day_audit={'date':stamp,'eligible_security_days':len(eligible),
                        'exclusions':{k:dict(v) for k,v in exclusions.items()}}

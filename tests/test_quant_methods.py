@@ -108,6 +108,25 @@ def test_invalid_top_and_method():
     for method,top in [('bogus',20),('all',0),('q1',101),('q2',True)]:
         with pytest.raises(ValueError):snapshot(ROOT,method=method,top=top)
 
+
+def test_historical_serial_parallel_candidate_parity():
+    from concurrent.futures import ProcessPoolExecutor
+    from radar.research.historical_quant import score_security
+    from radar.research.candidates import rank_candidates
+    import multiprocessing,sys
+    quiet=Path(getattr(sys,'_base_executable',sys.executable)).with_name('pythonw.exe')
+    if sys.platform=='win32' and quiet.exists():multiprocessing.set_executable(str(quiet))
+    raw=candles();raw['basis']='raw';raw['source']='fixture';raw['series_id']='fixture'
+    raw['shape_research_ready']=True;raw['membership_status']='confirmed_member';raw['shape_research_status']='READY'
+    fields=dict(security_id='SEC-fixture',historical_ticker='AAA',membership_status='confirmed_member',
+        window_start=raw.date.iloc[-126],series_id='fixture',source='fixture',basis='raw')
+    payloads=[({**fields,'security_id':f'SEC-{i}'},raw,[],str(raw.date.iloc[-1].date()),'fixture',CFG,configurations(ROOT)[1]) for i in range(4)]
+    serial=list(map(score_security,payloads))
+    with ProcessPoolExecutor(max_workers=2) as pool:parallel=list(pool.map(score_security,payloads))
+    encode=lambda rows:[[(x.model_dump(mode='json') if x is not None and not isinstance(x,str) else x) for x in row] for row in rows]
+    assert encode(serial)==encode(parallel)
+    assert [r.security_id for r in rank_candidates([x[0] for x in serial])]==[r.security_id for r in rank_candidates([x[0] for x in parallel])]
+
 @pytest.mark.parametrize('early_close',[False,True])
 def test_native_fixed_tenth_session_close(tmp_path,early_close):
     if os.environ.get('STOCK_RADAR_TEST_LEAN')!='1':pytest.skip('actual native LEAN opt-in')
