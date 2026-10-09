@@ -1,6 +1,8 @@
+> **历史文档 / SUPERSEDED as active direction（2026-10-09）**：最新用户确认的研究主线为 [Quant + Vision 双阶段监督与结果研究 v3](QUANT_VISION_DUAL_STAGE_RESEARCH_PLAN.md)。本文件完整保留原 v2 的未来收益目标、模型基准与参考文献，供复用与追溯；不再单方面排除人工监督，也不再是 Codex 当前工作令。新 v3 将 Blind H、Review H 和客观 Y 分离，左区仅过去 SVG/数值、右区在保存盲态决定后才揭示。
+
 # Stock Radar — Price Structure & Outcome-Supervised Learning Research Plan v2
 
-> **研究路线决定日期：2026-10-09；状态：ACTIVE — DESIGN / NOT YET IMPLEMENTED。**
+> **研究路线决定日期：2026-10-09；状态：SUPERSEDED AS MAIN ROADMAP — ORIGINAL V2 DESIGN / NOT IMPLEMENTED。**
 >
 > 本文是研究设计和待验证方案，不代表模型已经训练、达到论文效果、完成正式回测或具备实盘优势。
 >
