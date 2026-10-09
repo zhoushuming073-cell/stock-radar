@@ -1,3 +1,5 @@
+> **Research-program role · 2026-10-09:** This file defines shared infrastructure only. The current method taxonomy and research stages are governed by [Research Master Guide](RESEARCH_MASTER_GUIDE.md): Quant-only / Quant + Vision / Vision-only. Infrastructure readiness is not strategy efficacy or backtest evidence.
+
 # Research Infrastructure v1
 
 2026-10-08：`RESEARCH_INFRASTRUCTURE_V1_FROZEN`。本地数据库主动扩建结束，维护继续。当前事实由 [冻结配置](../config/research_infrastructure_v1.json)、[最终报告](../reports/acceptance/research-infrastructure-v1-finalization-2026-10-08.md) 和唯一 [当前总账](../reports/journey-2026-09-30-0651-📌当前总账.md) 管理。
