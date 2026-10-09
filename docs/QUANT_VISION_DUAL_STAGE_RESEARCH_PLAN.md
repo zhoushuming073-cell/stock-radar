@@ -4,7 +4,7 @@
 
 > 决策日期：2026-10-09  
 > 状态：**SHARED INFRASTRUCTURE — D1/D2 ENGINEERING PASS; D3 DATA/UI READY; HUMAN TRIAL PAUSED**。2026-10-09 已完成真实本地工程验收；模型与收益验证尚未开始。
-> **取代的当前主线**：人类审美优先的 [Quant + Vision v1](QUANT_VISION_FUSION_RESEARCH_PLAN.md)，以及完全移除人工主观标签的 [Outcome-Supervised v2](PRICE_STRUCTURE_OUTCOME_LEARNING_PLAN.md)。保留两者为历史研究决策和可复用设计，不抹掉证据。  
+> **历史演进**：v3 当时整合了 Human-first v1 与 Outcome-only v2；现在 v1/v2/v3 均由 [Research Master Guide](RESEARCH_MASTER_GUIDE.md) 重新归类。v3 只负责共享 Vision/Human/Y 基础设施与方法合同。  
 > **关键实施资产**：v3 真实本地工程已通过 PR [#9](https://github.com/zhoushuming073-cell/stock-radar/pull/9) 合并到 main；PR #7 只保留为历史 Draft / 源码来源。研究基建 Research Infrastructure v1 仍然 FROZEN、Shape READY、General PIT Tier 1。
 
 ## 0. 核心研究问题与新决定
@@ -93,9 +93,9 @@
 ## 5. Quant 样本来源、规模与选择偏差
 
 - Quant 继续高召回模糊筛选，覆盖前期强势、回撤、跌势衰竭、承接代理、初步转强、收盘位置不过度延伸；保留高/中/边界/冲突/普通控制样本。
-- PR #7 在 Draft 已报告真实本机 **300 unique +30 hidden repeats**、44 日切片扫描和 674 通过测试，尚未合并。优先借助它的独立 Q/X/H 合同、候选池、Label Studio 代码，先与 main 的 v2 文档/接口冲突协调后复用；不得覆盖原项目、盲评任务、用户真实标签或 smoke namespace。
+- PR #7 的 Quant-guided 代码后来已通过 PR #9 **选择性移植并与 main 协调**；原 PR #7 继续保留 Draft 作为历史 provenance。v3 当前 main 已有 300 unique +30 repeats 的工程资产，但这只证明数据/UI 可复用，不证明 Q1 或 Vision 有收益预测力。
 - Pilot 样本只是选中且有缺口的历史集合，不是完整美股市场；已知别名/发行主体关系和退市/缺价覆盖仍需审计。必须保留抽样层、概率、被排除比例、发行人歧义；正式结果分别报告候选域与 eligible market 的基率、漏检、分年分环境。
-- 建议先让用户做**10–20 张真盲态**的两阶段交互试用，确认左右图、标签语义和揭示操作合理；随后约 50 张作第一批验收，但不得自动要求补完全部 330 张。
+- 原计划建议先做 10–20 张真盲态试用；**当前该人工阶段已由用户暂停**。暂停不撤销工程验收，也不自动授权继续到 50 张或模型训练。
 
 ## 6. 训练路线：先检查标签质量，再学人和预测结果
 
