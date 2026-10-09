@@ -1,7 +1,9 @@
+> **MASTER-GUIDE STATUS UPDATE · 2026-10-09:** This document is now a **shared Vision/Human/Y subsystem specification**, not the sole project roadmap. The authoritative project taxonomy is [Research Master Guide](RESEARCH_MASTER_GUIDE.md): Quant-only / Quant + Vision / Vision-only. Engineering acceptance remains valid; the human trial is currently paused and no model training/backtest is implied.
+
 # Stock Radar — Quant + Vision 双阶段标注与结果监督研究计划 v3
 
 > 决策日期：2026-10-09  
-> 状态：**ACTIVE — D1/D2 ENGINEERING PASS; D3 DATA/UI READY FOR HUMAN TRIAL**。2026-10-09 已完成真实本地工程验收；首批用户 10–20 张反馈待完成，模型与收益验证尚未开始。
+> 状态：**SHARED INFRASTRUCTURE — D1/D2 ENGINEERING PASS; D3 DATA/UI READY; HUMAN TRIAL PAUSED**。2026-10-09 已完成真实本地工程验收；模型与收益验证尚未开始。
 > **取代的当前主线**：人类审美优先的 [Quant + Vision v1](QUANT_VISION_FUSION_RESEARCH_PLAN.md)，以及完全移除人工主观标签的 [Outcome-Supervised v2](PRICE_STRUCTURE_OUTCOME_LEARNING_PLAN.md)。保留两者为历史研究决策和可复用设计，不抹掉证据。  
 > **关键实施资产**：PR [#7](https://github.com/zhoushuming073-cell/stock-radar/pull/7) 的 Quant-guided Human Labeling v1 在本地报告中通过 674 项测试，仍是未合并 Draft；不能把 PR 分支上的成果写成 main 既有能力。研究基建 Research Infrastructure v1 仍然 FROZEN、Shape READY、General PIT Tier 1。
 
@@ -9,7 +11,7 @@
 
 最终问题：在 T 日收盘时，仅用 T 及此前当时可得的历史量价结构，能否通过 Quant + 数值时序 / Vision 找出更有利的未来数日交易候选，并让人工的形态直觉提供有增量的训练监督？
 
-**唯一现行研究流程**：
+**本子系统原始流程（现作为三路径计划的共享能力）**：
 
 ```text
 已知历史 eligible universe（带 PIT/缺价不确定性）
@@ -127,6 +129,6 @@
 
 **2026-10-09 实施验收：D1/D2 工程 PASS；D3 真实数据/交互 READY，用户反馈 PENDING。** 300 唯一图 +30 重复、728 Native-inclusive pytest、10 不同图真浏览器/11 次左右像素不变、2,623 保护哈希不变；原 PR #7 选择性移植且保留 Draft。仅经新实施 PR 发布验收后的源码，不把旧报告改写成新成果。[真实验收](../reports/acceptance/quant-vision-dual-stage-v3-acceptance-2026-10-09.md)，[本机操作](QUANT_VISION_DUAL_STAGE_LABELING_V3.md)。
 
-## 9. 当前下一任务
+## 9. 当前状态 / 下一任务
 
-详见 [Codex 当前任务](../codex/tasks/ACTIVE.md)。第一轮工程应以可追溯的 PR #7 模块为候选复用，从最新 main 创建安全实施分支，完成契约、左右 SVG 安全揭示、H_blind/H_review 严格持久化、Y_future 的有界自动计算和真实 10–20 图浏览器演示；对新的人工/未来双监督设计写入可证伪研究报告。**未授权前不训练神经网络、不跑正式 Test/Fresh 或 QC。**
+工程 D1/D2 与浏览器验收已经完成。当前人工试标被用户暂停；[Codex ACTIVE](../codex/tasks/ACTIVE.md) 也处于 PAUSED。未来若三路径总计划需要 Vision-H / Vision-Y 或 Fusion 数据，再单独授权继续。**未授权前不训练神经网络、不跑正式 Test/Fresh 或 QC。**
