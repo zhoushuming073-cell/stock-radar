@@ -1,11 +1,11 @@
-> **2026-10-09 当前方向：** 本文属于 P0/P1/早期纯视觉的历史研究方案。最新唯一 ACTIVE 路线是 [Quant + Vision 双阶段 SVG/盲态人工 + 结果监督 v3](QUANT_VISION_DUAL_STAGE_RESEARCH_PLAN.md)；历史 P0/P1 验收保留，不暗示 v3 已实施。
+> **MASTER-GUIDE STATUS · 2026-10-09:** Historical pure-vision/P0-P1 design. Current research classification is [Research Master Guide](RESEARCH_MASTER_GUIDE.md). Reusable rendering, labeling and leakage-control ideas remain valid; this file is not an active standalone roadmap.
 
 # Stock Radar — 纯视觉深度学习策略研究计划书
 
-> **2026-10-08 路线迁移：** 本文件保留为纯视觉研究的历史基线与 P0/P1 基建合同。人工实际试标后，随机盲图“审美偏好”不再作为当前主训练路线；现行主线已迁移到 [Quant + Vision Fusion Research Plan v1](QUANT_VISION_FUSION_RESEARCH_PLAN.md)：**Quant 高召回候选 → Human 标签 → Vision 学习 → Quant+Vision+Human 过渡 → Quant+Vision 自动化**。旧 P0/P1 基建继续复用，历史验收不撤销。
+> **2026-10-08 历史路线迁移：** 本文件保留为纯视觉研究的历史基线与 P0/P1 基建合同。当时曾迁移到 Quant+Vision v1；该决定后来又被 v2/v3 与当前三路径总研究框架取代。现行分类见 [Research Master Guide](RESEARCH_MASTER_GUIDE.md)。旧 P0/P1 基建继续复用，历史验收不撤销。
 
 > 版本：Plan v1.0 · 2026-10-08  
-> 状态（2026-10-08）：**P0 IMPLEMENTED / PASS；P1 INFRASTRUCTURE PASS；RANDOM BLIND HUMAN LABELING PAUSED；ACTIVE PATH = QUANT + VISION FUSION v1。** PR [#5](https://github.com/zhoushuming073-cell/stock-radar/pull/5) 已通过六个真实本地门禁并合并 main（`8f20a8bb843801b3b9bd61fc5f8d2a9fd835a99d`）。标注基础设施就绪，不代表 Ground Truth、模型或云端视觉检验完成。  
+> 状态（历史验收）：**P0 IMPLEMENTED / PASS；P1 INFRASTRUCTURE PASS；RANDOM BLIND HUMAN LABELING RETIRED AS PRIMARY TASK。** PR [#5](https://github.com/zhoushuming073-cell/stock-radar/pull/5) 已通过六个真实本地门禁并合并 main（`8f20a8bb843801b3b9bd61fc5f8d2a9fd835a99d`）。标注基础设施就绪，不代表 Ground Truth、模型或云端视觉检验完成。  
 > 主目标：通过历史 K 线图像与人的审美判断，训练一个能在未知历史时段自主识别潜在有利交易形态、给股票排序的视觉模型。  
 > 边界：与现有规则型 Strategy 2 平行，不用规则分数充当视觉模型答案；不修改现有策略参数、数据库、LEAN 生产接口、QC smoke 或 PIT 门禁。
 

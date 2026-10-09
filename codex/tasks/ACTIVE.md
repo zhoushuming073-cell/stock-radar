@@ -1,15 +1,24 @@
 # Active Codex task
 
-**Current work order (2026-10-09):** [Quant + Vision Dual-Stage Review v3 — implement D1/D2/D3](2026-10-09-dual-stage-quant-vision-v3.md).
+**Status: PAUSED — no implementation task is currently authorized.**
 
-**Current authoritative plan:** [Quant + Vision Dual-Stage Research Plan v3](../../docs/QUANT_VISION_DUAL_STAGE_RESEARCH_PLAN.md).
+The user has paused the Quant+Vision v3 human-labeling stage while reorganizing the research program.
 
-Scope: reconcile the still-draft PR #7 implementation with latest main, build past-only SVG and server-gated future SVG, split H_blind/H_review, compute separate bounded Y_future, run actual local tests and browser acceptance, and stop before any model training or formal OOS/QC.
+Current research authority:
+- [Research Master Guide](../../docs/RESEARCH_MASTER_GUIDE.md)
+- [Canonical project ledger](../../reports/journey-2026-09-30-0651-📌当前总账.md)
 
-Codex should synchronize and inspect the repository, read `AGENTS.md` and the linked full work order, then execute it. This file is a task pointer. Implementation evidence now exists: [2026-10-09 real acceptance](../../reports/acceptance/quant-vision-dual-stage-v3-acceptance-2026-10-09.md). D1/D2 engineering PASS; D3 data/UI READY, first 10–20 genuine user labels/feedback PENDING. Current stop condition remains: no model training, Test/Fresh or formal QC without new authorization.
+The project now has three top-level paths:
+1. Quant-only
+2. Quant + Vision
+3. Vision-only
 
-User can start the next Codex chat with:
+Existing implementation notes:
+- `fuzzy-shape-v1` exists in current main but has no formal efficacy/backtest validation.
+- Quant+Vision v3 labeling / H/Y infrastructure has passed engineering acceptance but the human trial is paused.
+- Parallel Channel Quant is experimental Draft PR #10, not merged.
+- No current model-training, formal backtest, Test/Fresh or QC task is authorized.
 
-> Read `AGENTS.md` and `codex/tasks/ACTIVE.md` in my stock-radar repository. Follow the linked work order end to end, honoring all gates and stop conditions. Report actual code changes, tests and PR.
+When the user approves the next concrete research task, create a new versioned work order under `codex/tasks/` and update this pointer. Historical task files remain unchanged.
 
-Do not replace the active task solely because a newer draft PR exists; change it only after a user decision.
+Until then Codex may read / inspect the repository when explicitly asked, but must not continue the previous v3 work order by default.

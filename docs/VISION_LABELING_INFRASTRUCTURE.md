@@ -2,9 +2,9 @@
 
 # Vision P0/P1：盲态人工标注基础设施
 
-> **当前用途更新 · 2026-10-08：** 这套 P0/P1 基建继续保留并复用，但“随机 250 图 / 125 Pair 的人工审美标注”已暂停，不再要求补完旧 50 Single +25 Pair。现行主线见 [Quant + Vision Fusion Research Plan v1](QUANT_VISION_FUSION_RESEARCH_PLAN.md)：下一批正式人工任务应由 Quant 高召回模糊筛选生成，并改用 Observe / Entry Readiness 标签。
+> **当前用途更新 · 2026-10-09：** 这套 P0/P1 基建继续作为历史可复用视觉/标注基础设施；随机 250 图 / 125 Pair 已退出主训练任务。项目总研究分类见 [Research Master Guide](RESEARCH_MASTER_GUIDE.md)。已验收的双阶段 v3 是共享 Vision/Human/Y 子系统，当前人工试标暂停。
 
-状态：**P0 PASS / P1 INFRASTRUCTURE PASS；旧随机 Pilot 正式人工标注 0、PAUSED；Quant-guided 新标注尚未生成；模型训练 NOT_STARTED。**
+状态：**P0 PASS / P1 INFRASTRUCTURE PASS；旧随机 Pilot 保留为历史证据；双阶段 v3 工程已通过、人工试标 PAUSED；模型训练 NOT_STARTED。**
 
 真实本地 Pilot、测试和 Label Studio 验收见 [2026-10-08 验收报告](../reports/acceptance/vision-p0-p1-pilot-acceptance-2026-10-08.md)。这表示可以开始人工标注，不表示视觉策略有效或 Ground Truth 已完成。
 

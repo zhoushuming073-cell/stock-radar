@@ -1,3 +1,5 @@
+> **STATUS UPDATE · 2026-10-09:** This dated record now describes a reusable Quant+Vision/Vision subsystem, not the project's sole research direction. Current authority: [three-path research snapshot](research-direction-three-paths-2026-10-09.md) and [Research Master Guide](../../docs/RESEARCH_MASTER_GUIDE.md). The human trial is paused.
+
 # Quant + Vision dual-stage research direction — 2026-10-09
 
 > **Current research decision; design adopted, engineering pending.** The single canonical backlog remains [the project ledger](../journey-2026-09-30-0651-📌当前总账.md).
