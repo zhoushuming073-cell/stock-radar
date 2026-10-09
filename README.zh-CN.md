@@ -70,11 +70,11 @@ Stock Radar 是一个个人美股量化研究系统，围绕一个非常具体�
 
 代码、网页、配置模板和纳入版本管理的文档以 GitHub `main` 为准。开始修改前先从 `origin/main` 获取并快进同步，检查本地差异，再把验收通过的修改推回 `main`。本地网站直接使用本仓库的 `site/dist`。`data/` 中的行情库、运行历史、凭据和生成的导出文件只保留在本机，代码同步时不覆盖它们。
 
-### 双阶段 Quant + Vision 标注 · 2026-10-09
+### 共享 Vision / 人工标注基础设施 · 2026-10-09
 
-真实本地工程已就绪：300 张历史左图+30 隐藏重复，先保存 Observe/Entry，服务器再揭示独立右图；H_blind、H_review、Y_future 严格分离。728 项测试通过并实际执行 Native LEAN；10 不同图 Chrome 交互通过。打开 **http://localhost:8123/quant-review/v3/human/**，使用已有 Label Studio 登录。先由本人做10–20 张并反馈；模型训练未开始，不宣称 alpha。
+双阶段 SVG、H_blind、H_review、Y_future 子系统已经完成真实本地工程验收（300 张唯一历史窗口 +30 重复；728 项测试含 Native LEAN；真实浏览器防泄漏检查通过）。现在它被归类为**共享研究基础设施**，不再代表整个项目唯一主线。人工试标目前**暂停**；尚未开始 Vision 模型训练，也没有 alpha 结论。
 
-[Guide / 操作说明](docs/QUANT_VISION_DUAL_STAGE_LABELING_V3.md) · [Actual acceptance](reports/acceptance/quant-vision-dual-stage-v3-acceptance-2026-10-09.md).
+[子系统操作说明](docs/QUANT_VISION_DUAL_STAGE_LABELING_V3.md) · [验收报告](reports/acceptance/quant-vision-dual-stage-v3-acceptance-2026-10-09.md).
 
 ## 界面预览
 
@@ -95,25 +95,27 @@ Stock Radar 是一个个人美股量化研究系统，围绕一个非常具体�
 
 ## 研究方向
 
-**现行研究设计（2026-10-09）：[Quant + Vision 双阶段监督路线 v3](docs/QUANT_VISION_DUAL_STAGE_RESEARCH_PLAN.md)。** 此路线整合人工盲态判断与未来客观结果监督，取代单纯依赖人工的 [v1](docs/QUANT_VISION_FUSION_RESEARCH_PLAN.md) 和移除人工监督的 [v2](docs/PRICE_STRUCTURE_OUTCOME_LEARNING_PLAN.md) 作为当前主线；旧文档保留用于追溯。
+当前唯一总研究指引是 [Research Master Guide](docs/RESEARCH_MASTER_GUIDE.md)。
 
-```text
-历史 PIT-aware universe → Quant 宽召回候选 + 普通对照
-→ 左区：仅 T 日收盘及之前的 K 线 / 成交量 SVG 和原始数值窗口
-→ 人工先保存 H_blind（观察 / 入场 / 置信度）
-→ 服务器验证保存后，才揭示右区 T+1 ... T+10 未来 SVG
-→ 人工复盘 H_review；独立程序计算客观 Y_future
-→ 后续比较 Quant、时序、Vision-H、Vision-Y、Fusion
-→ 冻结后再做有效 OOS / LEAN / QC 验证
-```
+以后只保留 **3 条一级研究路径**：
 
-**左右分界线代表 T 日信息截止，不代表 T 收盘已经成交。** 假设最早 T+1 可成交开盘入场。左图缩放、路径、任务内容和机器训练输入绝不能受未来右区影响；未来右图必须在真实保存盲态标签后才能由服务端下发，不能仅用 CSS 隐藏。
+| 一级路径 | 当前子路线 |
+| --- | --- |
+| **Quant-only** | Q1 fuzzy-shape-v1；Q2 parallel-channel-v1（Draft PR #10）；未来 Q1/Q2 ensemble / 传统 ML |
+| **Quant + Vision** | 传统 Machine Learning Fusion；Deep Learning Fusion |
+| **Vision-only** | 传统视觉 Machine Learning；Deep Learning 视觉模型 |
 
-采用 SVG/矢量图是为了人工放大不失真。机器仍需规范化 OHLCV 时序、仅左区 SVG 的确定性栅格化或另外设计的矢量几何编码；不能误认为普通 CNN 可直接把 SVG XML 当作图像。人工盲态标签、事后复盘标签及未来客观收益不可混作同一训练真值。
+H_blind 人工盲态标签、H_review 事后复盘、Y_future 客观未来结果、数值 OHLCV Sequence 模型、LEAN/QC、GPT 新闻/基本面二筛都属于**共享监督 / 对照 / 验证层**，不再单独算研究主线。
 
-**双区 SVG、独立标签合同与真实本机浏览器工程验收已通过**；首批本人10–20 张反馈待完成，模型训练与 alpha 验证未开始。[PR #7](https://github.com/zhoushuming073-cell/stock-radar/pull/7) 的 `33c3923` 源码已选择性移植并与最新 main 协调，原 PR 保留 Draft。旧随机盲图 P0/P1 图片、已有标签和历史验收均保留。
+项目目前仍处在**研究基建 + 方法定义阶段**。旧 Strategy 2、Scanner 前瞻统计、LEAN smoke run 都只是工程或探索性证据；**目前没有 Q1/Q2/Vision/Fusion 的正式策略回测，更没有 Fresh OOS alpha 结论。**
 
-**以后交给 Codex 的任务书统一放在 GitHub 的 [codex/tasks/ACTIVE.md](codex/tasks/ACTIVE.md) 中；** [AGENTS.md](AGENTS.md) 会提示 Codex 读取当前总账、最新研究计划和任务书。[操作指南](codex/README.md)。提交任务书不代表已经执行。
+当前状态：
+- **Q1 fuzzy-shape-v1：** 已实现候选生成与特征，但预测有效性未验证。
+- **Q2 parallel-channel-v1：** PR #10 Draft，未合并；还需要真实全市场扫描、算法修正与人工形态验收。
+- **Quant+Vision v3 子系统：** 工程验收通过，但人工试标暂停；模型未训练。
+- **Vision-only / Fusion ML/DL：** 正式实验尚未开始。
+
+以后所有方法必须在同一 causal universe、同一决策时点、同一时间切分、同一 Y 与执行口径下比较；复杂模型只有在样本外稳定超过简单基线时才保留。
 
 长期目标不是复制一个覆盖所有资产和执行方式的机构级通用交易系统，而是做成一个可复现的 **Personal Quantitative Stock Radar**：把个人交易语言变成机器可以稳定搜索、可以证伪、可以长期积累的数据流程，并作为人工 / GPT 盘前研究的第一层候选生成器。
 ### 主要能力
