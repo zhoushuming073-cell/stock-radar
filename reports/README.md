@@ -29,9 +29,9 @@
 
 The `reports/` root is intentionally kept small: this index plus the canonical ledger. Dated acceptance/readiness/finalization reports belong under `acceptance/`; superseded non-journey reports and completed operational plans belong under `archive/`.
 
-## Quant + Vision Fusion research direction · 2026-10-08
+## Historical Quant + Vision Fusion direction · 2026-10-08
 
-[Active plan](../docs/QUANT_VISION_FUSION_RESEARCH_PLAN.md): the current research path is **Quant high-recall candidate generation → Human Observe/Entry labels → Vision M1 → Quant+Vision+Human transition → frozen Quant+Vision**. The random blind Single/Pair Pilot remains valid P0/P1 infrastructure evidence but is no longer the primary human-label dataset path; its formal human Ground Truth remains0. Do not force completion of the old50 Single +25 Pair task. [Direction record](current/quant-vision-fusion-direction-2026-10-08.md), [historical P0/P1 acceptance](acceptance/vision-p0-p1-pilot-acceptance-2026-10-08.md).
+[Historical v1 plan](../docs/QUANT_VISION_FUSION_RESEARCH_PLAN.md): the current research path is **Quant high-recall candidate generation → Human Observe/Entry labels → Vision M1 → Quant+Vision+Human transition → frozen Quant+Vision**. The random blind Single/Pair Pilot remains valid P0/P1 infrastructure evidence but is no longer the primary human-label dataset path; its formal human Ground Truth remains0. Do not force completion of the old50 Single +25 Pair task. [Direction record](current/quant-vision-fusion-direction-2026-10-08.md), [historical P0/P1 acceptance](acceptance/vision-p0-p1-pilot-acceptance-2026-10-08.md).
 
 ## Quant + Vision dual-stage v3 subsystem · 2026-10-09
 
