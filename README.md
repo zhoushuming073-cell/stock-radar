@@ -51,11 +51,11 @@ and the installed formal PIT portfolio remains blocked by specific Run dependenc
 and [development report](reports/current/development-status-2026-10-06.md)
 document what works, what is limited and what remains open.
 
-### Dual-stage Quant + Vision labeling · 2026-10-09
+### Shared Vision / human-label infrastructure · 2026-10-09
 
-Engineering ready on real local data:300 unique past-only SVG charts+30 repeats, separate server-gated future SVG, immutable H_blind and independent H_review/Y_future.728 tests pass including Native LEAN;10 real charts passed Chrome acceptance. Open **http://localhost:8123/quant-review/v3/human/** using the existing Label Studio login. First user10–20 cases/feedback pending; no model training or alpha claimed.
+The dual-stage SVG / H_blind / H_review / Y_future subsystem has passed real local engineering acceptance (300 unique historical windows +30 repeats;728 tests including Native LEAN; real browser leakage checks). It is now treated as **shared research infrastructure**, not the sole project roadmap. The human trial is currently **paused**; no Vision training or alpha claim exists.
 
-[Guide / 操作说明](docs/QUANT_VISION_DUAL_STAGE_LABELING_V3.md) · [Actual acceptance](reports/acceptance/quant-vision-dual-stage-v3-acceptance-2026-10-09.md).
+[Subsystem guide](docs/QUANT_VISION_DUAL_STAGE_LABELING_V3.md) · [Acceptance](reports/acceptance/quant-vision-dual-stage-v3-acceptance-2026-10-09.md).
 
 ### Local LEAN backtests
 
@@ -95,25 +95,27 @@ they are not live quotes or trading signals.
 
 ## Research direction
 
-**Active research design (2026-10-09): [Quant + Vision dual-stage study v3](docs/QUANT_VISION_DUAL_STAGE_RESEARCH_PLAN.md).** This supersedes the earlier [outcome-only v2 design](docs/PRICE_STRUCTURE_OUTCOME_LEARNING_PLAN.md) and [human-only vision v1 design](docs/QUANT_VISION_FUSION_RESEARCH_PLAN.md) as the current work plan; both are retained for research history.
+The current authoritative roadmap is the [Research Master Guide](docs/RESEARCH_MASTER_GUIDE.md).
 
-The objective is to test whether causal price/volume structure and human-trained visual judgments help rank US-equity opportunities over a fixed, reproducible future horizon—not to optimize a pretty historical equity curve.
+Stock Radar now has exactly **three top-level research families**:
 
-```text
-Historical eligible market / PIT-aware Quant fuzzy candidates + controls
-→ past-only left SVG and OHLCV through T close
-→ human saves blind Observe and Entry labels
-→ only then unlock T+1 ... T+10 right-side SVG for retrospective review
-→ independent objective future Y labels, isolated from blind H
-→ later compare Quant, numeric sequence, Vision-H, Vision-Y, and Fusion
-→ freeze only after valid future evaluation gates
-```
+| Family | Current subpaths |
+| --- | --- |
+| **Quant-only** | Q1 fuzzy-shape-v1; Q2 parallel-channel-v1 (Draft PR #10); later Q1/Q2 ensemble / classical ML |
+| **Quant + Vision** | classical-ML Fusion; deep-learning Fusion |
+| **Vision-only** | classical visual ML; deep-learning visual models |
 
-The separator is the **T close information cutoff**, not a claim of trading at that close. The earliest hypothetical entry is **T+1 open**. The left chart's appearance and scale must never depend on right-side outcomes, and future data must not be sent to the browser before blind submission. SVG is a lossless vector display for human inspection, while machine inputs remain independently validated numeric OHLCV / left-only deterministic visual encodings.
+Human blind labels, retrospective review, objective future outcomes, numeric OHLCV sequence models, LEAN/QC and GPT/news review are **shared supervision / control / validation layers**, not separate top-level roadmaps.
 
-The **v3 dual-stage visualization + label contract + browser validation** now passes real local engineering acceptance. The owner should try 10–20 genuine cases next; no model training has run. Source from Draft PR [#7](https://github.com/zhoushuming073-cell/stock-radar/pull/7) was selectively ported at `33c3923` into the reconciled v3 implementation; #7 itself remains unmerged. The original blind PNG Pilot and its labels remain historical P0/P1 evidence.
+The project is still in **infrastructure + method-definition stage**. Existing historical Strategy 2 studies, Scanner forward statistics and LEAN smoke runs are engineering/exploratory evidence; there is **no formal current-strategy backtest or fresh OOS result proving Q1/Q2/Vision/Fusion alpha**.
 
-Codex's task instructions now live in [codex/tasks/ACTIVE.md](codex/tasks/ACTIVE.md) and [codex/README.md](codex/README.md); the root [AGENTS.md](AGENTS.md) points to the current task. Outcome labels, human blind decisions, retrospective reviews and research validation remain distinct; Quant-only / sequence / visual / Fusion must be compared on the same causal universe, splits and costs.
+Current method status:
+- **Q1 fuzzy-shape-v1:** implemented and used for candidate generation, predictive efficacy not yet validated.
+- **Q2 parallel-channel-v1:** experimental Draft PR #10, not merged; real-market validation and algorithm review still required.
+- **Quant+Vision v3 subsystem:** engineering accepted but human trial paused; model training not started.
+- **Vision-only / Fusion ML/DL:** formal experiments not started.
+
+All future comparisons must use the same causal universe, decision time, split, outcome definition and execution assumptions. Complexity is kept only if it adds stable out-of-sample value over simpler baselines.
 
 The long-term goal is not to reproduce a universal institutional trading stack. It is to build a reproducible **personal quantitative stock radar** that turns a discretionary selection process into something measurable, falsifiable and useful as the first stage of a human/GPT research workflow.
 ### What it includes
