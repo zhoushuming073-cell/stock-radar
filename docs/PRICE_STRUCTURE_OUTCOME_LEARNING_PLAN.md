@@ -1,11 +1,12 @@
 > **MASTER-GUIDE STATUS · 2026-10-09:** Historical methodology reference. The current authoritative taxonomy is [Research Master Guide](RESEARCH_MASTER_GUIDE.md), which has three top-level families: Quant-only, Quant + Vision, Vision-only. This v2 file contributes objective-Y, sequence-control and fair-comparison methodology; it is not a competing master roadmap.
+
 # Stock Radar — Price Structure & Outcome-Supervised Learning Research Plan v2
 
 > **研究路线决定日期：2026-10-09；状态：SUPERSEDED AS MAIN ROADMAP — ORIGINAL V2 DESIGN / NOT IMPLEMENTED。**
 >
 > 本文是研究设计和待验证方案，不代表模型已经训练、达到论文效果、完成正式回测或具备实盘优势。
 >
-> **替代的主路线：**[Quant + Vision Fusion Research Plan v1](./QUANT_VISION_FUSION_RESEARCH_PLAN.md) 中“Quant 宽筛 → 人工标注 → Vision 学人工 → 融合”。旧文件保留供历史追溯；已有 P0/P1 盲图、Label Studio 和冻结基建不删除。
+> **历史背景：** 本 v2 当时用于替代更早的 Human→Vision v1；现在两者都已归档为方法论来源，当前分类统一由 [Research Master Guide](RESEARCH_MASTER_GUIDE.md) 管理。
 >
 > **基础设施边界：**Research Infrastructure v1（已冻结），Shape Research READY；历史 PIT 仍有身份、退市和缺价等限制。本文不修改数据、冻结策略、已有 Train/Validation/Test/Fresh 定义或券商执行边界。
 
