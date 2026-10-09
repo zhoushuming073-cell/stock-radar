@@ -89,38 +89,25 @@ they are not live quotes or trading signals.
 
 ## Research direction
 
-Stock Radar is being refocused around **outcome-supervised price structure learning** rather than maximizing a historical equity curve. The [active v2 research plan](docs/PRICE_STRUCTURE_OUTCOME_LEARNING_PLAN.md) replaces subjective human chart labels with verifiable forward market outcomes; image CNN remains a literature baseline, not the only or default data representation.
+**Active research design (2026-10-09): [Quant + Vision dual-stage study v3](docs/QUANT_VISION_DUAL_STAGE_RESEARCH_PLAN.md).** This supersedes the earlier [outcome-only v2 design](docs/PRICE_STRUCTURE_OUTCOME_LEARNING_PLAN.md) and [human-only vision v1 design](docs/QUANT_VISION_FUSION_RESEARCH_PLAN.md) as the current work plan; both are retained for research history.
 
-The practical workflow is:
+The objective is to test whether causal price/volume structure and human-trained visual judgments help rank US-equity opportunities over a fixed, reproducible future horizon—not to optimize a pretty historical equity curve.
 
 ```text
-Full US-equity universe
-→ causal quantitative screening
-→ a small ranked candidate list
-→ later GPT-assisted review of news, catalysts, fundamentals and premarket context
-→ optional intraday confirmation
+Historical eligible market / PIT-aware Quant fuzzy candidates + controls
+→ past-only left SVG and OHLCV through T close
+→ human saves blind Observe and Entry labels
+→ only then unlock T+1 ... T+10 right-side SVG for retrospective review
+→ independent objective future Y labels, isolated from blind H
+→ later compare Quant, numeric sequence, Vision-H, Vision-Y, and Fusion
+→ freeze only after valid future evaluation gates
 ```
 
-The research questions are now:
+The separator is the **T close information cutoff**, not a claim of trading at that close. The earliest hypothetical entry is **T+1 open**. The left chart's appearance and scale must never depend on right-side outcomes, and future data must not be sent to the browser before blind submission. SVG is a lossless vector display for human inspection, while machine inputs remain independently validated numeric OHLCV / left-only deterministic visual encodings.
 
-1. Can a causal, high-recall Quant scanner produce relevant candidate stocks without excluding too many future winners?
-2. Can normalized OHLCV sequence models learn multi-scale trend, pullback, support and recent-price-position structure directly from **historical outcomes**, rather than human preferences?
-3. Do time-series models beat a Quant/LightGBM baseline and an A01-style image CNN, under the same universe, decision-time and labels?
-4. Does late Fusion provide robust out-of-sample incremental information after transaction costs and data-coverage caveats?
+The current work is the **v3 dual-stage visualization + label contract + browser validation**, not model training. PR [#7](https://github.com/zhoushuming073-cell/stock-radar/pull/7) contains a separate tested Draft implementation of Quant-guided candidate labeling, **not yet merged**, and is a possible source to reconcile, not evidence that the v3 flow is already shipped. The original blind PNG Pilot remains valid historical P0/P1 infrastructure evidence.
 
-Scanner already reports Precision/Lift, MFE/MAE and candidate outcomes. v2 proposes fixed-horizon target-before-adverse labels (initial research hypothesis: +5% before -3% within 10 trading sessions from the T+1 reference open), calibration, drawdown risk, and consistency across market regimes. No new model result is claimed.
-
-Current research branches:
-
-- **Quant** — broad causal candidate generator with medium/edge/random eligible-market controls; track both within-pool success and whole-market missed opportunities.
-- **Sequence** — primary new research branch: normalized multi-scale OHLCV → small 1D CNN/TCN → future-outcome supervised predictions. Recent price position is a testable hypothesis, not an assumed fact.
-- **Image benchmark** — A01-inspired 2D CNN on causally rendered price/volume images, used as a controlled competitor, **not** the required Vision path or an unlicensed code copy.
-- **Fusion** — compare Quant-only, sequence-only, image-only, and frozen combinations on identical time splits and executable outcome definitions. Humans audit failures; subjective human labels no longer supervise the main model.
-- **Intraday** — candidate-only support/reversal and fill-order research after the daily models and data contracts are validated.
-
-The earlier random blind Single/Pair pilot remains valid P0/P1 engineering evidence, but its 50+25 human-label task is no longer the active research path. See the [active outcome-supervised price-structure plan (v2)](docs/PRICE_STRUCTURE_OUTCOME_LEARNING_PLAN.md); [v1 Quant+Vision/Human plan](docs/QUANT_VISION_FUSION_RESEARCH_PLAN.md) is retained as superseded historical design.
-
-[Research literature reading pack](docs/literature/README.md): 17 PDF files covering 16 distinct studies on chart patterns, machine learning, factor testing, and backtest overfitting, with a versioned catalog and source links.
+Codex's task instructions now live in [codex/tasks/ACTIVE.md](codex/tasks/ACTIVE.md) and [codex/README.md](codex/README.md); the root [AGENTS.md](AGENTS.md) points to the current task. Outcome labels, human blind decisions, retrospective reviews and research validation remain distinct; Quant-only / sequence / visual / Fusion must be compared on the same causal universe, splits and costs.
 
 The long-term goal is not to reproduce a universal institutional trading stack. It is to build a reproducible **personal quantitative stock radar** that turns a discretionary selection process into something measurable, falsifiable and useful as the first stage of a human/GPT research workflow.
 ### What it includes
@@ -172,17 +159,17 @@ remain local.
 - [x] Canonical run configuration, Scanner outcome labels, event counts, filter funnel, and local PIT import boundary
 - [x] Blind chart snapshots and local Label Studio infrastructure (P0/P1 acceptance)
 - [x] Retire random-blind 50 Single +25 Pair as the primary labeling task after human trial; keep it as infrastructure evidence
-- [ ] Define v2 causal Quant candidate/control sampling and T+1 outcome-label contracts
-- [ ] Establish Quant/LightGBM, OHLCV sequence and A01-style image CNN comparable baselines
-- [ ] Train outcome-supervised sequence model, check recent-position ablations and calibrate probabilities
+- [ ] Reconcile Draft PR #7 Quant-guided Q/X/H candidate pipeline with active v3 and preserve existing private labels
+- [ ] Build versioned left-only SVG and server-gated future-right SVG, with immutable blind and separate review labels
+- [ ] Compute independent bounded Y outcomes (T+1 open; missing/ambiguous states) for Train/Validation
 - [x] Forward-outcome Precision/Lift at configurable Top-K, cooldown event Precision/Lift, MFE/MAE and primary-outcome regime breakdowns
-- [ ] Compare Quant-only, sequence-only, image-only and Fusion under one universe/split/outcome contract
+- [ ] Compare Quant-only, sequence-only, Vision-H, Vision-Y and Fusion under one universe/split/outcome contract
 - [ ] Fixed-horizon target-hit probability research and calibration
 - [ ] Learned market-regime conditioning beyond implemented descriptive breakdowns
 - [ ] One-click latest-session Daily Scanner (current Scanner processes historical research splits)
 - [ ] Full PIT / corporate-action / settlement realism for native execution
 - [ ] Candidate-only intraday data for support / reversal / execution studies
-- [ ] Execute v2 Price Structure + Outcome-Supervised Learning research stages (S0–S6)
+- [ ] Execute v3 dual-stage D1/D2/D3 local acceptance, then separately authorize model-training baselines
 - [ ] Point-in-time candidate/context log for future GPT-assisted second-stage review
 - [ ] Fresh untouched out-of-sample period for validating claimed strategy improvement
 - [ ] Broker execution / live trading — intentionally not implemented
