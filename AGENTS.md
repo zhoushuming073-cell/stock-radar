@@ -1,12 +1,15 @@
 # Stock Radar — Repository agent entrypoint
 
-Before performing tasks, read:
-1. `reports/journey-2026-09-30-0651-📌当前总账.md` (canonical current status).
-2. `docs/QUANT_VISION_DUAL_STAGE_RESEARCH_PLAN.md` (current active Quant/Vision research direction).
-3. `codex/tasks/ACTIVE.md` (current user-approved Codex task and detailed work order).
+Before performing any task, read in this order:
+1. `reports/journey-2026-09-30-0651-📌当前总账.md` — canonical completion status / blockers.
+2. `docs/RESEARCH_MASTER_GUIDE.md` — current authoritative research taxonomy and comparison rules.
+3. `codex/tasks/ACTIVE.md` — whether any implementation task is currently authorized.
+4. Only then read subsystem / historical plans linked by the master guide if relevant.
 
-Follow the detailed task's explicit scope and stop conditions. **Do not infer that repository docs alone authorize model training, cloud evaluation, data mutation, paid services or merge of another draft PR.**
+The project currently recognizes exactly three top-level research families: **Quant-only**, **Quant + Vision**, and **Vision-only**. Human labels, future outcomes, sequence controls, LEAN/QC and GPT/news review are shared supervision / control / validation layers, not extra top-level roadmaps.
 
-`Research Infrastructure v1` and Strategy 2 frozen semantics are protected. Keep market data, secret values, human annotations and detailed historical mapping in ignored local storage. Do not rewrite historical acceptance to match a changed plan. Confirm the current GitHub `main` and branch divergence before edits; never overwrite local working files.
+Do not infer that a research document authorizes implementation. In particular, do not start model training, full backtests, Historical Test/Fresh evaluation, QC jobs, paid services, data mutation or merging an experimental PR unless `codex/tasks/ACTIVE.md` explicitly authorizes it.
 
-If the active task conflicts with current `main` or another open PR, reconcile by an explicit reviewed change, not a forced checkout/reset or quiet rollback.
+`Research Infrastructure v1` and frozen Strategy 2 semantics are protected. Keep market data, credentials, real human annotations and detailed historical mappings in ignored local storage. Do not rewrite historical acceptance reports to match later decisions.
+
+If an old v1/v2/v3 document conflicts with `docs/RESEARCH_MASTER_GUIDE.md`, the master guide controls research classification; the canonical ledger controls actual completion status.
