@@ -1,24 +1,30 @@
 # Active Codex task
 
-**Status: PAUSED — no implementation task is currently authorized.**
+**Status: ACTIVE — Q1/Q2 Quant infrastructure, local LEAN → QC Cloud, latest-session watchlist**
 
-The user has paused the Quant+Vision v3 human-labeling stage while reorganizing the research program.
+Current work order:
+[2026-10-09 Q1/Q2 Quant infrastructure + backtest + Daily Scanner](2026-10-09-q1-q2-quant-backtest-daily-scanner.md)
 
 Current research authority:
 - [Research Master Guide](../../docs/RESEARCH_MASTER_GUIDE.md)
 - [Canonical project ledger](../../reports/journey-2026-09-30-0651-📌当前总账.md)
 
-The project now has three top-level paths:
-1. Quant-only
-2. Quant + Vision
-3. Vision-only
+Authorized scope:
+1. productionize and validate Q1 fuzzy-shape-v1;
+2. harden/reconcile Q2 parallel-channel-v1 from Draft PR #10;
+3. implement latest-session Q1/Q2/overlap Daily Scanner;
+4. freeze Q1/Q2 research versions;
+5. run local QuantConnect LEAN Q1-only and Q2-only research backtests;
+6. only after local PASS, run bounded compliant QuantConnect Cloud validation/backtests, respecting the documented Terms/export hold.
 
-Existing implementation notes:
-- `fuzzy-shape-v1` exists in current main but has no formal efficacy/backtest validation.
-- Quant+Vision v3 labeling / H/Y infrastructure has passed engineering acceptance but the human trial is paused.
-- Parallel Channel Quant is experimental Draft PR #10, not merged.
-- No current model-training, formal backtest, Test/Fresh or QC task is authorized.
+Not authorized:
+- Vision / Fusion training;
+- Q3 optimization;
+- return-driven Q1/Q2 threshold tuning;
+- Fresh-OOS claims;
+- paid QC resources;
+- broker/live orders.
 
-When the user approves the next concrete research task, create a new versioned work order under `codex/tasks/` and update this pointer. Historical task files remain unchanged.
+Codex start instruction:
 
-Until then Codex may read / inspect the repository when explicitly asked, but must not continue the previous v3 work order by default.
+> Synchronize stock-radar to latest main. Read AGENTS.md, docs/RESEARCH_MASTER_GUIDE.md, the canonical ledger, and codex/tasks/ACTIVE.md. Execute the linked Q1/Q2 work order end to end, using real local data/LEAN where available, respecting all freeze/Cloud/export gates, and report actual evidence only.
