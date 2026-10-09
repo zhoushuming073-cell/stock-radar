@@ -14,6 +14,8 @@
 
 ## Directory layout
 
+Latest authorized implementation: [Q1/Q2 actual acceptance — 2026-10-09](acceptance/q1-q2-quant-infrastructure-backtest-2026-10-09.md), [aggregate evidence](evidence/q1-q2-quant-infrastructure-backtest-2026-10-09.json). Daily watchlist/source engineering pass; Q2 bounded Native Train/Validation completed; Q1 execution-data gates blocked; Cloud NOT_RUN; Draft13 not merged. [ACTIVE](../codex/tasks/ACTIVE.md) is authorized for this Q1/Q2 work order, superseding older paused implementation pointers in subsystem history. Vision human trial/training remains paused/not started.
+
 | Path | Role |
 | --- | --- |
 | `acceptance/` | Dated acceptance reports and bounded engineering/research conclusions |

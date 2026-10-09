@@ -1,5 +1,7 @@
 # Q1/Q2 QuantConnect Cloud validation boundary
 
+**Actual 2026-10-09 status: BLOCKED / NOT_RUN.** Q1 Train and Validation fail frozen required-price/safety dependencies; Q2 Native Train/Validation passed execution. The complete mandatory local gate therefore has not passed. No new Cloud projects or strategy jobs were created. This is a local-data blocker, not an assertion that Cloud itself failed. Draft PR13 remains unmerged. See the [actual acceptance](../reports/acceptance/q1-q2-quant-infrastructure-backtest-2026-10-09.md).
+
 Cloud is a separate LEAN runtime, not the local Native installation. Results may differ because of data normalization, subscription/universe coverage, corporate-action handling, fills and fees. A common engine name does not prove an identical research environment.
 
 The active work order requires all mandatory local engineering, real candidate/data and Native execution gates before Cloud strategy jobs. Existing old platform data-export hold remains intact. No raw local OHLCV upload or QC-reference export/reconstruction, no paid resource purchase, no broker connection.

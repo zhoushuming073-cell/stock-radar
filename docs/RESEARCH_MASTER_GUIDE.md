@@ -433,6 +433,10 @@ Do not delete or rewrite dated acceptance reports. Later decisions supersede roa
 
 # 8. Immediate project posture
 
+## Authorized Q1/Q2 implementation update · 2026-10-09
+
+The explicit active work order supersedes the earlier statement below about waiting for authorization. Independent Q1 parity, hardened Q2, latest-session watchlist and the isolated fixed-horizon Native adapter are implemented on Draft PR #13. Release remains subject to actual local execution gates; source/fixture passes cannot replace a missing-price or identity/price-safety gate. The [dated acceptance](../reports/acceptance/q1-q2-quant-infrastructure-backtest-2026-10-09.md) controls actual results. Q2 Draft #10 remains open until an accepted replacement is merged. No changes to the three-family taxonomy, no model training and no Fresh/OOS efficacy claim.
+
 As of this guide:
 - **no model training is the default next action;**
 - v3 human labeling trial is **paused**;

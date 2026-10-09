@@ -40,9 +40,9 @@ labeling/quant-guided-v1.xml text eol=lf
 src/radar/vision/dual_*.py text eol=lf
 config/quant_vision_dual_stage_v3.yaml text eol=lf
 
-# New frozen selector and fixed-horizon source hashes must survive Windows checkout.
-src/radar/research/fuzzy_shape.py text eol=lf
-src/radar/research/parallel_channel.py text eol=lf
+# Preserve the physical newline convention bound by each v1 source receipt.
+src/radar/research/fuzzy_shape.py text eol=crlf
+src/radar/research/parallel_channel.py text eol=crlf
 src/radar/research/sessions.py text eol=lf
 src/radar/research/candidates.py text eol=lf
 src/radar/research/daily.py text eol=lf
