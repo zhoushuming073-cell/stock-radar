@@ -5,8 +5,10 @@
 ## Current source of truth
 
 - **📌 当前总账:** [Canonical status / active backlog](journey-2026-09-30-0651-📌当前总账.md) — the only active project ledger.
-- **Current research-direction snapshot:** [2026-10-09 · Quant + Vision dual-stage v3](current/quant-vision-dual-stage-direction-2026-10-09.md).
-- **Previous research-direction snapshot:** [2026-10-08 · Quant + Vision Fusion v1](current/quant-vision-fusion-direction-2026-10-08.md) — historical, superseded.
+- **Current research-direction snapshot:** [2026-10-09 · Three-path research program](current/research-direction-three-paths-2026-10-09.md).
+- **Master research guide:** [Quant-only / Quant+Vision / Vision-only](../docs/RESEARCH_MASTER_GUIDE.md).
+- **Previous subsystem direction:** [2026-10-09 · Quant + Vision dual-stage v3](current/quant-vision-dual-stage-direction-2026-10-09.md) — retained as shared Vision/Human/Y infrastructure history.
+- **Earlier research-direction snapshot:** [2026-10-08 · Quant + Vision Fusion v1](current/quant-vision-fusion-direction-2026-10-08.md) — historical, superseded.
 - **Earlier development-stage snapshot:** [2026-10-06 · Research + local LEAN integration](current/development-status-2026-10-06.md) — retained for engineering history.
 - When a dated report conflicts with the canonical ledger, the canonical ledger wins for current status. Dated reports remain audit evidence.
 
@@ -31,9 +33,9 @@ The `reports/` root is intentionally kept small: this index plus the canonical l
 
 [Active plan](../docs/QUANT_VISION_FUSION_RESEARCH_PLAN.md): the current research path is **Quant high-recall candidate generation → Human Observe/Entry labels → Vision M1 → Quant+Vision+Human transition → frozen Quant+Vision**. The random blind Single/Pair Pilot remains valid P0/P1 infrastructure evidence but is no longer the primary human-label dataset path; its formal human Ground Truth remains0. Do not force completion of the old50 Single +25 Pair task. [Direction record](current/quant-vision-fusion-direction-2026-10-08.md), [historical P0/P1 acceptance](acceptance/vision-p0-p1-pilot-acceptance-2026-10-08.md).
 
-## Current Quant + Vision dual-stage v3 · 2026-10-09
+## Quant + Vision dual-stage v3 subsystem · 2026-10-09
 
-[Approved research design](../docs/QUANT_VISION_DUAL_STAGE_RESEARCH_PLAN.md) and [Codex ACTIVE work order](../codex/tasks/ACTIVE.md). Left past-only SVG + H_blind first; right future SVG + H_review only after saved blind decision; independent objective Y_future. Current **D1/D2 engineering PASS; D3 data/UI READY FOR HUMAN TRIAL**, owner feedback pending. [Actual local acceptance](acceptance/quant-vision-dual-stage-v3-acceptance-2026-10-09.md):728 Native-inclusive pytest,300 windows replayed,10 real charts/11 before-after pixel pairs,2,623 protected hashes unchanged. [Labeling guide](../docs/QUANT_VISION_DUAL_STAGE_LABELING_V3.md). Earlier v1 and outcome-only v2 are preserved for history; Draft PR #7 was selectively ported, and the original PR remains unmerged. The canonical ledger alone owns current completion status.
+[Subsystem design](../docs/QUANT_VISION_DUAL_STAGE_RESEARCH_PLAN.md). The overall research authority is now the [three-path master guide](../docs/RESEARCH_MASTER_GUIDE.md); Codex implementation is currently paused in [ACTIVE](../codex/tasks/ACTIVE.md). Left past-only SVG + H_blind first; right future SVG + H_review only after saved blind decision; independent objective Y_future. Current **D1/D2 engineering PASS; D3 data/UI READY FOR HUMAN TRIAL**, owner feedback pending. [Actual local acceptance](acceptance/quant-vision-dual-stage-v3-acceptance-2026-10-09.md):728 Native-inclusive pytest,300 windows replayed,10 real charts/11 before-after pixel pairs,2,623 protected hashes unchanged. [Labeling guide](../docs/QUANT_VISION_DUAL_STAGE_LABELING_V3.md). Earlier v1 and outcome-only v2 are preserved for history; Draft PR #7 was selectively ported, and the original PR remains unmerged. The canonical ledger alone owns current completion status.
 
 ## Research Infrastructure v1 · 2026-10-08
 
