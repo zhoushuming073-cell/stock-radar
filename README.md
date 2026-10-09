@@ -166,20 +166,17 @@ remain local.
 - [x] Private Sites integration and unattended local updates
 - [x] Canonical run configuration, Scanner outcome labels, event counts, filter funnel, and local PIT import boundary
 - [x] Blind chart snapshots and local Label Studio infrastructure (P0/P1 acceptance)
-- [x] Retire random-blind 50 Single +25 Pair as the primary labeling task after human trial; keep it as infrastructure evidence
-- [ ] Reconcile Draft PR #7 Quant-guided Q/X/H candidate pipeline with active v3 and preserve existing private labels
-- [ ] Build versioned left-only SVG and server-gated future-right SVG, with immutable blind and separate review labels
-- [ ] Compute independent bounded Y outcomes (T+1 open; missing/ambiguous states) for Train/Validation
-- [x] Forward-outcome Precision/Lift at configurable Top-K, cooldown event Precision/Lift, MFE/MAE and primary-outcome regime breakdowns
-- [ ] Compare Quant-only, sequence-only, Vision-H, Vision-Y and Fusion under one universe/split/outcome contract
-- [ ] Fixed-horizon target-hit probability research and calibration
-- [ ] Learned market-regime conditioning beyond implemented descriptive breakdowns
-- [ ] One-click latest-session Daily Scanner (current Scanner processes historical research splits)
-- [ ] Full PIT / corporate-action / settlement realism for native execution
-- [ ] Candidate-only intraday data for support / reversal / execution studies
-- [ ] Execute v3 dual-stage D1/D2/D3 local acceptance, then separately authorize model-training baselines
-- [ ] Point-in-time candidate/context log for future GPT-assisted second-stage review
-- [ ] Fresh untouched out-of-sample period for validating claimed strategy improvement
+- [x] Secure dual-stage SVG / H_blind / H_review / Y_future engineering acceptance
+- [x] Q1 fuzzy-shape-v1 candidate-generation implementation
+- [ ] Validate / revise Q1 candidate quality under the new master comparison contract
+- [ ] Complete real-market engineering and shape acceptance for Q2 parallel-channel-v1 (Draft PR #10)
+- [ ] Build Quant-only Q1/Q2/Q3 comparable baselines
+- [ ] Build Vision-only classical-ML and deep-learning baselines
+- [ ] Build Quant+Vision classical-ML and deep-learning Fusion baselines
+- [ ] Compare all three families on one causal universe / split / outcome / execution contract
+- [ ] Freeze surviving methods before any formal held-out evaluation
+- [ ] Accumulate genuinely new OOS evidence, then use LEAN/QC for execution validation
+- [ ] Candidate-only intraday and GPT/news/fundamental review only after the daily selector is justified
 - [ ] Broker execution / live trading — intentionally not implemented
 
 ## Architecture
