@@ -21,6 +21,8 @@ def main():
         if not args.execute_only:
             scan_historical(root,split,window[0],window[1],directory/split,progress=lambda x:print(x,flush=True))
         if not args.signals_only:
+            from radar.research.quant_diagnostics import candidate_diagnostics
+            candidate_diagnostics(root,directory/split,window)
             for method in ['q1','q2']:
                 if args.method not in {'all',method}:continue
                 try:r=run_method(root,receipt,directory,split,method)

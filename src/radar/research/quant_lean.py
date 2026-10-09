@@ -11,12 +11,13 @@ import json
 import os
 from pathlib import Path
 import subprocess
+from copy import deepcopy
 from uuid import uuid4
 import duckdb
 import pandas as pd
 import yaml
 from radar.backtest.costs import load_fee_config
-from radar.lab.parameters import execution_defaults_from_legacy
+from radar.lab.parameters import execution_defaults_from_legacy,engine_legacy_fields
 from radar.lean.export import prepare_bundle
 from radar.lean.runtime import installation,invoke,digest
 from radar.lean.result_adapter import normalize
@@ -26,6 +27,8 @@ from radar.research.sessions import calendar
 from radar.research.historical_quant import scan_historical
 
 def execution_config(cfg):
+    if cfg['top_k'] != 10 or cfg['holding_sessions'] != 10 or cfg['maximum_positions'] != 10:
+        raise ValueError('Primary v1 contract requires Top10 / ten-session hold / maximum10 positions')
     r=execution_defaults_from_legacy({'initial_capital':cfg['initial_capital'],'max_new_candidates':10,
        'take_profit':None,'stop_loss':None,'max_holding_sessions':10,'entry_gap_min':-.1,'entry_gap_max':.05,
        'max_position_fraction':1,'minimum_position_fraction':0,'max_order_to_avg_dollar_volume':.02,
@@ -33,6 +36,16 @@ def execution_config(cfg):
     r['entry_gap']['enabled']=False
     r['exit']['timing']='fixed_horizon_close';r['sizing']['cash_allocation']='equal_remaining_slots'
     return r
+
+
+def execution_display(execution):
+    canonical=deepcopy(execution)
+    canonical['exit'].pop('timing',None)
+    canonical['sizing'].pop('cash_allocation',None)
+    result={**engine_legacy_fields(canonical),'execution_timing':'next_open',
+            'exit_timing':'fixed_horizon_close','cash_allocation':'equal_remaining_slots'}
+    result.update(entry_gap_min=None,entry_gap_max=None,entry_gap_enabled=False)
+    return result
 
 def freeze(root,directory):
     root=Path(root);directory=Path(directory);directory.mkdir(parents=True,exist_ok=True)
@@ -55,6 +68,7 @@ def freeze(root,directory):
              'source_domain':'bounded frozen Shape Research; vendor daily open-close proxy simulation; NOT certified raw PIT fills',
              'formal_pit':'UNCHANGED_BLOCKED','Fresh':'NOT_RUN','HistoricalTest':'NOT_RUN',
              'no_return_tuning':True}
+    receipt=json.loads(json.dumps(receipt,allow_nan=False))
     path=directory/'freeze.json'
     if path.exists():
         prior=json.loads(path.read_text())
@@ -100,7 +114,7 @@ def execution_inputs(root,rows,window):
                 failures.append({'security_id':sid,'reason':'mixed_execution_basis'});continue
             actions=c.execute('select date,factor from split_action where security_id=? and date between ? and ?',
                               [sid,start,evaluation_end]).fetchall()
-            if first['provenance']['basis']=='raw' and actions:
+            if first['provenance']['basis']=='raw' and any(str(pd.Timestamp(a[0]).date()) in required for a in actions):
                 failures.append({'security_id':sid,'reason':'raw_action_requires_existing_certified_native_PIT_contract'});continue
             # Split vendor series are explicit adjusted-unit price-only proxies.
             # No dividend/terminal entitlement or true share-count claim is made.
@@ -131,7 +145,8 @@ def execution_inputs(root,rows,window):
 def publish_result(root,result,metrics,metadata):
     from radar.lab.store import RunStore
     store=RunStore(Path(root)/'data/strategy-lab/runs.sqlite3')
-    run=store.create_run(metadata);store.start_run(run,os.getpid());store.finish_run(run,result,metrics)
+    run=metadata['run_id']
+    store.create_runs_batch([(run,metadata)]);store.start_run(run,os.getpid());store.finish_run(run,result,metrics)
     return run
 
 def run_method(root,receipt,directory,split,method):
@@ -149,9 +164,9 @@ def run_method(root,receipt,directory,split,method):
     selected_count=sum(r['selected'] for r in rows)
     run_id=str(uuid4());output=directory/split/(method+'-'+run_id)
     cfg=receipt['research_config'];version=receipt[method]['version']
-    metadata=dict(strategy_id=('q1_fuzzy_shape' if method=='q1' else 'q2_parallel_channel'),
+    metadata=dict(run_id=run_id,strategy_id=('q1_fuzzy_shape' if method=='q1' else 'q2_parallel_channel'),
                   strategy_version=version,strategy_name=method.upper()+' frozen Quant pilot',
-                  engine='lean',engine_identity=identity,engine_code_hash=digest(Path(root)/'src/radar/lean/algorithm.py'),
+                  engine='lean',engine_identity=identity,engine_code_hash=digest(Path(root)/'src/radar/lean/algorithm_fixed_horizon.py'),
                   universe_mode='shape_research_v1',quality_tier='bounded-shape-exploratory',
                   window=window,split=split,start_date=window[0],end_date=window[1],evaluation_end=window[2],
                   signal_source='frozen ResearchInfrastructure v1 Q1/Q2 candidate snapshots',
@@ -160,7 +175,7 @@ def run_method(root,receipt,directory,split,method):
                   strategy_code_hash=receipt['source_files']['src/radar/research/fuzzy_shape.py' if method=='q1' else 'src/radar/research/parallel_channel.py'],
                   feature_version=version,config=receipt[method],config_hash=receipt[method]['config_hash'],
                   git_revision=receipt['git_revision'],fee_profile=receipt['fees']['profile'],slippage_bps=cfg['slippage_bps'],
-                  execution_policy='T close signal -> T+1 open; tenth trading-session native MOC; equal remaining cash slots',
+                  execution_policy=execution_display(execution),
                   backtest_config_hash=fingerprint(execution),research_config_hash=fingerprint(cfg),
                   resolved_execution=execution,selector_freeze=fingerprint(receipt),execution_preflight=gate,
                   private_security_mapping=mapping,price_proxy_limitations=gate['limitations'])
@@ -185,6 +200,8 @@ def run_method(root,receipt,directory,split,method):
            'slippage_cost':sum(t['slippage_cost'] for t in trades),
            'selector_daily_counts':[s[method] for s in audit['sessions']],
            'eligible_security_days':audit['eligible_security_days'],'native_result_sha256':digest(raw)}
+    from radar.research.quant_diagnostics import portfolio_diagnostics
+    extra.update(portfolio_diagnostics(result,cfg['initial_capital']))
     result['quant_research_diagnostics']=extra
     store_id=publish_result(root,result,metrics,metadata)
     summary={'status':'PASS_EXPLORATORY_PROXY_ONLY','run_id':store_id,'native_id':run_id,'method':method,

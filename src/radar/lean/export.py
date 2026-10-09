@@ -172,7 +172,9 @@ def prepare_bundle(home: Path, output: Path, metadata: dict, sessions: list,
     data_index = output / 'data-index.json'
     write_json(data_index, data_files)
     algorithm = output / 'algorithm.py'
-    shutil.copy2(Path(__file__).with_name('algorithm.py'), algorithm)
+    adapter = ('algorithm_fixed_horizon.py' if execution['exit'].get('timing') == 'fixed_horizon_close'
+               else 'algorithm.py')
+    shutil.copy2(Path(__file__).with_name(adapter), algorithm)
     if metadata.get('engine_code_hash') and digest(algorithm) != metadata['engine_code_hash']:
         raise ValueError('LEAN execution adapter changed after queuing')
     manifest = {'schema_version': SIGNAL_SCHEMA_VERSION, 'run_metadata': metadata,

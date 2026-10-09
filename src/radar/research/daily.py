@@ -3,6 +3,7 @@ from collections import Counter
 import csv
 from io import StringIO
 import json
+from uuid import uuid4
 from pathlib import Path
 import duckdb
 import pandas as pd
@@ -94,7 +95,11 @@ def save_snapshot(root,result):
         with path.open('xb') as stream:stream.write(encoded)
     except FileExistsError:
         if path.read_bytes()!=encoded:raise ValueError('immutable snapshot differs')
-    latest=private/'latest.json';tmp=private/'latest.tmp';tmp.write_bytes(encoded);tmp.replace(latest)
+    latest=private/'latest.json';tmp=private/('latest-'+uuid4().hex+'.tmp')
+    try:
+        tmp.write_bytes(encoded);tmp.replace(latest)
+    finally:
+        tmp.unlink(missing_ok=True)
     return path
 
 def load_latest(root,method='all',top=20,now=None):

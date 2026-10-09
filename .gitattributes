@@ -39,3 +39,18 @@ src/radar/vision/quant_*.py text eol=lf
 labeling/quant-guided-v1.xml text eol=lf
 src/radar/vision/dual_*.py text eol=lf
 config/quant_vision_dual_stage_v3.yaml text eol=lf
+
+# New frozen selector and fixed-horizon source hashes must survive Windows checkout.
+src/radar/research/fuzzy_shape.py text eol=lf
+src/radar/research/parallel_channel.py text eol=lf
+src/radar/research/sessions.py text eol=lf
+src/radar/research/candidates.py text eol=lf
+src/radar/research/daily.py text eol=lf
+src/radar/research/daily_job.py text eol=lf
+src/radar/research/historical_quant.py text eol=lf
+src/radar/research/quant_lean.py text eol=lf
+src/radar/lean/algorithm_fixed_horizon.py text eol=lf
+config/parallel_channel_v1.yaml text eol=lf
+config/quant_research_v1.yaml text eol=lf
+src/radar/lean/export.py text eol=lf
+src/radar/research/quant_diagnostics.py text eol=lf

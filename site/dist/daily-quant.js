@@ -17,7 +17,7 @@
       const rows=(snapshot[key]||[]).slice(0,top);
       sections.push(`<h4>${key.toUpperCase()} · ${key==='q1'?'Fuzzy shape':'Parallel channel'} (scores are method-specific)</h4><table><thead><tr><th>Rank</th><th>Symbol / name</th><th>Score</th><th>Setup</th><th>Structure / warnings</th><th>Chart</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.rank}</td><td>${esc(r.symbol)}<br><small>${esc(r.name)}</small></td><td>${r.score.toFixed(2)}</td><td>${esc(r.status)}</td><td><details><summary>${esc(r.reason_codes[0])}</summary><pre>${esc(JSON.stringify({subscores:r.subscores,reasons:r.reason_codes,quality:r.data_quality_flags,structure:r.window_metadata.analysis?.consensus},null,2))}</pre></details></td><td><a href="./index.html?symbol=${encodeURIComponent(r.symbol)}" target="_blank" rel="noopener">Open</a></td></tr>`).join('')||'<tr><td colspan="6">No qualifying or watch setups. The list is not padded.</td></tr>'}</tbody></table>`);
     }
-    if(method==='all')sections.push(`<h4>Overlap · membership only, no combined score</h4><p>${(snapshot.overlap||[]).slice(0,top).map(r=>esc(r.symbol)).join(' · ')||'No overlap'}</p>`);
+    if(method==='all')sections.push(`<h4>Overlap · watchlist membership including Watch/Wait, no combined score</h4><p>${(snapshot.overlap||[]).slice(0,top).map(r=>esc(r.symbol)).join(' · ')||'No overlap'}</p>`);
     table.innerHTML=sections.join('');
     root.querySelector('[data-daily-audit]').textContent=JSON.stringify({as_of:snapshot.as_of,data_hash:snapshot.data_hash,code_hash:snapshot.code_hash,config_hashes:snapshot.config_hashes,excluded:snapshot.excluded,method_exclusions:snapshot.method_exclusions,score_distributions:snapshot.score_distributions},null,2);
   }

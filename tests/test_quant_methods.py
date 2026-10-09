@@ -108,14 +108,15 @@ def test_invalid_top_and_method():
     for method,top in [('bogus',20),('all',0),('q1',101),('q2',True)]:
         with pytest.raises(ValueError):snapshot(ROOT,method=method,top=top)
 
-def test_native_fixed_tenth_session_close(tmp_path):
+@pytest.mark.parametrize('early_close',[False,True])
+def test_native_fixed_tenth_session_close(tmp_path,early_close):
     if os.environ.get('STOCK_RADAR_TEST_LEAN')!='1':pytest.skip('actual native LEAN opt-in')
     from radar.lean.runtime import installation,invoke
     from radar.lean.export import prepare_bundle
     from radar.lean.result_adapter import normalize
     from radar.lab.parameters import execution_defaults_from_legacy
     from radar.backtest.costs import load_fee_config
-    sessions=calendar().sessions_in_range('2025-02-03','2025-02-20')
+    sessions=calendar().sessions_in_range('2025-11-13','2025-12-03') if early_close else calendar().sessions_in_range('2025-02-03','2025-02-20')
     prices=pd.DataFrame([{'symbol':s,'date':d,'open':100+i,'close':100+i+.5,
                          'high':102+i,'low':99+i,'volume':1000000}
                         for s in ['AAA','SPY'] for i,d in enumerate(sessions)])
@@ -142,7 +143,64 @@ def test_native_fixed_tenth_session_close(tmp_path):
     assert trade['entry_date']==str(sessions[1].date())
     assert trade['exit_date']==str(sessions[10].date()) and trade['holding_sessions']==10
     assert trade['exit_reason']=='fixed_horizon_close'
-    assert pd.Timestamp(trade['exit_time']).tz_convert('America/New_York').hour==16
+    assert pd.Timestamp(trade['exit_time']).tz_convert('America/New_York').hour==(13 if early_close else 16)
     assert trade['exit_price']==pytest.approx((110.5)*(1-.001))
     assert not result['open_positions']
+
+def test_freeze_receipt_can_be_reopened_without_tuple_list_drift(tmp_path,monkeypatch):
+    from radar.research import quant_lean
+    monkeypatch.setattr(quant_lean,'installation',lambda root:(tmp_path,{'engine':'lean','commit':'test_fixture'}))
+    before=quant_lean.freeze(ROOT,tmp_path/'receipt')
+    after=quant_lean.freeze(ROOT,tmp_path/'receipt')
+    assert before==after
+    assert after['research_config']['top_k']==10
+    assert after['Fresh']=='NOT_RUN'
+
+def test_execution_display_retains_native_policy_and_is_finite_json():
+    from radar.research.quant_lean import execution_config,execution_display
+    import yaml
+    cfg=yaml.safe_load((ROOT/'config/quant_research_v1.yaml').read_text())
+    native=execution_config(cfg);view=execution_display(native)
+    json.dumps(view,allow_nan=False)
+    assert view['entry_gap_enabled'] is False
+    assert view['max_holding_sessions']==10 and view['exit_timing']=='fixed_horizon_close'
+    assert native['exit']['timing']=='fixed_horizon_close'
+
+@pytest.mark.parametrize('failure',['missing','raw_split','source_switch'])
+def test_preflight_blocks_unsafe_forward_prices_without_candidate_substitution(tmp_path,monkeypatch,failure):
+    from radar.research import quant_lean
+    import duckdb
+    from types import SimpleNamespace
+    days=calendar().sessions_in_range('2025-02-03','2025-02-20')
+    frame=pd.DataFrame({'date':days,'open':100.,'high':101.,'low':99.,'close':100.,'volume':1000000.,
+                        'series_id':'source-a','source':'fixture','basis':'raw','shape_research_ready':True,
+                        'identity_conflict':False,'class_or_name_boundary':False})
+    core=duckdb.connect(':memory:')
+    subset=frame.drop(index=5) if failure=='missing' else frame
+    core.register('input_bars',subset);core.execute('create table shape_price as select * from input_bars')
+    core.execute('create table split_action (security_id varchar,date date,factor double)')
+    if failure=='raw_split':core.execute('insert into split_action values (?,?,?)',['security-a',days[6].date(),2.])
+    class API:
+        def __init__(self,root):self.core=SimpleNamespace(connection=core)
+        def __enter__(self):return self
+        def __exit__(self,*args):pass
+    monkeypatch.setattr(quant_lean,'ResearchInfrastructure',API)
+    (tmp_path/'data').mkdir()
+    with duckdb.connect(str(tmp_path/'data/market.duckdb')) as c:
+        spy=frame.copy();spy['symbol']='SPY';c.register('spy',spy);c.execute('create table daily_bars as select * from spy')
+    row=dict(selected=True,security_id='security-a',symbol='AAA',decision_date=str(days[0].date()),
+             rank=1,score=80.,method='q1_fuzzy_shape',version='fuzzy-shape-v1',
+             provenance={'series_id':'source-a','source':'fixture','basis':'raw'})
+    rows=[row]
+    if failure=='source_switch':
+        other={**row,'provenance':{**row['provenance'],'series_id':'source-b'}};rows.append(other)
+    before=json.dumps(rows,sort_keys=True)
+    r=quant_lean.execution_inputs(tmp_path,rows,[str(days[0].date()),str(days[0].date()),str(days[-1].date())])
+    assert r[0]['status']=='BLOCKED'
+    assert r[0]['failures'][0]['reason']=={'missing':'missing_10session_fill_prices',
+         'raw_split':'raw_action_requires_existing_certified_native_PIT_contract',
+         'source_switch':'execution_source_switch'}[failure]
+    assert r[1:4]==(None,None,None)
+    assert json.dumps(rows,sort_keys=True)==before
+    core.close()
 

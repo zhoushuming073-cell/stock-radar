@@ -11,3 +11,7 @@
 - Cloud: prior reference/data export hold remains. Verify current Terms/session after local gates; new ordinary strategy projects only. Record A/B/BLOCKED without claiming completion.
 - No Vision/Fusion training, Q3 optimization, Fresh-OOS efficacy, broker orders, paid resources or private data in Git.
 
+## Pre-result engineering corrections
+
+The initial receipt at commit `c743525` preceded all strategy outcomes. Native fixed-horizon fixture regression exposed an old QC campaign source pin. The corrected implementation isolates fixed-horizon code and restores the original algorithm bytes rather than changing that pin. JSON display policy serialization and scanner atomic writes were also corrected. No Q1/Q2 scoring/selection kernel changed during historical generation. The initial receipt is archived locally; a final execution receipt must bind the corrected code before the first strategy run. Bounded pilot dates and all score/weight/fee/slippage choices remain unchanged.
+
