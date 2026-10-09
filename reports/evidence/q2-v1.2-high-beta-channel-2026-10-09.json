@@ -56,6 +56,11 @@
   "frozen_selector_sha256": "4e5d9f15e7002977a74d67d1637c24a2da28c0cf11414696dece2090485962a8",
   "blind_review": {
     "tasks": 20,
+    "strata": {
+      "other": 13,
+      "boundary": 6,
+      "admitted": 1
+    },
     "formal_human_judgments": 0,
     "manifest_sha256": "fa90efe0cab3ca7a5393e5384d0220928164631149d5e0fabc5380a5179c056b",
     "renderer": "mplfinance-blind-v2",

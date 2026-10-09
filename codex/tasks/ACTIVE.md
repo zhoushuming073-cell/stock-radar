@@ -4,6 +4,8 @@
 
 ## Latest authorized work — Q2 v1.2, 2026-10-09
 
+[Draft PR #15](https://github.com/zhoushuming073-cell/stock-radar/pull/15) is open/unmerged, stacked on PR13; first implementation commit `3c9cd745910b8730066aca343ce91b107eb1c3a0`.
+
 Direct user request authorizes [High-beta liquid channel v1.2](2026-10-09-q2-v1.2-high-beta-liquid-channel.md), independent of frozen Q2 v1.1 and Q1. Branch `feature/q2-v1.2-high-beta-liquid-channel` is stacked on parent PR13 closure commit `6d4aa9e82a07f71b98e78cc4c54bf04055b6a334`. Do not merge main or overwrite frozen results.
 
 Actual completed-session current-pool scan:13,199 coarse assets,4,837 supported common listings,4,550 valid inputs,226 joint Beta/ADV gates,1 channel/low-support watch candidate (AMBA),0 early reversals. Six known positive preferences pass market gates but fail structural gates; potential excessive screening needs blind human review, not six-ticker tuning. Twenty unseen anonymous tripanels generated privately; developer rendering/browser QA is not user judgment. Formal human shape-QA labels0.
