@@ -5,7 +5,7 @@
 > 决策日期：2026-10-09  
 > 状态：**SHARED INFRASTRUCTURE — D1/D2 ENGINEERING PASS; D3 DATA/UI READY; HUMAN TRIAL PAUSED**。2026-10-09 已完成真实本地工程验收；模型与收益验证尚未开始。
 > **取代的当前主线**：人类审美优先的 [Quant + Vision v1](QUANT_VISION_FUSION_RESEARCH_PLAN.md)，以及完全移除人工主观标签的 [Outcome-Supervised v2](PRICE_STRUCTURE_OUTCOME_LEARNING_PLAN.md)。保留两者为历史研究决策和可复用设计，不抹掉证据。  
-> **关键实施资产**：PR [#7](https://github.com/zhoushuming073-cell/stock-radar/pull/7) 的 Quant-guided Human Labeling v1 在本地报告中通过 674 项测试，仍是未合并 Draft；不能把 PR 分支上的成果写成 main 既有能力。研究基建 Research Infrastructure v1 仍然 FROZEN、Shape READY、General PIT Tier 1。
+> **关键实施资产**：v3 真实本地工程已通过 PR [#9](https://github.com/zhoushuming073-cell/stock-radar/pull/9) 合并到 main；PR #7 只保留为历史 Draft / 源码来源。研究基建 Research Infrastructure v1 仍然 FROZEN、Shape READY、General PIT Tier 1。
 
 ## 0. 核心研究问题与新决定
 
