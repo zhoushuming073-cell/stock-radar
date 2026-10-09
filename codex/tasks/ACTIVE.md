@@ -1,6 +1,29 @@
 # Active Codex task
 
-**Status: Q2 v1.2 engineering implemented; blind human QA and normal API reload pending. Independent Draft; do not merge.**
+**Status: independent Q2 v1.2 Cloud source package ready; actual Cloud NOT_RUN pending human free-web-IDE launch. Independent Draft; do not merge.**
+
+## New direct user authorization — Q2 v1.2 exploratory Cloud
+
+The user explicitly requested multi-year Q2 QC Cloud exploratory backtesting,
+corrected the version to1.2, chose the free web-IDE route, then requested the agent
+click Backtest in project37482228. This supersedes the earlier no-Cloud restriction
+**only for this separate Q2 v1.2 experiment**. Frozen Q1 closure remains blocked;
+no historical outcome tuning, paid resource, data export workaround, training,
+broker execution or main merge is authorized.
+
+Branch `feature/q2-v12-qc-exploratory`, based on Draft15 commit a6efa441.
+Fixed source-generated v1.2,2021–2025,USD1m,Top10,10-session hold and existing
+fees/slippage. Scope is QC-native exploratory, not local SIP certification or
+Fresh/OOS efficacy. [Run guide](../../docs/Q2_V12_QC_EXPLORATORY.md).
+Initial editor bindings timed out; user-requested reopening restored DOM access.
+Actual current main.py is StockRadarDataValidation, not Q2 v1.2. QC Terms3.3(b)(x)
+restrict browser automation; use human free-IDE upload/click, not hidden requests.
+No remote upload/build/run performed.838 tests pass with real Native fixtures;
+12 real local symbols/2,616 bars give exact source parity;5,207 protected files
+unchanged. Git fetch also failed network connection;
+cached main remains2db3f5c. Report local tests separately from actual Cloud results.
+
+## Preserved v1.2 implementation status
 
 ## Latest authorized work — Q2 v1.2, 2026-10-09
 
