@@ -336,6 +336,13 @@ def make_handler(allowed_origins: set[str]):
                 elif target.path == "/api/symbol":
                     symbol = parse_qs(target.query).get("symbol", [""])[0].upper()
                     payload = symbol_data(symbol)
+                elif target.path == '/api/research/daily':
+                    from radar.research.daily import load_latest
+                    query = parse_qs(target.query)
+                    payload = load_latest(ROOT, query.get('method', ['all'])[0], int(query.get('top', ['20'])[0]))
+                elif target.path == '/api/research/daily/status':
+                    from radar.research.daily_job import status
+                    payload = status()
                 elif target.path == "/api/lab/strategies":
                     payload = lab_strategies()
                 elif target.path == "/api/lab/parameter-schema":
@@ -450,7 +457,7 @@ def make_handler(allowed_origins: set[str]):
             target = urlsplit(self.path).path
             if target not in {"/api/data/sync", "/api/lab/import", "/api/lab/run", "/api/lab/timeline", "/api/lab/cancel",
                               "/api/lab/uninstall", "/api/lab/run/rename", "/api/lab/run/archive", "/api/lab/run/restore",
-                              "/api/lab/experiment", "/api/lab/scanner/run", "/api/lab/export"}:
+                              "/api/lab/experiment", "/api/lab/scanner/run", "/api/lab/export", '/api/research/daily/run'}:
                 self._json(HTTPStatus.NOT_FOUND, {"error": "not found"})
                 return
             try:
@@ -459,7 +466,12 @@ def make_handler(allowed_origins: set[str]):
                 if not 0 < length <= maximum:
                     raise ValueError("invalid request size")
                 body = self.rfile.read(length)
-                if target == "/api/data/sync":
+                if target == '/api/research/daily/run':
+                    if self.headers.get('Content-Type', '').split(';', 1)[0] != 'application/json' or json.loads(body) != {}:
+                        raise ValueError('Daily Scanner takes an empty JSON object')
+                    from radar.research.daily_job import start
+                    payload = start(ROOT)
+                elif target == "/api/data/sync":
                     if self.headers.get("Content-Type", "").split(";", 1)[0] != "application/json":
                         raise ValueError("request must be JSON")
                     if not isinstance(json.loads(body), dict):

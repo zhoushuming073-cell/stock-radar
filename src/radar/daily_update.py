@@ -6,6 +6,7 @@ import argparse
 import json
 import os
 import sys
+import subprocess
 import tempfile
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -63,6 +64,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Update local US daily bars and validation")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--if-due", action="store_true", help="skip a successfully completed target date")
+    parser.add_argument('--skip-watchlist', action='store_true', help='skip independent Q1/Q2 watchlist after market update')
     args = parser.parse_args(argv)
     now = datetime.now(timezone.utc)
     end = target_date(now)
@@ -92,6 +94,21 @@ def main(argv: list[str] | None = None) -> int:
         validation = run_validation(settings, provider, end=date.fromisoformat(end))
         status["validation"] = validation
         status["state"] = "succeeded" if not sync["failed_symbols"] and validation["errors"] == 0 else "attention"
+        if status['state'] == 'succeeded' and not args.skip_watchlist:
+            # Selection cannot change the market-update return code or frozen research DB.
+            scanner_status = ROOT / 'data/research/daily-quant/status.json'
+            scanner_status.parent.mkdir(parents=True, exist_ok=True)
+            try:
+                with (scanner_status.parent / 'worker.log').open('w', encoding='utf-8') as log:
+                    scan = subprocess.run([sys.executable, str(ROOT / 'scripts/scan_quant_daily.py')],
+                        cwd=ROOT, stdout=log, stderr=subprocess.STDOUT, timeout=3600,
+                        creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0))
+                scanner = {'state': 'succeeded' if scan.returncode == 0 else 'failed', 'returncode': scan.returncode}
+            except Exception as error:
+                scanner = {'state': 'failed', 'error': str(error)}
+            scanner['finished_at'] = datetime.now(timezone.utc).isoformat()
+            scanner_status.write_text(json.dumps(scanner), encoding='utf-8')
+            status['watchlist'] = scanner
         return 0 if status["state"] == "succeeded" else 2
     except Exception as error:
         status["state"] = "failed"

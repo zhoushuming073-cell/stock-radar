@@ -36,6 +36,7 @@
     </header>
     <div id="notice" class="notice" hidden role="status"></div>
     <section id="scanner" class="page active">
+      <section class="card section-card" id="daily-quant"><div class="card-head"><h3>Latest-session Quant watchlist</h3><a href="./index.html">Market data / update</a></div><div class="toolbar"><button data-daily-method="all" type="button" class="secondary active">Q1 / Q2 / Overlap</button><button data-daily-method="q1" type="button" class="secondary">Q1</button><button data-daily-method="q2" type="button" class="secondary">Q2</button><label>Display<select data-daily-top aria-label="Daily watchlist count"><option>10</option><option selected>20</option><option>50</option><option>100</option></select></label><button data-daily-run class="primary" type="button">Run Daily Scanner</button><button data-daily-refresh class="secondary" type="button">Refresh watchlist</button></div><p data-daily-status class="helper" role="status">Loading watchlist…</p><div data-daily-table class="table-wrap"></div><details><summary>Watchlist provenance and exclusions</summary><pre data-daily-audit></pre></details></section>
       <div class="page-heading"><h2>Research · Scanner</h2><p>Filter, score, and rank each trading day. The local engine adds future labels afterward; no positions are opened.</p></div>
       <div class="toolbar scanner-toolbar">
         <label>Strategy<select id="scanner-strategy"></select></label>
@@ -87,4 +88,5 @@
   </main>
   <dialog id="rename-run-dialog" class="run-dialog"><form method="dialog" id="rename-run-form"><h3>Rename run</h3><p class="helper">This changes the display name only. Saved run results and settings remain intact.</p><label for="rename-run-name">Display name</label><input id="rename-run-name" name="name" maxlength="80" required autocomplete="off"><div class="dialog-actions"><button type="button" id="cancel-rename-run" class="text-button">Cancel</button><button type="submit" class="primary">Save name</button></div></form></dialog>
 </body>
+<script src="./daily-quant.js"></script>
 </html>

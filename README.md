@@ -41,6 +41,12 @@
 
 ## Overview
 
+### Q1/Q2 implementation candidate · 2026-10-09
+
+Latest-session Quant watchlists are available in the existing local Scanner page on [implementation PR #13](https://github.com/zhoushuming073-cell/stock-radar/pull/13): independent Q1 fuzzy-shape-v1, hardened Q2 parallel-channel-v1.1 and overlap, with persistent snapshots and silent daily updates. [Daily guide](docs/DAILY_QUANT_SCANNER.md), [method contract](docs/Q1_Q2_QUANT_RESEARCH.md), [Native execution](docs/Q1_Q2_LEAN_METHODOLOGY.md).
+
+**Release is pending local execution gates.** Source engineering, Native fixtures and the real Daily UI pass; bounded historical portfolio runs may be blocked by frozen execution data and must not be substituted with easier candidates. QC Cloud may run only after all mandatory local gates pass. These are exploratory vendor-price proxies, not formal raw PIT, full-split validation, Fresh OOS or a proven edge. [Actual acceptance](reports/acceptance/q1-q2-quant-infrastructure-backtest-2026-10-09.md), [machine evidence](reports/evidence/q1-q2-quant-infrastructure-backtest-2026-10-09.json), [Cloud boundary](docs/Q1_Q2_QC_CLOUD.md). No Vision/Fusion training was performed; the human trial remains paused.
+
 **Current local database status · 2026-10-08:** Research Infrastructure v1 is **FROZEN**, Shape Research is READY, General PIT is Tier 1 (deep/audit). Broad database expansion is CLOSED; maintenance and local strategy/visual research continue. Supported safe candles: 5,407,961; technical readiness: 83.8733% of observed common member-days. Fresh decision lookback is corrected; formal frozen-strategy QC validation remains NOT_RUN. [Infrastructure and default API](docs/RESEARCH_INFRASTRUCTURE_V1.md), [47-answer finalization](reports/acceptance/research-infrastructure-v1-finalization-2026-10-08.md).
 
 **Current stage · 2026-10-07:** research infrastructure and initial local LEAN

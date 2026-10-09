@@ -2,6 +2,12 @@
 
 **Status: ACTIVE — close Q1 execution dependencies, re-run frozen local LEAN, then QC Cloud**
 
+## Actual execution checkpoint — 2026-10-09
+
+**PARTIAL / BLOCKED_LOCAL_EXECUTION** on Draft PR[#13](https://github.com/zhoushuming073-cell/stock-radar/pull/13). Q1 parity, hardened Q2, actual Daily CLI/API/browser workflow, full756-test Native-inclusive regression and real Q2 Train/Validation Native runs completed. Q1 Train/Validation are blocked by three frozen execution dependencies (missing forward prices or unsafe price/identity); no substitutions or weaker gates. QC Cloud NOT_RUN; main not merged; Draft10 not closed. [Acceptance](../../reports/acceptance/q1-q2-quant-infrastructure-backtest-2026-10-09.md), [current ledger](../../reports/journey-2026-09-30-0651-📌当前总账.md).
+
+Continue only within this work order to resolve those trustworthy execution inputs and repeat the unchanged local study. Do not infer permission for training, Q3/date/weight optimization, data-gate relaxation, frozen database mutation or Cloud jobs before mandatory local PASS.
+
 Current work order:
 [2026-10-09 Q1 execution closure + QC Cloud follow-up](2026-10-09-q1-execution-closure-qc-cloud.md)
 
@@ -40,3 +46,7 @@ Not authorized:
 Codex start instruction:
 
 > Synchronize stock-radar main, read AGENTS.md, the Research Master Guide, canonical ledger and codex/tasks/ACTIVE.md. Then continue Draft PR #13 from its actual checkpoint. Resolve only the Q1 trusted execution dependencies under the unchanged frozen study, re-run local LEAN, and touch QC Cloud only after every mandatory local gate passes. Report actual evidence only.
+
+## Execution closure outcome — 2026-10-09
+
+**BLOCKED_TRUST_ACCEPTANCE** stop condition reached: acquired evidence does not establish accepted dated identity/event/homogeneous price supplements. Original Q1 preflights remain2 Train /1 Validation failures;0/3 dependencies accepted. 778 tests pass with Native opt-in,5,207 protected files unchanged, Q2 integrity and complete Daily recomputation/browser regression PASS. Cloud NOT_RUN; PR13 Draft/unmerged. See acceptance §8. New user-authorized Q2 v1.2 development must remain separate from the frozen PR13 experiment.

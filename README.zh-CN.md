@@ -41,6 +41,12 @@
 
 ## 项目简介
 
+### Q1/Q2 本地实现候选 · 2026-10-09
+
+[实现 PR #13](https://github.com/zhoushuming073-cell/stock-radar/pull/13) 已在原 Scanner 页面接入最新交易日 Q1/Q2/交集观察池、持久化快照及行情更新后的静默扫描。Q1 保持 fuzzy-shape-v1 分数完全一致；Q2 对 Draft #10 做结构修正而非直接合并。[日常操作](docs/DAILY_QUANT_SCANNER.md)、[共同研究合同](docs/Q1_Q2_QUANT_RESEARCH.md)、[本地 LEAN 方法](docs/Q1_Q2_LEAN_METHODOLOGY.md)。
+
+**发布仍等待真实本地执行门禁。** 工程测试、Native LEAN 样例与真实网页已通过；历史组合若被冻结库的执行数据阻断，不会替换候选或降低门禁来生成收益。全部必要本地门禁通过后才可运行 QC Cloud。这是有明确局限的短区间 Shape Research 行情代理实验，不能称为正式 raw PIT、全时段验收、Fresh OOS 或已证明的交易优势。[本轮实际验收](reports/acceptance/q1-q2-quant-infrastructure-backtest-2026-10-09.md)、[机器证据](reports/evidence/q1-q2-quant-infrastructure-backtest-2026-10-09.json)、[云端边界](docs/Q1_Q2_QC_CLOUD.md)。没有进行 Vision/Fusion 训练，原人工试标仍暂停。
+
 **本地数据库最终状态 · 2026-10-08：** Research Infrastructure v1 已冻结，Shape Research READY，General PIT Tier 1 作为深度/审计层。主动全市场扩建 CLOSED，维护 ACTIVE，可恢复 Strategy 2 形态/因子研究与视觉训练准备。默认安全 K 线 5,407,961 条，技术 ready 为已观测普通股交易日的 83.8733%；Fresh 决策回看已修正，正式冻结策略 QC 验证仍为 NOT_RUN。[基础设施与统一入口](docs/RESEARCH_INFRASTRUCTURE_V1.md)、[47 项收口报告](reports/acceptance/research-infrastructure-v1-finalization-2026-10-08.md)。
 
 **当前阶段 · 2026-10-07：** 研究基础设施和本地 LEAN 接入已验收；新增开放历史快照 PIT 重建、独立证券身份边界特征库和按日 Scanner 接入。历史身份、普通股分类及退市行情覆盖仍不完整，PIT LEAN 执行继续拒绝。
