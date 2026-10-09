@@ -1,3 +1,5 @@
+> **2026-10-09 当前方向：** 本文属于 P0/P1/早期纯视觉的历史研究方案。最新唯一 ACTIVE 路线是 [Quant + Vision 双阶段 SVG/盲态人工 + 结果监督 v3](QUANT_VISION_DUAL_STAGE_RESEARCH_PLAN.md)；历史 P0/P1 验收保留，不暗示 v3 已实施。
+
 # Stock Radar — 纯视觉深度学习策略研究计划书
 
 > **2026-10-08 路线迁移：** 本文件保留为纯视觉研究的历史基线与 P0/P1 基建合同。人工实际试标后，随机盲图“审美偏好”不再作为当前主训练路线；现行主线已迁移到 [Quant + Vision Fusion Research Plan v1](QUANT_VISION_FUSION_RESEARCH_PLAN.md)：**Quant 高召回候选 → Human 标签 → Vision 学习 → Quant+Vision+Human 过渡 → Quant+Vision 自动化**。旧 P0/P1 基建继续复用，历史验收不撤销。
