@@ -1,5 +1,4 @@
-> **历史文档 / SUPERSEDED as active direction（2026-10-09）**：最新用户确认的研究主线为 [Quant + Vision 双阶段监督与结果研究 v3](QUANT_VISION_DUAL_STAGE_RESEARCH_PLAN.md)。本文件完整保留原 v2 的未来收益目标、模型基准与参考文献，供复用与追溯；不再单方面排除人工监督，也不再是 Codex 当前工作令。新 v3 将 Blind H、Review H 和客观 Y 分离，左区仅过去 SVG/数值、右区在保存盲态决定后才揭示。
-
+> **MASTER-GUIDE STATUS · 2026-10-09:** Historical methodology reference. The current authoritative taxonomy is [Research Master Guide](RESEARCH_MASTER_GUIDE.md), which has three top-level families: Quant-only, Quant + Vision, Vision-only. This v2 file contributes objective-Y, sequence-control and fair-comparison methodology; it is not a competing master roadmap.
 # Stock Radar — Price Structure & Outcome-Supervised Learning Research Plan v2
 
 > **研究路线决定日期：2026-10-09；状态：SUPERSEDED AS MAIN ROADMAP — ORIGINAL V2 DESIGN / NOT IMPLEMENTED。**
