@@ -70,6 +70,12 @@ Stock Radar 是一个个人美股量化研究系统，围绕一个非常具体�
 
 代码、网页、配置模板和纳入版本管理的文档以 GitHub `main` 为准。开始修改前先从 `origin/main` 获取并快进同步，检查本地差异，再把验收通过的修改推回 `main`。本地网站直接使用本仓库的 `site/dist`。`data/` 中的行情库、运行历史、凭据和生成的导出文件只保留在本机，代码同步时不覆盖它们。
 
+### 双阶段 Quant + Vision 标注 · 2026-10-09
+
+真实本地工程已就绪：300 张历史左图+30 隐藏重复，先保存 Observe/Entry，服务器再揭示独立右图；H_blind、H_review、Y_future 严格分离。728 项测试通过并实际执行 Native LEAN；10 不同图 Chrome 交互通过。打开 **http://localhost:8123/quant-review/v3/human/**，使用已有 Label Studio 登录。先由本人做10–20 张并反馈；模型训练未开始，不宣称 alpha。
+
+[Guide / 操作说明](docs/QUANT_VISION_DUAL_STAGE_LABELING_V3.md) · [Actual acceptance](reports/acceptance/quant-vision-dual-stage-v3-acceptance-2026-10-09.md).
+
 ## 界面预览
 
 以下截图于 2026 年 9 月 30 日从本地网站截取，早于 LEAN-only 入口切换；展示保留的布局，
@@ -105,7 +111,7 @@ Stock Radar 是一个个人美股量化研究系统，围绕一个非常具体�
 
 采用 SVG/矢量图是为了人工放大不失真。机器仍需规范化 OHLCV 时序、仅左区 SVG 的确定性栅格化或另外设计的矢量几何编码；不能误认为普通 CNN 可直接把 SVG XML 当作图像。人工盲态标签、事后复盘标签及未来客观收益不可混作同一训练真值。
 
-当前批准的是研究方案和新一轮 Codex 实施任务，**双区 SVG、训练与未来收益验证尚未完成**。[PR #7](https://github.com/zhoushuming073-cell/stock-radar/pull/7) 是未合并的 Quant-guided 标注工程草案，应先核对代码与当前 main 的冲突后再复用。旧随机盲图 P0/P1 验收仍作为真实历史证据保留。
+**双区 SVG、独立标签合同与真实本机浏览器工程验收已通过**；首批本人10–20 张反馈待完成，模型训练与 alpha 验证未开始。[PR #7](https://github.com/zhoushuming073-cell/stock-radar/pull/7) 的 `33c3923` 源码已选择性移植并与最新 main 协调，原 PR 保留 Draft。旧随机盲图 P0/P1 图片、已有标签和历史验收均保留。
 
 **以后交给 Codex 的任务书统一放在 GitHub 的 [codex/tasks/ACTIVE.md](codex/tasks/ACTIVE.md) 中；** [AGENTS.md](AGENTS.md) 会提示 Codex 读取当前总账、最新研究计划和任务书。[操作指南](codex/README.md)。提交任务书不代表已经执行。
 

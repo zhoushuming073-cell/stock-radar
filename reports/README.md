@@ -33,7 +33,7 @@ The `reports/` root is intentionally kept small: this index plus the canonical l
 
 ## Current Quant + Vision dual-stage v3 · 2026-10-09
 
-[Approved research design](../docs/QUANT_VISION_DUAL_STAGE_RESEARCH_PLAN.md) and [Codex ACTIVE work order](../codex/tasks/ACTIVE.md). Left past-only SVG + H_blind first; right future SVG + H_review only after saved blind decision; independent objective Y_future. This is **design approved, dual-stage engineering not yet implemented**. Earlier v1 and outcome-only v2 are preserved for history; Draft PR #7 remains unmerged and needs safe reconciliation. The canonical ledger alone owns current completion status.
+[Approved research design](../docs/QUANT_VISION_DUAL_STAGE_RESEARCH_PLAN.md) and [Codex ACTIVE work order](../codex/tasks/ACTIVE.md). Left past-only SVG + H_blind first; right future SVG + H_review only after saved blind decision; independent objective Y_future. Current **D1/D2 engineering PASS; D3 data/UI READY FOR HUMAN TRIAL**, owner feedback pending. [Actual local acceptance](acceptance/quant-vision-dual-stage-v3-acceptance-2026-10-09.md):728 Native-inclusive pytest,300 windows replayed,10 real charts/11 before-after pixel pairs,2,623 protected hashes unchanged. [Labeling guide](../docs/QUANT_VISION_DUAL_STAGE_LABELING_V3.md). Earlier v1 and outcome-only v2 are preserved for history; Draft PR #7 was selectively ported, and the original PR remains unmerged. The canonical ledger alone owns current completion status.
 
 ## Research Infrastructure v1 · 2026-10-08
 

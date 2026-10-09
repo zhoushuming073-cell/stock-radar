@@ -6,7 +6,7 @@
 
 Scope: reconcile the still-draft PR #7 implementation with latest main, build past-only SVG and server-gated future SVG, split H_blind/H_review, compute separate bounded Y_future, run actual local tests and browser acceptance, and stop before any model training or formal OOS/QC.
 
-Codex should synchronize and inspect the repository, read `AGENTS.md` and the linked full work order, then execute it. This file is a task pointer, **not** proof that the implementation has run or succeeded.
+Codex should synchronize and inspect the repository, read `AGENTS.md` and the linked full work order, then execute it. This file is a task pointer. Implementation evidence now exists: [2026-10-09 real acceptance](../../reports/acceptance/quant-vision-dual-stage-v3-acceptance-2026-10-09.md). D1/D2 engineering PASS; D3 data/UI READY, first 10–20 genuine user labels/feedback PENDING. Current stop condition remains: no model training, Test/Fresh or formal QC without new authorization.
 
 User can start the next Codex chat with:
 

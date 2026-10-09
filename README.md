@@ -51,6 +51,12 @@ and the installed formal PIT portfolio remains blocked by specific Run dependenc
 and [development report](reports/current/development-status-2026-10-06.md)
 document what works, what is limited and what remains open.
 
+### Dual-stage Quant + Vision labeling · 2026-10-09
+
+Engineering ready on real local data:300 unique past-only SVG charts+30 repeats, separate server-gated future SVG, immutable H_blind and independent H_review/Y_future.728 tests pass including Native LEAN;10 real charts passed Chrome acceptance. Open **http://localhost:8123/quant-review/v3/human/** using the existing Label Studio login. First user10–20 cases/feedback pending; no model training or alpha claimed.
+
+[Guide / 操作说明](docs/QUANT_VISION_DUAL_STAGE_LABELING_V3.md) · [Actual acceptance](reports/acceptance/quant-vision-dual-stage-v3-acceptance-2026-10-09.md).
+
 ### Local LEAN backtests
 
 New web backtests use the independently installed, free open-source
@@ -105,7 +111,7 @@ Historical eligible market / PIT-aware Quant fuzzy candidates + controls
 
 The separator is the **T close information cutoff**, not a claim of trading at that close. The earliest hypothetical entry is **T+1 open**. The left chart's appearance and scale must never depend on right-side outcomes, and future data must not be sent to the browser before blind submission. SVG is a lossless vector display for human inspection, while machine inputs remain independently validated numeric OHLCV / left-only deterministic visual encodings.
 
-The current work is the **v3 dual-stage visualization + label contract + browser validation**, not model training. PR [#7](https://github.com/zhoushuming073-cell/stock-radar/pull/7) contains a separate tested Draft implementation of Quant-guided candidate labeling, **not yet merged**, and is a possible source to reconcile, not evidence that the v3 flow is already shipped. The original blind PNG Pilot remains valid historical P0/P1 infrastructure evidence.
+The **v3 dual-stage visualization + label contract + browser validation** now passes real local engineering acceptance. The owner should try 10–20 genuine cases next; no model training has run. Source from Draft PR [#7](https://github.com/zhoushuming073-cell/stock-radar/pull/7) was selectively ported at `33c3923` into the reconciled v3 implementation; #7 itself remains unmerged. The original blind PNG Pilot and its labels remain historical P0/P1 evidence.
 
 Codex's task instructions now live in [codex/tasks/ACTIVE.md](codex/tasks/ACTIVE.md) and [codex/README.md](codex/README.md); the root [AGENTS.md](AGENTS.md) points to the current task. Outcome labels, human blind decisions, retrospective reviews and research validation remain distinct; Quant-only / sequence / visual / Fusion must be compared on the same causal universe, splits and costs.
 
