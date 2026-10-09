@@ -1,3 +1,5 @@
+> **Current master-program status · 2026-10-09:** This UI remains accepted and reusable shared infrastructure, but the owner has paused the human-label trial. Do not continue labeling by default and do not start model training. See [Research Master Guide](RESEARCH_MASTER_GUIDE.md) and [Codex ACTIVE](../codex/tasks/ACTIVE.md).
+
 # Quant + Vision 双阶段标注 v3：本机操作说明
 
 ## 当前状态
