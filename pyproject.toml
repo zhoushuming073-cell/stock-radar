@@ -39,7 +39,7 @@ vision = [
     "pandera[pandas]>=0.34,<0.35",
     "Pillow>=10",
 ]
-vision-labeling = ["label-studio>=1.23,<2"]
+vision-labeling = ["label-studio>=1.23,<2", "waitress>=3,<4", "whitenoise>=6,<7"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

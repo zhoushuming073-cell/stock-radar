@@ -33,3 +33,7 @@ scripts/inventory_database_assets.py text eol=lf
 scripts/verify_research_infrastructure.py text eol=lf
 scripts/record_database_cleanup_results.py text eol=lf
 tests/test_research_infrastructure.py text eol=lf
+# Quant-guided bundle provenance uses physical source/config hashes.
+config/quant_vision_labeling_v1.yaml text eol=lf
+src/radar/vision/quant_*.py text eol=lf
+labeling/quant-guided-v1.xml text eol=lf

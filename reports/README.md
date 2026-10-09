@@ -4,6 +4,8 @@
 
 ## Current source of truth
 
+- **Current labeling acceptance:** [2026-10-09 · Quant-guided Human Labeling READY](acceptance/quant-vision-human-labeling-v1-acceptance-2026-10-09.md), [safe aggregate evidence](evidence/quant-guided-v1-acceptance-evidence-2026-10-09.json), [operations](../docs/QUANT_GUIDED_LABELING_V1.md). New real human annotations0; Vision M1 not started.
+
 - **📌 当前总账:** [Canonical status / active backlog](journey-2026-09-30-0651-📌当前总账.md) — the only active project ledger.
 - **Current research-direction snapshot:** [2026-10-08 · Quant + Vision Fusion](current/quant-vision-fusion-direction-2026-10-08.md).
 - **Earlier development-stage snapshot:** [2026-10-06 · Research + local LEAN integration](current/development-status-2026-10-06.md) — retained for engineering history.

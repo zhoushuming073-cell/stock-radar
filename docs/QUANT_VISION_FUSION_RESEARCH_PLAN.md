@@ -8,6 +8,12 @@
 
 ## 1. 当前研究目标
 
+### 2026-10-09 实施状态
+
+**QVF-1 + Human labeling infrastructure READY**：冻结历史库44个session切片、290,909个安全窗口，300唯一图+30隐藏重复，五种隐藏来源层90/70/50/60/30；独立Observe / Entry / Confidence / Reasons项目可使用。正式项目7有330任务0新标签，用户先做50任务；已有旧Pair5标签完整保留。完整674项测试通过，Native LEAN实际执行；300PNG和600canonical windows重放一致，真实浏览器10独图+重复/保存/修改/跳过/刷新及smoke回收PASS。
+
+具体合同/初值/概率语义见 [实施说明](QUANT_GUIDED_LABELING_V1.md)，[真实验收](../reports/acceptance/quant-vision-human-labeling-v1-acceptance-2026-10-09.md)。候选分布有选择偏差；295个样本跨root issuer身份仍未核验、历史missingness明确保留。高召回尚未由人工真值测量。VisionM1 / Fusion / Y /正式视觉QC仍NOT_RUN，必须等待本人真实标签与下一阶段授权。
+
 当前目标不是让视觉模型直接在全市场“凭感觉”找股票，也不是让人工去猜下一交易日涨跌。
 
 目标是建立一个逐步放权的研究流程：

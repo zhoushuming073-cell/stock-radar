@@ -32,7 +32,7 @@ if (-not (Test-Path $Python)) {
 }
 
 if ($Install -or -not (Test-Path $LabelStudio)) {
-    & $Python -m pip install "label-studio>=1.23,<2"
+    & $Python -m pip install "label-studio>=1.23,<2" "waitress>=3,<4" "whitenoise>=6,<7"
     if ($LASTEXITCODE -ne 0) { throw 'Label Studio installation failed.' }
 }
 
@@ -58,5 +58,5 @@ Write-Host "Single config: labeling/vision-single.xml"
 Write-Host "Pair config:   labeling/vision-pair.xml"
 Write-Host "Pilot tasks:   data/vision-research/pilot-v1/"
 Write-Host "Local login is stored in data/vision-research/label-studio/local-login.json"
-& $LabelStudio start --host "http://localhost:$Port" --internal-host 127.0.0.1 --port $Port --no-browser
+& $Python (Join-Path $PSScriptRoot 'start_label_studio_wsgi.py') start --host "http://localhost:$Port" --internal-host 127.0.0.1 --port $Port --no-browser
 if ($LASTEXITCODE -ne 0) { throw 'Label Studio exited with an error.' }

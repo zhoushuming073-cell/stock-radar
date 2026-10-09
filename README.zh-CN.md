@@ -41,6 +41,8 @@
 
 ## 项目简介
 
+**Quant-guided Human Labeling READY · 2026-10-09：** 从290,909个因果Train/Validation历史窗口生成300张唯一图+30隐藏重复。Observe与Entry独立，打开[本机正式人工项目](http://localhost:8123/projects/7/data)，第一批先做50任务。完整回归 **674通过、零失败/跳过，实际执行Native LEAN fixtures**；没有训练模型或读取未来收益。[操作及合同](docs/QUANT_GUIDED_LABELING_V1.md)、[真实验收与覆盖限制](reports/acceptance/quant-vision-human-labeling-v1-acceptance-2026-10-09.md)。图片、身份、标签和凭据只留本机。
+
 **本地数据库最终状态 · 2026-10-08：** Research Infrastructure v1 已冻结，Shape Research READY，General PIT Tier 1 作为深度/审计层。主动全市场扩建 CLOSED，维护 ACTIVE，可恢复 Strategy 2 形态/因子研究与视觉训练准备。默认安全 K 线 5,407,961 条，技术 ready 为已观测普通股交易日的 83.8733%；Fresh 决策回看已修正，正式冻结策略 QC 验证仍为 NOT_RUN。[基础设施与统一入口](docs/RESEARCH_INFRASTRUCTURE_V1.md)、[47 项收口报告](reports/acceptance/research-infrastructure-v1-finalization-2026-10-08.md)。
 
 **当前阶段 · 2026-10-07：** 研究基础设施和本地 LEAN 接入已验收；新增开放历史快照 PIT 重建、独立证券身份边界特征库和按日 Scanner 接入。历史身份、普通股分类及退市行情覆盖仍不完整，PIT LEAN 执行继续拒绝。
@@ -177,7 +179,7 @@ run，并在现有网页显示曲线、持仓、交易和引擎审计。上述�
 - [x] Scanner Research 候选快照、前瞻标签与候选质量指标
 - [x] 建立盲态 K 线 snapshot / Label Studio 基础设施（P0/P1）
 - [x] 随机盲图 50 Single +25 Pair 不再作为主训练任务；保留为工程证据
-- [ ] 构建 Quant-guided Human Labeling v1（宽候选池 + Observe / Entry Readiness）
+- [x] 构建 Quant-guided Human Labeling v1（真实宽候选池 + 独立Observe / Entry Readiness；本人标注待开始）
 - [ ] 用真实人工标签训练首版 image-only Vision M1
 - [ ] 进入 Quant + Vision + Human 主动学习过渡，并最终冻结 Quant + Vision
 - [x] 前瞻结果 Precision/Lift、可配置 Top-K、cooldown 事件 Precision/Lift、MFE/MAE 与 primary outcome 环境分层

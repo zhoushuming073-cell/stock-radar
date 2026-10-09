@@ -41,6 +41,8 @@
 
 ## Overview
 
+**Quant-guided Human Labeling READY · 2026-10-09:** 300 unique historical charts +30 hidden repeats from 290,909 causal Train/Validation windows. Observe and Entry Readiness are independent. Start with 50 tasks in the [local human project](http://localhost:8123/projects/7/data). Full regression: **674 passed, zero failures/skips, real Native LEAN fixtures executed**. No model training or future outcomes. [Instructions and contracts](docs/QUANT_GUIDED_LABELING_V1.md), [actual acceptance and limitations](reports/acceptance/quant-vision-human-labeling-v1-acceptance-2026-10-09.md). Images, identities, labels and credentials stay local.
+
 **Current local database status · 2026-10-08:** Research Infrastructure v1 is **FROZEN**, Shape Research is READY, General PIT is Tier 1 (deep/audit). Broad database expansion is CLOSED; maintenance and local strategy/visual research continue. Supported safe candles: 5,407,961; technical readiness: 83.8733% of observed common member-days. Fresh decision lookback is corrected; formal frozen-strategy QC validation remains NOT_RUN. [Infrastructure and default API](docs/RESEARCH_INFRASTRUCTURE_V1.md), [47-answer finalization](reports/acceptance/research-infrastructure-v1-finalization-2026-10-08.md).
 
 **Current stage · 2026-10-07:** research infrastructure and initial local LEAN
@@ -181,7 +183,7 @@ remain local.
 - [x] Canonical run configuration, Scanner outcome labels, event counts, filter funnel, and local PIT import boundary
 - [x] Blind chart snapshots and local Label Studio infrastructure (P0/P1 acceptance)
 - [x] Retire random-blind 50 Single +25 Pair as the primary labeling task after human trial; keep it as infrastructure evidence
-- [ ] Build Quant-guided Human Labeling v1 (wide candidate generator + Observe / Entry-Readiness labels)
+- [x] Quant-guided Human Labeling v1 READY (real candidates + independent Observe / Entry; actual human labeling next)
 - [ ] Train initial image-only Vision M1 from Quant-guided human labels
 - [ ] Quant + Vision + Human active-learning transition, then freeze Quant + Vision
 - [x] Forward-outcome Precision/Lift at configurable Top-K, cooldown event Precision/Lift, MFE/MAE and primary-outcome regime breakdowns
