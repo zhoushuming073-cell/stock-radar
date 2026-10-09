@@ -330,4 +330,4 @@ $("period").addEventListener("change", drawChart);
 $("issue-type").addEventListener("change", () => { visibleIssueLimit = 200; renderIssues(); });
 $("issue-scope").addEventListener("change", () => { visibleIssueLimit = 200; renderIssues(); });
 $("show-more").addEventListener("click", () => { visibleIssueLimit += 200; renderIssues(); });
-refresh();
+refresh().then(() => { const requested = new URLSearchParams(location.search).get('symbol'); if(requested) selectSymbol(requested); });

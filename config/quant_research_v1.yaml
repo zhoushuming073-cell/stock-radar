@@ -1,0 +1,25 @@
+# Bounded engineering/research pilot, chosen before any Q1/Q2 portfolio returns.
+# Same frozen universe and contiguous exchange sessions; not full split coverage.
+version: quant-research-v1
+methods: [q1, q2]
+intervals:
+  train: ["2023-01-03", "2023-02-15", "2023-03-02"]
+  validation: ["2024-09-30", "2024-11-12", "2024-11-26"]
+historical_test: NOT_RUN
+fresh_oos: NOT_RUN
+top_k: 10
+maximum_positions: 10
+initial_capital: 1000000.0
+holding_sessions: 10
+entry: next_tradable_open
+exit: fixed_horizon_close
+sizing: equal_remaining_cash_slots
+slippage_bps: 10
+fees: config/research.yaml
+fee_status: illustrative_unconfirmed
+cooldown: no_overlapping_same_security
+q1_primary_window: 126
+q1_qualified: accepted_high_score_and_below_extension_conflict
+q2_qualified: stable_multiple_windows_and_confirmed_low_rally_pullback_and_stabilizing_near_lower
+candidate_scores_comparable_across_methods: false
+execution_domain: bounded_shape_research_only_not_formal_pit

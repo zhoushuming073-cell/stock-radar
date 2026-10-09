@@ -51,6 +51,11 @@ class StockRadarExecution(QCAlgorithm):
         self._sr_sessions = self._sr_bundle['sessions']
         self._sr_day_index = {day: idx for idx, day in enumerate(self._sr_sessions)}
         self._sr_execution = self._sr_bundle['execution']
+        self._sr_fixed_close = self._sr_execution['exit'].get('timing') == 'fixed_horizon_close'
+        if self._sr_fixed_close and (self._sr_execution['exit']['take_profit'] is not None or
+                                    self._sr_execution['exit']['stop_loss'] is not None or
+                                    not self._sr_execution['exit']['max_holding_sessions']):
+            raise ValueError('Fixed horizon close requires a positive horizon and no TP/SL')
         if self._sr_execution['execution_timing'] != 'next_open':
             raise ValueError('LEAN only supports causal next-session Open execution')
         self._sr_signals = {}
@@ -199,7 +204,7 @@ class StockRadarExecution(QCAlgorithm):
         order = self.transactions.get_order_by_id(event.order_id)
         row = {'order_id': event.order_id, 'symbol': ticker, 'order_time': order.time.isoformat(),
                'fill_time': stamp, 'date': day, 'direction': 'buy' if quantity > 0 else 'sell',
-               'quantity': abs(quantity), 'reference_price': context['reference'], 'fill_price': price,
+               'quantity': abs(quantity), 'reference_price': (context['reference'] if context['reference'] is not None else price / (1-self._sr_slip)), 'fill_price': price,
                'fees': fee, 'status': 'filled', 'reason': context['reason']}
         self.append('fills.jsonl', row)
         self._sr_orders_today.append(row)
@@ -211,6 +216,8 @@ class StockRadarExecution(QCAlgorithm):
                                     'signal_date': signal['signal_date'], 'strategy_score': signal['strategy_score'],
                                     'entry_index': self._sr_day_index[day]}
         else:
+            if context['reference'] is None:
+                context['reference'] = row['reference_price']
             entry = self._sr_entries.pop(ticker)
             proceeds = abs(quantity) * price - fee + entry.get('corporate_cash', 0)
             pnl = proceeds - entry['entry_total']
@@ -256,6 +263,12 @@ class StockRadarExecution(QCAlgorithm):
                     raise ValueError(f'PIT held security has no Open: {day} {ticker}')
                 continue
             reference = float(bars[ticker].open)
+            if self._sr_fixed_close:
+                held = self._sr_day_index[day] - entry['entry_index'] + 1
+                if held >= self._sr_execution['exit']['max_holding_sessions']:
+                    self._sr_context[ticker] = {'reference': None, 'reason': 'fixed_horizon_close', 'signal': None}
+                    self.market_on_close_order(self._sr_symbols[ticker], -entry['quantity'], tag='fixed_horizon_close')
+                continue
             move = reference / entry.get('cost_basis_adjusted', entry['entry_total'] / entry['quantity']) - 1
             reason = self._sr_exits.get(ticker) or self.reason(move, gap=True)
             if reason:
@@ -283,7 +296,12 @@ class StockRadarExecution(QCAlgorithm):
         for signal, reference in eligible:
             if len(self._sr_entries) >= self._sr_bundle['max_positions']:
                 break
-            weight = signal['allocation_weight'] / total_weight if total_weight > 0 else 1 / len(eligible)
+            weight = (1 / max(1, self._sr_bundle['max_positions'] - len(self._sr_entries))
+                      if sizing.get('cash_allocation') == 'equal_remaining_slots' else
+                      signal['allocation_weight'] / total_weight if total_weight > 0 else 1 / len(eligible))
+            # Re-evaluate cash for equal remaining slots; no rebalancing old holdings.
+            if sizing.get('cash_allocation') == 'equal_remaining_slots':
+                available_cash = float(self.portfolio.cash)
             budget = min(available_cash * weight, open_equity * sizing['max_position_fraction'],
                          signal['avg_dollar_volume_20'] * self._sr_execution['liquidity']['max_adv_participation'])
             price = reference * (1 + self._sr_slip)
@@ -309,7 +327,7 @@ class StockRadarExecution(QCAlgorithm):
             holding = self.portfolio[self._sr_symbols[ticker]]
             move = last / entry.get('cost_basis_adjusted', entry['entry_total'] / entry['quantity']) - 1
             reason = self.reason(move, self._sr_day_index[day] - entry['entry_index'] + 1)
-            if reason:
+            if reason and not self._sr_fixed_close:
                 self._sr_exits[ticker] = reason
             positions.append({**{k: v for k, v in entry.items() if k != 'entry_index'},
                               'last_close': last, 'last_price': last, 'cost_basis': entry.get('cost_basis_adjusted', entry['entry_total'] / entry['quantity']),
