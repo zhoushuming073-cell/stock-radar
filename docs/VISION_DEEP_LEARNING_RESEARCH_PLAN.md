@@ -1,4 +1,4 @@
-> **2026-10-09 当前方向：** 本文属于 P0/P1/早期纯视觉的历史研究方案。最新唯一 ACTIVE 路线是 [Quant + Vision 双阶段 SVG/盲态人工 + 结果监督 v3](QUANT_VISION_DUAL_STAGE_RESEARCH_PLAN.md)；历史 P0/P1 验收保留，不暗示 v3 已实施。
+> **MASTER-GUIDE STATUS · 2026-10-09:** Historical pure-vision/P0-P1 design. Current research classification is [Research Master Guide](RESEARCH_MASTER_GUIDE.md). Reusable rendering, labeling and leakage-control ideas remain valid; this file is not an active standalone roadmap.
 
 # Stock Radar — 纯视觉深度学习策略研究计划书
 
