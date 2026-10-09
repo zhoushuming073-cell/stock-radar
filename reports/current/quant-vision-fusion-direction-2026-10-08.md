@@ -1,3 +1,5 @@
+> **HISTORICAL DECISION / SUPERSEDED 2026-10-09：** 此 2026-10-08 决策记录完整保留供追溯。当前正式方向改为 [双阶段 SVG / H_blind + H_review / Y_future v3](../../docs/QUANT_VISION_DUAL_STAGE_RESEARCH_PLAN.md)，详见 [最新方向记录](quant-vision-dual-stage-direction-2026-10-09.md)。下方的 ACTIVE 仅描述当时状态。
+
 # Quant + Vision Fusion — Current Research Direction · 2026-10-08
 
 状态：**ACTIVE**

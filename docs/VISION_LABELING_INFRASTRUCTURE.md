@@ -1,3 +1,5 @@
+> **2026-10-09 新当前方向：** 这份文档描述已经通过历史验收的旧 P0/P1 Label Studio/PNG 基建，**不代表** v3 双区 SVG、人工分步揭示或未来 Y 已实现。正式新目标见 [双阶段 Quant + Vision v3](QUANT_VISION_DUAL_STAGE_RESEARCH_PLAN.md) 和 [Codex 当前任务](../codex/tasks/ACTIVE.md)。旧人工项目只用于保留证据，不要重置、覆写或误当新主线。
+
 # Vision P0/P1：盲态人工标注基础设施
 
 > **当前用途更新 · 2026-10-08：** 这套 P0/P1 基建继续保留并复用，但“随机 250 图 / 125 Pair 的人工审美标注”已暂停，不再要求补完旧 50 Single +25 Pair。现行主线见 [Quant + Vision Fusion Research Plan v1](QUANT_VISION_FUSION_RESEARCH_PLAN.md)：下一批正式人工任务应由 Quant 高召回模糊筛选生成，并改用 Observe / Entry Readiness 标签。
