@@ -79,21 +79,21 @@ Quant 尚未获得人工真值，**高召回是设计目标，不是实测召回
 
 全部通过：图片加载、Observe 三种、Entry 四种、Confidence 三种、原因多选、Undo/Redo、Submit、自动下一张、Skip 持久化、Cancel skip 后返回提交、修改 Update、刷新恢复、重复 opaque task 命名。最终页面 JavaScript errors **0**、意外 HTTP errors **0**。保存、修改和导出都由真实 Label Studio API 完成；没有直接向数据库塞标签代替 UI。
 
-smoke-export JSON → 独立 `labels/smoke/labels.parquet` **11 行**；再次导入新增 revision **0**。human 项目全导出 → 严格回收 **0 行**，没有创建 human 真值。重复统计可运行；一组 smoke Observe/Entry 相同只证明管线，不是本人的一致性率。
+smoke-export JSON → 独立 `labels/smoke/labels.parquet` **11 行**；最终服务复测修改增加1个revision，再次导入新增 revision **0**。human 项目全导出 → 严格回收 **0 行**，没有创建 human 真值。重复统计可运行；最终一组机械smoke的Observe相同0/1、Entry相同1/1，只验证统计管线，不是本人的一致性率。
 
 公开只提供浏览器 receipt/hash/尺寸/操作计数。真实截图、浏览器 session、原 task 和标签 JSON 留在被忽略的本地 ready 目录，不上传 GitHub。
 
 本轮实际修复与重试也保留：
 
 1. 发现阶段二错误复用最小 stage1 hash，偏向窗口多的 issuer；修成独立 `stage2` hash，正式目录重新抽样/渲染。初始 Q 核心与冻结数据没有改变，扫描缓存先完整核验再复用。旧预发布目录和项目5/6保留。
-2. 原 Django 开发服务在 Windows 出现一次退出以及 export 的 SQLite closed-connection 500；改用单线程 Waitress。第一次 WSGI finder 没有服务 collected hashed jQuery，浏览器发现404，不能宣称通过；改用 WhiteNoise 的实际 STATIC_ROOT 后在新 smoke9 完整重验无错误。失败 smoke8 留存审计。恢复后已有保存标签与旧项目保持一致。
+2. 原 Django 开发服务在 Windows 出现一次退出以及 export 的 SQLite closed-connection 500；改用单线程 Waitress。第一次 WSGI finder 没有服务 collected hashed jQuery，浏览器发现404；改用 WhiteNoise 实际 STATIC_ROOT 后在新 smoke9 完整重验无错误。发布前连续检查仍出现closed-connection，证明单线程并不足够：最终设SQLite `CONN_MAX_AGE=None`、健康检查，避免每请求关闭连接。延迟响应finalizer是可能原因，未宣称已证明所有内部竞态。重启后20次无重试交替导出成功，再实际打开10独图、修改smoke/保存/刷新恢复，之后另20次无重试导出全部200；正式330任务仍0标签。失败smoke8留存审计，旧项目与文件不变。有限验收不是长期无人值守稳定性保证。
 3. 编辑模式侧栏曾遮住选项；保持原 Label Studio，调整为可折行两列/合理最小宽度，实际普通标注和已保存编辑都复查。PNG renderer 未改，不裁首尾。
 
 ## 5. 自动化与 Native LEAN
 
 全项目最终命令：`STOCK_RADAR_TEST_LEAN=1 .venv/Scripts/python.exe -m pytest -q --junitxml=data/vision-research/quant-regression-final.xml`。
 
-**674 passed / 0 failed / 0 errors / 0 skipped，86.872 秒（JUnit）**。新增 Quant/H 用例42项；历史基准632项不是本次免测证明。真实 Native LEAN 实际运行 golden nonempty/empty、cancel、PIT none/rename/split/reverse_split/cash、research-grade、decision-scoped reconciliation fixture；不是正式新策略 QC 或收益验证。
+**674 passed / 0 failed / 0 errors / 0 skipped，86.747 秒（最终JUnit；pytest命令报告87.84秒）**。新增 Quant/H 用例42项；历史基准632项不是本次免测证明。真实 Native LEAN 实际运行 golden nonempty/empty、cancel、PIT none/rename/split/reverse_split/cash、research-grade、decision-scoped reconciliation fixture；不是正式新策略 QC 或收益验证。
 
 测试覆盖未来后缀变动不改变 T 特征、T+1 不进入输入、vendor 常数缩放不改变 Q、raw split 和未来事件隔离、非法/重复窗口、严格 Train/Validation、unknown/unsafe 拒绝、错误 task/image/project/origin/version/choice、漏字段、重复任务、多 annotation、幂等修改、冲突/过期拒绝、单写者锁、原始 revision 不丢、独立随机域、固定 seed 重放与布局迁移不改 label contract。
 
@@ -118,6 +118,8 @@ warning：既有 `websockets.legacy` deprecation 一项；render 的字体 weigh
 其余 artifact/hash、因子分布、测试和浏览器汇总见 [机器证据](../evidence/quant-guided-v1-acceptance-evidence-2026-10-09.json)。源数据 read-only 前后 hash 不变；Strategy2 冻结参数、Research Infrastructure v1 语义与旧Pilot未修改。
 
 ## 7. 完成与下一阶段
+
+**发布状态：PR [#7](https://github.com/zhoushuming073-cell/stock-radar/pull/7) 为草稿，尚未合并。** 本轮从同步的main `6b6e6fa`开始；期间main新增`0d98a9c`，将主线改为[未来结果监督 v2](../../docs/PRICE_STRUCTURE_OUTCOME_LEARNING_PLAN.md)，与本轮明确的人类标注任务不同。实现与数据验收已完成；研究主线定位及文档冲突需由用户确认后再合并，不覆盖并发更新。本轮未开始任一种训练。
 
 已完成：真实 Quant/Q/X、五层样本与300PNG、独立人类项目、标签合同/回收、浏览器10独图、旧成果隔离、完整回归和真实Nativefixtures、公开安全汇总/说明书。
 

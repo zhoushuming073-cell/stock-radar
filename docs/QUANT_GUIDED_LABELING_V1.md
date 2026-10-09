@@ -23,7 +23,7 @@ Submit 保存并切到下一张；Undo/Redo 撤销/恢复未提交操作。Skip 
 powershell -ExecutionPolicy Bypass -File scripts/start_vision_label_studio.ps1
 ```
 
-Label Studio 使用独立 `.venv-label-studio`；已安装 Label Studio 1.23.2、Waitress3.0.2、WhiteNoise6.12.0。使用官方CLI初始化和原Django/Label Studio路由，单线程Waitress服务、WhiteNoise服务官方collected静态文件，规避本次SQLite连接异常和hashed资源404；不另建标注网站。缺少依赖时使用同一脚本的 `-Install`。登录信息只在 `data/vision-research/label-studio/local-login.json`，不得上传或复制进报告。
+Label Studio 使用独立 `.venv-label-studio`；已安装 Label Studio 1.23.2、Waitress3.0.2、WhiteNoise6.12.0。使用官方CLI初始化和原Django/Label Studio路由，单线程Waitress、持久SQLite连接及健康检查、WhiteNoise服务官方collected静态文件。单线程本身不足以消除本次closed-connection错误，最终连接生命周期修复后，两轮共40次无重试导出及10图浏览器保存/刷新检查通过；这不是长期无人值守稳定性保证。不另建标注网站。缺少依赖时使用同一脚本的 `-Install`。登录信息只在 `data/vision-research/label-studio/local-login.json`，不得上传或复制进报告。
 
 ## 本地文件和生成命令
 
