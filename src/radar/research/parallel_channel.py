@@ -183,7 +183,7 @@ def _fit(x: pd.DataFrame, tf: str, cfg: ChannelSettings) -> dict[str, Any]:
                 completed_pivot_highs=high_pivots)
 
 
-def _daily(x: pd.DataFrame, lower: float, upper: float) -> dict[str, Any]:
+def _daily(x: pd.DataFrame, lower: float, upper: float, cfg: ChannelSettings) -> dict[str, Any]:
     a = x.tail(20).reset_index(drop=True)
     lo = a.low.to_numpy(dtype=float)
     hi = a.high.to_numpy(dtype=float)
@@ -214,11 +214,11 @@ def _daily(x: pd.DataFrame, lower: float, upper: float) -> dict[str, Any]:
     green = int((cl[-3:] > op[-3:]).sum())
     higher_low = bool(lo[-3:].min() >= lo[-10:-3].min() * 0.99)
     stabilizing = bool((green >= 1 or last3[-1] > last3[0]) and higher_low)
-    below_floor = bool(last < lower - 0.08 * width)
+    below_floor = bool(last < lower - cfg.max_breach_fraction * width)
     urgent_down = bool(last < cl[-6] * 0.88 and cl[-1] < cl[-2] < cl[-3])
-    close_to_bottom = bool(-0.08 <= position <= 0.42)
+    close_to_bottom = bool(-cfg.max_breach_fraction <= position <= cfg.max_entry_position)
     cycle_score = float(best[0]) if best is not None else 0.0
-    distance_score = 20 * (1 - _ramp(max(0.0, position), 0.0, 0.42))
+    distance_score = 20 * (1 - _ramp(max(0.0, position), 0.0, cfg.max_entry_position))
     entry_score = float(np.clip(cycle_score + distance_score + (15 if stabilizing else 0) -
                                 (35 if urgent_down or below_floor else 0), 0, 100))
     stage = ("breakdown" if below_floor or urgent_down else
@@ -265,7 +265,7 @@ def analyze(frame: pd.DataFrame, asof: str | pd.Timestamp, cfg: ChannelSettings 
     if not usable:
         return {**base, "reason": "no_valid_channel", "channels": channels, "daily": None}
     best = usable[0]
-    daily = _daily(x, best["lower"], best["upper"])
+    daily = _daily(x, best["lower"], best["upper"], cfg)
     watch = daily["stage"] in ("near_lower_wait", "early_reversal")
     combined = round(best["quality"] * 0.75 + daily["entry_score"] * 0.25, 2)
     return {**base, "qualified": True, "watch": watch, "reason": daily["stage"],

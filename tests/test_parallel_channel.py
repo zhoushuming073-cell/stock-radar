@@ -98,3 +98,13 @@ def test_no_trading_decision_or_false_allegation_of_buying():
     if r["qualified"]:
         assert r["daily"]["stage"] in ("breakdown", "early_reversal", "near_lower_wait", "not_near_lower")
         assert 0 <= r["rank_score"] <= 100
+
+
+def test_entry_position_setting_changes_classification():
+    from radar.research.parallel_channel import _daily
+    x = fixture_daily()
+    low, up = 30., 55.
+    tight = _daily(x, low, up, ChannelSettings(max_entry_position=.01))
+    wide = _daily(x, low, up, ChannelSettings(max_entry_position=.90))
+    assert tight["stage"] == "not_near_lower"
+    assert wide["stage"] in ("near_lower_wait", "early_reversal")
