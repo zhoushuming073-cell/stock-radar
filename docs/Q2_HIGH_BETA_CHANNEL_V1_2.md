@@ -64,6 +64,12 @@ The sample is deliberately market-gated and partly boundary-enriched. It support
 
 ## Scope and release gates
 
+**Later direct user authorization:** a separate five-year QC-native exploratory
+study is now authorized with unchanged v1.2 thresholds. Its source package and
+free web-IDE workflow are in [Q2 Cloud guide](Q2_V12_QC_EXPLORATORY.md).
+Actual Cloud NOT_RUN pending human free-IDE upload/click under QC Terms. This does not release
+the parent Q1 experiment, replace human QA or establish Fresh/OOS alpha.
+
 Current broad pool contains other instruments; only supported unique common listings enter the market calculation. The classification directory can be up to7 calendar days old and requires exact normalized issuer description. It does not certify historical issuer continuity. Unsupported/unknown classifications are excluded, never silently promoted. This is not a complete historical or current common-stock census.
 
 No trusted sector dataset is installed; production sector counts are explicitly Unknown. Manual post-selection company-source annotation in the report must not be mistaken for a complete machine sector taxonomy. No dividend-total-return market beta is claimed.

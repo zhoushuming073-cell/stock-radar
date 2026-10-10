@@ -1,6 +1,47 @@
 # Active Codex task
 
-**Status: Q2 v1.2 engineering implemented; blind human QA and normal API reload pending. Independent Draft; do not merge.**
+**Status: Q2 v1.2 bounded local LEAN proxy executed; no trades; QC Cloud not completed. Independent Draft; do not merge.**
+
+## Latest direct user instruction — local Q2 v1.2 backtest
+
+The user explicitly stopped further QC Cloud attempts after the assistant's
+zlib/base64 plus `exec` packaging triggered QuantConnect Terms 2.6 and a
+temporary account suspension. Do not operate that Cloud account without a
+new direct user instruction. No valid Q2 Cloud result exists.
+
+The user then authorized a separate **uncertified Shape Research exploratory
+proxy** on the local Native LEAN installation. The original Q2 v1.2 selector
+parameters and ordinary historical certification refusal remain unchanged.
+Fixed Train/Validation windows produced zero complete channel structures,
+zero selected signals and zero trades; both Native cash-only runs completed.
+This does not evaluate v1.2 trading profitability. See
+[actual local report](../../reports/acceptance/q2-v1.2-local-proxy-2026-10-10.md).
+
+The Cloud preparation section below is a prior checkpoint, superseded by the
+account enforcement event and direct instruction to stop Cloud attempts.
+
+## New direct user authorization — Q2 v1.2 exploratory Cloud
+
+The user explicitly requested multi-year Q2 QC Cloud exploratory backtesting,
+corrected the version to1.2, chose the free web-IDE route, then requested the agent
+click Backtest in project37482228. This supersedes the earlier no-Cloud restriction
+**only for this separate Q2 v1.2 experiment**. Frozen Q1 closure remains blocked;
+no historical outcome tuning, paid resource, data export workaround, training,
+broker execution or main merge is authorized.
+
+Branch `feature/q2-v12-qc-exploratory`, based on Draft15 commit a6efa441.
+Fixed source-generated v1.2,2021–2025,USD1m,Top10,10-session hold and existing
+fees/slippage. Scope is QC-native exploratory, not local SIP certification or
+Fresh/OOS efficacy. [Run guide](../../docs/Q2_V12_QC_EXPLORATORY.md).
+Initial editor bindings timed out; user-requested reopening restored DOM access.
+Actual current main.py is StockRadarDataValidation, not Q2 v1.2. QC Terms3.3(b)(x)
+restrict browser automation; use human free-IDE upload/click, not hidden requests.
+No remote upload/build/run performed.838 tests pass with real Native fixtures;
+12 real local symbols/2,616 bars give exact source parity;5,207 protected files
+unchanged. Initial fetch failed; retry succeeded and local/remote main remain
+2db3f5c. Source branch pushed; no merge. Report local tests separately from Cloud.
+
+## Preserved v1.2 implementation status
 
 ## Latest authorized work — Q2 v1.2, 2026-10-09
 

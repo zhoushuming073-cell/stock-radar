@@ -1,0 +1,13 @@
+experiment: q2-v1.2-qc-native-exploratory-r1
+selector_version: high-beta-liquid-channel-v1.2
+start: '2021-01-04'
+end: '2025-12-31'
+feature_sessions: 430
+top_k: 10
+execution_config: config/quant_research_v1.yaml
+source_domain: QC native historical common-stock universe, RAW bars and causal splits
+scope: exploratory; previously inspected historical dates; not Fresh/OOS alpha
+cost_status: frozen illustrative September2026 fees applied uniformly; not historical broker tariff
+human_cloud_control: free web IDE upload and Backtest click; no paid API
+raw_platform_exports: prohibited
+parameter_optimization: false

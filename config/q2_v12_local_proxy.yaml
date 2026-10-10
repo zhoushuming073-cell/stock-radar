@@ -1,0 +1,16 @@
+version: q2-v1.2-local-shape-proxy-r1
+selector_version: high-beta-liquid-channel-v1.2
+data_domain: frozen_shape_research_v1_legacy_alpaca_sip_split
+scope: exploratory_proxy_only_not_certified_historical_execution
+# These bounded windows were chosen for available 430-session warmup and remain
+# fixed before scanning signals or reading returns. Test/Fresh are excluded.
+intervals:
+  train: ['2023-07-03', '2023-08-11', '2023-08-25']
+  validation: ['2025-01-02', '2025-02-13', '2025-02-27']
+execution_config: config/quant_research_v1.yaml
+limitations:
+  - Historical membership is reconstructed, not a certified full-market census.
+  - Legacy Alpaca split-adjusted price and volume provenance does not certify historical absolute notional or all corporate actions.
+  - LEAN receives daily Open/Close proxies, not actual minute or auction data.
+  - Fees are illustrative and dividends or terminal entitlements are not complete.
+  - Results are exploratory and must not be called Fresh or formal alpha evidence.

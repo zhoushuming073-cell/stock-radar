@@ -1,0 +1,109 @@
+{
+  "status": "SOURCE_PACKAGE_READY_CLOUD_NOT_RUN",
+  "selector_version": "high-beta-liquid-channel-v1.2",
+  "source_receipt": {
+    "selector_version": "high-beta-liquid-channel-v1.2",
+    "domain": "qc-native-exploratory-r1",
+    "sources": {
+      "src/radar/research/high_beta/channel.py": "cd8514da822c95ae8a98d801cf4fb3df40c15684ce8302af08183aa5715df051",
+      "src/radar/research/parallel_channel.py": "bab823fa22facbe51fb802b0eb9ad1cda9093d89fe0f1834dc3ef50871ebb440",
+      "src/radar/features/elasticity.py": "8bc68630ab2894a4f1d3202addf94206e07514892ea39119c413f049a28fc158",
+      "src/radar/research/candidates.py": "52e0da2f47b8dd41a8c37dbdfa9f1499a473687b47f0e982b8d9283bd419d067",
+      "src/radar/research/sessions.py": "56bb99639cc3beea25406a0186a8787b39cc3ad491a777de3378810997d67aef",
+      "src/radar/lean/algorithm_fixed_horizon.py": "a74e73f9680396a5391e5c1639d11b9cbc09056b9f43992436064ede9a977cb3",
+      "config/high_beta_channel_v1_2.yaml": "ec09f43280c5592f0623e6c34f4f387877550fab1cc6f39181dc04c4b96d32f7",
+      "config/quant_research_v1.yaml": "aff29446faefe4bbbb6d1d59dde589949b6699e80e537d7264ddd508bc071abd",
+      "config/research.yaml": "ea87411ac10a5b448211651df5e26a58e38166cf5fe5656037e255b6dc52e292",
+      "config/q2_v12_cloud_exploratory.yaml": "44b73f61f4c5677a6a45d4f5428a7d073070dde28dbfddec745383b718e570ec",
+      "src/radar/research/high_beta/cloud/data.py": "886effddc7aefce43da79bc48cadd5ca579384ed65a33b035e903f3db6d1495c",
+      "src/radar/research/high_beta/cloud/fill.py": "e2feae7e915e6c9e0a81ab2512acef397decb106b85156212138fd358023924c",
+      "src/radar/research/high_beta/cloud/main.py": "78df51eeb6e3e61cbfbe733c2fa6add315259da3064c1028ef460649f8d4a71c",
+      "src/radar/research/high_beta/cloud/build.py": "8137aea05b2b4b57e5ca7ac1444e5b003ce8e7736818f6f333b99922f60f4829"
+    },
+    "selector_sha256": "e9c23edaae3ac0eb754e555cac3c515002881ab1acdc642bbe0ad2bfe61fd16a"
+  },
+  "upload_files": {
+    "sr_q2.py": {
+      "bytes": 16769,
+      "sha256": "b2304e8d51c5dd52c9476ea0bea3cd579fff500b1d6381b19c1a3752e330212b"
+    },
+    "sr_channel.py": {
+      "bytes": 8042,
+      "sha256": "b6825c8de9d14c6b4e0f87161381e0a1d1731237d6f782f32e64a831618f1504"
+    },
+    "sr_math.py": {
+      "bytes": 923,
+      "sha256": "46e0a53e6316656ea3078c3ea73434ae00eeededef25125c3485d38c8f956cb8"
+    },
+    "sr_contracts.py": {
+      "bytes": 244,
+      "sha256": "d707f866fe4a47ef2fe2aa4168ba89b5835bc958166d922f45fbd826ed25b247"
+    },
+    "sr_execution.py": {
+      "bytes": 21686,
+      "sha256": "9a8a946075206b2c8792f3f7835f30bbc5d1ba2afec28e5f66a72fd25f5a6406"
+    },
+    "sr_config.py": {
+      "bytes": 4412,
+      "sha256": "4b24b4efc05bf5b7cbf063b4b7c4d576638010d1ffd28e1f5685884a895c0cf6"
+    },
+    "sr_sessions.py": {
+      "bytes": 20690,
+      "sha256": "70fcb40f78e0db936c92c026d77f221e53507b099aaee46da6a07d6ea01a85b2"
+    },
+    "main.py": {
+      "bytes": 10611,
+      "sha256": "78df51eeb6e3e61cbfbe733c2fa6add315259da3064c1028ef460649f8d4a71c"
+    },
+    "sr_data.py": {
+      "bytes": 6271,
+      "sha256": "886effddc7aefce43da79bc48cadd5ca579384ed65a33b035e903f3db6d1495c"
+    },
+    "sr_fill.py": {
+      "bytes": 1447,
+      "sha256": "e2feae7e915e6c9e0a81ab2512acef397decb106b85156212138fd358023924c"
+    }
+  },
+  "pytest": {
+    "tests": "838",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "123.579",
+    "timestamp": "2026-10-10T00:22:17.176744+08:00"
+  },
+  "native_fixtures_executed": true,
+  "local_parity": {
+    "status": "PASS_LOCAL_SOURCE_PARITY_NOT_CLOUD",
+    "real_local_fixture_symbols": 12,
+    "real_local_fixture_bars": 2616,
+    "fixture_market_qualified": 10,
+    "input_hash": "85557701ab49751e6833ea616be6c49e8cb819526059ce8a170e6a8c84965411",
+    "source_receipt": "e9c23edaae3ac0eb754e555cac3c515002881ab1acdc642bbe0ad2bfe61fd16a",
+    "frozen_parent_receipt_sha256": "7a175ee6fe9b5815207e5d1a964213cf005a11b4cbd4b16e27856f3f46a96efd",
+    "parent_freeze_verified": true,
+    "qc_data_or_cloud_runtime_verified": false,
+    "limitation": "Local vendor OHLCV used only to compare same math; not QC data parity or Cloud execution."
+  },
+  "protected": {
+    "protected_files": 5207,
+    "changed_count": 0,
+    "changes": []
+  },
+  "cloud": {
+    "project_id": null,
+    "backtest_id": null,
+    "returns": null,
+    "observed_existing_project": 37482228,
+    "current_class": "StockRadarDataValidation",
+    "reopened_page_verified": true,
+    "source_uploaded": false,
+    "clicked_backtest": false,
+    "boundary": "Human free web IDE control; QC Terms 3.3(b)(x)"
+  },
+  "git": {
+    "fetch": "RETRY_SUCCESS",
+    "cached_main": "2db3f5cbdd50bf1efcbb406240f4d55765c162c7",
+    "main_merged": false
+  }
+}
