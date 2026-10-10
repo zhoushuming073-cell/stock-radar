@@ -1,0 +1,36 @@
+method: high-beta-liquid-channel-v1.3
+data_backend: research_infrastructure_v1
+market:
+  beta_min: 2.0
+  adv20_min: 50000000.0
+  preferred_beta: 2.5
+  preferred_adv20: 100000000.0
+channel:
+  weekly_windows: [12, 16, 20, 26]
+  monthly_windows: [9, 12, 15, 18]
+  width_min_log: 0.12
+  width_max_log: 1.0
+  min_full_swings: 1.0
+  min_clarity: 55.0
+  min_drift_126: -0.15
+  max_drift_126: 0.25
+  min_inside: 0.70
+  max_parallel_error: 0.60
+  touch_fraction: 0.18
+  min_touches_each: 2
+  max_position: 0.55
+  preferred_position: 0.35
+  max_breakdown_fraction: 0.08
+readiness:
+  minimum_confirmations: 1
+  max_one_day_rise: 0.08
+  max_five_day_rise: 0.15
+  severe_five_day_drop: -0.12
+  severe_three_day_red_body_mean: 0.04
+selection:
+  max_candidates: 10
+max_new: 10
+exit:
+  take_profit: null
+  stop_loss: null
+  max_holding_sessions: 10

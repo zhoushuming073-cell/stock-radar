@@ -1,0 +1,16 @@
+name: Q2 Relaxed Channel v1.3
+id: q2_relaxed_channel_v1_3
+version: 1.3.0
+interface_version: 1
+author:
+  type: ai
+  name: Codex
+description: Causal high-beta liquid channel candidate selector; portfolio execution remains host-owned.
+required_features:
+  - beta_spy_126
+  - avg_dollar_volume_20
+  - market_input_safe
+tags:
+  - q2
+  - channel
+  - research-infrastructure-v1

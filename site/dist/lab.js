@@ -1,13 +1,13 @@
 const API = "http://127.0.0.1:8765";
 const $ = id => document.getElementById(id);
-const state = {strategies:[], runs:[], scannerRuns:[], selected:new Set(), closed:new Set(), focused:null, parameterFor:null, active:null, config:{}, schemas:{}, evaluation:{}, execution:{}, compare:new Set(), showDeletedRuns:false, exportSelected:new Set(), exportInitialized:false, exportResult:null, exportName:"Three strategy v3 study", loading:false};
+const state = {strategies:[], runs:[], scannerRuns:[], selected:new Set(), closed:new Set(), focused:null, parameterFor:null, active:null, initialRunChosen:false, config:{}, schemas:{}, evaluation:{}, execution:{}, compare:new Set(), showDeletedRuns:false, exportSelected:new Set(), exportInitialized:false, exportResult:null, exportName:"Three strategy v3 study", loading:false};
 const money = n => n!==null&&n!==undefined&&Number.isFinite(Number(n)) ? new Intl.NumberFormat("en-US",{maximumFractionDigits:0}).format(Number(n)) : "—";
 const pct = n => n!==null&&n!==undefined&&Number.isFinite(Number(n)) ? `${(Number(n)*100).toFixed(2)}%` : "—";
 const day = s => s ? String(s).slice(0,10) : "—";
 const statusLabel = {queued:"Queued",running:"Running",cancel_requested:"Stopping",completed:"Completed",failed:"Failed",cancelled:"Stopped"};
 const human = {train:"Training",validation:"Validation",test:"Historical Test",fresh_oos:"Fresh OOS"};
 const pitReadiness = run => run.result?.run_metadata?.run_pit_readiness || run.metadata?.run_pit_readiness;
-const runEnvironment = run => run.metadata?.quality_tier === "research-grade" ? `Research-Grade PIT · ${pitReadiness(run)?.preflight_ready ? (run.status==="completed" ? "EXECUTED" : "READY") : "BLOCKED"}` : run.metadata?.universe_mode === "point_in_time" ? `PIT ${run.metadata?.universe_provenance?.source_version?.slice(0,12)||"—"} · ${pitReadiness(run)?.preflight_ready ? (run.status==="completed" ? "EXECUTED" : "READY") : "BLOCKED"}` : "Current Snapshot";
+const runEnvironment = run => run.metadata?.universe_mode === "research_infrastructure_v1" ? `Research Infrastructure v1 · ${run.metadata?.research_backend?.semantic_hash?.slice(0,12)||"—"}` : run.metadata?.quality_tier === "research-grade" ? `Research-Grade PIT · ${pitReadiness(run)?.preflight_ready ? (run.status==="completed" ? "EXECUTED" : "READY") : "BLOCKED"}` : run.metadata?.universe_mode === "point_in_time" ? `PIT ${run.metadata?.universe_provenance?.source_version?.slice(0,12)||"—"} · ${pitReadiness(run)?.preflight_ready ? (run.status==="completed" ? "EXECUTED" : "READY") : "BLOCKED"}` : "Current Snapshot";
 const engineLabel = run => run.metadata?.engine==="lean"?"LEAN":"Legacy (archived)";
 const runName = run => run.display_name||run.metadata?.strategy_name||run.metadata?.strategy_id||"Strategy";
 const visibleRuns = () => state.runs.filter(run=>!run.archived_at);
@@ -39,9 +39,27 @@ function focusRun(id){
   window.timelineController?.detach();
   const run=visibleRuns().find(r=>runRef(r)===id);
   if(run){if(state.active!==run.run_id){state.active=run.run_id;drawActive();}}
-  else notice(`'${strategyByRef(id)?.name||id}' has no run history.`);
+  else clearActiveRun(id);
+}
+function clearActiveRun(id){
+  state.active=null;state.drawnSignature=null;
+  $("run-title").textContent=strategyByRef(id)?.name||"Select a run";
+  $("run-subtitle").textContent="No run history for this strategy. Review its parameters, then start a backtest.";
+  $("run-status").textContent="Not run";$("run-status").className="status";
+  $("cancel-run").hidden=true;$("run-error").textContent="";$("run-error").hidden=true;
+  $("clone-run").hidden=true;
+  for(const metric of ["m-equity","m-return","m-dd","m-cash","m-positions","m-trades"])$(metric).textContent="—";
+  $("chart-caption").textContent="By trading session";
+  if(window.Plotly){Plotly.purge($("equity-chart"));Plotly.purge($("drawdown-chart"))}
+  $("position-count").textContent="0";$("positions-body").innerHTML="<tr><td colspan='4'>No open positions</td></tr>";
+  $("trade-count").textContent="0 recent";$("trades-body").innerHTML="<tr><td colspan='5'>No trades yet</td></tr>";
+  $("event-count").textContent="0 recent";$("events").textContent="No activity yet";
+  $("run-meta").innerHTML="";$("run-audit").textContent="";
 }
 function drawStrategies(){
+  const focusedStrategy=strategyByRef(state.focused);
+  if(focusedStrategy?.data_backend==="research_infrastructure_v1"){$("universe-mode").value="research_infrastructure_v1";drawUniverseModeStatus()}
+  else if(focusedStrategy&&$("universe-mode").value==="research_infrastructure_v1"){$("universe-mode").value="current_snapshot";drawUniverseModeStatus()}
   const visible=state.strategies.filter(s=>!state.closed.has(strategyRef(s)));
   $("strategies").innerHTML=visible.map(s=>`<button class="strategy-chip ${state.selected.has(strategyRef(s))?"selected":""} ${state.focused===strategyRef(s)?"focused":""}" data-strategy="${safe(strategyRef(s))}" title="${safe(s.description)}">${safe(s.name)} <small>v${safe(s.version)}</small><span class="chip-close" data-close="${safe(strategyRef(s))}" title="Close tab">×</span></button>`).join("")||(state.strategies.length?"<span class='muted'>All tabs are closed. Reopen one from Strategies.</span>":"<span class='muted'>No strategies yet. Import a ZIP file.</span>");
   document.querySelectorAll("[data-close]").forEach(x=>x.onclick=event=>{
@@ -239,6 +257,9 @@ async function drawActive(){
   $("run-title").textContent=runName(run);
   $("run-subtitle").textContent=`${engineLabel(run)} · ${human[run.metadata?.split]||run.metadata?.split||""} · ${day(run.metadata?.start_date)} to ${day(run.metadata?.evaluation_end)} · ${run.run_id.slice(0,8)}`;
   $("run-status").textContent=statusLabel[run.status]||run.status;$("run-status").className=`status ${run.status}`;
+  $("clone-run").hidden=false;
+  $("run-error").textContent=run.status==="failed"&&run.error_text?`This run did not execute: ${run.error_text}`:"";
+  $("run-error").hidden=!(run.status==="failed"&&run.error_text);
   $("cancel-run").hidden=!(["queued","running"].includes(run.status));
   const p=run.progress||{},m=run.metrics||{},initial=m.initial_capital||run.metadata?.execution_policy?.initial_capital||0;
   const equity=m.final_equity??p.equity,cash=p.cash,ret=m.total_return??(equity&&initial?equity/initial-1:null);
@@ -258,7 +279,6 @@ async function drawActive(){
   const fields={"Engine":engineLabel(run),"PIT version":run.metadata?.universe_provenance?.source_version||"—","Run PIT readiness":run.metadata?.universe_mode!=="point_in_time"?"not applicable":pitReadiness(run)?.preflight_ready?"READY":"BLOCKED","PIT dependency hash":run.metadata?.pit_dependency?.dependency_sha256||"—","LEAN commit":run.metadata?.engine_identity?.commit?.slice(0,12)||"—","Signal snapshot":run.metadata?.signal_snapshot?.slice(0,12)||"—","Strategy version":run.metadata?.strategy_version,"Period":human[run.metadata?.split]||run.metadata?.split,"Universe":run.metadata?.universe_mode==="point_in_time"?"Point-in-Time":"Current Snapshot · survivorship bias risk present","Provider":run.metadata?.universe_provenance?.provider||"—","Source Scanner":run.metadata?.source_scanner_run_id||"—","Fill timing":timing==="next_open"?(run.metadata?.engine==="lean"?"Close signal → next-session Open proxy (09:31 ET)":"Close exit signal → next-session Open"):"Legacy: close exit signal → same-session Close; entries next Open","Take profit":exitText(exits.take_profit,true),"Stop loss":exitText(exits.stop_loss,true),"Max holding":exitText(exits.max_holding_sessions),"Start":day(run.metadata?.start_date),"End":day(run.metadata?.evaluation_end),"Slippage":`${run.metadata?.slippage_bps??"—"} bps`,"Fee profile":run.metadata?.fee_profile,"Resolved hash":run.metadata?.resolved_config_hash?.slice(0,12),"Data fingerprint":run.metadata?.data_snapshot?.slice(0,12),"Strategy fingerprint":run.metadata?.strategy_code_hash?.slice(0,12)};
   $("run-meta").innerHTML=Object.entries(fields).map(([k,v])=>`<dt>${safe(k)}</dt><dd title="${safe(v)}">${safe(v)}</dd>`).join("");
   $("run-audit").textContent=JSON.stringify({metadata:run.metadata,result:run.result},null,2);
-  if(run.error_text)notice(`Run failed: ${run.error_text}`);
   const signature=`${run.run_id}:${run.status}:${run.updated_at||""}`;
   if(["completed","failed","cancelled"].includes(run.status)&&state.drawnSignature===signature)return;
   try{
@@ -332,7 +352,7 @@ async function refresh(){
     if(state.focused&&!strategies.some(item=>strategyRef(item)===state.focused))state.focused=null;
     if(!state.selected.size&&strategies.length)state.selected.add(strategyRef(strategies[0]));
     if(!state.focused&&strategies.length)state.focused=[...state.selected][0];
-    if(!state.active&&visibleRuns().length){const nativeRuns=visibleRuns().filter(r=>r.metadata?.engine==="lean");const initialRun=nativeRuns.find(r=>runRef(r)===state.focused)||nativeRuns[0]||visibleRuns()[0];state.active=initialRun.run_id;const ref=runRef(initialRun);if(strategyByRef(ref)){state.focused=ref;state.selected=new Set([ref]);}}
+    if(!state.initialRunChosen){state.initialRunChosen=true;if(visibleRuns().length){const nativeRuns=visibleRuns().filter(r=>r.metadata?.engine==="lean");const initialRun=nativeRuns.find(r=>runRef(r)===state.focused)||nativeRuns[0]||visibleRuns()[0];state.active=initialRun.run_id;const ref=runRef(initialRun);if(strategyByRef(ref)){state.focused=ref;state.selected=new Set([ref]);}}}
     $("connection").innerHTML="<span class='green-dot'></span> Connected locally";
     drawStrategies();drawParameters();drawScannerSources();drawExperimentControls();drawRuns();if(state.active&&!window.timelineController?.active)await drawActive();await drawCompare();await drawExperiments();notice("");
   }catch(error){$("connection").textContent="Local service disconnected";notice(`Cannot connect to the local Strategy Lab: ${error.message}. Start the local Stock Radar service.`)}
@@ -473,7 +493,9 @@ $("start-experiment").onclick=async()=>{
   try{const result=await post("/api/lab/experiment",payload);notice(`Created ${result.count} runs. They will be queued in the background.`);await refresh();document.getElementById("experiments").scrollIntoView({behavior:"smooth"})}catch(error){notice(`Could not create experiment: ${error.message}`)}
 };
 function drawUniverseModeStatus(){
-  $("universe-status").textContent=$("universe-mode").value==="point_in_time"?
+  $("universe-status").textContent=$("universe-mode").value==="research_infrastructure_v1"?
+    "New runs: dated Research Infrastructure v1 membership · survivor bias reduced, not eliminated":
+    $("universe-mode").value==="point_in_time"?
     "New runs: Point-in-Time universe":
     "New runs: Current Snapshot · Survivorship Bias Risk: Present";
 }

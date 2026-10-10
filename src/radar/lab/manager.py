@@ -25,6 +25,7 @@ from radar.lab.parameters import (engine_legacy_fields, execution_defaults_from_
                                   validate_execution)
 from radar.lab.scanner import LABEL_VERSION, evaluation_settings, validate_frozen_horizon
 from radar.lab.readiness import local_readiness
+from radar.lab.research_backend import MODE as RESEARCH_MODE, FEATURES as RESEARCH_FEATURES, backend_receipt
 from radar.lab.terminal import TERMINAL_LABEL_VERSION, load_terminal_events, TERMINAL_POLICY
 from radar.lab.store import RunStore
 from radar.lab.universe import load_universe
@@ -74,7 +75,7 @@ class RunManager:
         self._discover_plugins()
 
     def _discover_plugins(self) -> None:
-        available = available_features(self.database)
+        available = available_features(self.database) | RESEARCH_FEATURES
         folders = list((self.root / "strategies").glob("*/manifest.yaml"))
         folders += list(self.plugin_dir.glob("*/manifest.yaml"))
         for manifest_path in sorted(folders):
@@ -106,9 +107,13 @@ class RunManager:
         return context
 
     def _validate_batch_context(self, context: dict, metadata: list[dict]) -> None:
-        if any(row["data_snapshot"] != context["snapshot"] or
-               row["source_watermark"] != context["watermark"] for row in metadata):
+        if any(row.get("universe_mode") != RESEARCH_MODE and (
+               row["data_snapshot"] != context["snapshot"] or
+               row["source_watermark"] != context["watermark"]) for row in metadata):
             raise ValueError("research snapshot changed during batch preparation")
+        for row in metadata:
+            if row.get("universe_mode") == RESEARCH_MODE and row.get("research_backend") != backend_receipt(self.root):
+                raise ValueError("Research Infrastructure v1 changed during batch preparation")
         current = self._capture_batch_context()
         for row in metadata:
             if row.get('pit_dependency'):
@@ -142,6 +147,10 @@ class RunManager:
             if not self.registry.is_enabled(registration.manifest.id,
                                             registration.manifest.version):
                 raise ValueError(f"strategy disabled: {strategy_id}")
+            if registration.config.get("data_backend") == RESEARCH_MODE:
+                raise ValueError("Research Infrastructure v1 plugin uses the LEAN Backtest path; Scanner adapter is not installed")
+            if universe_mode == RESEARCH_MODE:
+                raise ValueError("Scanner cannot use the Research Infrastructure v1 Backtest-only backend")
             config = _plain(config_override if config_override is not None else registration.config)
             if not isinstance(config, dict):
                 raise ValueError("strategy configuration must be a mapping")
@@ -244,7 +253,7 @@ class RunManager:
     def import_zip(self, path: Path) -> StrategyRegistration:
         with self._lock:
             return install_strategy_zip(path, self.plugin_dir,
-                                        available_features(self.database),
+                                        available_features(self.database) | RESEARCH_FEATURES,
                                         registry=self.registry, run_tests=True)
 
     def uninstall_strategy(self, strategy_id: str) -> int:
@@ -391,7 +400,9 @@ class RunManager:
             watermark = _batch_context["watermark"] if _batch_context else source_watermark(self.database)
             commit = self._git_revision()
             prepared: list[dict[str, Any]] = []
+            requested_universe_mode = universe_mode
             for reference in strategy_ids:
+                universe_mode = requested_universe_mode
                 if "@" in reference:
                     strategy_id, version = reference.rsplit("@", 1)
                     registration = self.registry.get(strategy_id, version)
@@ -401,11 +412,34 @@ class RunManager:
                 if not self.registry.is_enabled(registration.manifest.id,
                                                 registration.manifest.version):
                     raise ValueError(f"strategy disabled: {reference}")
+                declared_backend = registration.config.get("data_backend")
+                if declared_backend not in (None, RESEARCH_MODE):
+                    raise ValueError(f"unknown plugin data backend: {declared_backend}")
+                research_plugin = declared_backend == RESEARCH_MODE
+                if research_plugin:
+                    if engine != "lean":
+                        raise ValueError("Research Infrastructure v1 plugin requires local LEAN")
+                    if split == "fresh_oos":
+                        raise ValueError("Q2 v1.3 historical backend excludes Fresh")
+                    if source_scanner_run_id:
+                        raise ValueError("Q2 v1.3 cannot reuse Scanner signals from another backend")
+                    universe_mode = RESEARCH_MODE
+                    receipt = backend_receipt(self.root)
+                    snapshot = receipt["core_database_sha256"]
+                    watermark = receipt["semantic_hash"]
+                else:
+                    if universe_mode == RESEARCH_MODE:
+                        raise ValueError("Research Infrastructure v1 requires a matching plugin backend declaration")
+                    receipt = None
+                    snapshot = _batch_context["snapshot"] if _batch_context else self._data_snapshot()
+                    watermark = _batch_context["watermark"] if _batch_context else source_watermark(self.database)
                 configs = configs_by_strategy or {}
                 config = _plain(configs.get(reference, configs.get(strategy_id,
                                                                     registration.config)))
                 if not isinstance(config, dict):
                     raise ValueError("strategy configuration must be a mapping")
+                if config.get("data_backend") != declared_backend:
+                    raise ValueError("strategy configuration cannot change the plugin data backend")
                 available_sessions = dates["sessions"] if "sessions" in dates else dates[split]
                 universe_sessions = [day for day in available_sessions
                                      if pd.Timestamp(window[0]) <= day <= pd.Timestamp(window[2])]
@@ -468,6 +502,8 @@ class RunManager:
                     evaluation_defaults={}, execution_defaults=defaults,
                     dataset=dataset, execution_overrides=execution_overrides)
                 validate_execution(resolved.values["execution"])
+                if research_plugin and resolved.values["execution"]["market_guard"]["mode"] != "none":
+                    raise ValueError("Q2 Research Infrastructure v1 requires market guard 'none'")
                 execution_policy = engine_legacy_fields(resolved.values["execution"])
                 exit_source = resolved.sources.get("execution.exit.stop_loss", "host_default")
                 metadata = {
@@ -511,6 +547,7 @@ class RunManager:
                     "resolved_config": resolved.metadata(),
                     "resolved_config_hash": resolved.hash,
                     "universe_mode": universe_mode,
+                    "research_backend": receipt,
                     "survivorship_bias_risk": provenance.bias_risk,
                     "universe_provenance": provenance.metadata(),
                     "research_validity": readiness["research_validity"],
@@ -533,6 +570,11 @@ class RunManager:
                     lean_config = self.root / 'config/lean.yaml'
                     if lean_config.exists():
                         metadata['host_source_hashes']['config/lean.yaml'] = sha256_file(lean_config)
+                    if research_plugin:
+                        for relative in ("src/radar/lab/research_backend.py",
+                                         "src/radar/research/infrastructure.py",
+                                         "config/research_infrastructure_v1.json"):
+                            metadata['host_source_hashes'][relative] = sha256_file(self.root / relative)
                     if universe_mode == 'point_in_time':
                         from radar.lab.data import load_strategy_segment
                         from radar.lean.export import freeze_signals

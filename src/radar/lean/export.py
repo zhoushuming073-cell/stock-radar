@@ -21,7 +21,7 @@ def write_json(path: Path, value) -> None:
     path.write_text(json.dumps(value, indent=2, allow_nan=False), encoding='utf-8')
 
 
-def freeze_signals(frame, sessions, metadata, plugin, store, execution, guard=None):
+def freeze_signals(frame, sessions, metadata, plugin, store, execution, guard=None, *, history=None):
     """Only Stock Radar calls strategy code. No portfolio state enters selection."""
     source = metadata.get('source_scanner_run_id')
     by_day = {}
@@ -48,7 +48,11 @@ def freeze_signals(frame, sessions, metadata, plugin, store, execution, guard=No
         if source:
             chosen = sorted(by_day.get(day, []), key=lambda row: (row['rank'], row['symbol']))
         else:
-            ranked, _ = evaluate_selection(plugin, metadata['config'], daily, set())
+            if history is None:
+                ranked, _ = evaluate_selection(plugin, metadata['config'], daily, set())
+            else:
+                from radar.lab.research_adapter import evaluate_research_selection
+                ranked, _ = evaluate_research_selection(plugin, metadata['config'], daily, history)
             chosen = ranked.loc[ranked['selected'], ['symbol', 'rank', 'strategy_score']].to_dict('records')
         lookup = daily.set_index('symbol', drop=False)
         for row in chosen:
@@ -190,6 +194,10 @@ def prepare_bundle(home: Path, output: Path, metadata: dict, sessions: list,
                 'algorithm_sha256': digest(algorithm),
                 'limitations': ['No intraday path or trigger ordering', 'No order book/partial-fill simulation',
                                 'Universe and source-price adjustment biases remain those of the input snapshot']}
+    if metadata.get('universe_mode') == 'research_infrastructure_v1':
+        manifest['price_basis'] = ('Research Infrastructure v1 Alpaca SIP split-adjusted OHLCV; '
+                                   'LEAN receives Open/Close proxies without extra split or dividend factors')
+        manifest['limitations'].append('Historical membership and terminal wealth coverage remain incomplete')
     if pit_dataset:
         # Actions, delisting/settlement inputs and full dependency hash are part
         # of the same manifest lock as maps, factors, prices and engine source.

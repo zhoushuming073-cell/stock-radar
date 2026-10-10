@@ -250,6 +250,22 @@ def current_snapshot_provenance() -> UniverseProvenance:
 
 def load_universe(root: Path, mode: str, sessions: Sequence[pd.Timestamp]
                   ) -> tuple[LocalSecurityMaster | None, UniverseProvenance]:
+    if mode == "research_infrastructure_v1":
+        from radar.lab.research_backend import ResearchHistory, MODE
+        with ResearchHistory(root) as history:
+            if sessions and pd.Timestamp(max(sessions)) >= pd.Timestamp(
+                    history.api.profile["semantics"]["fresh_start"]):
+                raise ValueError("Research Infrastructure v1 historical mode excludes Fresh")
+            provenance = UniverseProvenance(
+                mode=MODE, provider="shape_research_universe_v1",
+                source_version="research-infrastructure-v1",
+                fingerprint=history.fingerprint,
+                coverage_start=history.api.profile["semantics"]["frozen_splits"]["train"][0],
+                coverage_end=history.api.profile["semantics"]["frozen_splits"]["test"][1],
+                bias_risk="reduced_not_eliminated; unknown membership excluded",
+                feature_basis="historical security_id; Alpaca SIP split OHLCV; SPY SIP split benchmark",
+                feature_store_sha256=history.database_sha256)
+        return None, provenance
     if mode == "current_snapshot":
         return None, current_snapshot_provenance()
     if mode != "point_in_time":
