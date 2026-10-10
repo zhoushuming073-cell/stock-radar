@@ -16,7 +16,7 @@ from typing import Any, Mapping
 NAMESPACES = frozenset({"strategy", "evaluation", "execution", "dataset", "view"})
 RESEARCH_NAMESPACES = ("strategy", "evaluation", "execution", "dataset")
 SOURCE_NAMES = frozenset({"host_default", "strategy_default", "run_override"})
-UNIVERSE_MODES = frozenset({"current_snapshot", "point_in_time"})
+UNIVERSE_MODES = frozenset({"current_snapshot", "point_in_time", "research_infrastructure_v1"})
 
 
 def plain(value: Any) -> Any:

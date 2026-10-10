@@ -115,14 +115,48 @@ The host validates output shape, indices, booleans, numeric scores, selected sym
 
 ## StrategyContext and allowed data
 
-`StrategyContext` exposes only:
+### Additive Research Infrastructure v1 history capability (Q2 v1.3)
+
+An interface-v1 plugin may declare `data_backend: research_infrastructure_v1`
+in `strategy.yaml`. Legacy configurations without this field retain their exact
+previous data path and behavior. This declaration binds a new Backtest Run to
+the frozen dated `shape_research_universe_v1` membership index, its semantic
+hash and core database SHA-256. The host records these in Run metadata; it does
+not use the current listing universe as a substitute. This adapter currently
+supports the local LEAN Backtest path, not Scanner Research or Fresh OOS.
+
+The opted-in plugin receives a `security_id` in `context.frame` and can ask the
+host for a bounded, defensive OHLCV copy:
+
+```python
+bars = context.history(security_id, sessions=430)
+```
+
+The host checks the frozen 126-session dated membership window, selects only
+that security's homogeneous historical series, and returns at most 430 exchange
+sessions ending no later than `context.signal_date` (T). Missing, unsafe or
+mixed-basis history is an explicit exclusion. The plugin never receives a
+database connection or a filesystem path. `context.history()` is unavailable
+to legacy plugins and does not change their context columns. The host also has
+T-clipped, provenance-tagged SPY/QQQ benchmark access; Q2 v1.3's causal paired
+SPY beta is supplied as `beta_spy_126`. Its `avg_dollar_volume_20` uses
+split-adjusted SIP close times volume from the same historical source. The
+`market_input_safe` flag is false when this evidence is incomplete.
+
+The ZIP static inspection still rejects file, database, network and private
+host imports. Static inspection is not an operating-system sandbox; import only
+trusted plugin ZIPs. Execution, fees, slippage, maximum positions and the next
+session Open remain host owned. Historical membership reconstruction reduces
+survivorship bias but does not remove unknown identities or all coverage gaps.
+
+For plugins without the research backend declaration, `StrategyContext` exposes only:
 
 ```python
 context.signal_date  # pandas.Timestamp: date t, after the close
 context.frame        # pandas.DataFrame: one row per symbol at date t
 ```
 
-`context.frame` is supplied as a copy. Its base columns are `symbol`, `security_name`, and `close`, plus selected, causal feature columns that were computable from observations through `t` Close. It does **not** expose daily Open or a raw price history, DuckDB connections, the Alpaca client, `forward_labels`, later bars, future equity, or final Test metrics. Some features are null while rolling windows warm up; use explicit null handling.
+`context.frame` is supplied as a copy. Its base columns are `symbol`, `security_name`, and `close`, plus selected, causal feature columns that were computable from observations through `t` Close. It does **not** expose daily Open, DuckDB connections, the Alpaca client, `forward_labels`, later bars, future equity, or final Test metrics. Only a declared research backend can request the separate T-clipped raw history capability above. Some features are null while rolling windows warm up; use explicit null handling.
 
 Examples of existing causal feature names (the available list is checked against the installed feature version):
 

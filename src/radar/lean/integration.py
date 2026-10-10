@@ -46,7 +46,16 @@ def execute(root, store, run_id, metadata, frame, sessions, registration, fees):
         guard_database=Path(json.loads(sidecars[0].read_text(encoding='utf-8'))['database'])
     guard = (load_spy_ma200_guard(guard_database, covered[-1])
              if execution['market_guard']['mode'] == 'spy_ma200' else None)
-    signals, allowed = freeze_signals(frame, covered, metadata, registration.plugin, store, execution, guard)
+    research_mode = metadata.get('universe_mode') == 'research_infrastructure_v1'
+    if research_mode:
+        from radar.lab.research_backend import ResearchHistory
+        with ResearchHistory(root) as history_host:
+            if history_host.fingerprint != metadata['research_backend']['semantic_hash']:
+                raise ValueError('Research Infrastructure v1 history binding changed')
+            signals, allowed = freeze_signals(frame, covered, metadata, registration.plugin,
+                                              store, execution, guard, history=history_host.history)
+    else:
+        signals, allowed = freeze_signals(frame, covered, metadata, registration.plugin, store, execution, guard)
     pit_dataset = None
     if metadata.get('universe_mode') == 'point_in_time':
         from radar.pit.execution import execution_inputs
@@ -57,6 +66,9 @@ def execute(root, store, run_id, metadata, frame, sessions, registration, fees):
             raise ValueError('queued PIT signals changed')
         signals, prices, pit_dataset = execution_inputs(closure,quality_tier='research-grade',
             research_audit=research_audit,research_rules=research_rules) if research_tier else execution_inputs(closure)
+    elif research_mode:
+        from radar.lab.research_backend import load_execution_prices
+        prices = load_execution_prices(root, frame, signals, metadata['window'][0], metadata['window'][2])
     else:
         prices = load_prices(root / 'data/phase2-research.duckdb', metadata['window'][0],
                              metadata['window'][2], [s['symbol'] for s in signals])
@@ -66,6 +78,10 @@ def execute(root, store, run_id, metadata, frame, sessions, registration, fees):
                               metadata['lean_max_positions'], pit_dataset=pit_dataset)
     bundle = json.loads(manifest.read_text(encoding='utf-8'))
     source_database=root/'data/phase2-research.duckdb'
+    if research_mode:
+        from radar.lab.research_backend import ResearchHistory
+        with ResearchHistory(root) as history_host:
+            source_database = history_host.core_path
     if research_tier:
         source_reference=metadata.get('research_source_database') or {}
         if not source_reference.get('path') or not source_reference.get('sha256'):

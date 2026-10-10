@@ -112,6 +112,10 @@ def assess_readiness(mode: str, sessions: Sequence[pd.Timestamp],
 
 
 def local_readiness(root: Path, mode: str, sessions: Sequence[pd.Timestamp]) -> dict:
+    if mode == "research_infrastructure_v1":
+        return {"research_validity": "exploratory_historical_membership",
+                "formal_pit_ready": False, "system_verified_structural_validity": True,
+                "reasons": ["Dated Research Infrastructure v1 membership reduces but does not eliminate survivorship bias; daily split-adjusted execution is exploratory."]}
     root = Path(root)
     master = None
     terminal = None

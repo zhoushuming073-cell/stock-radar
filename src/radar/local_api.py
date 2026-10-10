@@ -63,6 +63,7 @@ def lab_strategies() -> list[dict]:
         "description": item.manifest.description,
         "author": item.manifest.author.model_dump(),
         "tags": item.manifest.tags,
+        "data_backend": item.config.get("data_backend", "legacy_lab"),
         "config": _plain(item.config),
         "removable": (not item.path.is_symlink()
                       and item.path.parent.resolve() == plugin_root
@@ -104,8 +105,13 @@ def lab_split_status() -> dict:
 
 def lab_universe_status() -> dict:
     from radar.lab.universe import current_snapshot_provenance, LocalSecurityMaster
+    from radar.lab.research_backend import backend_receipt
     base = {"current": current_snapshot_provenance().metadata(),
             "point_in_time_available": False}
+    try:
+        base["research_infrastructure_v1"] = backend_receipt(ROOT)
+    except (OSError, ValueError) as error:
+        base["research_infrastructure_v1_error"] = str(error)
     csv_path = DATA / "security-master.csv"
     manifest_path = DATA / "security-master-manifest.json"
     if csv_path.exists() and manifest_path.exists():

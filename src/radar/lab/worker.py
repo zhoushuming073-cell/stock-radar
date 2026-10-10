@@ -22,6 +22,7 @@ from radar.lab.execution import resolve_exit_policy
 from radar.lab.parameters import engine_legacy_fields, research_hash
 from radar.lab.store import RunStore
 from radar.lab.universe import load_universe, validate_frozen_feature_store
+from radar.lab.research_backend import MODE as RESEARCH_MODE, FEATURES as RESEARCH_FEATURES, backend_receipt, load_signal_frame
 from radar.lab.terminal import load_terminal_events
 from radar.research.pipeline import FEATURE_VERSION
 from radar.strategy.adapter import make_candidate_selector
@@ -43,6 +44,7 @@ def execute_run(root: Path, store_path: Path, run_id: str) -> dict:
     metadata = record["metadata"]
     store.start_run(run_id, os.getpid())
     try:
+        research_run = metadata.get("universe_mode") == RESEARCH_MODE
         database = root / "data" / "phase2-research.duckdb"
         backtest_path = root / "config" / "backtest.yaml"
         research_path = root / "config" / "research.yaml"
@@ -56,18 +58,23 @@ def execute_run(root: Path, store_path: Path, run_id: str) -> dict:
                           (root / "src" / "radar" / "strategy" / "adapter.py", "adapter_code_hash"),
                           (root / "src" / "radar" / "strategy" / "full_strategy2.py",
                            "legacy_strategy_code_hash")):
+            if research_run and path == database:
+                continue
             if sha256_file(path) != metadata[key]:
                 raise ValueError(f"run source changed after queuing: {path.name}")
+        if research_run and (metadata.get("research_backend") != backend_receipt(root) or
+                             metadata["data_snapshot"] != metadata["research_backend"]["core_database_sha256"]):
+            raise ValueError("Research Infrastructure v1 source changed after queuing")
         for relative, expected in metadata.get("host_source_hashes", {}).items():
             if sha256_file(root / relative) != expected:
                 raise ValueError(f"run host source changed after queuing: {relative}")
         if (metadata["feature_version"] != FEATURE_VERSION or
                 metadata.get("market_feature_version") != MARKET_FEATURE_VERSION):
             raise ValueError("feature version changed after queuing")
-        if source_watermark(database) != metadata["source_watermark"]:
+        if not research_run and source_watermark(database) != metadata["source_watermark"]:
             raise ValueError("market source watermark changed after queuing")
         registration = load_strategy_directory(
-            strategy_path, available_features(database), run_tests=True,
+            strategy_path, available_features(database) | RESEARCH_FEATURES, run_tests=True,
         )
         manifest = registration.manifest
         if (manifest.id, manifest.version, manifest.interface_version) != (
@@ -128,8 +135,9 @@ def execute_run(root: Path, store_path: Path, run_id: str) -> dict:
             raise ValueError("queued PIT security master changed")
         validate_frozen_feature_store(provenance, metadata)
         load_args = (database, dates[0], dates[2], set(manifest.required_features))
-        frame = load_strategy_segment(*load_args, universe_provider) if universe_provider else (
-            load_strategy_segment(*load_args))
+        frame = (load_signal_frame(root, dates[0], dates[1]) if research_run else
+                 load_strategy_segment(*load_args, universe_provider) if universe_provider else
+                 load_strategy_segment(*load_args))
         config = _engine_config(
             raw, variant="full_strategy2", allocator=raw.get("allocator", "equal_cash"),
             slippage_bps=float(raw.get("slippage_bps", metadata["slippage_bps"])),

@@ -7,7 +7,7 @@ const day = s => s ? String(s).slice(0,10) : "—";
 const statusLabel = {queued:"Queued",running:"Running",cancel_requested:"Stopping",completed:"Completed",failed:"Failed",cancelled:"Stopped"};
 const human = {train:"Training",validation:"Validation",test:"Historical Test",fresh_oos:"Fresh OOS"};
 const pitReadiness = run => run.result?.run_metadata?.run_pit_readiness || run.metadata?.run_pit_readiness;
-const runEnvironment = run => run.metadata?.quality_tier === "research-grade" ? `Research-Grade PIT · ${pitReadiness(run)?.preflight_ready ? (run.status==="completed" ? "EXECUTED" : "READY") : "BLOCKED"}` : run.metadata?.universe_mode === "point_in_time" ? `PIT ${run.metadata?.universe_provenance?.source_version?.slice(0,12)||"—"} · ${pitReadiness(run)?.preflight_ready ? (run.status==="completed" ? "EXECUTED" : "READY") : "BLOCKED"}` : "Current Snapshot";
+const runEnvironment = run => run.metadata?.universe_mode === "research_infrastructure_v1" ? `Research Infrastructure v1 · ${run.metadata?.research_backend?.semantic_hash?.slice(0,12)||"—"}` : run.metadata?.quality_tier === "research-grade" ? `Research-Grade PIT · ${pitReadiness(run)?.preflight_ready ? (run.status==="completed" ? "EXECUTED" : "READY") : "BLOCKED"}` : run.metadata?.universe_mode === "point_in_time" ? `PIT ${run.metadata?.universe_provenance?.source_version?.slice(0,12)||"—"} · ${pitReadiness(run)?.preflight_ready ? (run.status==="completed" ? "EXECUTED" : "READY") : "BLOCKED"}` : "Current Snapshot";
 const engineLabel = run => run.metadata?.engine==="lean"?"LEAN":"Legacy (archived)";
 const runName = run => run.display_name||run.metadata?.strategy_name||run.metadata?.strategy_id||"Strategy";
 const visibleRuns = () => state.runs.filter(run=>!run.archived_at);
@@ -42,6 +42,9 @@ function focusRun(id){
   else notice(`'${strategyByRef(id)?.name||id}' has no run history.`);
 }
 function drawStrategies(){
+  const focusedStrategy=strategyByRef(state.focused);
+  if(focusedStrategy?.data_backend==="research_infrastructure_v1"){$("universe-mode").value="research_infrastructure_v1";drawUniverseModeStatus()}
+  else if(focusedStrategy&&$("universe-mode").value==="research_infrastructure_v1"){$("universe-mode").value="current_snapshot";drawUniverseModeStatus()}
   const visible=state.strategies.filter(s=>!state.closed.has(strategyRef(s)));
   $("strategies").innerHTML=visible.map(s=>`<button class="strategy-chip ${state.selected.has(strategyRef(s))?"selected":""} ${state.focused===strategyRef(s)?"focused":""}" data-strategy="${safe(strategyRef(s))}" title="${safe(s.description)}">${safe(s.name)} <small>v${safe(s.version)}</small><span class="chip-close" data-close="${safe(strategyRef(s))}" title="Close tab">×</span></button>`).join("")||(state.strategies.length?"<span class='muted'>All tabs are closed. Reopen one from Strategies.</span>":"<span class='muted'>No strategies yet. Import a ZIP file.</span>");
   document.querySelectorAll("[data-close]").forEach(x=>x.onclick=event=>{
@@ -473,7 +476,9 @@ $("start-experiment").onclick=async()=>{
   try{const result=await post("/api/lab/experiment",payload);notice(`Created ${result.count} runs. They will be queued in the background.`);await refresh();document.getElementById("experiments").scrollIntoView({behavior:"smooth"})}catch(error){notice(`Could not create experiment: ${error.message}`)}
 };
 function drawUniverseModeStatus(){
-  $("universe-status").textContent=$("universe-mode").value==="point_in_time"?
+  $("universe-status").textContent=$("universe-mode").value==="research_infrastructure_v1"?
+    "New runs: dated Research Infrastructure v1 membership · survivor bias reduced, not eliminated":
+    $("universe-mode").value==="point_in_time"?
     "New runs: Point-in-Time universe":
     "New runs: Current Snapshot · Survivorship Bias Risk: Present";
 }

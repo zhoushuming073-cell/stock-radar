@@ -83,7 +83,7 @@ Not yet proven:
 
 ## A2. Q2 — Parallel Channel Quant
 
-**Current status:** experimental source-only Draft PR [#10](https://github.com/zhoushuming073-cell/stock-radar/pull/10); **not merged / not locally accepted on the full real market**.
+**Current status:** the earlier parallel-channel draft remains in [PR #10](https://github.com/zhoushuming073-cell/stock-radar/pull/10). A separate Q2 v1.3 relaxed Strategy Lab plugin has passed a bounded Research Infrastructure v1 candidate-only and local input-preparation gate; the user's final Q2 portfolio backtest has not run. See the [2026-10-10 engineering acceptance](../reports/q2-v13-relaxed-plugin-acceptance-2026-10-10.md). No profitability claim is established.
 
 Research idea:
 
