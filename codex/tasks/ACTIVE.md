@@ -1,6 +1,24 @@
 # Active Codex task
 
-**Status: independent Q2 v1.2 Cloud source package ready; actual Cloud NOT_RUN pending human free-web-IDE launch. Independent Draft; do not merge.**
+**Status: Q2 v1.2 bounded local LEAN proxy executed; no trades; QC Cloud not completed. Independent Draft; do not merge.**
+
+## Latest direct user instruction — local Q2 v1.2 backtest
+
+The user explicitly stopped further QC Cloud attempts after the assistant's
+zlib/base64 plus `exec` packaging triggered QuantConnect Terms 2.6 and a
+temporary account suspension. Do not operate that Cloud account without a
+new direct user instruction. No valid Q2 Cloud result exists.
+
+The user then authorized a separate **uncertified Shape Research exploratory
+proxy** on the local Native LEAN installation. The original Q2 v1.2 selector
+parameters and ordinary historical certification refusal remain unchanged.
+Fixed Train/Validation windows produced zero complete channel structures,
+zero selected signals and zero trades; both Native cash-only runs completed.
+This does not evaluate v1.2 trading profitability. See
+[actual local report](../../reports/acceptance/q2-v1.2-local-proxy-2026-10-10.md).
+
+The Cloud preparation section below is a prior checkpoint, superseded by the
+account enforcement event and direct instruction to stop Cloud attempts.
 
 ## New direct user authorization — Q2 v1.2 exploratory Cloud
 

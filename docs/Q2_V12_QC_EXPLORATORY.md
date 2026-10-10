@@ -2,7 +2,17 @@
 
 ## Current state
 
-**SOURCE PACKAGE READY / CLOUD NOT_RUN.** The user directly authorized a separate
+**CLOUD NOT_COMPLETED / ACCOUNT SUSPENDED AFTER ASSISTANT ERROR.** This guide's
+free web-IDE steps below are historical preparation, not an instruction to
+retry. After this guide was written, the assistant uploaded zlib/base64-encoded
+modules executed via `exec`; QuantConnect flagged them under Terms 2.6 and
+suspended the account. No valid Q2 Cloud backtest was produced. The user
+directly instructed the assistant to stop QC attempts. Do not access or launch
+the Cloud project again without fresh user authorization. The subsequent
+[bounded local LEAN proxy report](../reports/acceptance/q2-v1.2-local-proxy-2026-10-10.md)
+is separate and generated no trades.
+
+**Prior checkpoint (superseded): SOURCE PACKAGE READY / CLOUD NOT_RUN.** The user directly authorized a separate
 multi-year Q2 v1.2 exploratory study, then requested the agent click Backtest.
 Two initial editor-bind calls timed out. At the user's request the agent reopened
 project37482228 in the right panel and the DOM became readable. Its current
