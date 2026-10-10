@@ -16,9 +16,8 @@ from radar.pit.research import local_research_readiness
 def main():
     root=Path.cwd();stage=root/'data/pit/research-final';base=root/'data/pit/research-grade'
     read=lambda p:json.loads(p.read_text(encoding='utf-8'))
-    source=root/'reports/pit-research-final-evidence-2026-10-07.json'
-    destination=root/'reports/evidence/pit-research-final-evidence-2026-10-07.json'
-    evidence=read(source if source.exists() else destination)
+    source=root/'reports/evidence/pit-research-final-evidence-2026-10-07.json'
+    evidence=read(source)
     for ref in evidence['artifacts']+[evidence['first_phase_freeze']]:
         if file_hash(Path(ref['path']))!=ref['sha256']:raise ValueError('final artifact changed: '+ref['path'])
     previous=read(root/'reports/evidence/pit-research-grade-evidence-2026-10-07.json')

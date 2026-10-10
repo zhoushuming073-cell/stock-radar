@@ -7,6 +7,8 @@
 - **📌 当前总账:** [Canonical status / active backlog](journey-2026-09-30-0651-📌当前总账.md) — the only active project ledger.
 - **Current research-direction snapshot:** [2026-10-09 · Three-path research program](current/research-direction-three-paths-2026-10-09.md).
 - **Master research guide:** [Quant-only / Quant+Vision / Vision-only](../docs/RESEARCH_MASTER_GUIDE.md).
+- **Active implementation · 2026-10-10:** [Q2 v1.3 relaxed plugin + Research Infrastructure v1 Strategy Lab adapter](../codex/tasks/2026-10-10-q2-v1.3-relaxed-plugin-backtest.md) — authorized work order; final user-run portfolio backtest is not yet recorded. [Codex task pointer](../codex/tasks/ACTIVE.md).
+- **Exploratory direction note · 2026-10-10:** [Quant ↔ Vision cascades and late fusion](current/quant-vision-cascade-direction-2026-10-10.md) — proposal only, not implementation authorization.
 - **Previous subsystem direction:** [2026-10-09 · Quant + Vision dual-stage v3](current/quant-vision-dual-stage-direction-2026-10-09.md) — retained as shared Vision/Human/Y infrastructure history.
 - **Earlier research-direction snapshot:** [2026-10-08 · Quant + Vision Fusion v1](current/quant-vision-fusion-direction-2026-10-08.md) — historical, superseded.
 - **Earlier development-stage snapshot:** [2026-10-06 · Research + local LEAN integration](current/development-status-2026-10-06.md) — retained for engineering history.
@@ -31,15 +33,19 @@ The `reports/` root is intentionally kept small: this index plus the canonical l
 
 ## Historical Quant + Vision Fusion direction · 2026-10-08
 
-[Historical v1 plan](../docs/QUANT_VISION_FUSION_RESEARCH_PLAN.md): the current research path is **Quant high-recall candidate generation → Human Observe/Entry labels → Vision M1 → Quant+Vision+Human transition → frozen Quant+Vision**. The random blind Single/Pair Pilot remains valid P0/P1 infrastructure evidence but is no longer the primary human-label dataset path; its formal human Ground Truth remains0. Do not force completion of the old50 Single +25 Pair task. [Direction record](current/quant-vision-fusion-direction-2026-10-08.md), [historical P0/P1 acceptance](acceptance/vision-p0-p1-pilot-acceptance-2026-10-08.md).
+[Historical v1 plan](../docs/QUANT_VISION_FUSION_RESEARCH_PLAN.md): the historical v1 proposal was **Quant high-recall candidate generation → Human Observe/Entry labels → Vision M1 → Quant+Vision+Human transition → frozen Quant+Vision**. The random blind Single/Pair Pilot remains valid P0/P1 infrastructure evidence but is no longer the primary human-label dataset path; its formal human Ground Truth remains0. Do not force completion of the old50 Single +25 Pair task. [Direction record](current/quant-vision-fusion-direction-2026-10-08.md), [historical P0/P1 acceptance](acceptance/vision-p0-p1-pilot-acceptance-2026-10-08.md).
 
 ## Quant + Vision dual-stage v3 subsystem · 2026-10-09
 
-[Subsystem design](../docs/QUANT_VISION_DUAL_STAGE_RESEARCH_PLAN.md). The overall research authority is now the [three-path master guide](../docs/RESEARCH_MASTER_GUIDE.md); Codex implementation is currently paused in [ACTIVE](../codex/tasks/ACTIVE.md). Left past-only SVG + H_blind first; right future SVG + H_review only after saved blind decision; independent objective Y_future. Current **D1/D2 engineering PASS; D3 data/UI READY FOR HUMAN TRIAL**, owner feedback pending. [Actual local acceptance](acceptance/quant-vision-dual-stage-v3-acceptance-2026-10-09.md):728 Native-inclusive pytest,300 windows replayed,10 real charts/11 before-after pixel pairs,2,623 protected hashes unchanged. [Labeling guide](../docs/QUANT_VISION_DUAL_STAGE_LABELING_V3.md). Earlier v1 and outcome-only v2 are preserved for history; Draft PR #7 was selectively ported, and the original PR remains unmerged. The canonical ledger alone owns current completion status.
+[Subsystem design](../docs/QUANT_VISION_DUAL_STAGE_RESEARCH_PLAN.md). The overall research authority is now the [three-path master guide](../docs/RESEARCH_MASTER_GUIDE.md); the v3 human trial is paused, while a separate Q2 v1.3 implementation task is active in [ACTIVE](../codex/tasks/ACTIVE.md). Left past-only SVG + H_blind first; right future SVG + H_review only after saved blind decision; independent objective Y_future. Current **D1/D2 engineering PASS; D3 data/UI READY FOR HUMAN TRIAL**, owner feedback pending. [Actual local acceptance](acceptance/quant-vision-dual-stage-v3-acceptance-2026-10-09.md):728 Native-inclusive pytest,300 windows replayed,10 real charts/11 before-after pixel pairs,2,623 protected hashes unchanged. [Labeling guide](../docs/QUANT_VISION_DUAL_STAGE_LABELING_V3.md). Earlier v1 and outcome-only v2 are preserved for history; Draft PR #7 was selectively ported, and the original PR remains unmerged. The canonical ledger alone owns current completion status.
 
 ## Research Infrastructure v1 · 2026-10-08
 
 [Frozen infrastructure / 47-answer finalization](acceptance/research-infrastructure-v1-finalization-2026-10-08.md): Shape READY, General PIT Tier 1 deep/audit, expansion CLOSED, maintenance ACTIVE, strategy research READY TO RESUME. 595 native-inclusive tests PASS. Combined ready 83.8733%; supported safe candles 5,407,961; Fresh supported windows 34,491 /33,745 /32,979 /30,462. Formal QC/Fresh strategy evaluation NOT_RUN. [API](../docs/RESEARCH_INFRASTRUCTURE_V1.md), [asset inventory](evidence/database-asset-inventory-2026-10-08.json), [cleanup receipt](evidence/database-cleanup-results-2026-10-08.json).
+
+## Research database reliability scorecard · 2026-10-10
+
+[Archived comparative scorecard](evidence/research-database-reliability-scorecard-2026-10-10.md): Research Infrastructure v1 **86.1/100** vs legacy current-survivor-oriented baseline **55.1/100** (+31.0 weighted points). These are qualitative research judgments, not measured probabilities, strategy returns, or formal acceptance gates. The underlying 2026-10-08 infrastructure finalization remains the engineering evidence.
 
 ## Earlier Shape core acceptance · 2026-10-08 (historical snapshot)
 
@@ -82,7 +88,7 @@ Supporting material:
 ## Maintenance rules
 
 - Exactly one active canonical ledger is allowed.
-- New acceptance reports go to `acceptance/`; machine evidence goes to `evidence/`; architecture audits go to `audit/`.
+- New acceptance reports go to `acceptance/`; machine evidence and scorecards go to `evidence/`; architecture audits go to `audit/`.
 - Closed or superseded journey records go to `archive/journeys/`; superseded non-journey reports go to `archive/reports/`; completed operational plans go to `archive/plans/`. Do not leave dated reports in the root.
 - Historical evidence is preserved rather than rewritten to make later results look cleaner.
 - Strategy logic, research parameters and trading assumptions are not changed as part of report housekeeping.

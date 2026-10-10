@@ -195,7 +195,7 @@ def main():
         'coupling':'independent diagnostic gate; existing API/native path retains blocked earlier gate; no Current fallback',
         'artifacts':[freeze_file(p) for p in sorted(out.glob('*.json'))],
         'first_phase_freeze':freeze_file(stage/'rules-freeze.json')}
-    dump(root/'reports/pit-research-final-evidence-2026-10-07.json',evidence)
+    dump(root/'reports/evidence/pit-research-final-evidence-2026-10-07.json',evidence)
     print(json.dumps({k:evidence[k] for k in ['effective_core_uncertainty_range','remaining_distinct_competitors','focused_proofs','candidate_scopes','score_stress','readiness']},ensure_ascii=True,indent=2),flush=True)
 
 

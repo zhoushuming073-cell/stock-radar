@@ -79,7 +79,7 @@ def main():
     findings['maximum_daily_true_competitors']=max(d['effective_unknown_competitors'] for d in days)
     gate=scoped_readiness(findings,rules)
     dump(out/'readiness.json',{'findings':findings,'result':gate})
-    evidence=read(root/'reports/pit-research-final-evidence-2026-10-07.json')
+    evidence=read(root/'reports/evidence/pit-research-final-evidence-2026-10-07.json')
     evidence['conditional_liquidity_unknown_range']=evidence['effective_core_uncertainty_range']
     evidence['effective_core_uncertainty_range']=[min(d['effective_unknown_competitors'] for d in days),max(d['effective_unknown_competitors'] for d in days)]
     evidence['known_core_identity_uncertain_range']=[min(d['known_core_identity_uncertain'] for d in days),max(d['known_core_identity_uncertain'] for d in days)]
@@ -92,7 +92,7 @@ def main():
     evidence['missingness']={k:v for k,v in impact.items() if k!='days'}
     evidence['score_stress']={k:v for k,v in stress.items() if k!='days'};evidence['readiness']=gate
     evidence['artifacts'].extend(freeze_file(p) for p in sorted(out.glob('*.json')))
-    dump(root/'reports/pit-research-final-evidence-2026-10-07.json',evidence)
+    dump(root/'reports/evidence/pit-research-final-evidence-2026-10-07.json',evidence)
     print(json.dumps({k:evidence[k] for k in ['effective_core_uncertainty_range','conditional_liquidity_unknown_range',
         'known_core_identity_uncertain_range','identity_cleared_price_eligible_range','identity_safe_rank_proofs','reopened_conditional_rank_exclusions','remaining_distinct_competitors']},indent=2),flush=True)
 
