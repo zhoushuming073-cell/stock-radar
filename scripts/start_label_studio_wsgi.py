@@ -9,7 +9,7 @@ from label_studio import server
 from waitress import serve
 from whitenoise import WhiteNoise
 from pathlib import Path
-import sys
+import os,sys
 
 
 def run(host,port):
@@ -20,10 +20,13 @@ def run(host,port):
     settings.DATABASES['default']['CONN_MAX_AGE']=None
     settings.DATABASES['default']['CONN_HEALTH_CHECKS']=True
     base_app=get_wsgi_application()
-    root=Path(__file__).resolve().parents[1]
-    sys.path.insert(0,str(root/'src'))
+    code_root=Path(__file__).resolve().parents[1]
+    root=Path(os.environ.get('STOCK_RADAR_RESEARCH_ROOT',code_root)).resolve()
+    sys.path.insert(0,str(code_root/'src'))
     from radar.vision.dual_views import install
     install(root)
+    from radar.box_labeling.web import install as install_box
+    install_box(root)
     app=WhiteNoise(base_app,root=settings.STATIC_ROOT,prefix=settings.STATIC_URL)
     from radar.vision.dual_http import guard_local_files
     app=guard_local_files(app,root/'data')
