@@ -1,6 +1,6 @@
 # Stock Radar — Proposed Codex Research Briefs
 
-> Updated: 2026-10-13  
+> Updated: 2026-10-13
 > Status: **Research proposals, NOT active work orders**. This index neither authorizes execution nor supersedes `codex/tasks/ACTIVE.md`.
 
 This index organizes **four briefs into two research tracks**. The three box documents complement each other; S1 is independent. Read the [consolidated development path](../../docs/BOX_RESEARCH_DEVELOPMENT_PATH.md) for the reviewed priority order: audit and label/mask foundations → independent detector → human pilot → gated model comparison → separately authorized economic research.
