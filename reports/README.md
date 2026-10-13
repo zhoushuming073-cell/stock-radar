@@ -37,6 +37,14 @@ The `reports/` root is intentionally kept small: this index plus the canonical l
 
 [Subsystem design](../docs/QUANT_VISION_DUAL_STAGE_RESEARCH_PLAN.md). The overall research authority is now the [three-path master guide](../docs/RESEARCH_MASTER_GUIDE.md); Codex implementation is currently paused in [ACTIVE](../codex/tasks/ACTIVE.md). Left past-only SVG + H_blind first; right future SVG + H_review only after saved blind decision; independent objective Y_future. Current **D1/D2 engineering PASS; D3 data/UI READY FOR HUMAN TRIAL**, owner feedback pending. [Actual local acceptance](acceptance/quant-vision-dual-stage-v3-acceptance-2026-10-09.md):728 Native-inclusive pytest,300 windows replayed,10 real charts/11 before-after pixel pairs,2,623 protected hashes unchanged. [Labeling guide](../docs/QUANT_VISION_DUAL_STAGE_LABELING_V3.md). Earlier v1 and outcome-only v2 are preserved for history; Draft PR #7 was selectively ported, and the original PR remains unmerged. The canonical ledger alone owns current completion status.
 
+## Q2 v1.3 plugin local acceptance · 2026-10-10 (Draft PR #20)
+
+[Local engineering acceptance](acceptance/q2-v13-relaxed-plugin-acceptance-2026-10-10.md): plugin/package, candidate-only funnel and regression gates passed on the Draft branch; the user's final Q2 portfolio backtest remains **NOT_RUN**. This receipt is branch-specific evidence, not approval to merge or an alpha claim.
+
+## Research database reliability scorecard · 2026-10-10
+
+[Comparative scorecard](evidence/research-database-reliability-scorecard-2026-10-10.md): Research Infrastructure v1 **86.1/100** vs historical baseline **55.1/100**; qualitative judgment, not formal acceptance or strategy returns.
+
 ## Research Infrastructure v1 · 2026-10-08
 
 [Frozen infrastructure / 47-answer finalization](acceptance/research-infrastructure-v1-finalization-2026-10-08.md): Shape READY, General PIT Tier 1 deep/audit, expansion CLOSED, maintenance ACTIVE, strategy research READY TO RESUME. 595 native-inclusive tests PASS. Combined ready 83.8733%; supported safe candles 5,407,961; Fresh supported windows 34,491 /33,745 /32,979 /30,462. Formal QC/Fresh strategy evaluation NOT_RUN. [API](../docs/RESEARCH_INFRASTRUCTURE_V1.md), [asset inventory](evidence/database-asset-inventory-2026-10-08.json), [cleanup receipt](evidence/database-cleanup-results-2026-10-08.json).
