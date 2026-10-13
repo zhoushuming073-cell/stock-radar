@@ -1,0 +1,120 @@
+{
+  "config_file_sha256": "d660dfa8773587f2ee1e5f2338d3a4dadbdf67cb796afe279ff35c581b301162",
+  "config_hash": "bedd4815553e73a866594c735dda89eb3dba559b704f3772c167d2a856af3f1e",
+  "detector_code_sha256": "65e268eb647abda244f5bebaf8ce32bada6f4e175f0917f88e26f402f9292321",
+  "detector_state_disagreements": 69,
+  "detectors": {
+    "confirmed-pivot-zone-v1": {
+      "active_structure_days": 5,
+      "evaluated_windows": 4416,
+      "formation_windows": {
+        "CONFIRMED": 62,
+        "DEVELOPING": 267,
+        "UNCERTAIN": 77
+      },
+      "historical_structure_days": 18,
+      "rejected_windows_by_reason": {
+        "center_drift": 179,
+        "invalid_geometry": 92,
+        "no_confirmed_pivots": 647,
+        "one_sided_or_trend": 2529,
+        "width": 563
+      },
+      "runtime_ms": {
+        "max": 930.9,
+        "median": 26.88,
+        "p95": 35.49
+      },
+      "status_at_t": {
+        "BREAKDOWN": 7,
+        "CONFIRMED": 5,
+        "DEVELOPING": 22,
+        "NONE": 49,
+        "UNCERTAIN": 13
+      }
+    },
+    "quantile-zone-v1": {
+      "active_structure_days": 38,
+      "evaluated_windows": 4416,
+      "formation_windows": {
+        "CONFIRMED": 691,
+        "DEVELOPING": 871
+      },
+      "historical_structure_days": 81,
+      "rejected_windows_by_reason": {
+        "center_drift": 118,
+        "one_sided_or_trend": 2223,
+        "width": 513
+      },
+      "runtime_ms": {
+        "max": 61.14,
+        "median": 36.88,
+        "p95": 46.59
+      },
+      "status_at_t": {
+        "BREAKDOWN": 15,
+        "CONFIRMED": 38,
+        "DEVELOPING": 26,
+        "NONE": 13,
+        "UNCERTAIN": 4
+      }
+    }
+  },
+  "eligible_denominators": {
+    "2022": {
+      "eligible_rows": 680566,
+      "indexed_rows": 763433,
+      "ready_rows": 763433,
+      "supported_rows": 680566
+    },
+    "2023": {
+      "eligible_rows": 830719,
+      "indexed_rows": 937251,
+      "ready_rows": 937251,
+      "supported_rows": 830719
+    },
+    "2024": {
+      "eligible_rows": 854897,
+      "indexed_rows": 963819,
+      "ready_rows": 963819,
+      "supported_rows": 854897
+    },
+    "2025": {
+      "eligible_rows": 665376,
+      "indexed_rows": 746646,
+      "ready_rows": 746646,
+      "supported_rows": 665376
+    }
+  },
+  "future_outcomes_read": false,
+  "private_rows_exported": false,
+  "processed_security_days": 96,
+  "processed_source_basis": {
+    "Dolt:post-no-preference/stocks / raw": 6,
+    "legacy:alpaca:sip / split": 90
+  },
+  "provider_exclusions": {},
+  "requested_per_year": 24,
+  "ri_semantic_hash": "74b765911a8a4f18b2074cd8d9e529b25b54afade15309a148b0ca43340b80be",
+  "sample_policy": "fixed hash draw of supported, ready Train/Validation 126-session security-days; diagnostic, not independent accuracy",
+  "seed": "box-range-stage-a-20261013",
+  "selected_by_year": {
+    "2022": 24,
+    "2023": 24,
+    "2024": 24,
+    "2025": 24
+  },
+  "selected_membership": {
+    "confirmed_member": 85,
+    "probable_member": 11
+  },
+  "selected_security_days": 96,
+  "unique_selected_securities": 95,
+  "version": "box-range-detector-stage-a-v1",
+  "years": [
+    2022,
+    2023,
+    2024,
+    2025
+  ]
+}

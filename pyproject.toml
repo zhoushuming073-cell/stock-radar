@@ -41,6 +41,7 @@ vision = [
 ]
 vision-labeling = ["label-studio>=1.23,<2", "waitress>=3,<4", "whitenoise>=6,<7"]
 box-training = ["torch>=2.5"]
+box-detector = ["scipy>=1.15,<2"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
