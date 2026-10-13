@@ -4,7 +4,7 @@
 > **Status:** DESIGN REFERENCE / NOT THE ACTIVE WORK ORDER
 > **Audience:** Codex / repository agents
 > **Scope:** historical box/range discovery, pattern-quality measurement, future 5% rebound-event research, and later ML/DL extensions
-> **Critical:** this document does **not** supersede `codex/tasks/ACTIVE.md`. The currently active Box Structure Numeric Deep Learning labeling/data-pipeline task remains authoritative until the user explicitly changes it.
+> **Critical (updated 2026-10-13):** this historical design reference does **not** supersede `codex/tasks/ACTIVE.md`. The owner subsequently authorized a docs-only priority revision toward open-source-assisted causal detection; see the [consolidated path](../../docs/BOX_RESEARCH_DEVELOPMENT_PATH.md). The older numeric-DL labeling order is no longer the next detector priority. This note does not authorize implementation.
 
 ## 0. Repository protocol and execution boundary
 
@@ -14,7 +14,7 @@ Before using this design prompt, synchronize latest `main` and read:
 2. `reports/journey-2026-09-30-0651-📌当前总账.md`
 3. `docs/RESEARCH_MASTER_GUIDE.md`
 4. `codex/tasks/ACTIVE.md`
-5. the currently active Box Structure Numeric Deep Learning work order
+5. the [current consolidated box path](../../docs/BOX_RESEARCH_DEVELOPMENT_PATH.md); consult the October 11 numeric-labeling work order only for historical implementation context
 6. this document
 
 Treat this file as a **research / implementation design reference**. Do not begin a new training campaign, future-return optimization, Historical Test/Fresh evaluation, LEAN/QC run, broker action, paid service, or merge solely because this file exists.
