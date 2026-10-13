@@ -2,7 +2,7 @@
 
 > Date: 2026-10-13
 > Status: **PROPOSED / NOT ACTIVE — documentation only**
-> Research family: **Quant-only baseline** supporting the existing numeric box-structure labeling / representation-learning work, not a fourth top-level research family
+> Research family: **Quant-only box-recognition baseline**, not a fourth top-level research family. Under the [revised path](../../docs/BOX_RESEARCH_DEVELOPMENT_PATH.md), causal open-source-assisted detection is the next **proposed** engineering priority; numeric CNN/TCN remains an optional later comparator.
 > Repository: `zhoushuming073-cell/stock-radar`
 > Integration target: Draft [PR #21 — Box Labeling v1](https://github.com/zhoushuming073-cell/stock-radar/pull/21)
 > Primary outcome: an independently implemented, causally correct, interpretable box detector and a reproducible comparison protocol against `loose_box_v1` and independent human structure labels
