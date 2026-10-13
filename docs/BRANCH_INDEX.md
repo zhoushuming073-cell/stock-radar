@@ -36,7 +36,7 @@ All four tips are ancestors of `origin/main` at review; remove their remote bran
 
 `docs/box-range-structure-codex-prompt-20261013` contains one added design document. Its exact Git blob is preserved in #23; after #23 is pushed and verified, close #22 as consolidated and remove the redundant remote branch. This is **not** a claim that #22 or #23 was merged into main.
 
-Expected remote branches after cleanup: **14 → 9** (main, one documentation branch, seven experimental code branches). Verify actual refs after deletion; never infer success from this plan. No experimental code merge or force overwrite is part of cleanup.
+**Completed 2026-10-13:** all five listed remote branches were deleted after matching their live heads to the reviewed SHAs. GitHub API enumeration confirmed **14 → 9** remaining branches (main, one documentation branch, seven experimental code branches). PR #22 is closed as consolidated; PR #23 remains open and unmerged. HTTPS Git transport temporarily failed, so authenticated GitHub REST ref deletion was used. No experimental code merge or force overwrite occurred.
 
 ## Future branch rule
 
