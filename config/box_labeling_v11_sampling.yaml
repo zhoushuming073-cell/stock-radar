@@ -1,0 +1,20 @@
+# P1 design contract only. The existing 30-task v1 batch remains the live pilot source.
+version: box-label-pool-v1.1-design
+seed: 20261013
+target: 180
+strata:
+  permissive_positive: 0.40
+  hard_negative_or_near_miss: 0.30
+  unconditional_control: 0.30
+splits: [train, validation]
+min_cooldown_sessions: 126
+one_window_per_issuer_group: true
+require_trusted_historical_membership: true
+require_issuer_alias_mapping: true
+require_fixed_eligible_denominator: true
+selection_probability_contract: >-
+  Draw one pre-T window uniformly per verified issuer group, then draw unconditioned
+  controls uniformly before weak-retriever classification. Draw remaining strata
+  without replacement. Persist group/window and stratum denominators and exact
+  conditional inclusion probability; reject the build if aliases or denominators
+  are unresolved. Historical Test and Fresh are excluded.
