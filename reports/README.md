@@ -7,6 +7,7 @@
 - **📌 当前总账:** [Canonical status / active backlog](journey-2026-09-30-0651-📌当前总账.md) — the only active project ledger.
 - **Current research-direction snapshot:** [2026-10-09 · Three-path research program](current/research-direction-three-paths-2026-10-09.md).
 - **Master research guide:** [Quant-only / Quant+Vision / Vision-only](../docs/RESEARCH_MASTER_GUIDE.md).
+- **Draft branch status boundary:** this branch preserves the 2026-10-10 Q2 v1.3 engineering checkpoint; it is not the latest `main` implementation priority. For live status use the canonical ledger on `main`.
 - **Previous subsystem direction:** [2026-10-09 · Quant + Vision dual-stage v3](current/quant-vision-dual-stage-direction-2026-10-09.md) — retained as shared Vision/Human/Y infrastructure history.
 - **Earlier research-direction snapshot:** [2026-10-08 · Quant + Vision Fusion v1](current/quant-vision-fusion-direction-2026-10-08.md) — historical, superseded.
 - **Earlier development-stage snapshot:** [2026-10-06 · Research + local LEAN integration](current/development-status-2026-10-06.md) — retained for engineering history.
@@ -35,7 +36,7 @@ The `reports/` root is intentionally kept small: this index plus the canonical l
 
 ## Quant + Vision dual-stage v3 subsystem · 2026-10-09
 
-[Subsystem design](../docs/QUANT_VISION_DUAL_STAGE_RESEARCH_PLAN.md). The overall research authority is now the [three-path master guide](../docs/RESEARCH_MASTER_GUIDE.md); Codex implementation is currently paused in [ACTIVE](../codex/tasks/ACTIVE.md). Left past-only SVG + H_blind first; right future SVG + H_review only after saved blind decision; independent objective Y_future. Current **D1/D2 engineering PASS; D3 data/UI READY FOR HUMAN TRIAL**, owner feedback pending. [Actual local acceptance](acceptance/quant-vision-dual-stage-v3-acceptance-2026-10-09.md):728 Native-inclusive pytest,300 windows replayed,10 real charts/11 before-after pixel pairs,2,623 protected hashes unchanged. [Labeling guide](../docs/QUANT_VISION_DUAL_STAGE_LABELING_V3.md). Earlier v1 and outcome-only v2 are preserved for history; Draft PR #7 was selectively ported, and the original PR remains unmerged. The canonical ledger alone owns current completion status.
+[Subsystem design](../docs/QUANT_VISION_DUAL_STAGE_RESEARCH_PLAN.md). The overall research authority is now the [three-path master guide](../docs/RESEARCH_MASTER_GUIDE.md); Codex implementation was paused at the 2026-10-09 v3 checkpoint; this branch's later Q2 v1.3 authorization is recorded in [ACTIVE](../codex/tasks/ACTIVE.md). Left past-only SVG + H_blind first; right future SVG + H_review only after saved blind decision; independent objective Y_future. Current **D1/D2 engineering PASS; D3 data/UI READY FOR HUMAN TRIAL**, owner feedback pending. [Actual local acceptance](acceptance/quant-vision-dual-stage-v3-acceptance-2026-10-09.md):728 Native-inclusive pytest,300 windows replayed,10 real charts/11 before-after pixel pairs,2,623 protected hashes unchanged. [Labeling guide](../docs/QUANT_VISION_DUAL_STAGE_LABELING_V3.md). Earlier v1 and outcome-only v2 are preserved for history; Draft PR #7 was selectively ported, and the original PR remains unmerged. The canonical ledger alone owns current completion status.
 
 ## Q2 v1.3 plugin local acceptance · 2026-10-10 (Draft PR #20)
 
