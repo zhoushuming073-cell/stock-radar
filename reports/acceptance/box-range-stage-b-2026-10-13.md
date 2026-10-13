@@ -83,7 +83,8 @@ Bundle verification checked every raw/window/tensor/chart hash, T cutoff,
 split and unique security ID. In the authenticated browser, 10 distinct tasks
 displayed all three charts without symbol/date/score. The isolated smoke path
 saved one task, restored it after refresh, and created revision 2. The separate
-**human** annotation database has not been created; formal human labels = 0.
+**human** annotation database was initialized when the page opened and contains
+zero annotation revisions; formal human labels = 0.
 An initial unused private task build failed the existing verifier because its
 manifest omitted `stratum`. The corrected v2 batch passed. Automatic approval
 review rejected deleting that unused local build, so it remains ignored under
