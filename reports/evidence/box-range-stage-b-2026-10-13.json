@@ -18,7 +18,12 @@
     },
     "weekly_full_52": 35,
     "monthly_full_48": 2,
-    "verified_issuer_alias_separation": false
+    "verified_issuer_alias_separation": false,
+    "as_of_t_single_cik_evidence": 48,
+    "distinct_evidence_ciks": 48,
+    "cik_overlap_with_prior_pilot_stage_a_or_six_references": 0,
+    "official_identity_rows": 0,
+    "compatible_names_rows": 46
   },
   "detector_state_disagreements_on_blind_selection": 33,
   "six_reference_cases_alpaca_sip_checked": 6,

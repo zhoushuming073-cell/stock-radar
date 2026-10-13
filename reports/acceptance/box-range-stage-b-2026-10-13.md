@@ -20,10 +20,15 @@ verdict, human label or future outcome affected selection.
 and 2 probable membership. Eligible indexed security-day denominators by year
 were 680,566 / 830,719 / 854,897 / 665,376. These are **indexed eligible
 security-days, not all US issuers**. The query examines a capped hash-priority
-candidate stream and cross-ticker issuer-alias separation is **not verified**;
-therefore this batch is independent at security-ID level only. It cannot yet
-support a market-wide recall estimate or a passed issuer-level independence
-gate. See the aggregate [receipt](../evidence/box-range-stage-b-2026-10-13.json).
+candidate stream. A read-only check against the exact construction database
+recorded by RI v1 (file SHA-256 matched) found one CIK with evidence already
+available by each T for all 48. These 48 CIKs are distinct and none overlap the
+prior pilot, Stage A diagnostic or six references. **This is still provisional**:
+all 48 are observational `OBS` identities, zero are marked `official_identity`,
+and two have incompatible-name flags. Cross-ticker issuer separation is not
+certified until those conflicts and identity provenance are reviewed. This
+batch cannot yet support a market-wide recall estimate or a passed issuer-level
+independence gate. See the aggregate [receipt](../evidence/box-range-stage-b-2026-10-13.json).
 
 ## Actual data and six supplied unverified examples
 

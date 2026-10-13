@@ -44,6 +44,9 @@ the Git repository diff.
 
 The current aggregate checkpoint and limitations are in
 `reports/acceptance/box-range-stage-b-2026-10-13.md`. The blind batch is
-security-ID independent; cross-ticker issuer alias separation remains unverified.
+security-ID independent. The RI-recorded construction evidence provides one
+as-of-T CIK per task and no CIK overlap with the earlier pools or six familiar
+symbols, but all identities remain observational and two name-compatibility
+flags remain. Issuer separation is provisional until reviewed.
 Do not compute an accuracy rate or advance the lower-band strategy until real
 human structure labels and that identity gate are complete.
