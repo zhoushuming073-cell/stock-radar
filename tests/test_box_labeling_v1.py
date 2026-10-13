@@ -150,6 +150,34 @@ def test_synthetic_only_trainer_contract(tmp_path):
     with pytest.raises(ValueError):class_weights({'BOX':1},('BOX','NOT_BOX'))
 
 
+def test_partial_month_is_encoded_and_padding_is_ignored(tmp_path):
+    torch=pytest.importorskip('torch')
+    from radar.box_labeling.trainer import model_type
+    root=fixture_bundle(tmp_path);store=BoxStore(root,'smoke')
+    payload={'shape':'BOX','position':'LOWER','confidence':'HIGH','reasons':[],
+             'note':'synthetic fixture','expected_revision':0,'label_version':LABEL_VERSION}
+    store.save('taskx',1,payload);store.export_numeric(1,root/'partial.json')
+    row=load_export(root/'partial.json')[0]
+    assert row[1][2]<48 and row[1][2]>0
+    torch.manual_seed(11)
+    model=model_type()().eval()
+    monthly=torch.tensor(row[0][2][None],dtype=torch.float32)
+    length=torch.tensor([row[1][2]],dtype=torch.long)
+    with torch.no_grad():
+        actual=model.encoders[2](monthly,length)
+        changed_padding=monthly.clone();changed_padding[:,:,:-int(length)]=1e6
+        same=model.encoders[2](changed_padding,length)
+        missing=model.encoders[2](monthly,torch.tensor([0]))
+    assert torch.allclose(actual,same)
+    assert actual.abs().sum()>0
+    assert torch.count_nonzero(missing)==0
+    export=json.loads((root/'partial.json').read_bytes())
+    export['examples'][0]['scales']['monthly']['length']+=1
+    (root/'wrong-length.json').write_bytes(packed(export))
+    with pytest.raises(ValueError,match='numeric tensor mismatch'):
+        load_export(root/'wrong-length.json')
+
+
 def test_real_provider_boundary_if_local_data_available():
     root=Path(__file__).resolve().parents[2]/'stock-radar'
     private=root/'config/research_infrastructure_v1.json'

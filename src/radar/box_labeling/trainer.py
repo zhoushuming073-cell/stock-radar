@@ -23,11 +23,13 @@ def load_export(path):
         for scale,n in LENGTHS.items():
             meta=r['scales'][scale]
             x=np.load(meta['path'],allow_pickle=False)
-            if x.ndim!=2 or x.shape[1]!=5 or x.shape[0]>n or digest(x.tobytes())!=meta['sha256']:
+            if (x.ndim!=2 or x.shape[1]!=5 or not 1<=x.shape[0]<=n
+                    or x.shape[0]!=meta['length'] or bool(meta['available'])!=(len(x)==n)
+                    or digest(x.tobytes())!=meta['sha256']):
                 raise ValueError('numeric tensor mismatch')
             padded=np.zeros((n,5),dtype=np.float32);padded[-len(x):]=x
-            xs.append(padded.T);masks.append(bool(meta['available']))
-        rows.append((xs,np.asarray(masks,dtype=np.float32),SHAPE_CLASSES.index(r['shape_label']),
+            xs.append(padded.T);masks.append(len(x))
+        rows.append((xs,np.asarray(masks,dtype=np.int64),SHAPE_CLASSES.index(r['shape_label']),
                      POSITION_CLASSES.index(r['position_label']),r['split']))
     return rows
 
@@ -39,9 +41,16 @@ def model_type():
     class Encoder(nn.Module):
         def __init__(self):
             super().__init__()
-            self.net=nn.Sequential(nn.Conv1d(5,16,5,padding=2),nn.ReLU(),
-                nn.Conv1d(16,24,5,padding=2),nn.ReLU(),nn.AdaptiveAvgPool1d(1),nn.Flatten())
-        def forward(self,x):return self.net(x)
+            self.first=nn.Conv1d(5,16,5,padding=2)
+            self.second=nn.Conv1d(16,24,5,padding=2)
+        def forward(self,x,length):
+            n=x.shape[-1]
+            if torch.any((length<0)|(length>n)):
+                raise ValueError('observed length outside sequence')
+            observed=(torch.arange(n,device=x.device)[None,:]>=n-length[:,None]).unsqueeze(1)
+            h=torch.relu(self.first(x*observed))*observed
+            h=torch.relu(self.second(h))*observed
+            return h.sum(dim=-1)/length.clamp(min=1).unsqueeze(1)
 
     class MultiScaleBox(nn.Module):
         def __init__(self):
@@ -50,8 +59,8 @@ def model_type():
             self.fusion=nn.Sequential(nn.Linear(72,32),nn.ReLU())
             self.shape_head=nn.Linear(32,3)
             self.position_head=nn.Linear(32,5)
-        def forward(self,daily,weekly,monthly,mask):
-            z=torch.cat([encoder(x)*mask[:,i:i+1] for i,(encoder,x) in
+        def forward(self,daily,weekly,monthly,lengths):
+            z=torch.cat([encoder(x,lengths[:,i]) for i,(encoder,x) in
                          enumerate(zip(self.encoders,(daily,weekly,monthly)))],dim=1)
             h=self.fusion(z)
             return self.shape_head(h),self.position_head(h)
@@ -113,7 +122,7 @@ def fit_numeric_export(export_path, checkpoint_path, *, seed=20261011, epochs=5,
 
     def batch(items):
         xs=[torch.tensor(np.stack([r[0][i] for r in items]),dtype=torch.float32) for i in range(3)]
-        mask=torch.tensor(np.stack([r[1] for r in items]),dtype=torch.float32)
+        mask=torch.tensor(np.stack([r[1] for r in items]),dtype=torch.long)
         sy=torch.tensor([r[2] for r in items],dtype=torch.long)
         py=torch.tensor([r[3] for r in items],dtype=torch.long)
         return xs,mask,sy,py
@@ -133,7 +142,7 @@ def fit_numeric_export(export_path, checkpoint_path, *, seed=20261011, epochs=5,
             'position_calibration':calibration(vpy.numpy(),pp)}
     config={'seed':seed,'epochs':epochs,'learning_rate':learning_rate,
             'shape_weights':shape_weights,'position_weights':position_weights}
-    metadata={'model':'multi-scale-1d-cnn-v1','source_code_sha256':digest(Path(__file__).read_bytes()),
+    metadata={'model':'multi-scale-1d-cnn-v2-length-masked','source_code_sha256':digest(Path(__file__).read_bytes()),
               'fit_config_sha256':digest(json.dumps(config,sort_keys=True).encode()),
               'numeric_export_sha256':digest(Path(export_path).read_bytes()),
               'train_count':len(train),'validation_count':len(valid)}
@@ -151,7 +160,7 @@ def synthetic_smoke(seed=20261011):
     optimizer=torch.optim.Adam(model.parameters(),lr=.001)
     arrays=[torch.tensor(rng.normal(size=(8,5,n)),dtype=torch.float32)
             for n in LENGTHS.values()]
-    mask=torch.ones((8,3),dtype=torch.float32)
+    mask=torch.tensor([list(LENGTHS.values())]*8,dtype=torch.long)
     shape=torch.tensor(rng.integers(0,3,size=8),dtype=torch.long)
     position=torch.tensor(rng.integers(0,5,size=8),dtype=torch.long)
     logits_s,logits_p=model(*arrays,mask)
