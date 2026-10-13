@@ -1,0 +1,22 @@
+version: box-labeling-v1
+candidate_plugin: loose-box-v1
+candidate:
+  sessions: 126
+  min_width: 0.08
+  min_occupancy: 0.52
+  min_turns: 2
+  max_abs_drift: 0.65
+  min_position: -0.20
+sampling:
+  seed: 20261011
+  target: 30
+  positive: 0.70
+  boundary: 0.20
+  control: 0.10
+  cooldown_sessions: 126
+  splits: [train, validation]
+numeric:
+  daily: 42
+  weekly: 52
+  monthly: 48
+  normalization_version: box-numeric-ohlcv-v2-42d-52w-48m

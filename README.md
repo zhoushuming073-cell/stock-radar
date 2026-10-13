@@ -41,6 +41,8 @@
 
 ## Overview
 
+**Current research engineering · 2026-10-11:** A local [Box Structure Labeling v1 workflow](docs/BOX_LABELING_V1.md) now prepares past-only Daily 2-month / Weekly 1-year / Monthly 4-year candlestick tasks from frozen Research Infrastructure v1, saves human structure/position labels with immutable revisions, and exports numeric OHLCV tensors for later model research. The first 30-task batch is local and private; 6 tasks have the full four-year monthly history, and shorter histories are explicitly shown. The sidebar links to the authenticated label page; no real-label model training or profitability conclusion has been made. [Acceptance evidence](reports/acceptance/box-labeling-v1-2026-10-11.md).
+
 **Current local database status · 2026-10-08:** Research Infrastructure v1 is **FROZEN**, Shape Research is READY, General PIT is Tier 1 (deep/audit). Broad database expansion is CLOSED; maintenance and local strategy/visual research continue. Supported safe candles: 5,407,961; technical readiness: 83.8733% of observed common member-days. Fresh decision lookback is corrected; formal frozen-strategy QC validation remains NOT_RUN. [Infrastructure and default API](docs/RESEARCH_INFRASTRUCTURE_V1.md), [47-answer finalization](reports/acceptance/research-infrastructure-v1-finalization-2026-10-08.md).
 
 **Current stage · 2026-10-07:** research infrastructure and initial local LEAN
