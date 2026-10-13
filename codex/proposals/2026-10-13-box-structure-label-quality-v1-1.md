@@ -7,6 +7,8 @@
 > Authority: `AGENTS.md` → canonical ledger → `docs/RESEARCH_MASTER_GUIDE.md` → `codex/tasks/ACTIVE.md`. This proposal does not override that chain.
 > Activation: only when the owner explicitly approves this scope and updates `codex/tasks/ACTIVE.md`. Until then, **read/review only**. No unattended implementation.
 
+> **2026-10-13 dependency update:** Draft PR #21 now includes the observed-length mask repair at `2a283affeef6336116f5eb8456b914d64bc53f08`, with [separate follow-up evidence](https://github.com/zhoushuming073-cell/stock-radar/blob/feature/box-labeling-v1-20261011/reports/acceptance/box-partial-scale-mask-repair-2026-10-13.md). The original October 11 snapshot and gap description below remain historical; do not repeat this repair. Actual v1.1 label ontology, sampling audit and human pilot are still proposed. Read-only local check found 0 human labels.
+
 ## Codex mission and research question
 
 You are the research engineer responsible for **measurement validity**, not for producing a profitable equity curve. Investigate whether historical OHLCV contains a **well-defined, reproducible, learnable range/box structure**. Build the minimum trustworthy labels and numeric representations needed to test:

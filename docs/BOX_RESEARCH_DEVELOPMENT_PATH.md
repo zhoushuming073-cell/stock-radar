@@ -18,9 +18,10 @@ The first three documents describe complementary parts of one box research track
 ## Verified starting point and evidence limits
 
 - Remote main at review: `5165f98b250751ee1a1eea0882ad1980deadf1a8`.
-- Box implementation: unmerged draft [PR #21](https://github.com/zhoushuming073-cell/stock-radar/pull/21), head `07222782657d2ba2068dd5f7ae41cc5b6e72b2aa`.
+- Box implementation: unmerged draft [PR #21](https://github.com/zhoushuming073-cell/stock-radar/pull/21), current reviewed head `2a283affeef6336116f5eb8456b914d64bc53f08`.
 - Its dated acceptance reports 30 historical tasks, 90 charts, 0 human annotations and 719 passed / 17 skipped. Those are **2026-10-11 receipts**, not freshly measured label counts or new test results.
-- Source review confirms `numeric_bundle()` sets `available` only for full-length scales; `load_export()` carries that boolean and `MultiScaleBox.forward()` zeroes the whole partial-scale embedding. Valid partial monthly/weekly history is therefore discarded by the scaffold. This is a verified representation defect to fix before substantive training; it does not mean the displayed partial candles are fabricated.
+- The October 11 source used the full-length `available` flag to zero whole partial-scale embeddings. The October 13 [repair receipt](https://github.com/zhoushuming073-cell/stock-radar/blob/feature/box-labeling-v1-20261011/reports/acceptance/box-partial-scale-mask-repair-2026-10-13.md) on PR #21 replaces that model behavior with observed-length masks; 9 targeted and 720 full-project tests passed (17 skipped). This closes the known mask defect, while the proposed v1.1 ontology and sampling changes remain unstarted.
+- Local private annotation count was checked read-only on October 13: 0 formal human revisions/tasks; smoke has 4 revisions on 3 tasks and 1 skip. Do not use smoke labels as Ground Truth.
 - The permissive selector uses 126 daily sessions while the close-up daily display has 42. This is a definition/display tradeoff, not by itself evidence of leakage.
 - Only 6/30 tasks had 48 monthly bars at the acceptance snapshot. RI v1 begins September 2021; four prior years cannot be invented for early Train cases. Preserve observed lengths.
 - This review did not rerun pytest, read future outcomes, recount private labels, train a model, or run LEAN/QC. External references are the briefs' proposed reading list; this pass does not certify external algorithms, licenses or scientific claims.
@@ -42,7 +43,7 @@ The first three documents describe complementary parts of one box research track
 | Step | Concrete deliverable | Exit gate / next decision |
 | --- | --- | --- |
 | P0 — baseline audit | Exact PR #21 dependency receipt; current human/smoke counts, coverage, versions and gap register | Distinguish verified bug, design choice and data limit; preserve all v1 artifacts |
-| P1 — labeling v1.1 foundation | Length-aware observed-step masks; separate coverage metadata; mask-aware encoder/pooling; versioned ontology, handbook and additive label storage | Partial real bars contribute; padding cannot change equivalent observed-input predictions; post-T changes leave T artifacts unchanged; regression + real browser smoke |
+| P1 — labeling v1.1 foundation | **Mask component repaired in PR #21**; remaining: v1.1 ontology, handbook, sampling/coverage audit and additive label storage | Partial real bars contribute and padding is ignored in tested scaffold; new label semantics still need a separate review and real browser acceptance |
 | P2 — independent structure detector | Small typed result contract; quantile baseline and pivot-zone comparator; bounded 8–26 completed-week searches within available prior 52 weeks; touches, swings, clarity, uniformity, expiry | Causal fixtures and negative controls pass; deterministic runtime/candidate counts on real permitted history; no human-accuracy claim yet |
 | P3 — blinded human pilot | New versioned 150–300-case pool if safe coverage permits; first 20–40 human judgments; delayed repeats and independently chosen controls | Report real uncertainty/repeat agreement and boundary dispersion; revise ontology if unreliable; no invented numeric success threshold |
 | P4 — structural comparison | Freeze detector settings before evaluating independent labeled groups; compare rule/base-rate, simple descriptor model and only then small CNN/TCN if authorized | Group/time-separated macro/class metrics, calibration, scale/stratum ablations and uncertainty; enough independent labels required |
@@ -59,7 +60,7 @@ S1 stays outside this dependency chain. If activated later, first audit historic
 
 Activate **P0 + P1 / BOX-LQ1 foundations** first when the owner asks to implement the next phase. Base code work explicitly on the verified PR #21 head; use one dependent implementation branch. If PR #21 remains unmerged, make that dependency visible in the PR rather than copying sources into main.
 
-Expected scope: audit receipts; corrected partial-history representation; label v1.1 handbook/schema/storage compatibility; isolated human/smoke UI; targeted causal/mask tests; full regression and browser acceptance. Stop at pilot readiness. Neither real-label training nor detector expansion, future-Y or backtests belongs to this first work order.
+Expected scope: complete the remaining audit receipts, label v1.1 handbook/schema/storage compatibility and isolated browser acceptance. Reuse the verified partial-history repair in PR #21; do not rebuild it. Stop at pilot readiness. Neither real-label training nor detector expansion, future-Y or backtests belongs to this first work order.
 
 Owner involvement begins with a small pilot after engineering readiness: judge structure and position, flag ambiguous definitions, then inspect aggregate reliability. The assistant handles candidate preparation and persistence; it cannot supply subjective human Ground Truth.
 

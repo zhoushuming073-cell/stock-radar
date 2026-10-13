@@ -8,7 +8,7 @@
 | --- | --- | --- |
 | `main` | Accepted repository baseline | Default reading entry |
 | `docs/codex-box-shock-research-20261013` / [#23](https://github.com/zhoushuming073-cell/stock-radar/pull/23) | Four research briefs, consolidated roadmap and this branch index | Single documentation review entry; planning only |
-| `feature/box-labeling-v1-20261011` / [#21](https://github.com/zhoushuming073-cell/stock-radar/pull/21) | Current box labeling engineering baseline | Retain draft; partial-scale mask issue requires follow-up before training |
+| `feature/box-labeling-v1-20261011` / [#21](https://github.com/zhoushuming073-cell/stock-radar/pull/21) | Current box labeling engineering baseline | Retain draft; partial-scale mask repaired at `2a283af`; human-label quality and model efficacy remain untested |
 
 ## Retained research checkpoints
 
