@@ -14,3 +14,6 @@ This is the canonical repository location for Codex work instructions.
 Current research authority: [Research Master Guide](../docs/RESEARCH_MASTER_GUIDE.md). The dual-stage v3 document is now a shared Vision/Human/Y subsystem specification, not the sole project roadmap.
 
 Do not commit real market candles/images, private label data, the Label Studio database, local sessions or credentials. Historical acceptance reports are immutable audit evidence; current status belongs to the single canonical ledger.
+## Research proposals (not active)
+
+Two owner-requested Codex research briefs are indexed at [codex/proposals/README.md](proposals/README.md): **BOX-LQ1** (box ontology, labeling reliability and numeric-mask repairs) and **S1** (market shock transmission and resilience). These are **not ACTIVE tasks**, confer no execution permission and must not replace `codex/tasks/ACTIVE.md` without explicit owner authorization.
