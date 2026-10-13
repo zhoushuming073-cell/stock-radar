@@ -3,10 +3,12 @@
 > Updated: 2026-10-13  
 > Status: **Research proposals, NOT active work orders**. This index neither authorizes execution nor supersedes `codex/tasks/ACTIVE.md`.
 
-This directory preserves two **independent, testable research directions** formulated from peer-reviewed finance and weak-supervision literature. They are Codex-oriented briefs, not proof of profitability and not a commitment to implement both simultaneously.
+This index organizes **four briefs into two research tracks**. The three box documents complement each other; S1 is independent. Read the [consolidated development path](../../docs/BOX_RESEARCH_DEVELOPMENT_PATH.md) for the reviewed priority order: audit and label/mask foundations → independent detector → human pilot → gated model comparison → separately authorized economic research.
 
 | ID | Research track | Immediate engineering hypothesis | Dependencies | Proposed first gate |
 | --- | --- | --- | --- | --- |
+| BOX-DESIGN | [Box/range structure design](../tasks/2026-10-13-box-range-structure-research-design-prompt.md) | Define historical ranges, quality, structure versus entry, and later +5% objectives | Existing box foundation; geometry proposals are not accepted performance | Resolve ontology and causal segment timing |
+| BOX-REA | [Evidence-led independent rectangle recognition](../tasks/2026-10-13-rea-assisted-box-recognition-research.md) | Add a pivot/zone rule comparator with explicit confirmation latency | PR #21; REA is optional, proprietary outputs are not labels | Independent baseline and negative-control fixtures after foundations |
 | BOX-LQ1 | [Box Structure Ontology, Label Reliability & Multi-scale Numeric Representation v1.1](2026-10-13-box-structure-label-quality-v1-1.md) | Establish reliable human definitions, sampling controls, and causally masked numeric OHLCV representations **before** training a real model | Box Labeling v1 code in **unmerged PR #21**; 30 prepared tasks, 0 genuine human labels | Verify PR #21 code, fix proven masking/coverage problems and run a human-label reliability pilot |
 | S1 | [Market Shock Transmission, Relative Dislocation & Resilience](2026-10-13-shock-transmission-resilience-s1.md) | Test whether abnormal stock-vs-peers shocks and risk/liquidity regime interactions contain incremental short-horizon information | Frozen RI v1; independent of Box / Vision; no historically trustworthy news event layer yet | **S1.0 data feasibility audit**, then separate authorization for event outcome analysis |
 
@@ -23,7 +25,7 @@ Both briefs fit the project's existing research taxonomy as **Quant-only** resea
 
 ## Governance and privacy
 
-- The current `ACTIVE.md` task is unchanged. Both proposals are **NOT_RUN**.
+- The current `ACTIVE.md` task is unchanged. New work described by all four briefs is **NOT_RUN**; PR #21 supplies the existing v1 engineering baseline only.
 - No human labels or observed Alpha have been created by adding these files.
 - No historical database or private OHLCV, SVGs, identities, raw study outcomes, personal annotation DB or credentials are committed.
 - No QuantConnect Cloud, live broker execution, external paid data or result-driven threshold tuning is authorized.
