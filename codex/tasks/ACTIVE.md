@@ -48,6 +48,13 @@ the full historical period. A naive full serial run appears to require many
 days of compute, so the next task is a proven lossless candidate prefilter or
 equivalent throughput improvement before attempting full Train/Validation
 coverage. Identity/raw execution-price gates remain independent and open.
+The [necessary-gate follow-up](2026-10-14-box-necessary-gate-stage-d.md) now
+has a T-only rule derived from the exact Stage C target state. Its [one-day
+audit](../../reports/acceptance/box-fast-gate-stage-d-2026-10-14.md) rejects
+2,723/3,944 rows while retaining all 96 near-lower rows from the complete
+reference scan. This does not verify other detector states or prove multi-year
+speed. Next integrate a separate candidate-only resumable scan and benchmark
+on more than one Train/Validation period before launching the full history.
 
 ## Historical Stage B checkpoint (preserved)
 

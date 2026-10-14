@@ -51,3 +51,9 @@ identities are certified, that raw LEAN execution data are available, or that
 the detector predicts returns. Before a complete historical run, use the
 measured day-level runtime to plan the long scan and keep its private
 artifacts outside Git.
+
+The later [necessary-gate audit](../reports/acceptance/box-fast-gate-stage-d-2026-10-14.md)
+checks only whether a row could reach the exact Stage C near-lower state.
+It rejects 69.0% of one real Train day's eligible rows without dropping any
+of its 96 full-scan near-lower cases. It does not recover the other detector
+states, and it has not yet been integrated into this full-state scanner.
