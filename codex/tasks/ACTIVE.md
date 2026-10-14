@@ -52,9 +52,16 @@ The [necessary-gate follow-up](2026-10-14-box-necessary-gate-stage-d.md) now
 has a T-only rule derived from the exact Stage C target state. Its [one-day
 audit](../../reports/acceptance/box-fast-gate-stage-d-2026-10-14.md) rejects
 2,723/3,944 rows while retaining all 96 near-lower rows from the complete
-reference scan. This does not verify other detector states or prove multi-year
-speed. Next integrate a separate candidate-only resumable scan and benchmark
-on more than one Train/Validation period before launching the full history.
+reference scan. The separate [candidate-only scan](2026-10-14-box-candidate-scan-stage-d.md)
+now passed a complete Train day (96 exact contexts equal to the full reference)
+and a Validation day (146 contexts) with immutable receipts. Train detector
+compute fell from 595.383 to 163.685 seconds; Validation retained a different
+47.2% of eligible rows, so a single rejection rate cannot be extrapolated.
+The [acceptance](../../reports/acceptance/box-candidate-scan-stage-d-2026-10-14.md)
+is engineering evidence only. Next extend resumable Train/Validation coverage
+in bounded intervals and address issuer/raw-price dependencies; the target-only
+path cannot replace the complete detector-state audit. Full history remains
+unscanned, and formal structure accuracy or returns remain unverified.
 
 ## Historical Stage B checkpoint (preserved)
 

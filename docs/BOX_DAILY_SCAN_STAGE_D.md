@@ -56,4 +56,25 @@ The later [necessary-gate audit](../reports/acceptance/box-fast-gate-stage-d-202
 checks only whether a row could reach the exact Stage C near-lower state.
 It rejects 69.0% of one real Train day's eligible rows without dropping any
 of its 96 full-scan near-lower cases. It does not recover the other detector
-states, and it has not yet been integrated into this full-state scanner.
+states, and it is not integrated into this full-state scanner.
+
+The separate [candidate-only scanner](../reports/acceptance/box-candidate-scan-stage-d-2026-10-14.md)
+keeps only near-lower contexts. Unknown prefixes still undergo full detector
+evaluation. It accepts the same frozen split bounds and writes separate
+private immutable receipts. One complete Train day matches the full-state
+reference exactly; one Validation day has also been scanned, without a
+full-state Validation comparator. To continue or verify one day:
+
+```powershell
+$env:PYTHONPATH = (Resolve-Path src).Path
+..\stock-radar\.venv\Scripts\python.exe -m scripts.scan_box_near_lower_stage_d `
+  --research-root ..\stock-radar --split validation `
+  --start 2025-06-02 --end 2025-06-02 `
+  --output-dir ..\stock-radar\data\box-range-stage-d\near-lower-candidate-v1 `
+  --verify-only
+```
+
+Remove `--verify-only` to create missing chunks, and optionally set
+`--max-new-chunks 1` to bound each invocation. The full-state scanner remains
+necessary for any study of other box states. Neither path produces orders or
+formal portfolio results.
