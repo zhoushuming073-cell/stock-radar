@@ -21,6 +21,12 @@ signal or LEAN backtest. The next autonomous step is to resolve the remaining
 observational issuer provenance and establish an explicitly bounded, trusted
 Train/Validation outcome/LEAN protocol. Do not use Historical Test/Fresh for
 rule selection or report formal profitability while provenance is provisional.
+The [2026-10-14 as-of-T issuer-alias follow-up](../../reports/acceptance/box-range-issuer-alias-asof-t-2026-10-14.md)
+found 4 frozen rows with another active security ID sharing their CIK and
+1 with an as-of-T name conflict; 43 have no known conflict but remain
+observational. The five risk rows are isolated for later exploratory work.
+This narrows the eligible diagnostic subset; it does not close the official
+identity or LEAN execution-data gates.
 
 ## Historical Stage B checkpoint (preserved)
 

@@ -45,3 +45,8 @@ the eligible-market denominator, do not establish accuracy or returns, and
 do not justify threshold tuning. All selected identities remain observational
 under frozen RI v1; formal outcome/LEAN work requires an independently trusted
 execution population and a separate frozen rule contract.
+
+The [subsequent as-of-T issuer-alias audit](../reports/acceptance/box-range-issuer-alias-asof-t-2026-10-14.md)
+found four contemporaneous same-CIK aliases and one known name conflict in the
+48-row sample. Those five rows are isolated from later exploratory analysis;
+the other 43 still have observational, not official, identity provenance.
