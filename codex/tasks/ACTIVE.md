@@ -33,6 +33,13 @@ rows, but 41 use split-adjusted basis and 17 also have alternative source/basis
 rows. Matching metadata is not a tradable-price, corporate-action or LEAN
 readiness certificate. A full historical signal stream and frozen execution
 rules are still absent; do not promote this small diagnostic to a backtest.
+The [split-bounded 10-session follow-up](../../reports/acceptance/box-execution-horizon-metadata-2026-10-14.md)
+found 430/430 research-metadata sessions but only 20/430 same-source raw
+sessions; just 2/43 sampled tasks have a complete unflagged raw horizon.
+One matched-basis later session has an action/readiness flag. This establishes
+a concrete raw-price closure gap, not a return or LEAN result. Continue with
+separate, resumable Train/Validation daily detector scans and issuer/raw-price
+dependency work; do not bypass the existing PIT/LEAN gates.
 
 ## Historical Stage B checkpoint (preserved)
 

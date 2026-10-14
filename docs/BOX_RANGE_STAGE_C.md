@@ -54,3 +54,10 @@ the other 43 still have observational, not official, identity provenance.
 The [T+1 metadata preflight](../reports/acceptance/box-execution-metadata-preflight-2026-10-14.md)
 finds source/basis-matched research rows for all 43. This is one-session
 coverage, not an executable price or local LEAN acceptance.
+
+The [10-session metadata audit](../reports/acceptance/box-execution-horizon-metadata-2026-10-14.md)
+stays within Train/Validation and reads no future OHLCV. It finds only 20 of
+430 later sessions with same-source raw rows; only 2 of 43 diagnostic tasks
+have a complete unflagged raw horizon. This is the immediate execution-data
+gap. Split-adjusted box-research bars cannot substitute for the native LEAN
+raw price/action closure.
