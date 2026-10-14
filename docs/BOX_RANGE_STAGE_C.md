@@ -50,3 +50,7 @@ The [subsequent as-of-T issuer-alias audit](../reports/acceptance/box-range-issu
 found four contemporaneous same-CIK aliases and one known name conflict in the
 48-row sample. Those five rows are isolated from later exploratory analysis;
 the other 43 still have observational, not official, identity provenance.
+
+The [T+1 metadata preflight](../reports/acceptance/box-execution-metadata-preflight-2026-10-14.md)
+finds source/basis-matched research rows for all 43. This is one-session
+coverage, not an executable price or local LEAN acceptance.

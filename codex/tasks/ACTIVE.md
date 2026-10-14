@@ -27,6 +27,12 @@ found 4 frozen rows with another active security ID sharing their CIK and
 observational. The five risk rows are isolated for later exploratory work.
 This narrows the eligible diagnostic subset; it does not close the official
 identity or LEAN execution-data gates.
+The [T+1 execution-metadata preflight](../../reports/acceptance/box-execution-metadata-preflight-2026-10-14.md)
+then found a matching next-session research bar for all 43 observational
+rows, but 41 use split-adjusted basis and 17 also have alternative source/basis
+rows. Matching metadata is not a tradable-price, corporate-action or LEAN
+readiness certificate. A full historical signal stream and frozen execution
+rules are still absent; do not promote this small diagnostic to a backtest.
 
 ## Historical Stage B checkpoint (preserved)
 

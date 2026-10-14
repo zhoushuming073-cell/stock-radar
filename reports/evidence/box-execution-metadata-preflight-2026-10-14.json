@@ -1,0 +1,18 @@
+{
+  "version": "box-execution-metadata-preflight-v1",
+  "date": "2026-10-14",
+  "selection_sha256": "f64acf27893960ed3ac449d398a89bf0cdf4396d170c6669e8ab5043644f15a5",
+  "context_sha256": "88e3449deaaa8a1ee74cfdf1ac0d6bdf7132adb2a984e7d3609c6ae8f18e00c3",
+  "alias_sha256": "879bdaffa6ad9f4fcc5a85bd57cb5697a839c7969de6dc7c9b76b94bb36bf422",
+  "private_receipt_sha256": "343ed24ee1c9ac557274becb8a4b9a623144e01bffb4c8d2a3708d4a9526966d",
+  "observational_rows_checked": 43,
+  "metadata_complete_rows": 43,
+  "alternative_source_or_basis_rows": 17,
+  "next_basis": {"raw": 2, "split": 41},
+  "issues": {},
+  "near_lower_quantile_rows": 1,
+  "near_lower_pivot_rows": 0,
+  "formal_lean_ready": false,
+  "future_prices_read": false,
+  "future_outcomes_read": false
+}
