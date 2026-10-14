@@ -122,3 +122,10 @@ checks. It finds zero same-source raw candidate sessions in the 2022 sample,
 despite limited raw rows elsewhere in the period. Continuous prefix verification
 later reached 224/753 Train and 8/235 Validation sessions. These candidate
 contexts still have no official identity or formal execution certificate.
+
+The [source/basis aggregate audit](../reports/acceptance/box-candidate-source-basis-2026-10-14.md)
+uses the existing private chunk verifier and a second file-set hash check.
+It exposes a structural provenance dependency: all 14,358 checked Train
+contexts and 965/1,140 checked Validation contexts are split-adjusted legacy
+series with no same-source raw series in the frozen database. It does not
+remap other-source raw prices or change Research Infrastructure v1.

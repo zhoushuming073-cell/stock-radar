@@ -112,6 +112,16 @@ The live continuous prefixes now verify 224/753 Train and 8/235 Validation
 sessions. Official identity, raw price/action/factor and portfolio-rule gates
 remain open; no formal LEAN backtest is authorized by these counts.
 
+The [verified source/basis audit](../../reports/acceptance/box-candidate-source-basis-2026-10-14.md)
+shows the current price provenance constraint across the same prefixes:
+14,358/14,358 Train candidates and 965/1,140 Validation candidates use
+split-adjusted legacy source series, while 175 Validation candidates use
+Dolt raw. The frozen database has no `legacy:alpaca:sip` raw series in the
+checked Train/Validation range. Existing same-source raw checks cannot be
+waived by borrowing a different source. Keep scans running; any cross-source
+execution bridge needs an explicit new version and independent identity,
+price/action/factor acceptance before formal LEAN use.
+
 ## Historical Stage B checkpoint (preserved)
 
 The owner authorized continuing the existing roadmap on 2026-10-13 without
