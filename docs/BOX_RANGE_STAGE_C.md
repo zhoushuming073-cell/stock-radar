@@ -61,3 +61,8 @@ stays within Train/Validation and reads no future OHLCV. It finds only 20 of
 have a complete unflagged raw horizon. This is the immediate execution-data
 gap. Split-adjusted box-research bars cannot substitute for the native LEAN
 raw price/action closure.
+
+The downstream [Stage D daily context scanner](BOX_DAILY_SCAN_STAGE_D.md)
+now has a real one-day acceptance with immutable private chunks and explicit
+remaining historical coverage. It remains research context, not a strategy
+order stream or LEAN result.

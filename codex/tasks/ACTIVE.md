@@ -40,6 +40,14 @@ One matched-basis later session has an action/readiness flag. This establishes
 a concrete raw-price closure gap, not a return or LEAN result. Continue with
 separate, resumable Train/Validation daily detector scans and issuer/raw-price
 dependency work; do not bypass the existing PIT/LEAN gates.
+The [Stage D work order](2026-10-14-box-daily-scan-stage-d.md) now has a
+resumable, hash-verified daily scan and aggregate verifier. Its [real local
+acceptance](../../reports/acceptance/box-daily-scan-stage-d-2026-10-14.md)
+covers one complete Train day (3,944 eligible security-days, 16 chunks), not
+the full historical period. A naive full serial run appears to require many
+days of compute, so the next task is a proven lossless candidate prefilter or
+equivalent throughput improvement before attempting full Train/Validation
+coverage. Identity/raw execution-price gates remain independent and open.
 
 ## Historical Stage B checkpoint (preserved)
 
