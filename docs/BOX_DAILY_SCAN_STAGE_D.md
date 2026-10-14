@@ -61,9 +61,9 @@ states, and it is not integrated into this full-state scanner.
 The separate [candidate-only scanner](../reports/acceptance/box-candidate-scan-stage-d-2026-10-14.md)
 keeps only near-lower contexts. Unknown prefixes still undergo full detector
 evaluation. It accepts the same frozen split bounds and writes separate
-private immutable receipts. One complete Train day matches the full-state
-reference exactly; one Validation day has also been scanned, without a
-full-state Validation comparator. To continue or verify one day:
+private immutable receipts. A complete Train reference day matches the
+full-state scan exactly; later independent comparisons also matched complete
+Validation reference days. To continue or verify one day:
 
 ```powershell
 $env:PYTHONPATH = (Resolve-Path src).Path
@@ -129,3 +129,9 @@ It exposes a structural provenance dependency: all 14,358 checked Train
 contexts and 965/1,140 checked Validation contexts are split-adjusted legacy
 series with no same-source raw series in the frozen database. It does not
 remap other-source raw prices or change Research Infrastructure v1.
+
+The [later prefix distribution receipt](../reports/acceptance/box-candidate-prefix-distribution-2026-10-14.md)
+verifies 228/753 Train and 11/235 Validation sessions. The first 125 Train
+sessions are a contiguous zero-eligible 126-session warmup; candidate daily
+counts are summarized only after separating that denominator. Full historical
+coverage and formal quality/execution gates remain incomplete.

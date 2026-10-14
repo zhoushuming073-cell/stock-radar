@@ -122,6 +122,14 @@ waived by borrowing a different source. Keep scans running; any cross-source
 execution bridge needs an explicit new version and independent identity,
 price/action/factor acceptance before formal LEAN use.
 
+The [later continuous-prefix and distribution receipt](../../reports/acceptance/box-candidate-prefix-distribution-2026-10-14.md)
+verifies 228/753 Train sessions (698/698 chunks, 14,891 contexts) and
+11/235 Validation sessions (90/90 chunks, 1,670 contexts). Train's first
+125 sessions have no eligible 126-session windows; only 103 sessions in this
+prefix contribute eligible security-days. Both full-split background scans
+continue. Do not report 228 populated Train sessions or treat daily context
+counts as detector truth, order signals or return evidence.
+
 ## Historical Stage B checkpoint (preserved)
 
 The owner authorized continuing the existing roadmap on 2026-10-13 without
