@@ -14,6 +14,21 @@ from radar.box_labeling.history import BoxHistory
 from radar.box_labeling.stage_b import DOMAIN, EXCLUDED_SYMBOLS, digest
 
 
+def as_of_t_evidence(connection: duckdb.DuckDBPyConnection,
+                     selected: list[dict]) -> list[tuple]:
+    """Count only issuer evidence available at each frozen decision date."""
+    connection.register("selected", pd.DataFrame(selected)[["security_id", "decision_date"]])
+    return connection.execute("""SELECT s.security_id,
+        count(DISTINCT e.cik) FILTER (WHERE CAST(e.available_on AS DATE)
+            <= CAST(s.decision_date AS DATE)),
+        count(*) FILTER (WHERE e.name_compatible IS FALSE AND
+            CAST(e.available_on AS DATE) <= CAST(s.decision_date AS DATE)),
+        count(*) FILTER (WHERE e.name_compatible IS FALSE AND
+            CAST(e.available_on AS DATE) > CAST(s.decision_date AS DATE))
+        FROM selected s LEFT JOIN issuer_evidence e USING(security_id)
+        GROUP BY s.security_id""").fetchall()
+
+
 def audit(research_root: Path, selection: Path, prior_manifest: Path) -> dict:
     frozen = json.loads(selection.read_bytes())
     selected = frozen["rows"]
@@ -55,12 +70,7 @@ def audit(research_root: Path, selection: Path, prior_manifest: Path) -> dict:
         by_id = defaultdict(set)
         for security_id, cik in evidence:
             by_id[security_id].add(cik)
-        c.register("selected", pd.DataFrame(selected)[["security_id", "decision_date"]])
-        asof = c.execute("""SELECT s.security_id,
-            count(DISTINCT e.cik) FILTER (WHERE CAST(e.available_on AS DATE)
-                <= CAST(s.decision_date AS DATE))
-            FROM selected s LEFT JOIN issuer_evidence e USING(security_id)
-            GROUP BY s.security_id""").fetchall()
+        asof = as_of_t_evidence(c, selected)
         quality = c.execute("""SELECT count(*),
             count(*) FILTER (WHERE official_identity),
             count(*) FILTER (WHERE cik_count=1),
@@ -75,14 +85,17 @@ def audit(research_root: Path, selection: Path, prior_manifest: Path) -> dict:
         "ri_recorded_construction_sha256": source["sha256"],
         "selected": len(selected_ids),
         "all_time_cik_counts": dict(sorted(Counter(len(by_id[i]) for i in selected_ids).items())),
-        "as_of_t_cik_counts": dict(sorted(Counter(n for _, n in asof).items())),
+        "as_of_t_cik_counts": dict(sorted(Counter(n for _, n, _, _ in asof).items())),
+        "as_of_t_incompatible_name_ids": sum(before > 0 for _, _, before, _ in asof),
+        "post_t_only_incompatible_name_ids": sum(
+            before == 0 and after > 0 for _, _, before, after in asof),
         "distinct_selected_ciks": len(chosen_ciks),
         "overlap_ciks_with_prior_pilot": len(chosen_ciks & ciks(previous_ids)),
         "overlap_ciks_with_stage_a": len(chosen_ciks & ciks(stage_a)),
         "overlap_ciks_with_six_references": len(chosen_ciks & ciks(reference)),
         "quality_rows": quality[0], "official_identity_rows": quality[1],
         "single_cik_quality_rows": quality[2], "compatible_names_rows": quality[3],
-        "issuer_alias_gate": "PROVISIONAL; OBS identities are not official and two names fail compatibility",
+        "issuer_alias_gate": "PROVISIONAL; OBS identities are not official, and one as-of-T name conflict requires review",
     }
 
 

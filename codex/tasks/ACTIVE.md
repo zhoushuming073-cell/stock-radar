@@ -8,6 +8,9 @@ is active on a branch stacked on Stage A PR #25 → PR #24 → PR #21. Engineeri
 may proceed through the existing route, but human judgments and data-quality
 gates cannot be waived or simulated. The independent blind 48-task set is frozen
 and the local smoke path passed browser checks; formal human labels are still absent.
+The [2026-10-14 identity follow-up](../../reports/acceptance/box-range-stage-b-identity-followup-2026-10-14.md)
+separated one as-of-T name conflict from one post-T-only flag; identity remains
+provisional and the human annotation store still has zero revisions.
 
 The owner explicitly authorized Stage A on 2026-10-13 after the [revised box route in PR #23](https://github.com/zhoushuming073-cell/stock-radar/pull/23). The bounded [Stage A work order](2026-10-13-box-range-detector-stage-a.md) was executed on a branch based on unmerged [PR #24](https://github.com/zhoushuming073-cell/stock-radar/pull/24), which itself depends on [PR #21](https://github.com/zhoushuming073-cell/stock-radar/pull/21). Preserve all three review dependencies; do not treat this code as merged into main.
 

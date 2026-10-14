@@ -1,0 +1,17 @@
+{
+  "status": "PROVISIONAL",
+  "selection_sha256": "f64acf27893960ed3ac449d398a89bf0cdf4396d170c6669e8ab5043644f15a5",
+  "ri_recorded_construction_version": "bd743ee2310659c839afe1b56fa6ae8fb287d1fc4ed744347ee7db7b83f882c5",
+  "ri_recorded_construction_sha256": "a41a38992bfd2e0e3fc1a91838725ff9f851bde760ed5aaf6a7fc167abced641",
+  "selected": 48,
+  "as_of_t_single_cik_ids": 48,
+  "distinct_selected_ciks": 48,
+  "overlap_ciks_with_prior_pilot": 0,
+  "overlap_ciks_with_stage_a": 0,
+  "overlap_ciks_with_six_references": 0,
+  "all_time_compatible_name_rows": 46,
+  "as_of_t_incompatible_name_ids": 1,
+  "post_t_only_incompatible_name_ids": 1,
+  "official_identity_rows": 0,
+  "human_annotation_revisions_at_audit": 0
+}
