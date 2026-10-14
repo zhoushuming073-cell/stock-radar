@@ -13,6 +13,8 @@ separated one as-of-T name conflict from one post-T-only flag; identity remains
 provisional and the human annotation store still has zero revisions.
 The same read-only source shows 12/48 retrospective C-level identity rows;
 that full-window flag is a review risk, not a causal T-day exclusion rule.
+All 12 C-level observed ends are after their sampled T and each has one active
+ticker episode at T; these bounds do not establish official issuer provenance.
 All 48 causal 126-session chart windows stay within one observed ticker episode
 with one CIK available by T, but this still does not certify official identity.
 The [human progress gate](../../reports/acceptance/box-range-stage-b-human-gate-followup-2026-10-14.md)

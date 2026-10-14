@@ -105,6 +105,26 @@ def audit(research_root: Path, selection: Path, prior_manifest: Path) -> dict:
         retrospective_levels = c.execute("""SELECT q.level,count(*)
             FROM selected s JOIN identity_quality q USING(security_id)
             GROUP BY q.level ORDER BY q.level""").fetchall()
+        c_last_after_t = c.execute("""SELECT count(*)
+            FROM selected s JOIN identity_quality q USING(security_id)
+            WHERE q.level='C'
+            AND CAST(q.last_date AS DATE) > CAST(s.decision_date AS DATE)""").fetchone()[0]
+        c_active_episodes = c.execute("""SELECT n,count(*) FROM (
+            SELECT s.security_id,count(t.interval_id) AS n
+            FROM selected s JOIN identity_quality q USING(security_id)
+            LEFT JOIN ticker_episode t ON t.security_id=s.security_id
+              AND t.valid_from <= CAST(s.decision_date AS DATE)
+              AND t.valid_to >= CAST(s.decision_date AS DATE)
+            WHERE q.level='C' GROUP BY s.security_id)
+            GROUP BY n ORDER BY n""").fetchall()
+        c_known_event_types = c.execute("""SELECT e.event_type,
+            count(DISTINCT s.security_id)
+            FROM selected s JOIN identity_quality q USING(security_id)
+            JOIN lifecycle_event e USING(security_id)
+            WHERE q.level='C'
+              AND e.known_on <= CAST(s.decision_date AS DATE)
+              AND e.effective_date <= CAST(s.decision_date AS DATE)
+            GROUP BY e.event_type ORDER BY e.event_type""").fetchall()
         reviewed_at_t = c.execute("""SELECT count(DISTINCT s.security_id)
             FROM selected s JOIN review_annotation a USING(security_id)
             WHERE a.known_on <= CAST(s.decision_date AS DATE)
@@ -143,6 +163,9 @@ def audit(research_root: Path, selection: Path, prior_manifest: Path) -> dict:
         "as_of_t_reviewed_discontinuity_ids": reviewed_at_t,
         "retrospective_identity_level_counts": dict(retrospective_levels),
         "retrospective_identity_scope": "full-window; not a T-known selection predicate",
+        "retrospective_c_last_observation_after_t": c_last_after_t,
+        "retrospective_c_active_ticker_episode_counts_at_t": dict(c_active_episodes),
+        "retrospective_c_known_lifecycle_event_types_at_t": dict(c_known_event_types),
         "issuer_alias_gate": "PROVISIONAL; OBS identities are not official, and one as-of-T name conflict requires review",
     }
 

@@ -19,6 +19,9 @@
   "as_of_t_reviewed_discontinuity_ids": 0,
   "retrospective_identity_level_counts": {"A": 33, "B": 3, "C": 12},
   "retrospective_identity_scope": "full-window; not a T-known selection predicate",
+  "retrospective_c_last_observation_after_t": 12,
+  "retrospective_c_active_ticker_episode_counts_at_t": {"1": 12},
+  "retrospective_c_known_lifecycle_event_types_at_t": {"new_observation": 5},
   "official_identity_rows": 0,
   "human_annotation_revisions_at_audit": 0
 }
