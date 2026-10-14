@@ -11,6 +11,10 @@ and the local smoke path passed browser checks; formal human labels are still ab
 The [2026-10-14 identity follow-up](../../reports/acceptance/box-range-stage-b-identity-followup-2026-10-14.md)
 separated one as-of-T name conflict from one post-T-only flag; identity remains
 provisional and the human annotation store still has zero revisions.
+The same read-only source shows 12/48 retrospective C-level identity rows;
+that full-window flag is a review risk, not a causal T-day exclusion rule.
+All 48 causal 126-session chart windows stay within one observed ticker episode
+with one CIK available by T, but this still does not certify official identity.
 
 The owner explicitly authorized Stage A on 2026-10-13 after the [revised box route in PR #23](https://github.com/zhoushuming073-cell/stock-radar/pull/23). The bounded [Stage A work order](2026-10-13-box-range-detector-stage-a.md) was executed on a branch based on unmerged [PR #24](https://github.com/zhoushuming073-cell/stock-radar/pull/24), which itself depends on [PR #21](https://github.com/zhoushuming073-cell/stock-radar/pull/21). Preserve all three review dependencies; do not treat this code as merged into main.
 

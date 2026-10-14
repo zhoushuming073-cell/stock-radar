@@ -5,6 +5,9 @@
   "ri_recorded_construction_sha256": "a41a38992bfd2e0e3fc1a91838725ff9f851bde760ed5aaf6a7fc167abced641",
   "selected": 48,
   "as_of_t_single_cik_ids": 48,
+  "window_126_single_ticker_episode_ids": 48,
+  "window_126_single_symbol_ids": 48,
+  "window_126_single_as_of_t_episode_cik_ids": 48,
   "distinct_selected_ciks": 48,
   "overlap_ciks_with_prior_pilot": 0,
   "overlap_ciks_with_stage_a": 0,
@@ -12,6 +15,10 @@
   "all_time_compatible_name_rows": 46,
   "as_of_t_incompatible_name_ids": 1,
   "post_t_only_incompatible_name_ids": 1,
+  "as_of_t_cik_evidence_source_id_counts": {"cik": 48},
+  "as_of_t_reviewed_discontinuity_ids": 0,
+  "retrospective_identity_level_counts": {"A": 33, "B": 3, "C": 12},
+  "retrospective_identity_scope": "full-window; not a T-known selection predicate",
   "official_identity_rows": 0,
   "human_annotation_revisions_at_audit": 0
 }

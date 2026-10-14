@@ -4,7 +4,9 @@ import json
 import duckdb
 import pytest
 
-from scripts.audit_box_range_stage_b_identity import as_of_t_evidence
+from scripts.audit_box_range_stage_b_identity import (
+    as_of_t_evidence, window_episode_evidence,
+)
 from radar.box_labeling.stage_b import (
     EXCLUDED_SYMBOLS, VERSION, digest, freeze_blind_pool,
     materialize_blind_tasks, packed,
@@ -84,4 +86,40 @@ def test_issuer_name_conflicts_are_classified_at_frozen_t():
     assert {row[0]: row[1:] for row in rows} == {
         "future-only": (1, 0, 1),
         "old-name": (1, 1, 0),
+    }
+
+
+def test_window_issuer_audit_detects_episode_boundary_and_future_cik():
+    with duckdb.connect() as connection:
+        connection.execute("""CREATE TABLE ticker_episode (
+            security_id VARCHAR, interval_id VARCHAR, symbol VARCHAR,
+            valid_from DATE, valid_to DATE)""")
+        connection.execute("""CREATE TABLE issuer_evidence (
+            security_id VARCHAR, interval_id VARCHAR, cik VARCHAR,
+            available_on DATE)""")
+        connection.executemany("INSERT INTO ticker_episode VALUES (?, ?, ?, ?, ?)", [
+            ("single", "e1", "AAA", "2020-01-01", "2023-12-31"),
+            ("cross", "e2", "OLD", "2020-01-01", "2022-03-31"),
+            ("cross", "e3", "NEW", "2022-04-01", "2023-12-31"),
+            ("future", "e4", "FUT", "2023-01-01", "2023-12-31"),
+        ])
+        connection.executemany("INSERT INTO issuer_evidence VALUES (?, ?, ?, ?)", [
+            ("single", "e1", "1", "2022-01-01"),
+            ("single", "e1", "9", "2023-01-01"),
+            ("cross", "e2", "2", "2022-01-01"),
+            ("cross", "e3", "2", "2022-04-01"),
+            ("future", "e4", "4", "2023-01-01"),
+        ])
+        rows = window_episode_evidence(connection, [
+            {"security_id": "single", "window_start": "2022-01-01",
+             "decision_date": "2022-06-01"},
+            {"security_id": "cross", "window_start": "2022-01-01",
+             "decision_date": "2022-06-01"},
+            {"security_id": "future", "window_start": "2022-01-01",
+             "decision_date": "2022-06-01"},
+        ])
+    assert {row[0]: row[1:] for row in rows} == {
+        "single": (1, 1, 1),
+        "cross": (2, 2, 1),
+        "future": (0, 0, 0),
     }
