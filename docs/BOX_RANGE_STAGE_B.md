@@ -22,6 +22,22 @@ and saving again creates an immutable revision. Refresh reloads saved answers.
 Only the owner should provide substantive judgments. The `/smoke/` route is
 for technical tests and must never be counted as human Ground Truth.
 
+To check actual progress without exposing labels or producing detector quality
+claims, run this read-only command from the Stage B worktree:
+
+```powershell
+$env:PYTHONPATH = (Resolve-Path src).Path
+..\stock-radar\.venv\Scripts\python.exe scripts\check_box_range_stage_b_human_gate.py `
+  --selection '..\stock-radar\data\box-range-stage-b\blind-selection-v1.json' `
+  --task-root '..\stock-radar\data\box-range-stage-b\blind-label-tasks-v2' `
+  --detector-audit '..\stock-radar\data\box-range-stage-b\private-detector-audit-v1.json'
+```
+
+It verifies the frozen task mappings and every saved human revision. Smoke
+annotations are never read. `LABEL_SET_COMPLETE_QUALITY_PENDING` means only
+that all 48 tasks have valid saved labels; issuer review and a separately
+versioned detector comparison are still required before a quality verdict.
+
 If the service is stopped, start it from this worktree in PowerShell:
 
 ```powershell

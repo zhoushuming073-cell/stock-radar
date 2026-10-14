@@ -15,6 +15,9 @@ The same read-only source shows 12/48 retrospective C-level identity rows;
 that full-window flag is a review risk, not a causal T-day exclusion rule.
 All 48 causal 126-session chart windows stay within one observed ticker episode
 with one CIK available by T, but this still does not certify official identity.
+The [human progress gate](../../reports/acceptance/box-range-stage-b-human-gate-followup-2026-10-14.md)
+now validates frozen task/audit hashes and the isolated human revision store;
+the actual result remains 0/48, so no detector quality statistic is authorized.
 
 The owner explicitly authorized Stage A on 2026-10-13 after the [revised box route in PR #23](https://github.com/zhoushuming073-cell/stock-radar/pull/23). The bounded [Stage A work order](2026-10-13-box-range-detector-stage-a.md) was executed on a branch based on unmerged [PR #24](https://github.com/zhoushuming073-cell/stock-radar/pull/24), which itself depends on [PR #21](https://github.com/zhoushuming073-cell/stock-radar/pull/21). Preserve all three review dependencies; do not treat this code as merged into main.
 

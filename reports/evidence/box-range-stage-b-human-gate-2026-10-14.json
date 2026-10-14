@@ -1,0 +1,11 @@
+{
+  "status": "AWAITING_HUMAN",
+  "labeled_tasks": 0,
+  "total_tasks": 48,
+  "annotation_revisions": 0,
+  "selection_sha256": "f64acf27893960ed3ac449d398a89bf0cdf4396d170c6669e8ab5043644f15a5",
+  "manifest_sha256": "53c7ebfe442b5c33ada7d49d8ad7273a206cee39890920c65572af705b3de8d7",
+  "detector_quality_computed": false,
+  "future_outcomes_read": false,
+  "focused_tests_passed": 31
+}
