@@ -1,6 +1,6 @@
 # Active Codex task
 
-**Status: BOX RANGE STAGE C ENGINEERING DIAGNOSTIC — FORMAL QUALITY/RETURN UNVERIFIED**
+**Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
 On 2026-10-14 the owner explicitly cancelled mandatory human blind review and
 directed Codex to continue without asking for manual approvals. The 48-task
@@ -61,7 +61,7 @@ The [acceptance](../../reports/acceptance/box-candidate-scan-stage-d-2026-10-14.
 is engineering evidence only. Next extend resumable Train/Validation coverage
 in bounded intervals and address issuer/raw-price dependencies; the target-only
 path cannot replace the complete detector-state audit. Full history remains
-unscanned, and formal structure accuracy or returns remain unverified.
+incomplete, and formal structure accuracy or returns remain unverified.
 The [candidate execution-metadata follow-up](2026-10-14-box-candidate-execution-metadata.md)
 checked all 242 near-lower contexts on those two verified days. Only 29/242
 have a complete, unflagged same-source raw metadata horizon of ten sessions,
