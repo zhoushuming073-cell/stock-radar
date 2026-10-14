@@ -110,3 +110,8 @@ verifies a four-session prefix and compares the exact first Validation day
 against a complete full-state reference. It is a separate dated receipt;
 do not overwrite the earlier three-day parity result or infer that the whole
 Validation split is finished.
+
+The [later dual-prefix checkpoint](../reports/acceptance/box-candidate-dual-prefix-2026-10-14.md)
+independently verifies 222/753 Train and 6/235 Validation sessions, with
+655/655 and 44/44 candidate chunks present. This extends only the verified
+coverage intervals; the background processes and formal data gates remain open.

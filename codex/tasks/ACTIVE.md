@@ -96,6 +96,12 @@ contexts on the 2024-09-30 split boundary. Four complete reference dates now
 show 614/614 exact observed target rows. Both full-split backfills continue;
 no formal signal or LEAN readiness follows.
 
+The later [dual-prefix checkpoint](../../reports/acceptance/box-candidate-dual-prefix-2026-10-14.md)
+independently verifies Train through 2022-07-20 (222/753 sessions, 655/655
+chunks, 14,101 near-lower contexts) and Validation through 2024-10-07
+(6/235 sessions, 44/44 chunks, 777 contexts). Both remain partial; preserve
+their live private backfills and continue verifying completed intervals.
+
 ## Historical Stage B checkpoint (preserved)
 
 The owner authorized continuing the existing roadmap on 2026-10-13 without
