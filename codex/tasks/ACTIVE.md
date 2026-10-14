@@ -77,12 +77,13 @@ intersection with the raw-metadata receipts leaves 25 candidates with no
 known conflict and a complete same-source raw metadata horizon. The [audit](../../reports/acceptance/box-candidate-issuer-asof-t-2026-10-14.md)
 does **not** certify those 25 for LEAN: official historical identity,
 corporate-action/factor and execution/portfolio contracts remain open.
-The low-priority Train candidate backfill is active. A [continuous-prefix
+The low-priority Train and Validation candidate backfills are active in
+separate private split directories. A [continuous-prefix
 verification](../../reports/acceptance/box-candidate-train-prefix-2026-10-14.md)
 has independently checked 207/753 frozen Train sessions through 2022-06-28:
 260,414 eligible security-days, 560/560 private chunks, 11,093 near-lower
 contexts, zero missing chunks. This is not full Train/Validation coverage.
-Continue the scan and verify completed intervals; do not rewrite the scanner
+Continue both scans and verify completed intervals; do not rewrite the scanner
 while its immutable code-bound receipts are being produced. The [cross-period
 parity receipt](../../reports/acceptance/box-candidate-cross-period-parity-2026-10-14.md)
 now checks complete full-state days in 2022 Train, 2024 Train and 2025
