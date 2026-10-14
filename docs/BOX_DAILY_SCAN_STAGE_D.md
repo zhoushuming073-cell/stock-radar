@@ -84,3 +84,10 @@ reuses the existing split-bounded ten-session coverage checker on the two
 verified candidate days. Its low same-source raw coverage is a data-readiness
 observation, not a future-price or return study. No LEAN-ready subset is
 certified by metadata alone.
+
+The [candidate as-of-T issuer audit](../reports/acceptance/box-candidate-issuer-asof-t-2026-10-14.md)
+reuses the frozen construction-source and episode/CIK evidence on the same
+two days. It isolates known alias/conflict rows and preserves the distinction
+between an observational absence of known conflict and official identity
+certification. The private issuer/raw intersection is only a dependency
+diagnostic, not a LEAN-ready population.

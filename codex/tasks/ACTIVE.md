@@ -70,6 +70,13 @@ acceptance](../../reports/acceptance/box-candidate-execution-metadata-2026-10-14
 does not read future OHLCV/returns or make these 29 executable; source,
 issuer, corporate-action/factor and portfolio gates remain open. The ten
 sessions are a coverage probe, not a frozen exit rule.
+The [candidate as-of-T issuer follow-up](2026-10-14-box-candidate-issuer-followup.md)
+then found 20 known alias/name-risk cases among the same 242 candidates;
+222 have no known conflict but remain observational. A hash-bound private
+intersection with the raw-metadata receipts leaves 25 candidates with no
+known conflict and a complete same-source raw metadata horizon. The [audit](../../reports/acceptance/box-candidate-issuer-asof-t-2026-10-14.md)
+does **not** certify those 25 for LEAN: official historical identity,
+corporate-action/factor and execution/portfolio contracts remain open.
 
 ## Historical Stage B checkpoint (preserved)
 
