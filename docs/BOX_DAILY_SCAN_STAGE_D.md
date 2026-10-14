@@ -104,3 +104,9 @@ compares candidate-only and complete full-state outputs on two Train dates
 and one Validation date. All 470 observed near-lower context rows match
 exactly. This validates those dated receipts only; the ongoing backfill and
 unverified dates retain their own denominator and identity/data gates.
+
+The later [Validation-start addendum](../reports/acceptance/box-candidate-validation-start-2026-10-14.md)
+verifies a four-session prefix and compares the exact first Validation day
+against a complete full-state reference. It is a separate dated receipt;
+do not overwrite the earlier three-day parity result or infer that the whole
+Validation split is finished.

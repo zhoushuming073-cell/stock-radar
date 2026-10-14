@@ -89,6 +89,12 @@ parity receipt](../../reports/acceptance/box-candidate-cross-period-parity-2026-
 now checks complete full-state days in 2022 Train, 2024 Train and 2025
 Validation: all 470 observed near-lower context rows match exactly. This
 does not prove detector quality, all-date parity, or other state preservation.
+The [Validation-start addendum](../../reports/acceptance/box-candidate-validation-start-2026-10-14.md)
+verified 4/235 frozen Validation sessions through 2024-10-03 (15,920 eligible
+security-days, 28/28 chunks) and independently matched all 144 near-lower
+contexts on the 2024-09-30 split boundary. Four complete reference dates now
+show 614/614 exact observed target rows. Both full-split backfills continue;
+no formal signal or LEAN readiness follows.
 
 ## Historical Stage B checkpoint (preserved)
 
