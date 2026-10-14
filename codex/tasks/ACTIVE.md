@@ -102,6 +102,16 @@ chunks, 14,101 near-lower contexts) and Validation through 2024-10-07
 (6/235 sessions, 44/44 chunks, 777 contexts). Both remain partial; preserve
 their live private backfills and continue verifying completed intervals.
 
+The [cross-era dependency audit](../../reports/acceptance/box-candidate-cross-era-gates-2026-10-14.md)
+checked two additional complete candidate days. On 2022-03-15 Train, all
+228 candidates lack a same-source raw ten-session horizon (0/2,280 session
+rows), although 210 have no known as-of-T issuer conflict. On the 2024-09-30
+Validation boundary, 24/144 have complete raw metadata and only 23 are also
+observationally conflict-free; 13 have contemporaneous same-CIK aliases.
+The live continuous prefixes now verify 224/753 Train and 8/235 Validation
+sessions. Official identity, raw price/action/factor and portfolio-rule gates
+remain open; no formal LEAN backtest is authorized by these counts.
+
 ## Historical Stage B checkpoint (preserved)
 
 The owner authorized continuing the existing roadmap on 2026-10-13 without

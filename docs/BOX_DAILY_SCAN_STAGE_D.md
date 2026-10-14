@@ -115,3 +115,10 @@ The [later dual-prefix checkpoint](../reports/acceptance/box-candidate-dual-pref
 independently verifies 222/753 Train and 6/235 Validation sessions, with
 655/655 and 44/44 candidate chunks present. This extends only the verified
 coverage intervals; the background processes and formal data gates remain open.
+
+The [cross-era gate audit](../reports/acceptance/box-candidate-cross-era-gates-2026-10-14.md)
+adds complete 2022 Train and 2024 Validation reference-day issuer/raw-metadata
+checks. It finds zero same-source raw candidate sessions in the 2022 sample,
+despite limited raw rows elsewhere in the period. Continuous prefix verification
+later reached 224/753 Train and 8/235 Validation sessions. These candidate
+contexts still have no official identity or formal execution certificate.
