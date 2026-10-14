@@ -91,3 +91,16 @@ two days. It isolates known alias/conflict rows and preserves the distinction
 between an observational absence of known conflict and official identity
 certification. The private issuer/raw intersection is only a dependency
 diagnostic, not a LEAN-ready population.
+
+The [live Train prefix checkpoint](../reports/acceptance/box-candidate-train-prefix-2026-10-14.md)
+verifies a continuous 207-session interval through 2022-06-28, including
+all 560 expected candidate chunks. The background scan may have written later
+private files by the time this dated receipt is read; only a new verifier
+result can expand the verified interval. Keep this distinction when reporting
+progress.
+
+The [cross-period parity receipt](../reports/acceptance/box-candidate-cross-period-parity-2026-10-14.md)
+compares candidate-only and complete full-state outputs on two Train dates
+and one Validation date. All 470 observed near-lower context rows match
+exactly. This validates those dated receipts only; the ongoing backfill and
+unverified dates retain their own denominator and identity/data gates.
