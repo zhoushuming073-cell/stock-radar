@@ -78,3 +78,9 @@ Remove `--verify-only` to create missing chunks, and optionally set
 `--max-new-chunks 1` to bound each invocation. The full-state scanner remains
 necessary for any study of other box states. Neither path produces orders or
 formal portfolio results.
+
+A separate [candidate execution-metadata audit](../reports/acceptance/box-candidate-execution-metadata-2026-10-14.md)
+reuses the existing split-bounded ten-session coverage checker on the two
+verified candidate days. Its low same-source raw coverage is a data-readiness
+observation, not a future-price or return study. No LEAN-ready subset is
+certified by metadata alone.

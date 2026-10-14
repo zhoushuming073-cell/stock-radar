@@ -62,6 +62,14 @@ is engineering evidence only. Next extend resumable Train/Validation coverage
 in bounded intervals and address issuer/raw-price dependencies; the target-only
 path cannot replace the complete detector-state audit. Full history remains
 unscanned, and formal structure accuracy or returns remain unverified.
+The [candidate execution-metadata follow-up](2026-10-14-box-candidate-execution-metadata.md)
+checked all 242 near-lower contexts on those two verified days. Only 29/242
+have a complete, unflagged same-source raw metadata horizon of ten sessions,
+versus 239/242 with complete matched research-basis metadata. The [read-only
+acceptance](../../reports/acceptance/box-candidate-execution-metadata-2026-10-14.md)
+does not read future OHLCV/returns or make these 29 executable; source,
+issuer, corporate-action/factor and portfolio gates remain open. The ten
+sessions are a coverage probe, not a frozen exit rule.
 
 ## Historical Stage B checkpoint (preserved)
 
