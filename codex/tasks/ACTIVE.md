@@ -1,6 +1,28 @@
 # Active Codex task
 
-**Status: BOX RANGE DETECTOR STAGE B ENGINEERING READY — HUMAN QUALITY GATE PENDING**
+**Status: BOX RANGE STAGE C ENGINEERING DIAGNOSTIC — FORMAL QUALITY/RETURN UNVERIFIED**
+
+On 2026-10-14 the owner explicitly cancelled mandatory human blind review and
+directed Codex to continue without asking for manual approvals. The 48-task
+blind pool and its separate human/smoke stores remain preserved, but completing
+human annotations is no longer a prerequisite for engineering progression.
+Codex must not synthesize human labels or convert detector agreement, synthetic
+fixtures, or future returns into a purported structure-accuracy score.
+Historical Stage B reports retain their original gate at the time they were
+written. This decision supersedes that gate for subsequent work; independent
+identity/data-quality requirements remain in force.
+
+The [Stage C work order](2026-10-14-box-lower-band-stage-c.md) implements a
+versioned, T-only lower-band context on a separate dependent branch. Its actual
+48-task Train/Validation diagnostic and tests are recorded in the [Stage C
+acceptance](../../reports/acceptance/box-lower-band-stage-c-2026-10-14.md).
+This is an engineering/coverage receipt, not structure truth, alpha, an order
+signal or LEAN backtest. The next autonomous step is to resolve the remaining
+observational issuer provenance and establish an explicitly bounded, trusted
+Train/Validation outcome/LEAN protocol. Do not use Historical Test/Fresh for
+rule selection or report formal profitability while provenance is provisional.
+
+## Historical Stage B checkpoint (preserved)
 
 The owner authorized continuing the existing roadmap on 2026-10-13 without
 repeated permission requests. [Stage B work order](2026-10-13-box-range-stage-b.md)

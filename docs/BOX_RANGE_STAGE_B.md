@@ -67,5 +67,8 @@ symbols, but all identities remain observational. The later
 found one incompatible-name evidence set by T and one only after T; the
 all-time identity table flags both. Issuer separation is provisional until
 provenance review is complete.
-Do not compute an accuracy rate or advance the lower-band strategy until real
-human structure labels and that identity gate are complete.
+The owner cancelled mandatory human blind review on 2026-10-14. This page and
+its optional annotation workflow remain available, but no manual task is needed
+for engineering progression. Do not compute structure accuracy without real
+independent Ground Truth. The identity/data-quality gate remains separate.
+The next engineering receipt is [Stage C](BOX_RANGE_STAGE_C.md).
