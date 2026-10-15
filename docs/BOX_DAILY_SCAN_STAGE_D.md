@@ -1,5 +1,11 @@
 # Box daily context scan — Stage D
 
+The [longer-prefix audit](../reports/acceptance/box-candidate-source-distribution-prefix-2026-10-15.md)
+adds reproducible aggregate daily distribution to the existing read-only
+source/basis auditor (v2). It verifies Train 257/753 and Validation 34/235
+sessions without exposing private daily rows. Neither split is complete;
+source/basis and issuer gates still apply independently of scanner parity.
+
 The [complete high-density Validation comparison](../reports/acceptance/box-candidate-validation-high-density-parity-2026-10-15.md)
 found exact equality of all 225 near-lower contexts on 2024-10-28 between
 the candidate-only and full-state paths, bringing six dated reference days

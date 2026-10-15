@@ -2,6 +2,15 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [longer-prefix source/distribution checkpoint](../../reports/acceptance/box-candidate-source-distribution-prefix-2026-10-15.md)
+independently verifies Train through 2022-09-08 (257/753 sessions, 869/869
+chunks, 17,732 contexts) and Validation through 2024-11-14 (34/235,
+259/259, 4,812). The versioned read-only source/distribution auditor finds
+all Train contexts split-adjusted legacy; Validation has 4,090 split-adjusted
+legacy and 722 Dolt raw. Full Native-inclusive regression: 797 passed, 8
+skipped. Continue both immutable scans and separately close identity/raw
+execution-data gates; these prefixes remain incomplete and non-executable.
+
 The [high-density Validation full-state parity](../../reports/acceptance/box-candidate-validation-high-density-parity-2026-10-15.md)
 completed all 16 full-detector chunks for 2024-10-28 (3,995 eligible rows).
 All 225/225 near-lower contexts match the separately sealed candidate path

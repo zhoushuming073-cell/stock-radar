@@ -11,12 +11,13 @@ from collections import Counter
 from hashlib import sha256
 import json
 from pathlib import Path
+from statistics import median
 
 from radar.box_labeling.stage_b import digest, packed
 from scripts.scan_box_daily_stage_d import SPLITS, source_digest
 from scripts.scan_box_near_lower_stage_d import execute
 
-VERSION = "box-candidate-source-basis-audit-v1"
+VERSION = "box-candidate-source-basis-audit-v2"
 
 
 def summarize_verified_files(folder: Path, split: str, start: str,
@@ -31,10 +32,12 @@ def summarize_verified_files(folder: Path, split: str, start: str,
         raise ValueError("candidate interval is not completely verified")
     counts: Counter[tuple[str, str]] = Counter()
     hashes: list[str] = []
+    daily_counts: list[int] = []
     files = 0
     for day_folder in sorted(folder.iterdir()) if folder.exists() else ():
         if not day_folder.is_dir() or not start <= day_folder.name <= end:
             continue
+        daily_count = 0
         for path in sorted(day_folder.glob("*.json")):
             raw = path.read_bytes()
             hashes.append(sha256(raw).hexdigest())
@@ -44,10 +47,14 @@ def summarize_verified_files(folder: Path, split: str, start: str,
                 if not isinstance(source, str) or not source or basis not in ("raw", "split"):
                     raise ValueError("candidate source or basis invalid")
                 counts[(source, basis)] += 1
+                daily_count += 1
+        daily_counts.append(daily_count)
     if (files != verified["verified_chunks"]
             or digest(packed(hashes)) != verified["verified_file_set_sha256"]
-            or sum(counts.values()) != verified["near_lower_union_rows"]):
+            or sum(counts.values()) != verified["near_lower_union_rows"]
+            or len(daily_counts) != verified["sessions"]):
         raise ValueError("candidate file set or provenance count drift")
+    positive = [count for count in daily_counts if count]
     return {"version": VERSION, "split": split, "start": start, "end": end,
             "sessions": verified["sessions"],
             "eligible_security_days": verified["eligible_security_days"],
@@ -58,6 +65,14 @@ def summarize_verified_files(folder: Path, split: str, start: str,
             "source_basis_counts": [
                 {"source": source, "basis": basis, "candidates": count}
                 for (source, basis), count in sorted(counts.items())],
+            "daily_distribution": {
+                "zero_candidate_sessions": len(daily_counts) - len(positive),
+                "positive_candidate_sessions": len(positive),
+                "positive_min": min(positive) if positive else None,
+                "positive_median": median(positive) if positive else None,
+                "positive_max": max(positive) if positive else None,
+                "top_10_candidate_rows": sum(sorted(daily_counts, reverse=True)[:10]),
+            },
             "future_ohlcv_values_read": False, "future_outcomes_read": False,
             "formal_lean_ready": False}
 
