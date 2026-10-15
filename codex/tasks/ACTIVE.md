@@ -2,6 +2,17 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [Validation-prefix decision-dated issuer cross-tab](../../reports/acceptance/box-candidate-prefix-issuer-at-t-2026-10-15.md)
+reuses the frozen issuer query on all 1,531 Dolt/raw candidate-days from
+77 sealed sessions. Among 982 absent from the older accepted-price table,
+876 have no *known* issuer conflict in T-dated evidence, 77 have a
+contemporaneous alias, and 29 have a known identity conflict. Among 549
+accepted T-day price matches, 14 still have a contemporaneous alias risk.
+Neither observational clearance nor accepted prices certify identity;
+the older full-closure rejection remains retrospective and cannot filter
+historical candidates. Full Native-inclusive regression: 814 passed,
+8 skipped. Continue immutable scans and independent official data gates.
+
 The [accepted-price scope diagnosis](../../reports/acceptance/box-candidate-accepted-scope-2026-10-15.md)
 corrects the interpretation of 982 missing accepted T-day rows in the
 77-session Validation prefix: all 982 belong to the older PIT dependency
