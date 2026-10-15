@@ -2,6 +2,15 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [Stage C→D necessary-gate implication audit](../../reports/acceptance/box-fast-gate-implication-2026-10-15.md)
+adds a cross-module property test (200 deterministic generated scenarios and
+an explicit positive target case). An independent gate audit of the sealed
+2022-10-03 full-state day excluded 1,221/3,258 eligible rows but retained
+all 437 observed near-lower contexts. Focused tests: 11 passed. This does
+not prove all-date pipeline parity or formal detector accuracy. Keep the
+immutable workers running and retain identity/raw execution-data gates.
+Full Native-inclusive regression: 805 passed, 8 skipped.
+
 The [maximum-density Train full-state comparison](../../reports/acceptance/box-candidate-maximum-density-parity-2026-10-15.md)
 independently verified 13/13 full detector chunks for the highest candidate
 day in the sealed 274-session prefix. All 437/437 target contexts equal the
