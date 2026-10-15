@@ -2,6 +2,14 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [new continuous-prefix verification](../../reports/acceptance/box-candidate-continuous-prefix-316-77-2026-10-15.md)
+passes Train 316/753 frozen sessions through 2022-12-01 (1,209/1,209
+chunks; 27,444 contexts) and Validation 77/235 through 2025-01-21
+(580/580; 10,863). Both low-priority writers remain live and unchanged.
+These partial source-stratified counts are not detector quality, a full
+signal stream or return evidence. Keep verifying sealed intervals and keep
+official identity/execution-data gates open.
+
 The [accepted raw horizon metadata audit](../../reports/acceptance/box-candidate-accepted-horizon-2026-10-15.md)
 starts from the 18 accepted T-day-exact Dolt/raw candidates on four
 previously sealed Train/Validation days. All have dated matching-source
