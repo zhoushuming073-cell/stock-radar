@@ -2,6 +2,16 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [T-day accepted-price bridge audit](../../reports/acceptance/box-candidate-tday-price-bridge-2026-10-15.md)
+cross-checks 51 previously metadata-complete Dolt/raw candidates against the
+separately hash-verified Research-grade accepted-price database. Only 18
+have an exact security-ID/date/symbol/OHLCV match at decision close T; 33
+are missing accepted T-day rows. Even the 18 lack official identity,
+complete execution-horizon/action/factor and portfolio certification. This
+read-only finding must not be turned into a source substitution or LEAN run.
+Continue the immutable Train/Validation backfills and source-specific closure.
+Full Native-inclusive regression: 808 passed, 8 skipped.
+
 The [Stage C→D necessary-gate implication audit](../../reports/acceptance/box-fast-gate-implication-2026-10-15.md)
 adds a cross-module property test (200 deterministic generated scenarios and
 an explicit positive target case). An independent gate audit of the sealed
