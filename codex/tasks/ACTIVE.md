@@ -2,6 +2,17 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [decision-dated reference-support audit](../../reports/acceptance/box-candidate-reference-support-2026-10-15.md)
+reverifies 120 sealed Validation sessions and 2,329 Dolt/raw candidate-days.
+Within the frozen construction database's 31-day freshness rule, 1,549 have
+both compatible CIK and Nasdaq **mirror observations** at T; 780 have recent
+compatible CIK observations only. Independent issuer checks still find 140
+contemporaneous aliases and 45 known conflicts. The checkout's CRLF rules
+normalize to the construction manifest's pinned LF hash; a different rule
+content fails closed. These mirrors do not certify official issuer/share
+class or LEAN inputs. Focused tests: 5 passed; full Native-inclusive pytest:
+818 passed, 8 skipped. Continue immutable scans and source-specific gates.
+
 The [adjacent-segment verification](../../reports/acceptance/box-candidate-segment-increment-2026-10-15.md)
 adds seven independently hash-verified Train sessions through 2023-02-13 and
 five Validation sessions through 2025-03-24 without reprocessing the prior
