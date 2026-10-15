@@ -2,6 +2,15 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [continuous-prefix and runtime checkpoint](../../reports/acceptance/box-candidate-continuous-prefix-333-88-2026-10-15.md)
+independently verifies Train 333/753 sessions through 2022-12-27
+(1,301/1,301 chunks; 29,363 contexts) and Validation 88/235 through
+2025-02-05 (664/664; 12,530). Both immutable low-priority workers remain
+live. Last-30-completion-interval means imply roughly 38/18 further hours
+for Train/Validation only if throughput and uptime hold; this is not a
+reliable ETA. Full coverage, official identity/execution data and formal
+signal gates remain open. No code change or new full pytest was needed.
+
 The [Validation-prefix decision-dated issuer cross-tab](../../reports/acceptance/box-candidate-prefix-issuer-at-t-2026-10-15.md)
 reuses the frozen issuer query on all 1,531 Dolt/raw candidate-days from
 77 sealed sessions. Among 982 absent from the older accepted-price table,
