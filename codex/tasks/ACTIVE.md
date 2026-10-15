@@ -2,6 +2,14 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [maximum-density Train full-state comparison](../../reports/acceptance/box-candidate-maximum-density-parity-2026-10-15.md)
+independently verified 13/13 full detector chunks for the highest candidate
+day in the sealed 274-session prefix. All 437/437 target contexts equal the
+candidate path; seven selected dates now total 1,589/1,589 observed target
+matches. This does not establish all-date parity, non-target-state accuracy,
+identity, execution readiness or returns. Continue both immutable scans and
+source-specific data gates.
+
 The [source-stratified issuer/raw-metadata intersection](../../reports/acceptance/box-candidate-source-gates-2026-10-15.md)
 binds four previously audited days to exact candidate and gate receipt hashes.
 Among 719 legacy split candidates, none has complete same-source raw horizon
