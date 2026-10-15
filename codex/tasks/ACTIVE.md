@@ -2,6 +2,14 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [longer continuous-prefix source checkpoint](../../reports/acceptance/box-candidate-longer-prefix-source-2026-10-15.md)
+verifies Train 274/753 frozen sessions (947/947 chunks, 20,689 contexts)
+and Validation 43/235 (334/334, 5,962). The four legacy public-EOD split
+Train contexts remain a separate source stratum from legacy Alpaca SIP;
+Validation has 906 Dolt raw contexts in this prefix. Focused tests: 8 passed.
+Continue immutable scans and independent identity/same-source execution-data
+closure. Neither partial coverage nor raw-basis metadata authorizes LEAN.
+
 The [resume preflight integrity guard](../../reports/acceptance/box-candidate-resume-preflight-2026-10-15.md)
 checks the unchanged candidate scanner's verify-only path before a future
 stopped writer may resume. A real completed Train day skipped all writes;
