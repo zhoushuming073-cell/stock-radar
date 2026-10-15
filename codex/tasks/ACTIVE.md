@@ -2,6 +2,16 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [Validation-prefix three-gate intersection](../../reports/acceptance/box-candidate-prefix-data-gates-2026-10-15.md)
+hash-verifies 77 sealed sessions and crosses all 1,531 Dolt/raw candidate-days
+by accepted T-day price status, decision-dated issuer observation and ten-session
+same-source raw metadata. The last is complete for 1,494 candidates and
+incomplete for 37; 548/549 exact accepted T-day matches have complete raw
+metadata. None has thereby acquired official identity, accepted execution
+prices/actions/factors or formal LEAN eligibility. Future OHLCV values and
+outcomes were not read; both immutable scans continue. Focused tests: 6 passed;
+full Native-inclusive pytest: 815 passed, 8 skipped.
+
 The [continuous-prefix and runtime checkpoint](../../reports/acceptance/box-candidate-continuous-prefix-333-88-2026-10-15.md)
 independently verifies Train 333/753 sessions through 2022-12-27
 (1,301/1,301 chunks; 29,363 contexts) and Validation 88/235 through
