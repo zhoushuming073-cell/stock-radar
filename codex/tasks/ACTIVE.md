@@ -2,6 +2,13 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [resume preflight integrity guard](../../reports/acceptance/box-candidate-resume-preflight-2026-10-15.md)
+checks the unchanged candidate scanner's verify-only path before a future
+stopped writer may resume. A real completed Train day skipped all writes;
+full Native-inclusive regression: 800 passed, 8 skipped. Do not invoke the
+wrapper while the existing Train/Validation writers are live. Continue their
+immutable scans and independent identity/raw execution-data closure.
+
 The [longer-prefix source/distribution checkpoint](../../reports/acceptance/box-candidate-source-distribution-prefix-2026-10-15.md)
 independently verifies Train through 2022-09-08 (257/753 sessions, 869/869
 chunks, 17,732 contexts) and Validation through 2024-11-14 (34/235,

@@ -97,6 +97,24 @@ Remove `--verify-only` to create missing chunks, and optionally set
 necessary for any study of other box states. Neither path produces orders or
 formal portfolio results.
 
+Before restarting a stopped long-running candidate writer, confirm no writer
+for that split is still live and use the preflight wrapper. It runs the
+scanner's `--verify-only` path over the requested interval first, rejecting
+unexpected JSON, partial files, corrupted receipts or provenance drift before
+creating missing chunks. Do not run it concurrently with an existing writer:
+
+```powershell
+$env:PYTHONPATH = (Resolve-Path src).Path
+..\stock-radar\.venv\Scripts\python.exe -m scripts.resume_box_candidate_backfill `
+  --research-root ..\stock-radar --split train `
+  --start 2021-09-01 --end 2024-08-29 `
+  --output-dir ..\stock-radar\data\box-range-stage-d\near-lower-candidate-v1
+```
+
+This wrapper leaves the immutable scanner and its code-bound receipts
+unchanged. The existing background Train/Validation writers were started
+after independent preflight verification; keep them running until completion.
+
 A separate [candidate execution-metadata audit](../reports/acceptance/box-candidate-execution-metadata-2026-10-14.md)
 reuses the existing split-bounded ten-session coverage checker on the two
 verified candidate days. Its low same-source raw coverage is a data-readiness
