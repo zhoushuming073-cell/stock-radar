@@ -2,6 +2,14 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [high-density Validation full-state parity](../../reports/acceptance/box-candidate-validation-high-density-parity-2026-10-15.md)
+completed all 16 full-detector chunks for 2024-10-28 (3,995 eligible rows).
+All 225/225 near-lower contexts match the separately sealed candidate path
+exactly. Six dated reference days now total 1,152/1,152 observed target rows;
+this is not an all-date or non-target-state proof. Focused tests: 14 passed.
+Continue both background split scans and the independent issuer/raw-price
+closure; do not convert context parity into formal signals or returns.
+
 The [high-density identity/raw-metadata audit](../../reports/acceptance/box-candidate-high-density-data-gates-2026-10-15.md)
 checks two additional actual candidate days: 2022-05-04 Train has 29/313
 known issuer alias risks and 0/313 complete same-source raw metadata horizons;

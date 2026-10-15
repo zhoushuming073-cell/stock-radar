@@ -1,5 +1,11 @@
 # Box daily context scan — Stage D
 
+The [complete high-density Validation comparison](../reports/acceptance/box-candidate-validation-high-density-parity-2026-10-15.md)
+found exact equality of all 225 near-lower contexts on 2024-10-28 between
+the candidate-only and full-state paths, bringing six dated reference days
+to 1,152/1,152 observed target rows. This does not establish all-date parity
+or quality of the detector's structural judgment.
+
 The [high-density identity/raw-metadata follow-up](../reports/acceptance/box-candidate-high-density-data-gates-2026-10-15.md)
 audits two further complete candidate days using frozen as-of-T issuer
 evidence and future-session **metadata only**. It confirms substantial
