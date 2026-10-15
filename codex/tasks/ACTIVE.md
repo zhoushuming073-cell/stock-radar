@@ -2,6 +2,15 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [high-density identity/raw-metadata audit](../../reports/acceptance/box-candidate-high-density-data-gates-2026-10-15.md)
+checks two additional actual candidate days: 2022-05-04 Train has 29/313
+known issuer alias risks and 0/313 complete same-source raw metadata horizons;
+2024-10-28 Validation has 18/225 known alias/name risks and 30/225 complete
+raw metadata horizons, of which four already have a known identity risk.
+The other 26 are only observationally conflict-free and metadata-complete,
+not official identity or LEAN-ready. Continue immutable backfills and data
+provenance closure without promoting these contexts to formal signals.
+
 The [2026-10-15 background-prefix checkpoint](../../reports/acceptance/box-candidate-background-prefix-checkpoint-2026-10-15.md)
 independently verified the resumed candidate scans through 2022-08-05 Train
 (234/753 sessions, 740/740 chunks, 15,512 contexts) and 2024-10-22

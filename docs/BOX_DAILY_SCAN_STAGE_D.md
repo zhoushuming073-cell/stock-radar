@@ -1,5 +1,11 @@
 # Box daily context scan — Stage D
 
+The [high-density identity/raw-metadata follow-up](../reports/acceptance/box-candidate-high-density-data-gates-2026-10-15.md)
+audits two further complete candidate days using frozen as-of-T issuer
+evidence and future-session **metadata only**. It confirms substantial
+era-dependent raw-price coverage and known alias risks; it does not promote
+any candidate to a trade or formally clear historical identity.
+
 The scanner enumerates supported, research-ready 126-session security-days in
 the **frozen Train or Validation split only**. It uses Research Infrastructure
 v1's trusted `BoxHistory` prefix through decision close T, evaluates the
