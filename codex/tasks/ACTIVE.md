@@ -2,6 +2,15 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [2026-10-15 background-prefix checkpoint](../../reports/acceptance/box-candidate-background-prefix-checkpoint-2026-10-15.md)
+independently verified the resumed candidate scans through 2022-08-05 Train
+(234/753 sessions, 740/740 chunks, 15,512 contexts) and 2024-10-22
+Validation (17/235, 141/141, 2,564). Its hash-bound source audit found all
+15,512 Train candidates on split-adjusted legacy series, while Validation
+has 2,178 split-adjusted legacy and 386 Dolt raw contexts. Both full-split
+workers remain live. Continue the existing immutable scans and issuer/raw
+dependency work; no formal LEAN readiness or quality/return claim follows.
+
 On 2026-10-14 the owner explicitly cancelled mandatory human blind review and
 directed Codex to continue without asking for manual approvals. The 48-task
 blind pool and its separate human/smoke stores remain preserved, but completing
