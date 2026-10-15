@@ -130,6 +130,17 @@ prefix contribute eligible security-days. Both full-split background scans
 continue. Do not report 228 populated Train sessions or treat daily context
 counts as detector truth, order signals or return evidence.
 
+The [high-density Train full-state comparison](../../reports/acceptance/box-candidate-high-density-parity-2026-10-15.md)
+selected the previously verified prefix's maximum-count day before its
+complete scan. All 313/313 near-lower contexts match exactly, bringing five
+dated reference days to 927/927 observed target rows. This remains bounded
+target-state evidence, not an all-date proof. After both long-running process
+handles disappeared overnight without terminal summaries, independent
+verification passed Train through 2022-08-03 (232/753, 727/727 chunks) and
+Validation through 2024-10-17 (14/235, 120/120 chunks). Both scans resumed
+hidden and low-priority from the existing immutable private directories;
+continue to monitor and verify further intervals. Formal data gates stay open.
+
 ## Historical Stage B checkpoint (preserved)
 
 The owner authorized continuing the existing roadmap on 2026-10-13 without

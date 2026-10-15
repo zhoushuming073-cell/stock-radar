@@ -135,3 +135,11 @@ verifies 228/753 Train and 11/235 Validation sessions. The first 125 Train
 sessions are a contiguous zero-eligible 126-session warmup; candidate daily
 counts are summarized only after separating that denominator. Full historical
 coverage and formal quality/execution gates remain incomplete.
+
+The [high-density full-state parity addendum](../reports/acceptance/box-candidate-high-density-parity-2026-10-15.md)
+compares the highest near-lower-count day in that verified Train prefix:
+all 313 target contexts match a complete independent 3,193-row scan exactly.
+Five reference dates total 927/927 observed target rows. Overnight process
+interruption was handled by re-verifying completed Train/Validation prefixes
+before resuming both private background scans; no scanner code or frozen
+database changed.
