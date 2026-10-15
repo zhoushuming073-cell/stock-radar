@@ -2,6 +2,16 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [38-session Validation data-gate increment](../../reports/acceptance/box-candidate-data-gates-delta-2026-10-15.md)
+extends the independent read-only intersection through 2025-03-17 without
+repeating the first 77 sessions: 690 new Dolt/raw candidate-days, 249 exact
+accepted T-day matches, 441 missing accepted rows, and 660/690 with complete
+ten-session same-source raw metadata. The two nonoverlapping intervals cover
+115 verified sessions and 2,221 Dolt/raw candidate-days (798 accepted T-day
+matches; 2,154 metadata-complete). This is not official identity or actual
+execution-price/action/factor certification. No code changed; the latest full
+Native-inclusive pytest remains 815 passed, 8 skipped. Immutable scans continue.
+
 The [continuous-prefix checkpoint 358/115](../../reports/acceptance/box-candidate-continuous-prefix-358-115-2026-10-15.md)
 read-only verifies Train 358/753 sessions through 2023-02-02 (1,486 chunks;
 32,476 contexts) and Validation 115/235 through 2025-03-17 (837 chunks;
