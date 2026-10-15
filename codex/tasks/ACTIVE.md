@@ -2,6 +2,17 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [accepted-price scope diagnosis](../../reports/acceptance/box-candidate-accepted-scope-2026-10-15.md)
+corrects the interpretation of 982 missing accepted T-day rows in the
+77-session Validation prefix: all 982 belong to the older PIT dependency
+but fail its **retrospective whole-closure** research identity gate; 847
+also require material review. They are not proven missing raw market-data
+rows. The 812 C/170 B levels and overlapping risk reasons are only
+diagnostic, never as-of-T candidate exclusions. Candidate selection and
+private scans remain unchanged. Full Native-inclusive regression:
+813 passed, 8 skipped. Actual raw price/issuer/action certification remains
+open, and formal LEAN is still blocked.
+
 The [Validation-prefix accepted horizon metadata audit](../../reports/acceptance/box-candidate-prefix-horizon-2026-10-15.md)
 reselects the 549 exact accepted T-day matches from the hash-verified
 77-session prefix. Each has dated matching-source raw metadata for the next
