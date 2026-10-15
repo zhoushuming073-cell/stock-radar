@@ -2,6 +2,15 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [77-session Validation-prefix T-day accepted-price audit](../../reports/acceptance/box-candidate-prefix-tday-2026-10-15.md)
+hash-verifies all 580 immutable candidate chunks, then checks 1,531
+Dolt/raw candidate-days against the separately accepted Research-grade
+database at decision T only. It finds 549 exact ID/date/symbol/OHLCV matches
+and 982 missing accepted T-day rows, with zero other observed discrepancies.
+This broad population has no issuer/horizon gate applied; do not promote the
+549 into formal signals or LEAN inputs. Train's legacy split sources remain
+separate. Full Native-inclusive regression: 811 passed, 8 skipped.
+
 The [new continuous-prefix verification](../../reports/acceptance/box-candidate-continuous-prefix-316-77-2026-10-15.md)
 passes Train 316/753 frozen sessions through 2022-12-01 (1,209/1,209
 chunks; 27,444 contexts) and Validation 77/235 through 2025-01-21
