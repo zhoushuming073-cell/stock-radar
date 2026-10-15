@@ -2,6 +2,15 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [accepted raw horizon metadata audit](../../reports/acceptance/box-candidate-accepted-horizon-2026-10-15.md)
+starts from the 18 accepted T-day-exact Dolt/raw candidates on four
+previously sealed Train/Validation days. All have dated matching-source
+metadata for the next ten in-split sessions (180/180 records); post-T OHLCV
+values and outcomes were not read. This is not a holding rule or formal
+execution-data certification. Official issuer, price/action/factor, complete
+signal and portfolio gates remain open. Background scans remain immutable.
+Full Native-inclusive regression: 810 passed, 8 skipped.
+
 The [T-day accepted-price bridge audit](../../reports/acceptance/box-candidate-tday-price-bridge-2026-10-15.md)
 cross-checks 51 previously metadata-complete Dolt/raw candidates against the
 separately hash-verified Research-grade accepted-price database. Only 18

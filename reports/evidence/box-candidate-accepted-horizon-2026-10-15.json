@@ -1,0 +1,51 @@
+{
+  "accepted_database_sha256": "1fd1996e88cc91ab25baf9a4f7615478d99506672ed47c028eaecfefd0240545",
+  "audit_source_sha256": "7ce1bddcb58c7eda44d85b3911c6d9fafa9a5097d60d6fa371df2297b77489cf",
+  "by_day": [
+    {
+      "decision_date": "2022-05-04",
+      "split": "train"
+    },
+    {
+      "complete_metadata_tasks": 5,
+      "decision_date": "2024-07-01",
+      "expected_sessions": 50,
+      "matching_raw": 50,
+      "split": "train",
+      "tday_exact": 5
+    },
+    {
+      "complete_metadata_tasks": 10,
+      "decision_date": "2024-10-28",
+      "expected_sessions": 100,
+      "matching_raw": 100,
+      "split": "validation",
+      "tday_exact": 10
+    },
+    {
+      "complete_metadata_tasks": 3,
+      "decision_date": "2025-06-02",
+      "expected_sessions": 30,
+      "matching_raw": 30,
+      "split": "validation",
+      "tday_exact": 3
+    }
+  ],
+  "corporate_actions_certified": false,
+  "formal_lean_ready": false,
+  "future_outcomes_read": false,
+  "future_price_values_read": false,
+  "gate_evidence_sha256": "39e8fff89b14b150f4f2f99b1fcf9e3c1f4ea58eb2c7abcc6aa71b34f23e467f",
+  "horizon_sessions_diagnostic_only": 10,
+  "official_identity_certified": false,
+  "ri_semantic_hash": "74b765911a8a4f18b2074cd8d9e529b25b54afade15309a148b0ca43340b80be",
+  "selected_tday_exact": 18,
+  "tday_auditor_sha256": "29555c38bddea41d7f3318707e47b10394a27aab0801aba398d4bcd3a65abf13",
+  "totals": {
+    "complete_metadata_tasks": 18,
+    "expected_sessions": 180,
+    "matching_raw": 180,
+    "tday_exact": 18
+  },
+  "version": "box-candidate-accepted-horizon-v1"
+}
