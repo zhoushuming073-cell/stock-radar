@@ -2,6 +2,15 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [Validation-prefix accepted horizon metadata audit](../../reports/acceptance/box-candidate-prefix-horizon-2026-10-15.md)
+reselects the 549 exact accepted T-day matches from the hash-verified
+77-session prefix. Each has dated matching-source raw metadata for the next
+ten in-split sessions (5,490/5,490 records). No post-T OHLCV values or
+outcomes were read. This is neither a holding rule nor a price, issuer,
+action/factor or LEAN certification; 982 Dolt/raw candidates still lack
+accepted T-day rows. Full Native-inclusive regression: 812 passed,
+8 skipped. Keep immutable backfills running and close source-specific gates.
+
 The [77-session Validation-prefix T-day accepted-price audit](../../reports/acceptance/box-candidate-prefix-tday-2026-10-15.md)
 hash-verifies all 580 immutable candidate chunks, then checks 1,531
 Dolt/raw candidate-days against the separately accepted Research-grade
