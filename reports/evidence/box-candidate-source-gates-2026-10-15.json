@@ -1,0 +1,57 @@
+{
+  "version": "box-candidate-source-gates-acceptance-v1",
+  "source_gate_auditor_sha256": "54e44b13fa074aeff499caa51e694a6e94dcf6c4692b73ccbdc3bc1ac2b65015",
+  "days": [
+    {
+      "split": "train",
+      "decision_date": "2022-05-04",
+      "candidate_file_set_sha256": "fb8cc87706e08f7d7ed6c4d354d880faa611deea7a1622b044ed479a23d867e6",
+      "issuer_receipt_sha256": "a7ab11b97aaeb65f3b2a868bac8112f33008b8cb398e2d6f173abda6a7dd8e72",
+      "metadata_receipt_sha256": "5500ad4c2c8c0afa4b8770ad1435abaa1d73c24cc0a82462d0c581215f5e3ca7",
+      "legacy_split": {"candidates": 313, "known_identity_risk": 29, "raw_metadata_complete": 0, "observational_and_raw_complete": 0},
+      "dolt_raw": {"candidates": 0, "known_identity_risk": 0, "raw_metadata_complete": 0, "observational_and_raw_complete": 0}
+    },
+    {
+      "split": "train",
+      "decision_date": "2024-07-01",
+      "candidate_file_set_sha256": "407252c54b700c2dfb35646b95c795beb5ad10541ae3ceff1edb774e3376fed5",
+      "issuer_receipt_sha256": "3ee4f7bc2d95a3443f87e378200e0d37855957ae13ec7058cded4d4b9e9379e2",
+      "metadata_receipt_sha256": "1ac7fcf265f5058629cbee8a53ef39800a404f16102256ce698ec6769949e26b",
+      "legacy_split": {"candidates": 78, "known_identity_risk": 9, "raw_metadata_complete": 0, "observational_and_raw_complete": 0},
+      "dolt_raw": {"candidates": 18, "known_identity_risk": 3, "raw_metadata_complete": 18, "observational_and_raw_complete": 15}
+    },
+    {
+      "split": "validation",
+      "decision_date": "2024-10-28",
+      "candidate_file_set_sha256": "545dfef504963b17c69b45ebb6fd4b841bb60566cdd247bd74ed69f08f897a1a",
+      "issuer_receipt_sha256": "5f7b848f0d8d02a5fdacc924f5aec44cb9930f49295d7bd6a157657acc78bbaa",
+      "metadata_receipt_sha256": "b3a5cb969518e779f79c31387b24bf475648f752b30789d54f40fbd0717474fa",
+      "legacy_split": {"candidates": 194, "known_identity_risk": 14, "raw_metadata_complete": 0, "observational_and_raw_complete": 0},
+      "dolt_raw": {"candidates": 31, "known_identity_risk": 4, "raw_metadata_complete": 30, "observational_and_raw_complete": 26}
+    },
+    {
+      "split": "validation",
+      "decision_date": "2025-06-02",
+      "candidate_file_set_sha256": "23e2075cea394cfccb5b281aab3bd02f87e15804e4eae66d08951c461d5b4374",
+      "issuer_receipt_sha256": "d757dc9e26b5915d9cb12e0991b60f6f04b5c342fa2849b2f0fd3e86d4c5b88e",
+      "metadata_receipt_sha256": "0109ea2ef621e5609287e18ad0d6ffd48b914e58723f885abc44395bdaa071af",
+      "legacy_split": {"candidates": 134, "known_identity_risk": 7, "raw_metadata_complete": 0, "observational_and_raw_complete": 0},
+      "dolt_raw": {"candidates": 12, "known_identity_risk": 1, "raw_metadata_complete": 11, "observational_and_raw_complete": 10}
+    }
+  ],
+  "totals": {
+    "candidates": 780,
+    "legacy_split": {"candidates": 719, "known_identity_risk": 59, "raw_metadata_complete": 0, "observational_and_raw_complete": 0},
+    "dolt_raw": {"candidates": 61, "known_identity_risk": 8, "raw_metadata_complete": 59, "observational_and_raw_complete": 51}
+  },
+  "horizon_sessions_diagnostic_only": 10,
+  "focused_pytest_passed": 8,
+  "native_lean_opt_in": true,
+  "project_pytest_passed": 803,
+  "project_pytest_skipped": 8,
+  "project_pytest_warnings": 1,
+  "official_identity_certified": false,
+  "future_prices_read": false,
+  "future_outcomes_read": false,
+  "formal_lean_ready": false
+}

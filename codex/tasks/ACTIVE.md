@@ -2,6 +2,15 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [source-stratified issuer/raw-metadata intersection](../../reports/acceptance/box-candidate-source-gates-2026-10-15.md)
+binds four previously audited days to exact candidate and gate receipt hashes.
+Among 719 legacy split candidates, none has complete same-source raw horizon
+metadata; 59/61 Dolt raw candidates do, but eight Dolt cases have known
+identity risk. Only 51 cases combine observational no-known-conflict with
+complete raw metadata; none is officially identified or LEAN-ready. Continue
+source-specific price/action/identity closure without cross-source substitution.
+Full Native-inclusive regression: 803 passed, 8 skipped.
+
 The [longer continuous-prefix source checkpoint](../../reports/acceptance/box-candidate-longer-prefix-source-2026-10-15.md)
 verifies Train 274/753 frozen sessions (947/947 chunks, 20,689 contexts)
 and Validation 43/235 (334/334, 5,962). The four legacy public-EOD split
