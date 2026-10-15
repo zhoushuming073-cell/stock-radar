@@ -2,6 +2,14 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [continuous-prefix checkpoint 358/115](../../reports/acceptance/box-candidate-continuous-prefix-358-115-2026-10-15.md)
+read-only verifies Train 358/753 sessions through 2023-02-02 (1,486 chunks;
+32,476 contexts) and Validation 115/235 through 2025-03-17 (837 chunks;
+16,447 contexts). Both immutable workers remain live. The 47.5%/48.9%
+figures describe scan coverage only, not project completion or formal LEAN
+readiness. No code changed; the latest full Native-inclusive pytest remains
+815 passed, 8 skipped.
+
 The [Validation-prefix three-gate intersection](../../reports/acceptance/box-candidate-prefix-data-gates-2026-10-15.md)
 hash-verifies 77 sealed sessions and crosses all 1,531 Dolt/raw candidate-days
 by accepted T-day price status, decision-dated issuer observation and ten-session
