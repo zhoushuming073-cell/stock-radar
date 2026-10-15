@@ -2,6 +2,15 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [adjacent-segment verification](../../reports/acceptance/box-candidate-segment-increment-2026-10-15.md)
+adds seven independently hash-verified Train sessions through 2023-02-13 and
+five Validation sessions through 2025-03-24 without reprocessing the prior
+358/115-session intervals. Their nonoverlapping arithmetic covers Train
+365/753 (1,526 chunks; 32,875 contexts) and Validation 120/235
+(881 chunks; 17,716 contexts). Both immutable workers remain live. Scan
+coverage is not formal data or return readiness. No code changed; latest full
+Native-inclusive pytest remains 815 passed, 8 skipped.
+
 The [38-session Validation data-gate increment](../../reports/acceptance/box-candidate-data-gates-delta-2026-10-15.md)
 extends the independent read-only intersection through 2025-03-17 without
 repeating the first 77 sessions: 690 new Dolt/raw candidate-days, 249 exact
