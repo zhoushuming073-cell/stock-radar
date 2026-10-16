@@ -2,6 +2,18 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [three-session July follow-up](../../reports/acceptance/box-candidate-july-followup-2026-10-16.md)
+adds one Train and two Validation sealed sessions after independent source
+verification. Adjoining scan coverage reaches Train 465/753 (2,154 chunks;
+46,261 contexts) and Validation 199/235 (1,469 chunks; 27,841 contexts).
+The continuous Validation three-gate population contains 3,387 Dolt/raw
+candidate-days, 1,286 exact accepted T-day matches and 3,281 complete
+same-source raw metadata horizons. All 2,101 absent accepted rows are inside
+the old dependency but fail its retrospective whole-closure identity gate.
+Formal identity/execution/signal gates remain open. Focused tests: 13
+passed; code unchanged, latest full Native-inclusive pytest 818 passed,
+8 skipped.
+
 The [July sealed extension](../../reports/acceptance/box-candidate-july-extension-2026-10-16.md)
 independently adds four Train and four Validation sessions. Adjoining scan
 coverage reaches Train 464/753 (2,147 chunks; 46,127 contexts) and
