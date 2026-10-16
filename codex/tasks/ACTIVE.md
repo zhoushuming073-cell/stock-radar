@@ -2,6 +2,15 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [2026-10-16 adjacent-segment checkpoint](../../reports/acceptance/box-candidate-over-night-increment-2026-10-16.md)
+independently verifies 88 further Train sessions and 69 further Validation
+sessions without rescanning the previous prefix. Adjoining verified coverage
+reaches Train 453/753 (2,074 chunks; 44,845 contexts) and Validation
+189/235 (1,389 chunks; 26,700 contexts). Both immutable workers remain live.
+The 60.2%/80.4% figures are scan coverage, not formal LEAN readiness or total
+project completion. No code changed; latest Native-inclusive pytest remains
+818 passed, 8 skipped. Keep source strata and official data gates separate.
+
 The [decision-dated reference-support audit](../../reports/acceptance/box-candidate-reference-support-2026-10-15.md)
 reverifies 120 sealed Validation sessions and 2,329 Dolt/raw candidate-days.
 Within the frozen construction database's 31-day freshness rule, 1,549 have
