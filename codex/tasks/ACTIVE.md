@@ -2,6 +2,19 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [late-July sealed checkpoint](../../reports/acceptance/box-candidate-late-july-checkpoint-2026-10-16.md)
+adds three Train and two Validation sessions with independent read-only
+source and Validation data-gate audits. Adjoining candidate scan coverage is
+Train 468/753 (2,181 chunks; 46,688 contexts) and Validation 201/235
+(1,484 chunks; 28,099 contexts). The continuous Validation population has
+3,406 Dolt/raw candidate-days, 1,293 exact accepted T-day matches and 3,298
+complete diagnostic raw-metadata horizons; 2,113 accepted-price absences
+remain. The old retrospective whole-closure gate explains these absences
+but cannot select candidates as of T. Formal issuer, price/action/factor,
+signal and portfolio gates remain open. This is engineering evidence only.
+Focused audit regression: 13 passed; code unchanged, latest full Native-
+inclusive pytest remains 818 passed, 8 skipped.
+
 The [three-session July follow-up](../../reports/acceptance/box-candidate-july-followup-2026-10-16.md)
 adds one Train and two Validation sealed sessions after independent source
 verification. Adjoining scan coverage reaches Train 465/753 (2,154 chunks;
