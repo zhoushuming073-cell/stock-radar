@@ -2,6 +2,16 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [next Validation three-gate increment](../../reports/acceptance/box-candidate-data-gates-next-2026-10-16.md)
+reverified 69 sealed sessions (955 Dolt/raw candidate-days) after the prior
+115-session data-gate population. Exact accepted T-day prices cover 406/955;
+927/955 have a complete same-source raw metadata horizon. Nineteen exact
+price matches still have observed issuer alias/conflict risk. Across the
+nonoverlapping but not fully adjoining audited intervals, 184 sessions and
+3,176 candidate-days have three-gate aggregate evidence. None is thereby
+officially identity-certified or LEAN-ready. Focused test: 1 passed; code
+unchanged, latest full Native-inclusive pytest 818 passed, 8 skipped.
+
 The [frozen official-evidence inventory](../../reports/acceptance/box-official-evidence-gap-2026-10-16.md)
 found 15 verified lifecycle events across 9 security IDs, but none has a
 `known_on` date or enabled economics; 19 verified ticker/class intervals are
