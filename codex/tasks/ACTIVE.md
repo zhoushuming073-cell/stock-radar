@@ -2,6 +2,14 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [frozen official-evidence inventory](../../reports/acceptance/box-official-evidence-gap-2026-10-16.md)
+found 15 verified lifecycle events across 9 security IDs, but none has a
+`known_on` date or enabled economics; 19 verified ticker/class intervals are
+retrospective. This aggregate necessary-gate audit does not resolve any
+candidate identity or certify official as-of-T evidence. Formal LEAN remains
+closed. The immutable scans continue; no code changed and latest full
+Native-inclusive pytest remains 818 passed, 8 skipped.
+
 The [2026-10-16 adjacent-segment checkpoint](../../reports/acceptance/box-candidate-over-night-increment-2026-10-16.md)
 independently verifies 88 further Train sessions and 69 further Validation
 sessions without rescanning the previous prefix. Adjoining verified coverage
