@@ -2,6 +2,15 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [five-session Validation data-gate bridge](../../reports/acceptance/box-candidate-data-gates-bridge-2026-10-16.md)
+closes the previously unaudited 2025-03-18–2025-03-24 interval. The
+continuous 189/235-session Validation prefix now has three-gate aggregate
+evidence for 3,284 Dolt/raw candidate-days: 1,255 exact accepted T-day
+matches and 3,185 complete ten-session same-source raw metadata tasks.
+These are observational data-coverage counts, not official identity or
+LEAN-ready signals. Code unchanged; latest full Native-inclusive pytest
+remains 818 passed, 8 skipped.
+
 The [next Validation three-gate increment](../../reports/acceptance/box-candidate-data-gates-next-2026-10-16.md)
 reverified 69 sealed sessions (955 Dolt/raw candidate-days) after the prior
 115-session data-gate population. Exact accepted T-day prices cover 406/955;
