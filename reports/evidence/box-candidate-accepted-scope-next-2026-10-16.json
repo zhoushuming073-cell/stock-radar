@@ -1,0 +1,44 @@
+{
+  "accepted_database_sha256": "1fd1996e88cc91ab25baf9a4f7615478d99506672ed47c028eaecfefd0240545",
+  "accepted_manifest_sha256": "795a01d14fc1158006eb8afe257e0e1adc12719abf3798fd7c82df519f64b4d0",
+  "accepted_missing_scope": {
+    "inside_dependency_rejected_by_whole_closure_gate": 1087
+  },
+  "audit_source_sha256": "6f8f665af313c33122c8ff86b46e62f65246df3a256a3f88e13434d0f5ebec87",
+  "candidate_file_set_sha256": "a973c0cca75bdb4b6be9ded0a8b1e749e5f38b6e5c934a41fdb8bac17b727eef",
+  "candidate_selection_changed": false,
+  "dolt_raw_candidates": 1814,
+  "end": "2025-07-09",
+  "formal_lean_ready": false,
+  "frozen_sessions": 116,
+  "future_outcomes_read": false,
+  "future_price_values_read": false,
+  "identity_risk_sha256": "06aefe53606e1d6ad421d4f5099f1b959ee5fc7e22277e6e8cbe3986d8b0e396",
+  "official_identity_certified": false,
+  "pit_dependency_sha256": "2538efd79fdc64f5479f4345256f4d077e709d475c84a0452be9baa87256febf",
+  "prior_auditor_sha256": "c67e359606270853c280ccbbc4bd5ebfbd03ca8ad4fc703d6bda752ea0dac14e",
+  "retrospective_identity_levels": {
+    "B": 193,
+    "C": 894
+  },
+  "retrospective_identity_reasons_overlapping": {
+    "ADR/share-class/lifecycle ambiguity": 115,
+    "issuer evidence unavailable at first research decision": 3,
+    "material lifecycle/action evidence": 654,
+    "ticker has multiple observed identity episodes": 246,
+    "unexplained price continuity problem": 193
+  },
+  "ri_semantic_hash": "74b765911a8a4f18b2074cd8d9e529b25b54afade15309a148b0ca43340b80be",
+  "risk_artifact_is_retrospective_not_tday_filter": true,
+  "split": "validation",
+  "start": "2025-01-22",
+  "tday_results": {
+    "accepted_tday_missing": 1087,
+    "exact_tday_match": 727
+  },
+  "version": "box-candidate-acceptance-scope-v1",
+  "whole_closure_gate_overlaps": {
+    "whole_closure_identity_fail": 1087,
+    "whole_closure_material_review": 888
+  }
+}

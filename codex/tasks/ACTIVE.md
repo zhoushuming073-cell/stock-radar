@@ -2,6 +2,17 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [later accepted-price scope audit](../../reports/acceptance/box-candidate-accepted-scope-next-2026-10-16.md)
+independently checks the remaining 116 sessions of the current 193-session
+Validation prefix. All 1,087 Dolt/raw candidate-days missing an accepted
+T-day row are inside the older PIT dependency but rejected by its
+retrospective whole-closure identity gate. With the earlier 77-session
+diagnosis, all 2,069 missing accepted rows share that explanation. This
+confirms a unique T-day Dolt/raw-labeled research row for each missing
+accepted row, but does not certify executable prices or permit use of the
+retrospective gate as a T-day filter. Focused tests: 5 passed; code
+unchanged, latest full Native-inclusive pytest 818 passed, 8 skipped.
+
 The [next sealed scan and data-gate checkpoint](../../reports/acceptance/box-candidate-next-sealed-increment-2026-10-16.md)
 independently adds seven Train and four Validation sessions. Adjoining scan
 coverage is Train 460/753 (2,122 chunks; 45,653 contexts) and Validation

@@ -1,0 +1,18 @@
+# Box candidate accepted-price absence scope increment — 2026-10-16
+
+**Result: all 1,087 Dolt/raw candidate-days without an accepted T-day price row in the newly audited 116-session Validation interval are inside the older PIT dependency, but were rejected by its retrospective whole-closure identity gate.** They are not missing a T-day Dolt/raw-labeled `shape_price` row: the unchanged T-day comparator checks that exactly one such research row exists *before* returning `accepted_tday_missing`. This is a provenance explanation of the existing accepted-price table, not a causal candidate exclusion or an execution-price certificate.
+
+The unchanged `box-candidate-acceptance-scope-v1` auditor independently reverified sealed sessions from 2025-01-22 through 2025-07-09, the candidate file set, accepted-price database and its frozen private identity-risk artifact. This interval follows the previously audited 77-session prefix without overlap. It includes 1,814 Dolt/raw candidate-days: 727 exact accepted T-day matches and 1,087 absent accepted rows. All 1,087 absent rows are within the old dependency; none is outside it or inside with the old whole-closure gates passed.
+
+| Status in newly audited 116 sessions | Candidate-days |
+| --- | ---: |
+| Exact accepted T-day match | 727 |
+| No accepted T-day row; within older dependency and rejected by whole-closure gate | 1,087 |
+| Retrospective identity level B / C among those rejected | 193 / 894 |
+| Of those rejected, material review also required | 888 |
+
+The older risk reasons overlap: material lifecycle/action evidence 654, multiple observed ticker identity episodes 246, unexplained price continuity 193, ADR/share-class/lifecycle ambiguity 115 and missing issuer evidence at the first research decision 3. These are not distinct populations. Crucially, the old `research_identity_pass` evaluates an entire prior research closure and can incorporate post-T information; it is **never** used here to alter the T-day box candidate set or its historical signals.
+
+Combined with the earlier [77-session scope diagnosis](box-candidate-accepted-scope-2026-10-15.md), the continuous **193-session** Validation prefix has **3,345** Dolt/raw candidate-days: 1,276 exact accepted T-day matches and 2,069 absent accepted rows. **All 2,069 absent rows are inside the old dependency and fail its retrospective whole-closure identity gate.** The same comparator's ordering and result categories establish a unique T-day Dolt/raw-labeled research row for each of these 2,069 cases, correcting the older report's more cautious wording. This does not establish original vendor coverage beyond that research row, official issuer/share-class facts, or complete future execution prices, corporate actions and factors. The [new aggregate evidence](../evidence/box-candidate-accepted-scope-next-2026-10-16.json) binds candidate, accepted-price, risk, RI and auditor hashes; private security/date/price mappings remain ignored local data. The 116-session population and accepted/missing counts reconcile exactly with the separate disjoint [three-gate intervals](box-candidate-next-sealed-increment-2026-10-16.md).
+
+No candidate selection, frozen RI semantics, source basis or accepted store changed. The real read-only audit exited successfully and population/scope conservation passed. Focused acceptance-scope, prefix T-day and comparator tests: **5 passed**. No code changed; latest full Native-inclusive pytest remains **818 passed, 8 skipped, one existing warning**. No future price values, outcomes, Test/Fresh, orders, returns or box LEAN backtest were used. Official as-of-T identity and accepted execution-data certification remain open.
