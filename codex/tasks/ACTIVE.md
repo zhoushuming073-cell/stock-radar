@@ -2,6 +2,20 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [late-August tail checkpoint](../../reports/acceptance/box-candidate-august-tail-2026-10-16.md)
+adds two Train and two Validation sealed sessions. Adjoining coverage is
+Train 503/753 (2,413 chunks; 50,629 contexts) and Validation 229/235
+(1,699 chunks; 32,443 contexts). Continuous Validation three-gate evidence
+contains 3,689 Dolt/raw candidate-days: 1,435 exact accepted T-day prices,
+2,254 accepted-price absences and 3,534 complete diagnostic raw-metadata
+horizons. The new 24 raw cases are ten-session split-censored; all 155
+observed in-split raw metadata rows have no issue flags. Existing trust-
+catalog raw hashes validate, but its source/mapping/event chronology is
+insufficient for official as-of-T identity. Formal execution, signal and
+portfolio gates remain open. Focused horizon/source/gate tests: 12 passed;
+code unchanged, latest full Native-inclusive pytest remains 818 passed,
+8 skipped.
+
 The [Validation split-boundary checkpoint](../../reports/acceptance/box-candidate-split-boundary-2026-10-16.md)
 adds two Train and two Validation sealed sessions after full-prefix
 read-only verification through the first new day in each split. Adjoining
