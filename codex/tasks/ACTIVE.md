@@ -2,6 +2,20 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [July extension and low-count full-state parity](../../reports/acceptance/box-candidate-july-parity-and-extension-2026-10-16.md)
+adds four Train and four Validation sealed sessions, reaching adjoining
+candidate scan coverage of Train 472/753 (2,212 chunks; 47,084 contexts)
+and Validation 205/235 (1,518 chunks; 28,640 contexts). The anomalously
+low-count 2023-07-14 Train day has exact 47/47 target-context parity with a
+complete independent full-state detector scan; this does not establish
+all-date or non-target-state correctness. The continuous Validation three-
+gate population now has 3,451 Dolt/raw candidate-days: 1,311 exact accepted
+T-day prices, 2,140 accepted-price absences and 3,340 complete raw-metadata
+horizons. Formal issuer, price/action/factor, signal and portfolio gates
+remain open. No box LEAN run or return estimate is authorized by this result.
+Focused scanner/comparator/data-gate tests: 21 passed; code unchanged,
+latest full Native-inclusive pytest remains 818 passed, 8 skipped.
+
 The [late-July sealed checkpoint](../../reports/acceptance/box-candidate-late-july-checkpoint-2026-10-16.md)
 adds three Train and two Validation sessions with independent read-only
 source and Validation data-gate audits. Adjoining candidate scan coverage is
