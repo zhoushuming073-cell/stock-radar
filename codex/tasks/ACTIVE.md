@@ -2,6 +2,17 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [next sealed scan and data-gate checkpoint](../../reports/acceptance/box-candidate-next-sealed-increment-2026-10-16.md)
+independently adds seven Train and four Validation sessions. Adjoining scan
+coverage is Train 460/753 (2,122 chunks; 45,653 contexts) and Validation
+193/235 (1,424 chunks; 27,225 contexts). The continuous 193-session
+Validation three-gate population contains 3,345 Dolt/raw candidate-days:
+1,276 exact accepted T-day matches, 3,241 complete same-source raw metadata
+horizons. The four-day reference audit confirms all 61 new Dolt/raw cases
+have stale CIK mirrors. This does not certify official identity or LEAN
+execution inputs. Focused tests: 8 passed; no code change and latest full
+Native-inclusive pytest remains 818 passed, 8 skipped.
+
 The [later 69-session reference-support audit](../../reports/acceptance/box-candidate-reference-support-next-2026-10-16.md)
 shows 58/955 Dolt/raw candidate-days with both recent compatible CIK and
 Nasdaq mirrors, 18 CIK-only, 548 Nasdaq-only and 331 with neither. The
