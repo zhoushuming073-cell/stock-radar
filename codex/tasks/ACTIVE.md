@@ -2,6 +2,18 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [July sealed extension](../../reports/acceptance/box-candidate-july-extension-2026-10-16.md)
+independently adds four Train and four Validation sessions. Adjoining scan
+coverage reaches Train 464/753 (2,147 chunks; 46,127 contexts) and
+Validation 197/235 (1,451 chunks; 27,569 contexts). The continuous
+Validation three-gate population now contains 3,374 Dolt/raw candidate-days:
+1,283 exact accepted T-day matches and 3,268 complete same-source raw
+metadata horizons. All 2,091 absent accepted rows are within the old
+dependency but fail its retrospective whole-closure identity gate; a unique
+T-day research row is present, not an accepted execution price. Focused
+tests: 13 passed; code unchanged, latest full Native-inclusive pytest
+818 passed, 8 skipped. Formal identity/execution/signal gates stay open.
+
 The [later accepted-price scope audit](../../reports/acceptance/box-candidate-accepted-scope-next-2026-10-16.md)
 independently checks the remaining 116 sessions of the current 193-session
 Validation prefix. All 1,087 Dolt/raw candidate-days missing an accepted
