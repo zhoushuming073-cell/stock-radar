@@ -1,0 +1,16 @@
+{
+  "version": "box-reference-source-chronology-inventory-v1",
+  "construction_database_sha256": "a41a38992bfd2e0e3fc1a91838725ff9f851bde760ed5aaf6a7fc167abced641",
+  "table": "membership_evidence",
+  "date_column": "available_on",
+  "cik_mirror_last_observation": "2025-02-28",
+  "nasdaq_mirror_observations_by_month": {
+    "2025-03": 2919,
+    "2025-04": 2923,
+    "2025-05": 2914,
+    "2025-06": 2910,
+    "2025-07": 2927
+  },
+  "scope": "read-only aggregate source inventory; source mirror availability is not official issuer or share-class publication timing",
+  "candidate_selection_changed": false
+}

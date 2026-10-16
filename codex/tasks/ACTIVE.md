@@ -2,6 +2,16 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [later 69-session reference-support audit](../../reports/acceptance/box-candidate-reference-support-next-2026-10-16.md)
+shows 58/955 Dolt/raw candidate-days with both recent compatible CIK and
+Nasdaq mirrors, 18 CIK-only, 548 Nasdaq-only and 331 with neither. The
+frozen CIK mirror's latest `available_on` is 2025-02-28, so its 31-day
+freshness support expires after March 31. This is a source coverage gap,
+not detector or return evidence. The 189-session combined reference audit
+remains observational, never official issuer/share-class certification.
+Focused tests: 3 passed; code unchanged and latest full Native-inclusive
+pytest remains 818 passed, 8 skipped.
+
 The [five-session Validation data-gate bridge](../../reports/acceptance/box-candidate-data-gates-bridge-2026-10-16.md)
 closes the previously unaudited 2025-03-18–2025-03-24 interval. The
 continuous 189/235-session Validation prefix now has three-gate aggregate
