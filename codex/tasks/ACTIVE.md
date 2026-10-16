@@ -2,6 +2,16 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [second-week August checkpoint](../../reports/acceptance/box-candidate-august-second-week-2026-10-16.md)
+adds five Train and five Validation sealed sessions. Adjoining candidate
+coverage is Train 484/753 (2,291 chunks; 48,088 contexts) and Validation
+216/235 (1,585 chunks; 30,065 contexts). The continuous Validation three-
+gate population has 3,543 Dolt/raw candidate-days: 1,361 exact accepted
+T-day prices, 2,182 accepted-price absences and 3,429 complete diagnostic
+raw-metadata horizons. The old retrospective whole-closure gate explains
+the 24 new absences but cannot select candidates as of T. Formal identity,
+execution price/action/factor, signal and portfolio gates remain open.
+
 The [August-boundary prefix and interval audit](../../reports/acceptance/box-candidate-august-boundary-2026-10-16.md)
 reopens the full prior Train/Validation prefixes with zero missing chunks,
 then independently verifies the next five-session intervals. Adjoining
