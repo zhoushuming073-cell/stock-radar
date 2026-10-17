@@ -2,6 +2,14 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [Train December-entry checkpoint](../../reports/acceptance/box-candidate-train-december-entry-2026-10-17.md)
+independently verifies seven more frozen Train sessions across the November
+holiday/weekend (59 chunks; 551 contexts; zero missing). Adjoining verified
+Train coverage reaches 567/753 sessions, 2,822 chunks and 57,532 contexts;
+Validation stays 235/235. Combined candidate-scan coverage is 802/988
+sessions. This does not change formal identity, execution, signal or
+portfolio gates. The low-priority Train writer continues.
+
 The [full Validation mirror-support aggregation](../../reports/acceptance/box-candidate-reference-full-2026-10-17.md)
 hash-verifies 26 nonoverlapping prior receipts against all 235 frozen
 sessions and 1,748 candidate chunks. Among 3,729 Dolt/raw candidate-days,
