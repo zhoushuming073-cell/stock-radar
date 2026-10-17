@@ -2,6 +2,17 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [official-evidence overlap audit](../../reports/acceptance/box-candidate-trust-overlap-2026-10-17.md)
+re-hashes all 1,748 completed Validation candidate chunks and compares their
+stored security IDs with the existing trust catalog. Only 9/33,226
+candidate-days exactly match its mappings/events; all nine are legacy split,
+and 0/3,729 Dolt/raw candidate-days match. All 13 catalog raw documents
+hash-validate, but none of its source/mapping/event records carries structured
+publication chronology. This exact-ID diagnostic is not issuer adjudication;
+it demonstrates that dating the existing narrow catalog alone cannot close
+the full Validation identity gate. A broader source-dated official evidence
+plan is required before any frozen rebuild or formal LEAN promotion.
+
 The [full Validation checkpoint](../../reports/acceptance/box-candidate-validation-full-2026-10-17.md)
 independently verifies all 235/235 frozen Validation sessions (1,748 chunks;
 33,226 contexts) and extends the adjoining Train prefix to 560/753 sessions
