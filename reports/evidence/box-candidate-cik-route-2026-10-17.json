@@ -1,0 +1,18 @@
+{
+  "version": "box-candidate-validation-cik-bridge-preflight-v1",
+  "candidate_file_set_sha256": "80f7f641045051fd80cae446ba1ebad7ab2c78694d6c76e1260e4054a6b33c96",
+  "construction_database_sha256": "a41a38992bfd2e0e3fc1a91838725ff9f851bde760ed5aaf6a7fc167abced641",
+  "raw_candidate_days": 3729,
+  "raw_unique_security_ids": 424,
+  "cik_count_and_episode_count": {
+    "1_cik_1_episode": 3729
+  },
+  "unique_observed_ciks": 422,
+  "internal_ids_with_multiple_observed_ciks": 0,
+  "cik_is_issuer_not_security_class": true,
+  "official_share_class_certified": false,
+  "future_price_values_read": false,
+  "future_outcomes_read": false,
+  "formal_lean_ready": false,
+  "private_identifiers_in_public_evidence": false
+}

@@ -2,6 +2,16 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [official-source route preflight](../../reports/acceptance/box-official-source-route-preflight-2026-10-17.md)
+re-hashes the full Validation candidate set and finds that all 3,729
+Dolt/raw candidate-days have one T-available **observed** CIK and active
+episode; 424 internal IDs map to 422 observed CIKs without observed CIK
+drift per ID. This makes free SEC filing chronology technically joinable,
+but CIK is issuer-level, not a security-class or corporate-action
+certificate. The paid Nasdaq Daily List was not used. Selecting a broader
+official class/action evidence corpus and any frozen rebuild is a material
+source decision; do not promote observational mappings or run formal LEAN.
+
 The [Train December-entry checkpoint](../../reports/acceptance/box-candidate-train-december-entry-2026-10-17.md)
 independently verifies seven more frozen Train sessions across the November
 holiday/weekend (59 chunks; 551 contexts; zero missing). Adjoining verified
