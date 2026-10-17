@@ -2,6 +2,14 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [Train mid-December checkpoint](../../reports/acceptance/box-candidate-train-december-mid-2026-10-17.md)
+combines five disjoint hash-verified daily receipts for 2023-12-11–15. The
+frozen calendar confirms five sessions, 35 chunks and 228 contexts, all
+legacy Alpaca SIP/split. Adjoining verified Train coverage reaches 577/753
+sessions, 2,894 chunks and 58,027 contexts; Validation stays 235/235.
+Combined candidate-scan coverage is 812/988 sessions. This remains candidate
+engineering, not formal identity, execution, signal or portfolio evidence.
+
 The [Train December-week checkpoint](../../reports/acceptance/box-candidate-train-december-week-2026-10-17.md)
 combines three disjoint hash-verified receipts for 2023-12-04–08. The frozen
 calendar confirms five sessions, 37 chunks and 267 contexts, all legacy
