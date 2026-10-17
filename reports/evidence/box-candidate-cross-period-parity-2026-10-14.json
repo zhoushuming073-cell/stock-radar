@@ -1,0 +1,48 @@
+{
+  "verifier_source_sha256": "2c5d6ec34ff294a05fb0b3e199a1febcf1fb70b792e31f9205200d0580f578bb",
+  "ri_semantic_hash": "74b765911a8a4f18b2074cd8d9e529b25b54afade15309a148b0ca43340b80be",
+  "target_state": "NEAR_LOWER_STABILIZING",
+  "days": [
+    {
+      "split": "train",
+      "date": "2022-03-15",
+      "eligible": 3106,
+      "gate_possible": 1642,
+      "gate_certainly_not": 1464,
+      "near_lower_union": 228,
+      "candidate_file_set_sha256": "eaacf8557c9ea40e5592efb6fa60cd5f2a5dcef1f4947d2707a4d6c7c1447e0b",
+      "full_file_set_sha256": "e868c77a272892ce9cf742f0feda9a4d04ba152f57b0123b5d1bf79300061f11",
+      "exact_context_equality": true,
+      "full_new_compute_seconds": 607.49
+    },
+    {
+      "split": "train",
+      "date": "2024-07-01",
+      "eligible": 3944,
+      "gate_possible": 1221,
+      "gate_certainly_not": 2723,
+      "near_lower_union": 96,
+      "candidate_file_set_sha256": "407252c54b700c2dfb35646b95c795beb5ad10541ae3ceff1edb774e3376fed5",
+      "full_file_set_sha256": "18fd02c3e61b32876453942fe9442e4c67051929d83d7246226ed301fb3fc8a2",
+      "exact_context_equality": true,
+      "candidate_new_compute_seconds": 163.685,
+      "full_new_compute_seconds": 595.383
+    },
+    {
+      "split": "validation",
+      "date": "2025-06-02",
+      "eligible": 3898,
+      "gate_possible": 1839,
+      "gate_certainly_not": 2059,
+      "near_lower_union": 146,
+      "candidate_file_set_sha256": "23e2075cea394cfccb5b281aab3bd02f87e15804e4eae66d08951c461d5b4374",
+      "full_file_set_sha256": "f3cd00fa47f236ab656a0b379607995a4a054a8ae4120592e047f26ac731cbfb",
+      "exact_context_equality": true,
+      "candidate_new_compute_seconds": 258.862,
+      "full_new_compute_seconds": 751.374
+    }
+  ],
+  "exact_context_rows_matched": 470,
+  "future_outcomes_read": false,
+  "formal_signal_stream": false
+}

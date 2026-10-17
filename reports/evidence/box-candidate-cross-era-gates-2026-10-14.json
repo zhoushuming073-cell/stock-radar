@@ -1,0 +1,68 @@
+{
+  "version": "box-candidate-cross-era-gates-v1",
+  "train_2022_03_15": {
+    "split": "train",
+    "candidate_file_set_sha256": "eaacf8557c9ea40e5592efb6fa60cd5f2a5dcef1f4947d2707a4d6c7c1447e0b",
+    "candidates": 228,
+    "issuer_receipt_sha256": "dc13a6a40298d1574cf8f6acd59a3e707f52975ecaddf7f0178672010a7f0677",
+    "execution_receipt_sha256": "407f1ac1046fc6b8066b11a1f78fdfae9683d6dd3364ca0db657f33ba1f7aa22",
+    "observational_no_known_conflict": 210,
+    "contemporaneous_issuer_alias": 13,
+    "ambiguous_own_identity": 5,
+    "matching_basis_complete_tasks": 228,
+    "expected_session_rows": 2280,
+    "raw_available_session_rows": 0,
+    "same_source_raw_complete_tasks": 0,
+    "observational_and_raw_metadata_complete": 0,
+    "overall_basis_rows_2022_03_16_to_2022_03_29": {"raw": 10, "split": 38499}
+  },
+  "validation_2024_09_30": {
+    "split": "validation",
+    "candidate_file_set_sha256": "ad3b317bc66ae503074fb7e82bddc2a4ac3e85886adb1d39ebf7008a66ed1a44",
+    "candidates": 144,
+    "issuer_receipt_sha256": "b109189de183e0a49452d315ff0fd8034451f7f2ef85af0c110959167f4e4ed0",
+    "execution_receipt_sha256": "958bef86f502eb7e4624596dce65e306f23fa35d68374c809cf02e86fd30eb0f",
+    "observational_no_known_conflict": 131,
+    "contemporaneous_issuer_alias": 13,
+    "matching_basis_complete_tasks": 143,
+    "missing_or_duplicate_matching_basis_session_rows": 7,
+    "expected_session_rows": 1440,
+    "raw_available_session_rows": 243,
+    "same_source_raw_complete_tasks": 24,
+    "observational_and_raw_metadata_complete": 23,
+    "overall_basis_rows_2024_10_01_to_2024_10_14": {"raw": 51323, "split": 43446}
+  },
+  "prefix_verification": {
+    "train": {
+      "start": "2021-09-01",
+      "end": "2022-07-22",
+      "sessions": 224,
+      "total_frozen_sessions": 753,
+      "eligible_security_days": 315447,
+      "near_lower_union_rows": 14358,
+      "verified_chunks": 668,
+      "missing_chunks": 0,
+      "verified_file_set_sha256": "b589684d831ad0d43b473456175c99db984e411be30f36a2e02bf80c707267e9"
+    },
+    "validation": {
+      "start": "2024-09-30",
+      "end": "2024-10-09",
+      "sessions": 8,
+      "total_frozen_sessions": 235,
+      "eligible_security_days": 31856,
+      "near_lower_union_rows": 1140,
+      "verified_chunks": 62,
+      "missing_chunks": 0,
+      "verified_file_set_sha256": "c57f841b3bfc45bcb717470d130157e1476ad842cba5d32e302bd6a09193f58e"
+    }
+  },
+  "ri_semantic_hash": "74b765911a8a4f18b2074cd8d9e529b25b54afade15309a148b0ca43340b80be",
+  "construction_sha256": "a41a38992bfd2e0e3fc1a91838725ff9f851bde760ed5aaf6a7fc167abced641",
+  "issuer_audit_source_sha256": "d11343c81c5052099318c5c72305d37f4aef62d2863b7157677d9447acd2a68b",
+  "execution_audit_source_sha256": "bedf2954eaee822f2290472d2f77865455df50f96f861502c5f6c3abde22d33d",
+  "official_identity_certified": false,
+  "future_ohlcv_values_read": false,
+  "future_outcomes_read": false,
+  "human_labels_generated": false,
+  "formal_lean_ready": false
+}

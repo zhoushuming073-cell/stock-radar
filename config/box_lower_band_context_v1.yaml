@@ -1,0 +1,9 @@
+# Explainable initial research bounds; no outcome or human-label optimization.
+version: box-lower-band-context-v1
+max_position: 0.33
+min_headroom: 0.08
+max_last_day_gain: 0.06
+max_three_day_gain: 0.10
+min_last_day_return: -0.005
+min_recent_low_change: -0.025
+max_volume_ratio: 4.0

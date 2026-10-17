@@ -1,0 +1,39 @@
+{
+  "version": "box-candidate-train-december-entry-v1",
+  "prior_verified_train_sessions": 560,
+  "prior_verified_train_chunks": 2763,
+  "prior_verified_train_contexts": 56981,
+  "new_interval": {
+    "split": "train",
+    "start": "2023-11-22",
+    "end": "2023-12-01",
+    "sessions": 7,
+    "eligible_security_days": 23664,
+    "verified_chunks": 59,
+    "missing_chunks": 0,
+    "near_lower_contexts": 551,
+    "file_set_sha256": "b488123bb32e60dad2d980cae573bfc9f1c90e5d790a83cf1820ba91a1b5dac7",
+    "ri_semantic_hash": "74b765911a8a4f18b2074cd8d9e529b25b54afade15309a148b0ca43340b80be",
+    "source_basis_counts": [
+      {"source": "legacy:alpaca:sip", "basis": "split", "candidates": 551}
+    ],
+    "positive_session_count": 7,
+    "daily_candidate_min": 52,
+    "daily_candidate_median": 84,
+    "daily_candidate_max": 104,
+    "interval_complete": true,
+    "independent_verify_only_passed": true,
+    "source_audit_file_hash_equal": true
+  },
+  "adjoining_verified_train_sessions": 567,
+  "adjoining_verified_train_chunks": 2822,
+  "adjoining_verified_train_contexts": 57532,
+  "frozen_train_sessions": 753,
+  "frozen_validation_sessions": 235,
+  "verified_validation_sessions": 235,
+  "combined_verified_sessions": 802,
+  "combined_frozen_sessions": 988,
+  "formal_lean_ready": false,
+  "future_outcomes_read": false,
+  "private_identifiers_in_public_evidence": false
+}

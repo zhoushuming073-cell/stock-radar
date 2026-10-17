@@ -1,0 +1,52 @@
+{
+  "version": "box-candidate-high-density-parity-v1",
+  "reference": {
+    "split": "train",
+    "decision_date": "2022-05-04",
+    "selection_reason": "maximum near-lower count in prior verified Train prefix through 2022-07-28",
+    "indexed_security_days": 3568,
+    "eligible_security_days": 3193,
+    "gate_possible": 1823,
+    "gate_certainly_not": 1370,
+    "candidate_near_lower": 313,
+    "full_near_lower": 313,
+    "exact_context_equality": true,
+    "full_verified_chunks": 13,
+    "full_new_compute_seconds": 709.064,
+    "candidate_file_set_sha256": "fb8cc87706e08f7d7ed6c4d354d880faa611deea7a1622b044ed479a23d867e6",
+    "full_file_set_sha256": "4add1a99759f047a5224db8f8f415f1ad19720cba16cac38987d839bc48d1cfc"
+  },
+  "comparison_reference_days_total": 5,
+  "comparison_observed_target_rows_total": 927,
+  "resumed_prefixes": {
+    "train": {
+      "start": "2021-09-01",
+      "end": "2022-08-03",
+      "verified_sessions": 232,
+      "total_frozen_sessions": 753,
+      "eligible_security_days": 341365,
+      "near_lower_union_rows": 15345,
+      "verified_chunks": 727,
+      "missing_chunks": 0,
+      "verified_file_set_sha256": "bdd27818fd120123c43c34f8d89a11cc7716d5b13cc648e8a8a7662cb368483f"
+    },
+    "validation": {
+      "start": "2024-09-30",
+      "end": "2024-10-17",
+      "verified_sessions": 14,
+      "total_frozen_sessions": 235,
+      "eligible_security_days": 55789,
+      "near_lower_union_rows": 2166,
+      "verified_chunks": 120,
+      "missing_chunks": 0,
+      "verified_file_set_sha256": "be123a26829c6fe4c5a067b4b0f109f97e6fa4ac629deec57d29611500a98642"
+    }
+  },
+  "ri_semantic_hash": "74b765911a8a4f18b2074cd8d9e529b25b54afade15309a148b0ca43340b80be",
+  "candidate_scanner_source_sha256": "bc44d44a840579938fa1269500044c3f9f2ea889d7503f54c7fe60fe509b27df",
+  "full_scanner_source_sha256": "57c3bad73172782c2bf2b5cfd2929cf956322075d954c7fd19c92e00b8f81481",
+  "comparator_source_sha256": "2c5d6ec34ff294a05fb0b3e199a1febcf1fb70b792e31f9205200d0580f578bb",
+  "future_outcomes_read": false,
+  "formal_signal_stream": false,
+  "lean_backtest_run": false
+}

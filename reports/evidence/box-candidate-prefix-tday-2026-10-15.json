@@ -1,0 +1,26 @@
+{
+  "accepted_database_sha256": "1fd1996e88cc91ab25baf9a4f7615478d99506672ed47c028eaecfefd0240545",
+  "accepted_manifest_sha256": "795a01d14fc1158006eb8afe257e0e1adc12719abf3798fd7c82df519f64b4d0",
+  "accepted_source_version": "vt6qeesk27k07492k5jc5b7p04mf0s6o",
+  "audit_source_sha256": "c67e359606270853c280ccbbc4bd5ebfbd03ca8ad4fc703d6bda752ea0dac14e",
+  "candidate_file_set_sha256": "495cc9a9a1a6deeeca75ef7e042ff6c8412ef5b11d9f48a5ff03b32cf2593069",
+  "corporate_actions_certified": false,
+  "dolt_raw_candidate_days": 77,
+  "dolt_raw_candidates": 1531,
+  "end": "2025-01-21",
+  "formal_lean_ready": false,
+  "frozen_sessions": 77,
+  "future_outcomes_read": false,
+  "future_prices_read": false,
+  "official_identity_certified": false,
+  "ri_semantic_hash": "74b765911a8a4f18b2074cd8d9e529b25b54afade15309a148b0ca43340b80be",
+  "source_audit_sha256": "107d0a0ec780971669f1c8ba517e770b56a29ded53a8ad7e64bc918e542bfd58",
+  "split": "validation",
+  "start": "2024-09-30",
+  "tday_only": true,
+  "tday_results": {
+    "accepted_tday_missing": 982,
+    "exact_tday_match": 549
+  },
+  "version": "box-candidate-prefix-tday-v1"
+}

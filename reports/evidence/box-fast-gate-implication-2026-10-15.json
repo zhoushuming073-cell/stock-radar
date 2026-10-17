@@ -1,0 +1,44 @@
+{
+  "version": "box-fast-gate-implication-audit-v1",
+  "cross_module_test_source_sha256": "6c143eed7f12ee59553693224f1d1b62d881c8baa59dddba7ee3c390834228af",
+  "gate_source_sha256": "944dc47cb39dfc4fd6a105abc213ff82b779b1e5bf5eaee5d7636eb1e9c5ebb5",
+  "prefix_query_source_sha256": "d2fc90c27aaa814e6b57425db597e03d13531440d10522fd1ebddb109b986866",
+  "ri_semantic_hash": "74b765911a8a4f18b2074cd8d9e529b25b54afade15309a148b0ca43340b80be",
+  "context_config_hash": "7ede6014fd9a3e13b3a3d1fe090dac636730288a6eaaa3a4066de782f9eda390",
+  "property_test": {
+    "generated_examples": 200,
+    "derandomize": true,
+    "explicit_positive_target_case": true,
+    "property": "Stage C NEAR_LOWER_STABILIZING implies Stage D necessary gate possible",
+    "simulated_confirmed_range_only": true
+  },
+  "independent_full_state_day": {
+    "split": "train",
+    "decision_date": "2022-10-03",
+    "full_scan_file_set_sha256": "f61bea160c72a86a2affda3531720f7e9cc06be8ff80f8fa84d8f2d5de295dd0",
+    "eligible_security_days": 3258,
+    "trusted_recent_prefixes": 3258,
+    "unknown_or_untrusted_prefixes_retained": 0,
+    "possible_near_lower": 2037,
+    "certainly_not_near_lower": 1221,
+    "full_scan_near_lower_union": 437,
+    "observed_false_exclusions": 0,
+    "rejection_reasons_overlapping": {
+      "last_day_declining": 363,
+      "last_day_overextended": 259,
+      "recent_low_falling": 743,
+      "three_day_overextended": 72,
+      "volume_baseline_unavailable": 26,
+      "volume_spike": 69
+    }
+  },
+  "focused_pytest_passed": 11,
+  "native_lean_opt_in": true,
+  "project_pytest_passed": 805,
+  "project_pytest_skipped": 8,
+  "project_pytest_warnings": 1,
+  "scanner_or_gate_source_changed": false,
+  "future_prices_read": false,
+  "future_outcomes_read": false,
+  "formal_lean_ready": false
+}

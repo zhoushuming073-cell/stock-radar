@@ -1,0 +1,19 @@
+{
+  "version": "box-lower-band-stage-c-diagnostic-v1",
+  "date": "2026-10-14",
+  "selection_sha256": "f64acf27893960ed3ac449d398a89bf0cdf4396d170c6669e8ab5043644f15a5",
+  "private_receipt_sha256": "88e3449deaaa8a1ee74cfdf1ac0d6bdf7132adb2a984e7d3609c6ae8f18e00c3",
+  "detector_config_hash": "bedd4815553e73a866594c735dda89eb3dba559b704f3772c167d2a856af3f1e",
+  "context_config_hash": "7ede6014fd9a3e13b3a3d1fe090dac636730288a6eaaa3a4066de782f9eda390",
+  "ri_semantic_hash": "74b765911a8a4f18b2074cd8d9e529b25b54afade15309a148b0ca43340b80be",
+  "sampled_security_days": 48,
+  "by_year": {"2022": 12, "2023": 12, "2024": 12, "2025": 12},
+  "states": {
+    "quantile-zone-v1": {"NO_ACTIVE_RANGE": 34, "AWAY_FROM_LOWER": 9, "WAIT_UNDERCUT": 3, "WAIT_PRICE": 1, "NEAR_LOWER_STABILIZING": 1},
+    "confirmed-pivot-zone-v1": {"NO_ACTIVE_RANGE": 46, "AWAY_FROM_LOWER": 1, "WAIT_UNDERCUT": 1}
+  },
+  "identity_gate": "PROVISIONAL_OBSERVATIONAL",
+  "human_labels_read": false,
+  "future_outcomes_read": false,
+  "accuracy_or_return_claim": null
+}

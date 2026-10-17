@@ -1,0 +1,52 @@
+{
+  "audit_source_sha256": "107d0a0ec780971669f1c8ba517e770b56a29ded53a8ad7e64bc918e542bfd58",
+  "formal_lean_ready": false,
+  "future_ohlcv_values_read": false,
+  "future_outcomes_read": false,
+  "prior_checkpoint": "box-candidate-segment-increment-2026-10-15.json",
+  "ri_semantic_hash": "74b765911a8a4f18b2074cd8d9e529b25b54afade15309a148b0ca43340b80be",
+  "train_increment": {
+    "split": "train",
+    "start": "2023-02-14",
+    "end": "2023-06-21",
+    "sessions": 88,
+    "eligible_security_days": 290493,
+    "verified_chunks": 548,
+    "verified_file_set_sha256": "7e7dcece9b8cab2ca9eea4d6504843230622e8acbc958cf407b50315f7682379",
+    "near_lower_union_rows": 11970,
+    "source_basis_counts": [
+      {"source": "legacy:alpaca:sip", "basis": "split", "candidates": 11970}
+    ],
+    "daily_distribution": {
+      "zero_candidate_sessions": 0,
+      "positive_candidate_sessions": 88,
+      "positive_min": 32,
+      "positive_median": 132.5,
+      "positive_max": 315,
+      "top_10_candidate_rows": 2472
+    }
+  },
+  "validation_increment": {
+    "split": "validation",
+    "start": "2025-03-25",
+    "end": "2025-07-02",
+    "sessions": 69,
+    "eligible_security_days": 269274,
+    "verified_chunks": 508,
+    "verified_file_set_sha256": "1fb460d0db6f19fde34b92e8bce3af30e3b9d0f97fe619794455a7beadf887bc",
+    "near_lower_union_rows": 8984,
+    "source_basis_counts": [
+      {"source": "Dolt:post-no-preference/stocks", "basis": "raw", "candidates": 955},
+      {"source": "legacy:alpaca:sip", "basis": "split", "candidates": 8029}
+    ],
+    "daily_distribution": {
+      "zero_candidate_sessions": 0,
+      "positive_candidate_sessions": 69,
+      "positive_min": 9,
+      "positive_median": 128,
+      "positive_max": 279,
+      "top_10_candidate_rows": 2272
+    }
+  },
+  "version": "box-candidate-adjacent-increment-v1"
+}

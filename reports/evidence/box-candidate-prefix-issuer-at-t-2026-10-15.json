@@ -1,0 +1,32 @@
+{
+  "accepted_database_sha256": "1fd1996e88cc91ab25baf9a4f7615478d99506672ed47c028eaecfefd0240545",
+  "accepted_manifest_sha256": "795a01d14fc1158006eb8afe257e0e1adc12719abf3798fd7c82df519f64b4d0",
+  "audit_source_sha256": "627fcdafe4350d7c0d7f303387cdf4cdee13d193fda1d5c9a2b3d4eed138bbd0",
+  "candidate_file_set_sha256": "495cc9a9a1a6deeeca75ef7e042ff6c8412ef5b11d9f48a5ff03b32cf2593069",
+  "candidate_window_sha256": "d11343c81c5052099318c5c72305d37f4aef62d2863b7157677d9447acd2a68b",
+  "construction_database_sha256": "a41a38992bfd2e0e3fc1a91838725ff9f851bde760ed5aaf6a7fc167abced641",
+  "dolt_raw_candidate_days": 1531,
+  "end": "2025-01-21",
+  "formal_lean_ready": false,
+  "frozen_sessions": 77,
+  "future_outcomes_read": false,
+  "human_labels_read": false,
+  "issuer_query_sha256": "20a058fe4fe9f449459d46b6434def3733e217ac656ef24ebd4b63c3c6d471f1",
+  "official_identity_certified": false,
+  "prior_auditor_sha256": "c67e359606270853c280ccbbc4bd5ebfbd03ca8ad4fc703d6bda752ea0dac14e",
+  "ri_semantic_hash": "74b765911a8a4f18b2074cd8d9e529b25b54afade15309a148b0ca43340b80be",
+  "split": "validation",
+  "start": "2024-09-30",
+  "tday_price_status_by_asof_t_issuer_observation": {
+    "accepted_tday_missing": {
+      "CONTEMPORANEOUS_ISSUER_ALIAS": 77,
+      "KNOWN_IDENTITY_CONFLICT": 29,
+      "OBSERVATIONAL_NO_KNOWN_CONFLICT": 876
+    },
+    "exact_tday_match": {
+      "CONTEMPORANEOUS_ISSUER_ALIAS": 14,
+      "OBSERVATIONAL_NO_KNOWN_CONFLICT": 535
+    }
+  },
+  "version": "box-candidate-prefix-issuer-asof-t-v1"
+}
