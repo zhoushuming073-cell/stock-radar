@@ -2,6 +2,15 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [full Validation mirror-support aggregation](../../reports/acceptance/box-candidate-reference-full-2026-10-17.md)
+hash-verifies 26 nonoverlapping prior receipts against all 235 frozen
+sessions and 1,748 candidate chunks. Among 3,729 Dolt/raw candidate-days,
+1,607 have both recent compatible CIK/Nasdaq mirrors, 798 CIK only,
+819 Nasdaq only and 505 neither. Independent T-dated issuer observations
+include 206 contemporaneous aliases and 71 known conflicts. This completes
+mirror-support accounting, not official issuer/share-class certification;
+formal LEAN data, signal and portfolio gates remain open.
+
 The [official-evidence overlap audit](../../reports/acceptance/box-candidate-trust-overlap-2026-10-17.md)
 re-hashes all 1,748 completed Validation candidate chunks and compares their
 stored security IDs with the existing trust catalog. Only 9/33,226

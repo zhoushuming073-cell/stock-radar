@@ -1,0 +1,41 @@
+{
+  "all_interval_hashes_verified": true,
+  "all_sessions_covered_once": true,
+  "candidate_chunks": 1748,
+  "candidate_file_set_sha256": "80f7f641045051fd80cae446ba1ebad7ab2c78694d6c76e1260e4054a6b33c96",
+  "construction_database_sha256": "a41a38992bfd2e0e3fc1a91838725ff9f851bde760ed5aaf6a7fc167abced641",
+  "counts": {
+    "dolt_raw_candidate_days": 3729,
+    "frozen_sessions": 235,
+    "has_older_compatible_cik_but_not_recent": 1324,
+    "has_older_compatible_nasdaq_but_not_recent": 0,
+    "no_full_window_ticker_episode_tasks": 0,
+    "recent_reference_conflict_tasks": 0,
+    "tasks": 3729
+  },
+  "end": "2025-09-08",
+  "formal_lean_ready": false,
+  "full_candidate_file_set_rehashed": true,
+  "future_outcomes_read": false,
+  "future_price_values_read": false,
+  "issuer_observation": {
+    "CONTEMPORANEOUS_ISSUER_ALIAS": 206,
+    "KNOWN_IDENTITY_CONFLICT": 71,
+    "OBSERVATIONAL_NO_KNOWN_CONFLICT": 3452
+  },
+  "official_identity_certified": false,
+  "private_identifiers_in_public_evidence": false,
+  "recent_mirror_support": {
+    "BOTH_RECENT_COMPATIBLE": 1607,
+    "CIK_ONLY_RECENT_COMPATIBLE": 798,
+    "NASDAQ_ONLY_RECENT_COMPATIBLE": 819,
+    "NO_RECENT_COMPATIBLE_REFERENCE": 505
+  },
+  "reference_rules_sha256": "d744ae5c6ae193b09dca46646359582bb4da61169f557674126eceb8dd764e72",
+  "ri_semantic_hash": "74b765911a8a4f18b2074cd8d9e529b25b54afade15309a148b0ca43340b80be",
+  "source_receipt_set_sha256": "9000023bb1fb6c90d412e701440dae6a31eae54ef3a3101dccb5a661b63575c0",
+  "source_receipts": 26,
+  "split": "validation",
+  "start": "2024-09-30",
+  "version": "box-candidate-reference-full-aggregate-v1"
+}
