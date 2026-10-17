@@ -2,6 +2,15 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [Train mid-March checkpoint](../../reports/acceptance/box-candidate-train-march-mid-2026-10-17.md)
+combines three disjoint hash-verified daily receipts for 2024-03-13–15.
+The frozen calendar confirms three sessions, 17 chunks and 281 contexts,
+all legacy Alpaca SIP/split. Adjoining verified Train coverage reaches
+638/753 sessions, 3,314 chunks and 64,162 contexts; Validation stays
+235/235. Combined candidate-scan coverage is 873/988 sessions. The
+free-data route keeps formal box LEAN deferred; identity, execution,
+signal and portfolio gates remain open.
+
 The [Train early-March checkpoint](../../reports/acceptance/box-candidate-train-march-early-2026-10-17.md)
 combines three disjoint hash-verified daily receipts for 2024-03-08–12.
 The frozen calendar confirms three sessions, 22 chunks and 400 contexts,
