@@ -2,6 +2,18 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [full Validation checkpoint](../../reports/acceptance/box-candidate-validation-full-2026-10-17.md)
+independently verifies all 235/235 frozen Validation sessions (1,748 chunks;
+33,226 contexts) and extends the adjoining Train prefix to 560/753 sessions
+(2,763 chunks; 56,981 contexts). All independent Validation receipts agree
+on the candidate file-set hash. The 3,729 Dolt/raw candidate-days contain
+1,449 exact accepted T-day price matches, 2,280 absences caused by the
+older retrospective whole-closure identity gate, and 3,534 complete
+diagnostic raw-metadata horizons. These are not executable prices or
+official as-of-T identities. Train continues in the background. Full
+Native-inclusive pytest was rerun: 818 passed, 8 skipped, one existing
+warning. Formal identity, execution, signal and portfolio gates stay open.
+
 The [September-entry checkpoint](../../reports/acceptance/box-candidate-september-entry-2026-10-16.md)
 adds three Train and two Validation sealed sessions. Frozen-calendar
 read-only verification confirms the short intervals have zero missing
