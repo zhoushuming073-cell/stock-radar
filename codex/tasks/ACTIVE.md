@@ -2,6 +2,14 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [Train July fourth-week checkpoint](../../reports/acceptance/box-candidate-train-july-fourth-week-2026-10-18.md)
+combines five disjoint hash-verified daily receipts: 19,713 eligible days,
+10,438 T-only possible days, 44 chunks and 450 contexts (370 legacy Alpaca
+SIP/split; 80 Dolt/raw). Adjoining Train coverage reaches 729/753 sessions,
+3,981 chunks and 75,100 contexts; Validation stays 235/235. Combined
+candidate-scan coverage is 964/988. The scanner and follower continue;
+formal box LEAN remains deferred under the free-data route.
+
 The [Train July 12–19 checkpoint](../../reports/acceptance/box-candidate-train-july-12-to-19-2026-10-18.md)
 combines six disjoint hash-verified daily receipts: 23,655 eligible days,
 11,517 T-only possible days, 48 chunks and 543 contexts (445 legacy Alpaca
