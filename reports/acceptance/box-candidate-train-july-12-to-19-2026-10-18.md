@@ -1,0 +1,13 @@
+# Box candidate Train July 12–19 checkpoint — 2026-10-18
+
+**Result: six further frozen Train trading sessions pass independent read-only verification.** The 2024-07-12–19 interval contains 23,655 eligible security-days, 11,517 T-only possible security-days, 48 immutable candidate chunks, zero missing chunks and 543 near-lower contexts. Six disjoint daily verifier/source-audit receipts agree on each day's file-set SHA-256. A separate interval verifier re-opened all 48 files and bound the combined file set to `8ec82e203d49df20efea6493f77a50b6bd0590c3bb9b6466c5d5c201dd6db222`. The frozen Research Infrastructure v1 calendar confirms six sessions.
+
+Source-basis audit finds **445 contexts from legacy Alpaca SIP/split and 98 from Dolt/raw**. All six sessions have candidates; daily counts range from 31 to 141 with median 94. The July 18 count of 31 coincides with a decline in T-only possible security-days from 2,654 on July 16 to 965 on July 18, while eligible security-days remain near 3,940. Both source strata decline, and the daily receipts show no missing chunks. This is a bounded selection-distribution observation, not evidence of a particular market cause, structure accuracy or return quality.
+
+This interval adjoins the previous independently verified boundary of 2024-07-11. Cumulative adjoining Train coverage becomes **724/753 sessions, 3,937 chunks and 74,650 contexts**. Validation remains independently complete at 235/235 sessions. Combined candidate-scan coverage is **959/988 sessions (97.1%)**. The remaining 29 Train sessions would take roughly **4.1 hours at the median of the 12 recent daily verifier intervals (8.56 minutes)**; this is an observed-rate projection, not a completion guarantee.
+
+The unchanged scanner and private read-only follower continued through this interval. The actual scanner and verifier child processes run hidden at low priority. Neither source code nor frozen selection rules changed.
+
+The owner chose the free-data route: candidate research continues while formal box LEAN backtesting is deferred. This does not waive official as-of-T security identity, accepted same-source execution prices/actions/factors, complete signals or frozen portfolio-rule gates. No paid historical source was ordered or used.
+
+The [aggregate evidence](../evidence/box-candidate-train-july-12-to-19-2026-10-18.json) contains counts and hashes without private candidate identities or market rows. No Test/Fresh data, future outcomes, human labels or box LEAN portfolio backtest were used. No tracked source code changed; the latest full Native-inclusive pytest remains **818 passed, 8 skipped, one existing warning**.
