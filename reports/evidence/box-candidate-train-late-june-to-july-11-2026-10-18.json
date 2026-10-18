@@ -15,6 +15,14 @@
     {"source": "Dolt:post-no-preference/stocks", "basis": "raw", "candidates": 418},
     {"source": "legacy:alpaca:sip", "basis": "split", "candidates": 2296}
   ],
+  "daily_distribution": {
+    "zero_candidate_sessions": 0,
+    "positive_candidate_sessions": 17,
+    "positive_min": 93,
+    "positive_median": 156,
+    "positive_max": 219,
+    "top_10_candidate_rows": 1838
+  },
   "missing_chunks": 0,
   "disjoint_verifier_hashes_agree": true,
   "frozen_calendar_verified": true,

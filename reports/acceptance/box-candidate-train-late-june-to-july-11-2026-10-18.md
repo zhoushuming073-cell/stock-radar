@@ -4,6 +4,8 @@
 
 Source-basis audit finds **2,296 contexts from legacy Alpaca SIP/split and 418 from Dolt/raw**. These strata remain distinct. Candidate presence alone does not certify official as-of-T security identity or LEAN execution data.
 
+All 17 sessions have at least one candidate. Daily context counts range from 93 to 219, with median 156; the ten highest-count sessions contribute 1,838/2,714 (67.7%) of this interval's contexts. This bounded descriptive check does not establish full-period diversity, independent structures or outcome quality.
+
 This interval adjoins the previous independently verified boundary of 2024-06-14. Cumulative adjoining Train coverage becomes **718/753 sessions, 3,889 chunks and 74,107 contexts**. Validation remains independently complete at 235/235 sessions. Combined candidate-scan coverage is **953/988 sessions (96.5%)**. These figures measure scan coverage only, not structure accuracy, executable signals or returns.
 
 The unchanged scanner and private read-only follower continued through this interval. The actual scanner and verifier child processes run hidden at low priority. Neither source code nor frozen selection rules changed.
