@@ -1,0 +1,41 @@
+{
+  "version": "box-candidate-train-july29-aug07-v1",
+  "start": "2024-07-29",
+  "end": "2024-08-07",
+  "sessions": 8,
+  "eligible_security_days": 31614,
+  "possible_security_days": 8541,
+  "chunks": 38,
+  "near_lower_contexts": 379,
+  "file_set_sha256": "e5aee765ff0cbe6a6a6b1c05f17e53103badb497589d83d3a31a6897aeab068b",
+  "source_basis_counts": [
+    {"source": "Dolt:post-no-preference/stocks", "basis": "raw", "candidates": 77},
+    {"source": "legacy:alpaca:sip", "basis": "split", "candidates": 302}
+  ],
+  "daily_distribution": {
+    "zero_candidate_sessions": 0,
+    "positive_candidate_sessions": 8,
+    "positive_min": 6,
+    "positive_median": 35,
+    "positive_max": 122,
+    "top_10_candidate_rows": 379
+  },
+  "missing_chunks": 0,
+  "disjoint_verifier_hashes_agree": true,
+  "frozen_calendar_verified": true,
+  "prior_verified_sessions": 729,
+  "prior_verified_chunks": 3981,
+  "prior_verified_contexts": 75100,
+  "adjoining_sessions": 737,
+  "adjoining_chunks": 4019,
+  "adjoining_contexts": 75479,
+  "frozen_train_sessions": 753,
+  "verified_validation_sessions": 235,
+  "frozen_validation_sessions": 235,
+  "combined_verified_sessions": 972,
+  "combined_frozen_sessions": 988,
+  "formal_lean_ready": false,
+  "free_data_only": true,
+  "future_outcomes_read": false,
+  "private_identifiers_in_public_evidence": false
+}
