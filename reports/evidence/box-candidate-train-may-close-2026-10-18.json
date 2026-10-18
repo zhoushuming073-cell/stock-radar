@@ -1,0 +1,31 @@
+{
+  "version": "box-candidate-train-may-close-v1",
+  "start": "2024-05-28",
+  "end": "2024-05-31",
+  "sessions": 4,
+  "eligible_security_days": 13489,
+  "chunks": 24,
+  "near_lower_contexts": 413,
+  "file_set_sha256": "77736aed5601c91a81546d9ce312ea213b100f25e7e7f5841227fb52384098c9",
+  "source_basis_counts": [
+    {"source": "legacy:alpaca:sip", "basis": "split", "candidates": 413}
+  ],
+  "missing_chunks": 0,
+  "disjoint_verifier_hashes_agree": true,
+  "frozen_calendar_verified": true,
+  "prior_verified_sessions": 687,
+  "prior_verified_chunks": 3663,
+  "prior_verified_contexts": 69790,
+  "adjoining_sessions": 691,
+  "adjoining_chunks": 3687,
+  "adjoining_contexts": 70203,
+  "frozen_train_sessions": 753,
+  "verified_validation_sessions": 235,
+  "frozen_validation_sessions": 235,
+  "combined_verified_sessions": 926,
+  "combined_frozen_sessions": 988,
+  "formal_lean_ready": false,
+  "free_data_only": true,
+  "future_outcomes_read": false,
+  "private_identifiers_in_public_evidence": false
+}
