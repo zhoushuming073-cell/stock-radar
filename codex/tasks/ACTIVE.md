@@ -1,6 +1,17 @@
 # Active Codex task
 
-**Status: BOX RANGE STAGE D CANDIDATE ENGINEERING — FORMAL QUALITY/RETURN UNVERIFIED**
+**Status: BOX RANGE STAGE D CANDIDATE SCAN COMPLETE — FORMAL QUALITY/RETURN UNVERIFIED**
+
+The [full Train/Validation candidate acceptance](../../reports/acceptance/box-candidate-full-train-validation-2026-10-19.md)
+independently reopens both complete frozen file sets: Train 753/753 sessions,
+4,167 chunks, 78,607 contexts; Validation 235/235 sessions, 1,748 chunks,
+33,226 contexts. Both have zero missing chunks and matching source audits.
+The final six Train daily receipts also agree with a separate interval hash.
+Candidate scan coverage is 988/988. The scanner and follower ended normally.
+Formal box LEAN remains deferred under the owner's free-data route; exact
+as-of-T identity, accepted execution prices/actions/factors, complete signals
+and portfolio-rule gates remain open. Do not treat candidate completion as
+strategy or return validation.
 
 The [Train August third-week checkpoint](../../reports/acceptance/box-candidate-train-august-third-week-2026-10-18.md)
 combines five disjoint hash-verified daily receipts: 19,885 eligible days,
