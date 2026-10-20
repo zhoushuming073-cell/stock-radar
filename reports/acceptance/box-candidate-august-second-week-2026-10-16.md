@@ -1,0 +1,11 @@
+# Box candidate second-week August checkpoint — 2026-10-16
+
+**Result: two further five-session intervals pass independent read-only, hash-bound audits.** Adjoining candidate scan coverage reaches **Train 484/753 sessions (2,291 chunks; 48,088 near-lower contexts)** and **Validation 216/235 sessions (1,585 chunks; 30,065 contexts)**. These are engineering coverage counts, not detector accuracy, signals or returns.
+
+Train 2023-07-31–08-04 adds 16,624 eligible security-days, 30 verified chunks and 442 contexts, all on the legacy Alpaca SIP/split basis. Validation 2025-08-05–08-11 adds 19,540 eligible security-days, 35 verified chunks and 914 contexts: 852 legacy split and 62 Dolt/raw. The Validation source, data-gate, decision-dated reference and accepted-scope receipts agree on the exact candidate file-set hash.
+
+Of the 62 new Dolt/raw candidate-days, 38 have an exact accepted T-day price, 24 lack an accepted T-day row and 61 have complete ten-session same-source raw **metadata** horizons. All 24 missing accepted rows are in the older PIT dependency but fail its retrospective whole-closure identity gate. That gate is not a causal T-day selector, and diagnostic raw metadata do not certify executable prices. All 62 have only a stale CIK mirror under the 31-day rule; 43 have a recent compatible Nasdaq mirror observation and 19 have no recent compatible mirror. These are not official issuer/share-class certifications.
+
+The continuous Validation prefix now has **3,543** Dolt/raw candidate-days: **1,361** exact accepted T-day matches, **2,182** accepted-price absences and **3,429** complete diagnostic raw-metadata horizons. [Aggregate evidence](../evidence/box-candidate-august-second-week-2026-10-16.json) records the auditor receipts and file/data/source hashes without private identities or market rows.
+
+No future OHLCV values or outcomes, Test/Fresh rows, human labels, orders, returns or box LEAN portfolio backtest were used. The two candidate workers remain active. Official historical identity, accepted same-source executable prices/actions/factors, full signal formation and frozen portfolio rules remain open. No source code changed; the latest full Native-inclusive pytest remains **818 passed, 8 skipped, one existing warning**.

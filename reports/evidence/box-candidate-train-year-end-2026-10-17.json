@@ -1,0 +1,30 @@
+{
+  "version": "box-candidate-train-year-end-v1",
+  "start": "2023-12-26",
+  "end": "2023-12-29",
+  "sessions": 4,
+  "eligible_security_days": 13495,
+  "chunks": 32,
+  "near_lower_contexts": 218,
+  "file_set_sha256": "6811148ae80617efcfad751fd45821559ce8a9e70ed378bab4da130ecc523377",
+  "source_basis_counts": [
+    {"source": "legacy:alpaca:sip", "basis": "split", "candidates": 218}
+  ],
+  "missing_chunks": 0,
+  "disjoint_verifier_hashes_agree": true,
+  "frozen_calendar_verified": true,
+  "prior_verified_sessions": 582,
+  "prior_verified_chunks": 2935,
+  "prior_verified_contexts": 58333,
+  "adjoining_sessions": 586,
+  "adjoining_chunks": 2967,
+  "adjoining_contexts": 58551,
+  "frozen_train_sessions": 753,
+  "verified_validation_sessions": 235,
+  "frozen_validation_sessions": 235,
+  "combined_verified_sessions": 821,
+  "combined_frozen_sessions": 988,
+  "formal_lean_ready": false,
+  "future_outcomes_read": false,
+  "private_identifiers_in_public_evidence": false
+}

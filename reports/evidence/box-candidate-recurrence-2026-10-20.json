@@ -1,0 +1,62 @@
+{
+  "train": {
+    "version": "box-candidate-recurrence-v1",
+    "split": "train",
+    "file_set_sha256": "350aa4ab25e1af5ecd1b06350ef819a2b5107d89ca911f928b97ea86c2b769b6",
+    "sessions": 753,
+    "candidate_days": 78607,
+    "observed_ids": 3901,
+    "by_cooldown_sessions": {
+      "20": {
+        "episodes": 14845,
+        "candidate_days_in_multi_day_episodes": 75238,
+        "largest_episode_candidate_days": 50
+      },
+      "60": {
+        "episodes": 9841,
+        "candidate_days_in_multi_day_episodes": 77059,
+        "largest_episode_candidate_days": 84
+      },
+      "126": {
+        "episodes": 6564,
+        "candidate_days_in_multi_day_episodes": 77863,
+        "largest_episode_candidate_days": 84
+      }
+    },
+    "cross_split_episodes_measured": false,
+    "independent_input_windows_proven": false,
+    "identity_certified": false,
+    "future_outcomes_read": false,
+    "formal_signal_stream": false
+  },
+  "validation": {
+    "version": "box-candidate-recurrence-v1",
+    "split": "validation",
+    "file_set_sha256": "80f7f641045051fd80cae446ba1ebad7ab2c78694d6c76e1260e4054a6b33c96",
+    "sessions": 235,
+    "candidate_days": 33226,
+    "observed_ids": 3397,
+    "by_cooldown_sessions": {
+      "20": {
+        "episodes": 6479,
+        "candidate_days_in_multi_day_episodes": 31749,
+        "largest_episode_candidate_days": 58
+      },
+      "60": {
+        "episodes": 4610,
+        "candidate_days_in_multi_day_episodes": 32470,
+        "largest_episode_candidate_days": 62
+      },
+      "126": {
+        "episodes": 3633,
+        "candidate_days_in_multi_day_episodes": 32827,
+        "largest_episode_candidate_days": 62
+      }
+    },
+    "cross_split_episodes_measured": false,
+    "independent_input_windows_proven": false,
+    "identity_certified": false,
+    "future_outcomes_read": false,
+    "formal_signal_stream": false
+  }
+}

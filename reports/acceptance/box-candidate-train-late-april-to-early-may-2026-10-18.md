@@ -1,0 +1,11 @@
+# Box candidate Train late-April to early-May checkpoint — 2026-10-18
+
+**Result: ten further frozen Train trading sessions pass independent read-only verification.** The 2024-04-22–05-03 interval contains 33,783 eligible security-days, 79 immutable candidate chunks, zero missing chunks and 1,589 near-lower contexts. Ten disjoint daily verifier/source-audit receipts agree on each day's file-set SHA-256. Separate verifiers re-opened the 2024-04-22–26 and 04-29–05-03 file sets; a further combined verifier bound all 79 files to `0af95277f24515548d085af0c478d1f02fed19ada80a0c4f9a1374dcca16f5cf`. The frozen Research Infrastructure v1 calendar confirms ten trading sessions. All contexts use the legacy Alpaca SIP/split basis.
+
+This interval adjoins the previous independently verified boundary of 2024-04-19. Cumulative adjoining Train coverage becomes **672/753 sessions, 3,551 chunks and 68,426 contexts**. Validation remains independently complete at 235/235 sessions. Combined candidate-scan coverage is **907/988 sessions (91.8%)**. These figures measure scan coverage only, not structure accuracy, executable signals or returns.
+
+The earlier background processes stopped after 2024-05-06 was verified, leaving seven of eight 2024-05-07 chunks. A read-only check confirmed those seven existing chunks and one missing chunk; the unchanged immutable scanner and follower were resumed hidden at low priority. The cause of process termination is unconfirmed. No completed chunk was overwritten and no frozen selection rule changed.
+
+The owner chose the free-data route: candidate research continues while formal box LEAN backtesting is deferred. This does not waive official as-of-T security identity, accepted same-source execution prices/actions/factors, complete signals or frozen portfolio-rule gates. No paid historical source was ordered or used.
+
+The [aggregate evidence](../evidence/box-candidate-train-late-april-to-early-may-2026-10-18.json) contains counts and hashes without private candidate identities or market rows. No Test/Fresh data, future outcomes, human labels or box LEAN portfolio backtest were used. No tracked source code changed; the latest full Native-inclusive pytest remains **818 passed, 8 skipped, one existing warning**.

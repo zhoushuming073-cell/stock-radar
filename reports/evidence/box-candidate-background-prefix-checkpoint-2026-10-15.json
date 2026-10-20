@@ -1,0 +1,40 @@
+{
+  "version": "box-candidate-background-prefix-checkpoint-v1",
+  "candidate_scanner_source_sha256": "bc44d44a840579938fa1269500044c3f9f2ea889d7503f54c7fe60fe509b27df",
+  "source_auditor_source_sha256": "4984c3e5d9a6f0de52c5cf9cc54dd368f84defc4cbd6cb918033641c947e5688",
+  "ri_semantic_hash": "74b765911a8a4f18b2074cd8d9e529b25b54afade15309a148b0ca43340b80be",
+  "train": {
+    "start": "2021-09-01",
+    "end": "2022-08-05",
+    "sessions": 234,
+    "frozen_sessions": 753,
+    "eligible_security_days": 347835,
+    "near_lower_union_rows": 15512,
+    "verified_chunks": 740,
+    "missing_chunks": 0,
+    "verified_file_set_sha256": "99f5702ea8a115d7c7e402100e1c86aac73ea76c4204b1e0b8dc2f7d94505c9c",
+    "source_basis_counts": [
+      {"source": "legacy:alpaca:sip", "basis": "split", "candidates": 15511},
+      {"source": "legacy:post-no-preference/stocks:public_eod", "basis": "split", "candidates": 1}
+    ]
+  },
+  "validation": {
+    "start": "2024-09-30",
+    "end": "2024-10-22",
+    "sessions": 17,
+    "frozen_sessions": 235,
+    "eligible_security_days": 67749,
+    "near_lower_union_rows": 2564,
+    "verified_chunks": 141,
+    "missing_chunks": 0,
+    "verified_file_set_sha256": "44831abaa4634b540d7aedc6774d0d005bb8cd136a25f6e3339608ec20d52f3c",
+    "source_basis_counts": [
+      {"source": "Dolt:post-no-preference/stocks", "basis": "raw", "candidates": 386},
+      {"source": "legacy:alpaca:sip", "basis": "split", "candidates": 2178}
+    ]
+  },
+  "future_ohlcv_values_read": false,
+  "future_outcomes_read": false,
+  "formal_signal_stream": false,
+  "formal_lean_ready": false
+}

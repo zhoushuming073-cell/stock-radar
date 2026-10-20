@@ -1,0 +1,51 @@
+{
+  "version": "box-candidate-maximum-density-parity-v1",
+  "candidate_scanner_source_sha256": "bc44d44a840579938fa1269500044c3f9f2ea889d7503f54c7fe60fe509b27df",
+  "full_scanner_source_sha256": "57c3bad73172782c2bf2b5cfd2929cf956322075d954c7fd19c92e00b8f81481",
+  "comparator_source_sha256": "2c5d6ec34ff294a05fb0b3e199a1febcf1fb70b792e31f9205200d0580f578bb",
+  "selection": {
+    "split": "train",
+    "verified_prefix_start": "2021-09-01",
+    "verified_prefix_end": "2022-10-03",
+    "verified_prefix_sessions": 274,
+    "reason": "maximum daily near-lower candidate count in the sealed 274-session prefix",
+    "decision_date": "2022-10-03",
+    "candidate_count": 437
+  },
+  "candidate": {
+    "version": "box-near-lower-candidate-stage-d-v1",
+    "verified_chunks": 8,
+    "missing_chunks": 0,
+    "eligible_security_days": 3258,
+    "gate_possible": 2037,
+    "gate_certainly_not": 1221,
+    "near_lower_contexts": 437,
+    "file_set_sha256": "0a99180c7a031aaabb59083ea28652a21d435db1304811b4cea69d083eb3c902",
+    "source_basis_counts": [
+      {"source": "legacy:alpaca:sip", "basis": "split", "candidates": 437}
+    ]
+  },
+  "full_state": {
+    "version": "box-daily-context-stage-d-v4",
+    "indexed_security_days": 3663,
+    "eligible_security_days": 3258,
+    "processed_security_days": 3258,
+    "verified_chunks": 13,
+    "provider_exclusions": 0,
+    "candidate_context_rows_all_states": 1370,
+    "near_lower_contexts": 437,
+    "new_detector_compute_seconds": 701.442,
+    "file_set_sha256": "f61bea160c72a86a2affda3531720f7e9cc06be8ff80f8fa84d8f2d5de295dd0"
+  },
+  "ri_semantic_hash": "74b765911a8a4f18b2074cd8d9e529b25b54afade15309a148b0ca43340b80be",
+  "detector_config_sha256": "bedd4815553e73a866594c735dda89eb3dba559b704f3772c167d2a856af3f1e",
+  "context_config_sha256": "7ede6014fd9a3e13b3a3d1fe090dac636730288a6eaaa3a4066de782f9eda390",
+  "exact_target_context_equality": true,
+  "reference_days_to_date": 7,
+  "observed_target_contexts_equal_to_date": 1589,
+  "focused_pytest_passed": 9,
+  "source_code_changed": false,
+  "future_outcomes_read": false,
+  "formal_signal_stream": false,
+  "formal_lean_ready": false
+}

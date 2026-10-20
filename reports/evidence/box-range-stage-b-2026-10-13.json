@@ -1,0 +1,38 @@
+{
+  "status": "ENGINEERING_READY_HUMAN_QUALITY_PENDING",
+  "selection_version": "box-range-stage-b-blind-v1",
+  "selection_sha256": "f64acf27893960ed3ac449d398a89bf0cdf4396d170c6669e8ab5043644f15a5",
+  "blind_task_manifest_sha256": "53c7ebfe442b5c33ada7d49d8ad7273a206cee39890920c65572af705b3de8d7",
+  "detector_config_sha256": "bedd4815553e73a866594c735dda89eb3dba559b704f3772c167d2a856af3f1e",
+  "detector_source_sha256": "65e268eb647abda244f5bebaf8ce32bada6f4e175f0917f88e26f402f9292321",
+  "ri_semantic_hash": "74b765911a8a4f18b2074cd8d9e529b25b54afade15309a148b0ca43340b80be",
+  "private_detector_audit_sha256": "f868c553dffdfad8cd43cb54d2a30d5b2cda510cc2dc60fe11acc104cef52df9",
+  "blind_selection": {
+    "security_days": 48,
+    "unique_security_ids": 48,
+    "years": {"2022": 12, "2023": 12, "2024": 12, "2025": 12},
+    "splits": {"train": 31, "validation": 17},
+    "membership": {"confirmed_member": 46, "probable_member": 2},
+    "eligible_indexed_security_days_by_year": {
+      "2022": 680566, "2023": 830719, "2024": 854897, "2025": 665376
+    },
+    "weekly_full_52": 35,
+    "monthly_full_48": 2,
+    "verified_issuer_alias_separation": false,
+    "as_of_t_single_cik_evidence": 48,
+    "distinct_evidence_ciks": 48,
+    "cik_overlap_with_prior_pilot_stage_a_or_six_references": 0,
+    "official_identity_rows": 0,
+    "compatible_names_rows": 46
+  },
+  "detector_state_disagreements_on_blind_selection": 33,
+  "six_reference_cases_alpaca_sip_checked": 6,
+  "reference_cases_with_ri_v1_126_session_gate": 5,
+  "poet_2026_10_12_ri_v1_available": false,
+  "real_human_labels": 0,
+  "isolated_browser_smoke": {"different_tasks_viewed": 10, "images_per_task": 3, "saved_revision_count": 2, "refresh_persisted": true},
+  "pytest": {"passed": 760, "skipped": 8, "warnings": 1, "native_lean_opt_in": true},
+  "future_outcomes_read": false,
+  "strategy_backtest_run": false,
+  "accuracy_or_alpha_claim": false
+}

@@ -1,0 +1,40 @@
+{
+  "version": "box-candidate-source-basis-audit-v1",
+  "auditor_source_sha256": "4984c3e5d9a6f0de52c5cf9cc54dd368f84defc4cbd6cb918033641c947e5688",
+  "ri_semantic_hash": "74b765911a8a4f18b2074cd8d9e529b25b54afade15309a148b0ca43340b80be",
+  "train_prefix": {
+    "start": "2021-09-01",
+    "end": "2022-07-22",
+    "sessions": 224,
+    "eligible_security_days": 315447,
+    "near_lower_union_rows": 14358,
+    "verified_chunks": 668,
+    "verified_file_set_sha256": "b589684d831ad0d43b473456175c99db984e411be30f36a2e02bf80c707267e9",
+    "source_basis_counts": [
+      {"source": "legacy:alpaca:sip", "basis": "split", "candidates": 14357},
+      {"source": "legacy:post-no-preference/stocks:public_eod", "basis": "split", "candidates": 1}
+    ]
+  },
+  "validation_prefix": {
+    "start": "2024-09-30",
+    "end": "2024-10-09",
+    "sessions": 8,
+    "eligible_security_days": 31856,
+    "near_lower_union_rows": 1140,
+    "verified_chunks": 62,
+    "verified_file_set_sha256": "c57f841b3bfc45bcb717470d130157e1476ad842cba5d32e302bd6a09193f58e",
+    "source_basis_counts": [
+      {"source": "Dolt:post-no-preference/stocks", "basis": "raw", "candidates": 175},
+      {"source": "legacy:alpaca:sip", "basis": "split", "candidates": 965}
+    ]
+  },
+  "shape_price_aggregate_2021_09_01_to_2025_09_08": {
+    "Alpaca SIP|raw": {"2021": 85, "2022": 251, "2023": 83, "distinct_securities_each_year": 1},
+    "Dolt:post-no-preference/stocks|raw": {"2023": 62865, "2024": 1269028, "2025": 875619, "first_date": "2023-12-12"},
+    "legacy:alpaca:sip|raw_rows": 0
+  },
+  "future_ohlcv_values_read": false,
+  "future_outcomes_read": false,
+  "cross_source_reconciliation_adopted": false,
+  "formal_lean_ready": false
+}

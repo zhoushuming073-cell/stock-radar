@@ -1,0 +1,28 @@
+{
+  "version": "box-candidate-validation-high-density-parity-v1",
+  "reference": {
+    "split": "validation",
+    "decision_date": "2024-10-28",
+    "selection_reason": "maximum near-lower count in complete verified Validation prefix through 2024-10-28, selected before full-state run",
+    "indexed_security_days": 4500,
+    "eligible_security_days": 3995,
+    "gate_possible": 2510,
+    "gate_certainly_not": 1485,
+    "candidate_near_lower": 225,
+    "full_near_lower": 225,
+    "exact_context_equality": true,
+    "full_verified_chunks": 16,
+    "full_new_compute_seconds": 827.722,
+    "candidate_file_set_sha256": "545dfef504963b17c69b45ebb6fd4b841bb60566cdd247bd74ed69f08f897a1a",
+    "full_file_set_sha256": "aee2ce1ae1a5ce1aefee1913381ebea7f716a472c03334ede1ddbd01b19a9a7e"
+  },
+  "comparison_reference_days_total": 6,
+  "comparison_observed_target_rows_total": 1152,
+  "ri_semantic_hash": "74b765911a8a4f18b2074cd8d9e529b25b54afade15309a148b0ca43340b80be",
+  "candidate_scanner_source_sha256": "bc44d44a840579938fa1269500044c3f9f2ea889d7503f54c7fe60fe509b27df",
+  "full_scanner_source_sha256": "57c3bad73172782c2bf2b5cfd2929cf956322075d954c7fd19c92e00b8f81481",
+  "comparator_source_sha256": "2c5d6ec34ff294a05fb0b3e199a1febcf1fb70b792e31f9205200d0580f578bb",
+  "future_outcomes_read": false,
+  "formal_signal_stream": false,
+  "lean_backtest_run": false
+}

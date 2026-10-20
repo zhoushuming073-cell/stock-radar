@@ -1,0 +1,61 @@
+{
+  "version": "box-candidate-full-train-validation-v1",
+  "frozen_calendar_verified": true,
+  "ri_semantic_hash": "74b765911a8a4f18b2074cd8d9e529b25b54afade15309a148b0ca43340b80be",
+  "train": {
+    "start": "2021-09-01",
+    "end": "2024-08-29",
+    "sessions": 753,
+    "eligible_security_days": 2107260,
+    "possible_security_days": 954027,
+    "chunks": 4167,
+    "near_lower_contexts": 78607,
+    "file_set_sha256": "350aa4ab25e1af5ecd1b06350ef819a2b5107d89ca911f928b97ea86c2b769b6",
+    "source_basis_counts": [
+      {"source": "Dolt:post-no-preference/stocks", "basis": "raw", "candidates": 1247},
+      {"source": "legacy:alpaca:sip", "basis": "split", "candidates": 77355},
+      {"source": "legacy:post-no-preference/stocks:public_eod", "basis": "split", "candidates": 5}
+    ],
+    "zero_candidate_sessions": 125,
+    "missing_chunks": 0
+  },
+  "validation": {
+    "start": "2024-09-30",
+    "end": "2025-09-08",
+    "sessions": 235,
+    "eligible_security_days": 924298,
+    "possible_security_days": 418382,
+    "chunks": 1748,
+    "near_lower_contexts": 33226,
+    "file_set_sha256": "80f7f641045051fd80cae446ba1ebad7ab2c78694d6c76e1260e4054a6b33c96",
+    "source_basis_counts": [
+      {"source": "Dolt:post-no-preference/stocks", "basis": "raw", "candidates": 3729},
+      {"source": "legacy:alpaca:sip", "basis": "split", "candidates": 29497}
+    ],
+    "zero_candidate_sessions": 0,
+    "missing_chunks": 0
+  },
+  "final_train_interval": {
+    "start": "2024-08-22",
+    "end": "2024-08-29",
+    "sessions": 6,
+    "eligible_security_days": 23897,
+    "possible_security_days": 13137,
+    "chunks": 54,
+    "near_lower_contexts": 860,
+    "file_set_sha256": "8dcb361b6bf2cb1365e6392303956b3941faf76e15acdb6462623d1f8b4f8173",
+    "source_basis_counts": [
+      {"source": "Dolt:post-no-preference/stocks", "basis": "raw", "candidates": 144},
+      {"source": "legacy:alpaca:sip", "basis": "split", "candidates": 716}
+    ],
+    "daily_receipts_agree": true,
+    "missing_chunks": 0
+  },
+  "combined_sessions": 988,
+  "combined_chunks": 5915,
+  "combined_near_lower_contexts": 111833,
+  "formal_lean_ready": false,
+  "free_data_only": true,
+  "future_outcomes_read": false,
+  "private_identifiers_in_public_evidence": false
+}

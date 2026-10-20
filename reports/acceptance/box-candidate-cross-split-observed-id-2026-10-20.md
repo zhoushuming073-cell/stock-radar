@@ -1,0 +1,9 @@
+# Box candidate cross-split observed-ID audit — 2026-10-20
+
+**Result: observed security IDs recur extensively across frozen Train and Validation candidate sets.** The read-only audit first rehashed every sealed file against the accepted full-split receipts, then counted ID overlap without exporting an ID/date map. Train contains 3,901 distinct observed IDs; Validation contains 3,397; **2,836 Validation IDs (83.5%)** also appear in Train. Those shared IDs account for **61,666/78,607 Train candidate-days (78.4%)** and **28,544/33,226 Validation candidate-days (85.9%)**.
+
+For each shared observed ID, the calendar gap between its latest Train candidate and earliest Validation candidate is at least 32 days (median 238, maximum 1,220). The 32-day minimum follows the frozen split separation; these calendar gaps do not establish independent 126-session context windows, distinct issuers, or absence of model leakage. They are not trading-session counts. A future supervised comparison must make its grouping and window-overlap control explicit before claiming independent validation.
+
+Observed IDs are stored data keys, not certified share-class or issuer identities. This audit neither merges aliases nor asserts that two different IDs are independent companies. It does not read raw OHLCV, future outcomes, Test/Fresh rows, human labels or LEAN orders. No strategy quality or return conclusion follows from this overlap.
+
+The [aggregate evidence](../evidence/box-candidate-cross-split-observed-id-2026-10-20.json) contains only counts, file-set hashes and gap summaries. Focused tamper/order tests: **2 passed**. Full project pytest with `STOCK_RADAR_TEST_LEAN=1`: **822 passed, 8 skipped, one existing websockets deprecation warning**. Formal box LEAN remains deferred under the existing free-data identity, corporate-action and execution-price gates.

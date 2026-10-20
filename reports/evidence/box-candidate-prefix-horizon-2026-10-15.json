@@ -1,0 +1,25 @@
+{
+  "accepted_database_sha256": "1fd1996e88cc91ab25baf9a4f7615478d99506672ed47c028eaecfefd0240545",
+  "accepted_manifest_sha256": "795a01d14fc1158006eb8afe257e0e1adc12719abf3798fd7c82df519f64b4d0",
+  "audit_source_sha256": "b73083b4dc2c9eb79923067d6ea0b5a5ab6d84fbcfd4d81096b43b824261f87b",
+  "candidate_file_set_sha256": "495cc9a9a1a6deeeca75ef7e042ff6c8412ef5b11d9f48a5ff03b32cf2593069",
+  "corporate_actions_certified": false,
+  "diagnostic_horizon_sessions": 10,
+  "end": "2025-01-21",
+  "formal_lean_ready": false,
+  "frozen_sessions": 77,
+  "future_outcomes_read": false,
+  "future_price_values_read": false,
+  "official_identity_certified": false,
+  "prior_auditor_sha256": "c67e359606270853c280ccbbc4bd5ebfbd03ca8ad4fc703d6bda752ea0dac14e",
+  "ri_semantic_hash": "74b765911a8a4f18b2074cd8d9e529b25b54afade15309a148b0ca43340b80be",
+  "selected_exact_tday": 549,
+  "split": "validation",
+  "start": "2024-09-30",
+  "totals": {
+    "complete_metadata_tasks": 549,
+    "expected_sessions": 5490,
+    "matching_raw": 5490
+  },
+  "version": "box-candidate-prefix-horizon-metadata-v1"
+}
