@@ -2,6 +2,11 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE SCAN COMPLETE — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The docs-only box roadmap PR #23 and labeling foundation PR #21 are now
+merged into main. Dependent implementation PR #24–#27 remain drafts. This
+branch retains the complete Stage D candidate receipts below while adopting
+the updated base; no human labels, formal box signals or returns are implied.
+
 The [free official-source recheck](../../reports/acceptance/box-free-official-source-recheck-2026-10-20.md)
 found no newly verified free full-history class/action/price source. The
 public NYSE CTA symbol-file listing starts in 2025-05; SEC issuer filings
