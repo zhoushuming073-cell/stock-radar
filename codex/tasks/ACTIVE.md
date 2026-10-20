@@ -2,6 +2,13 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE SCAN COMPLETE — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [post-scan distribution audit](../../reports/acceptance/box-candidate-distribution-2026-10-20.md)
+rehashed all complete Train/Validation candidate chunks, found zero duplicate
+security-day keys, and reports annual/source concentration without exposing
+private mappings. This bounded follow-up follows the
+[2026-10-20 work order](2026-10-20-box-postscan-distribution-audit.md).
+It does not establish issuer identity, detector quality or executable signals.
+
 The [full Train/Validation candidate acceptance](../../reports/acceptance/box-candidate-full-train-validation-2026-10-19.md)
 independently reopens both complete frozen file sets: Train 753/753 sessions,
 4,167 chunks, 78,607 contexts; Validation 235/235 sessions, 1,748 chunks,
