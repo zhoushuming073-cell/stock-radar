@@ -2,6 +2,14 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE SCAN COMPLETE — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [within-split candidate recurrence audit](../../reports/acceptance/box-candidate-recurrence-2026-10-20.md)
+groups observed-ID candidate days using 20/60/126 frozen split sessions.
+At a 20-session gap, Train has 14,845 episodes from 78,607 candidate-days;
+Validation has 6,479 from 33,226. This is repeated-candidate evidence,
+not proof of independent input windows, issuer identity or signal quality.
+The bounded [work order](2026-10-20-box-candidate-recurrence-audit.md)
+keeps formal LEAN gates unchanged.
+
 The [cross-split observed-ID audit](../../reports/acceptance/box-candidate-cross-split-observed-id-2026-10-20.md)
 finds 2,836 IDs shared between frozen Train and Validation candidate sets,
 covering 28,544 of 33,226 Validation candidate-days. The sealed file sets
