@@ -1,9 +1,19 @@
 # Active Codex task
 
-**Status: P0/P1 ENGINEERING COMPLETE — GO_TO_HUMAN_PILOT**
+**Status: BOX ROADMAP ALIGNMENT — DEPENDENT ENGINEERING DRAFTS; FORMAL QUALITY/RETURN UNVERIFIED**
 
-The owner activated this bounded next phase on 2026-10-13. Follow [BOX-LQ1 foundations](2026-10-13-box-lq1-foundations-active.md). It depends on unmerged draft PR #21 at `2a283affeef6336116f5eb8456b914d64bc53f08`; do not copy its code into main or merge it by implication.
+PR #21's box-labeling foundation is now merged into main (`d95d12c`). This
+branch adds the [BOX-LQ1 P0 audit](../../reports/acceptance/box-lq1-p0-gap-audit-2026-10-13.md)
+and [P1 v1.1 acceptance](../../reports/acceptance/box-label-quality-v1-1-2026-10-13.md):
+isolated store/UI, ten browser tasks, 722 passed / 18 skipped at the dated
+receipt, zero formal human labels. The owner's later cancellation means a
+human blind pilot is optional, not a release gate. This PR remains a draft;
+no synthetic Ground Truth, model training or structure accuracy is claimed.
 
-The previous [Box Labeling v1 work order](2026-10-11-box-structure-numeric-dl-labeling.md) and its 2026-10-11 acceptance remain historical evidence. The October 13 partial-scale mask repair is already complete on PR #21.
+The owner authorized a research-direction and task-priority document update on 2026-10-13. This PR #23 branch points to the [consolidated box development path](../../docs/BOX_RESEARCH_DEVELOPMENT_PATH.md). Since that revision, causal detector baselines, bounded diagnostics, lower-band context and the full Train/Validation candidate scan were implemented on dependent draft [PR #25](https://github.com/zhoushuming073-cell/stock-radar/pull/25), [#26](https://github.com/zhoushuming073-cell/stock-radar/pull/26) and [#27](https://github.com/zhoushuming073-cell/stock-radar/pull/27). They are not merged into main. Candidate coverage is engineering evidence, not detector accuracy, a trading signal or a formal return result. The old numeric OHLCV CNN/TCN scaffold remains an optional later comparator.
 
-The [P0 audit](../../reports/acceptance/box-lq1-p0-gap-audit-2026-10-13.md) and [P1 acceptance](../../reports/acceptance/box-label-quality-v1-1-2026-10-13.md) record actual local evidence: the v1.1 store/UI is isolated, 10 browser tasks and full pytest passed, and the formal human store remains unused. A first human ontology pilot can now begin on the existing 30 blinded charts. No new candidate pool, reliability statistic, market-wide recall, assistant-generated Ground Truth, real-label training, future-return study, detector P2, Test/Fresh, LEAN/QC, broker action or main merge follows from this activation. A next work order requires a separate decision after genuine human labels and data-denominator gaps are reviewed.
+The October 11 [numeric labeling/data pipeline order](2026-10-11-box-structure-numeric-dl-labeling.md) is historical, not a standing authorization for new CNN/TCN work. Preserve its artifacts and receipts. [PR #21](https://github.com/zhoushuming073-cell/stock-radar/pull/21) is merged; this dependent draft [PR #24](https://github.com/zhoushuming073-cell/stock-radar/pull/24) contains BOX-LQ1 P0/P1 engineering with pilot-ready v1.1 labels/UI. Formal human labels were zero at that acceptance. On 2026-10-14 the owner cancelled mandatory human blind review. Keep independent human judgments optional and never fabricate labels or claim an accuracy estimate from detector agreement.
+
+**Permitted on this branch:** align and validate the PR #23 planning documents with the later user decision and dependent engineering receipts. This docs-only task does not itself authorize new dependency installation, detector changes, synthetic human labels, model training, outcome research, Historical Test/Fresh work, LEAN/QC backtests, frozen database changes, paid/broker actions or merging experimental implementation PRs.
+
+The dependent engineering branch keeps its own bounded work orders and acceptance. Formal box LEAN still lacks trusted as-of-T security-class identity, corporate-action/factor coverage and accepted execution prices under the owner's free-data route. Do not promote Stage D candidates to executable signals or profitability evidence. Keep Research Infrastructure v1 and the three-family Research Master Guide unchanged in meaning. S1 remains independent.
