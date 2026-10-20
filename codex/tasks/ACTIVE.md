@@ -2,6 +2,12 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE SCAN COMPLETE — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [free official-source recheck](../../reports/acceptance/box-free-official-source-recheck-2026-10-20.md)
+found no newly verified free full-history class/action/price source. The
+public NYSE CTA symbol-file listing starts in 2025-05; SEC issuer filings
+and Nasdaq's subscribed Daily List do not close the full historical gate.
+Formal box LEAN remains deferred; no source was imported or promoted.
+
 The [within-split candidate recurrence audit](../../reports/acceptance/box-candidate-recurrence-2026-10-20.md)
 groups observed-ID candidate days using 20/60/126 frozen split sessions.
 At a 20-session gap, Train has 14,845 episodes from 78,607 candidate-days;
