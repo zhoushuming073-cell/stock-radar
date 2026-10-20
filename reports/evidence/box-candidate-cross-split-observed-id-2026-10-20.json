@@ -1,0 +1,19 @@
+{
+  "version": "box-candidate-cross-split-observed-id-v1",
+  "train_file_set_sha256": "350aa4ab25e1af5ecd1b06350ef819a2b5107d89ca911f928b97ea86c2b769b6",
+  "validation_file_set_sha256": "80f7f641045051fd80cae446ba1ebad7ab2c78694d6c76e1260e4054a6b33c96",
+  "train_observed_ids": 3901,
+  "validation_observed_ids": 3397,
+  "shared_observed_ids": 2836,
+  "train_candidate_days_on_shared_ids": 61666,
+  "validation_candidate_days_on_shared_ids": 28544,
+  "shared_id_gap_calendar_days": {
+    "min": 32,
+    "median": 238.0,
+    "max": 1220,
+    "at_most_31": 0
+  },
+  "identity_certified": false,
+  "future_outcomes_read": false,
+  "formal_signal_stream": false
+}

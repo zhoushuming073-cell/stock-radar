@@ -2,6 +2,14 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE SCAN COMPLETE — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [cross-split observed-ID audit](../../reports/acceptance/box-candidate-cross-split-observed-id-2026-10-20.md)
+finds 2,836 IDs shared between frozen Train and Validation candidate sets,
+covering 28,544 of 33,226 Validation candidate-days. The sealed file sets
+were rehashed before measurement. This follows the
+[bounded work order](2026-10-20-box-cross-split-observed-id-audit.md) and
+requires explicit grouping/window-overlap controls in any later supervised
+comparison; it is not proof of causal leakage or certified issuer identity.
+
 The [post-scan distribution audit](../../reports/acceptance/box-candidate-distribution-2026-10-20.md)
 rehashed all complete Train/Validation candidate chunks, found zero duplicate
 security-day keys, and reports annual/source concentration without exposing
