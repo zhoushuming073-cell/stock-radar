@@ -40,12 +40,14 @@ vision = [
     "Pillow>=10",
 ]
 vision-labeling = ["label-studio>=1.23,<2", "waitress>=3,<4", "whitenoise>=6,<7"]
+box-training = ["torch>=2.5"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-data]
 "radar.vision" = ["dual_ui.html"]
+"radar.box_labeling" = ["box_ui.html"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
