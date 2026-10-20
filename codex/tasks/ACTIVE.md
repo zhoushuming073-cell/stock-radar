@@ -4,7 +4,8 @@
 
 The docs-only box roadmap PR #23 and labeling foundation PR #21 are merged
 into main. At the owner's request, the implementation from dependent draft
-PR #24–#27 is consolidated onto one draft branch based on current main. The
+PR #24–#27 is consolidated into [draft PR #28](https://github.com/zhoushuming073-cell/stock-radar/pull/28)
+based on current main. The
 dated Stage D candidate receipts below are preserved; no human labels,
 formal box signals or returns are implied. The old drafts are historical
 review records, not additional active implementation tracks.

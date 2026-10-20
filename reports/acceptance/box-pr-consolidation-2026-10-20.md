@@ -1,6 +1,6 @@
 # Box PR consolidation — 2026-10-20
 
-The owner chose one reviewable draft instead of the dependent PR #24 → #25 → #26 → #27 chain. This is a branch and review change, not a new research result.
+The owner chose one reviewable [draft PR #28](https://github.com/zhoushuming073-cell/stock-radar/pull/28) instead of the dependent PR #24 → #25 → #26 → #27 chain. The four former drafts were closed as superseded; their GitHub PR refs and local worktrees still retain the dated commits. This is a branch and review change, not a new research result.
 
 ## Reconciliation
 
@@ -15,7 +15,7 @@ The owner chose one reviewable draft instead of the dependent PR #24 → #25 →
 - `git diff --cached --check` and the subsequent working-tree diff check passed before the full regression.
 - Full project pytest from the consolidated checkout with `STOCK_RADAR_TEST_LEAN=1`: **824 passed, 8 skipped, one existing third-party `websockets.legacy` deprecation warning**. This includes eligible Native LEAN regression fixtures, not a box LEAN portfolio backtest.
 - Path audit of the 293 transferred tracked files found zero `data/` or obvious credential/key/secret paths.
-- Final source-to-consolidated file comparison and remote PR verification are recorded by the branch/PR state, not by this document alone.
+- Final source-to-consolidated tree comparison found exactly five changed current-status/route documents and no changed source, test, config or dated evidence files. The remote consolidated branch resolved to the tested commit, and GitHub reported PR #28 open, draft, based on main and mergeable.
 
 ## Open gates
 
