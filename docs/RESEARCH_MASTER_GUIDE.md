@@ -105,7 +105,7 @@ Before merge / formal use, Q2 requires:
 
 ### Box/range recognition priority within Quant-only
 
-The 2026-10-13 [box development path](BOX_RESEARCH_DEVELOPMENT_PATH.md) prioritizes independently evaluated, causal, open-source-assisted range detectors. It is a **Quant-only structure-recognition subtrack**, not a fourth top-level family and not proof that historical Q2 is validated. The existing box labeling and numeric OHLCV CNN/TCN scaffold remain preserved in unmerged PR #21/#24, but the network is an optional later comparator rather than the required next detector. Human structure labels, lower-band entry decisions, future outcomes and LEAN execution remain separate gates. Stage A detector implementation is only proposed; the docs revision does not authorize it.
+The 2026-10-13 [box development path](BOX_RESEARCH_DEVELOPMENT_PATH.md) prioritizes independently evaluated, causal, replaceable range detectors. It is a **Quant-only structure-recognition subtrack**, not a fourth top-level family and not proof that historical Q2 is validated. The existing box labeling and numeric OHLCV CNN/TCN scaffold remain preserved in unmerged PR #21/#24; the network is an optional later comparator. Detector, lower-band context and candidate-scan engineering now exist on dependent draft PR #25–#27, but formal structure accuracy and returns remain unverified. Human structure labels, lower-band entry decisions, future outcomes and LEAN execution are separate evidence layers. Mandatory human blind review was cancelled by the owner; no labels may be fabricated or detector agreement presented as Ground Truth.
 
 ## A3. Q3 — Quant ensemble / ML on Quant features
 
