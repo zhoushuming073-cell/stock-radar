@@ -1,37 +1,11 @@
 # Active Codex task
 
-**Status: ACTIVE — Box Structure Numeric Deep Learning labeling/data pipeline v1**
+**Status: BOX ROADMAP ALIGNMENT — DEPENDENT ENGINEERING DRAFTS; FORMAL QUALITY/RETURN UNVERIFIED**
 
-Current work order:
-[2026-10-11 Box Structure Numeric Deep Learning — causal labeling and training-data pipeline v1](2026-10-11-box-structure-numeric-dl-labeling.md)
+The owner authorized a research-direction and task-priority document update on 2026-10-13. This PR #23 branch points to the [consolidated box development path](../../docs/BOX_RESEARCH_DEVELOPMENT_PATH.md). Since that revision, causal detector baselines, bounded diagnostics, lower-band context and the full Train/Validation candidate scan were implemented on dependent draft [PR #25](https://github.com/zhoushuming073-cell/stock-radar/pull/25), [#26](https://github.com/zhoushuming073-cell/stock-radar/pull/26) and [#27](https://github.com/zhoushuming073-cell/stock-radar/pull/27). They are not merged into main. Candidate coverage is engineering evidence, not detector accuracy, a trading signal or a formal return result. The old numeric OHLCV CNN/TCN scaffold remains an optional later comparator.
 
-User-authorized objective:
-- supersede the prior Q2 v1.3 implementation priority;
-- build a causal historical box/range labeling workflow on Research Infrastructure v1;
-- use a replaceable, permissive high-recall candidate prefilter to improve human-labeling throughput without letting the prefilter define Ground Truth;
-- show the human simultaneous historical Daily / Weekly / Monthly candlestick views whose latest observation is the historical decision date T, never today and never post-T;
-- persist a new versioned box-structure label contract;
-- export training-ready **numeric OHLCV** multi-scale tensors;
-- implement a lightweight multi-scale 1D CNN/TCN training scaffold for later supervised learning;
-- stop before substantive real-label model training, future-return evaluation, strategy backtesting, or alpha claims.
+The October 11 [numeric labeling/data pipeline order](2026-10-11-box-structure-numeric-dl-labeling.md) is historical, not a standing authorization for new CNN/TCN work. Preserve its artifacts and receipts. [PR #21](https://github.com/zhoushuming073-cell/stock-radar/pull/21) contains unmerged box labeling/mask work; dependent draft [PR #24](https://github.com/zhoushuming073-cell/stock-radar/pull/24) completed BOX-LQ1 P0/P1 engineering with pilot-ready v1.1 labels/UI. Formal human labels were zero at that acceptance. On 2026-10-14 the owner cancelled mandatory human blind review. Keep independent human judgments optional and never fabricate labels or claim an accuracy estimate from detector agreement.
 
-Modality decision:
-- candlestick charts are **human annotation visualizations only**;
-- the deep-learning model consumes causal numerical OHLCV time series;
-- do not implement an image-only CNN or use PNG/JPEG/SVG pixels as the default model feature representation.
+**Permitted on this branch:** align and validate the PR #23 planning documents with the later user decision and dependent engineering receipts. This docs-only task does not itself authorize new dependency installation, detector changes, synthetic human labels, model training, outcome research, Historical Test/Fresh work, LEAN/QC backtests, frozen database changes, paid/broker actions or merging experimental implementation PRs.
 
-This supersedes the Q2 v1.3 work order as the **active priority**. Preserve Q1/PR13, Q2 v1.1/v1.2/v1.3 work orders, Draft PRs, historical evidence, and frozen artifacts; do not delete or rewrite them.
-
-Not authorized:
-- substantive production-quality training on fabricated or insufficient labels;
-- future-return-driven labeling or threshold tuning;
-- Historical Test/Fresh consumption for development;
-- portfolio/LEAN/QC backtests for this task;
-- QC Cloud access/retry;
-- database expansion/rebuild;
-- paid services or broker/live actions;
-- implementation merge to main without later explicit user approval.
-
-Codex start instruction:
-
-> Synchronize latest main, read AGENTS.md → canonical ledger → Research Master Guide → this ACTIVE file → the 2026-10-11 Box Structure Numeric Deep Learning work order. Implement only that work order. Reuse Research Infrastructure v1 and the existing local labeling security/audit patterns, enforce the T-close causal boundary, keep candidate generation replaceable and high-recall, treat charts as human-only views, export numeric multi-scale OHLCV tensors, validate the training scaffold, and stop before substantive model training or any profitability evaluation.
+The dependent engineering branch keeps its own bounded work orders and acceptance. Formal box LEAN still lacks trusted as-of-T security-class identity, corporate-action/factor coverage and accepted execution prices under the owner's free-data route. Do not promote Stage D candidates to executable signals or profitability evidence. Keep Research Infrastructure v1 and the three-family Research Master Guide unchanged in meaning. S1 remains independent.

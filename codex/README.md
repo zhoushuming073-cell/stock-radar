@@ -14,3 +14,8 @@ This is the canonical repository location for Codex work instructions.
 Current research authority: [Research Master Guide](../docs/RESEARCH_MASTER_GUIDE.md). The dual-stage v3 document is now a shared Vision/Human/Y subsystem specification, not the sole project roadmap.
 
 Do not commit real market candles/images, private label data, the Label Studio database, local sessions or credentials. Historical acceptance reports are immutable audit evidence; current status belongs to the single canonical ledger.
+## Research proposals (not active)
+
+Four owner-requested briefs are organized in the [proposal index](proposals/README.md): three complementary box research specifications and the independent S1 shock study. Read the [consolidated development path](../docs/BOX_RESEARCH_DEVELOPMENT_PATH.md) for dependencies, conflicting defaults and acceptance gates. These are **not ACTIVE tasks** and do not replace `codex/tasks/ACTIVE.md`.
+
+See the [branch index](../docs/BRANCH_INDEX.md) for the active review entries and retained experimental checkpoints.
