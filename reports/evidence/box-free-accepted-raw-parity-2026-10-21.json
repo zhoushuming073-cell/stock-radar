@@ -1,0 +1,28 @@
+{
+  "version": "box-accepted-raw-price-parity-v1",
+  "split": "validation",
+  "start": "2025-05-05",
+  "end": "2025-09-08",
+  "private_queue_sha256": "fb026fce19455dcd2d7b02fec75cc98200675270a21028c0d86642fb1a51a60c",
+  "full_cta_receipt_sha256": "b0f437e83e2b1730c3fddd86c8a5436a53ac861cd64ae911051b716b72c2dd3f",
+  "candidate_file_set_sha256": "48189aae1a54e3607a991df0c84e9d6939b49d7a714369988e561ffdaefbbb09",
+  "ri_semantic_hash": "74b765911a8a4f18b2074cd8d9e529b25b54afade15309a148b0ca43340b80be",
+  "accepted_database_sha256": "1fd1996e88cc91ab25baf9a4f7615478d99506672ed47c028eaecfefd0240545",
+  "candidate_days": 142,
+  "observed_security_ids": 28,
+  "diagnostic_horizon_sessions": 10,
+  "candidate_session_comparisons": 1420,
+  "distinct_security_session_pairs": 667,
+  "session_status": {
+    "exact": 1420
+  },
+  "candidate_status": {
+    "all_exact": 142
+  },
+  "future_price_values_read_for_source_parity_only": true,
+  "future_outcomes_read": false,
+  "official_identity_certified": false,
+  "corporate_actions_certified": false,
+  "portfolio_rules_frozen": false,
+  "formal_lean_ready": false
+}

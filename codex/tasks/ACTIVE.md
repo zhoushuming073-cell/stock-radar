@@ -2,6 +2,17 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE SCAN COMPLETE — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The owner-authorized [free raw-price parity follow-up](2026-10-21-box-free-raw-price-parity-followup.md)
+assessed all 356 CTA-matched Dolt/raw Validation candidate-days. A bounded
+private cohort of 142 candidate-days / 28 observed IDs met the existing
+observational issuer, raw-horizon and accepted T-day/metadata checks. All
+1,420 ten-session OHLCV comparisons (667 unique observed ID/session pairs)
+between the frozen Shape raw data and the accepted raw-price copy were exact.
+See the [acceptance](../../reports/acceptance/box-free-raw-price-parity-2026-10-21.md).
+This is same-source copy parity, not identity, company-action or LEAN
+execution certification. Formal box LEAN remains deferred and no returns were
+computed.
+
 The owner reaffirmed the free-source route on 2026-10-21. The
 [CTA + SEC pilot](2026-10-21-box-free-cta-sec-pilot.md) re-verified all
 87 public-CTA-covered later-Validation sessions: 11,510 candidates, 3,747
