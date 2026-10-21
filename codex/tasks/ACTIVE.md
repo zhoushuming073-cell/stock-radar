@@ -2,6 +2,14 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE SCAN COMPLETE — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [SEC class-observation follow-up](2026-10-21-box-sec-class-cohort-followup.md)
+now has dated pre-T filing observations for all 28 observed IDs / 142
+candidate-days in the bounded raw-price cohort; see the
+[acceptance](../../reports/acceptance/box-sec-class-observation-coverage-2026-10-21.md).
+This closes only the bounded filing-observation queue. It does not certify
+continuous security identity, complete actions/factors, accepted execution
+prices or full historical coverage. Formal box LEAN remains deferred.
+
 The [pinned event-exposure follow-up](2026-10-21-box-free-event-exposure-followup.md)
 found two private cash-dividend review leads affecting seven of the bounded
 142 candidate-days over the ten-session diagnostic horizon; no split row

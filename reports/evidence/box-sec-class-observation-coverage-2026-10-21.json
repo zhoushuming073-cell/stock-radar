@@ -1,0 +1,24 @@
+{
+  "candidate_days": 142,
+  "corporate_actions_certified": false,
+  "dated_sec_class_observations_only": true,
+  "filing_bytes_collected": false,
+  "formal_lean_ready": false,
+  "future_outcomes_read": false,
+  "lifecycle_completeness_certified": false,
+  "observed_security_ids": 28,
+  "official_asof_t_identity_certified": false,
+  "price_parity_receipt_sha256": "6924f6d78b87033011098ec34ece2b72dc3ec644066676f014fa18f2a89278fc",
+  "private_queue_sha256": "fb026fce19455dcd2d7b02fec75cc98200675270a21028c0d86642fb1a51a60c",
+  "private_review_sha256": [
+    "03e3074516f7ec08ca624f431cda6b7eeca1db71e14843fe1050655888d3085d",
+    "32293ac62b3afd85d3ae6df9464df6833d4220b6b2906021d4acd0ccf25844f4",
+    "44d1b41836ea1cad221b87118484aae73561a2258b305bcccb46be017a4a1651"
+  ],
+  "reviewed_candidate_days": 142,
+  "reviewed_observed_security_ids": 28,
+  "split": "validation",
+  "unreviewed_candidate_days": 0,
+  "unreviewed_observed_security_ids": 0,
+  "version": "box-sec-class-observation-coverage-v1"
+}
