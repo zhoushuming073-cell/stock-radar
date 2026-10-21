@@ -1,0 +1,402 @@
+{
+  "version": "box-cta-full-covered-validation-v1",
+  "split": "validation",
+  "start": "2025-05-05",
+  "end": "2025-09-08",
+  "sessions": 87,
+  "candidate_rows": 11510,
+  "candidate_chunks": 684,
+  "candidate_file_set_sha256": "48189aae1a54e3607a991df0c84e9d6939b49d7a714369988e561ffdaefbbb09",
+  "ri_semantic_hash": "74b765911a8a4f18b2074cd8d9e529b25b54afade15309a148b0ca43340b80be",
+  "cta_snapshot_hashes": [
+    {
+      "date": "2025-05-05",
+      "sha256": "877c60f2626fac2aad28bf2e55e683793f0f2e8a2c804560794d4f33dda8534f"
+    },
+    {
+      "date": "2025-05-06",
+      "sha256": "5f36f32108f9d80422e98b0dd03aae3fbc288f461b3cb0054590bfd5ab40de94"
+    },
+    {
+      "date": "2025-05-07",
+      "sha256": "cbaff7aa538a5f6d89920623777684509b317cedd374ffecec266b91edf08dde"
+    },
+    {
+      "date": "2025-05-08",
+      "sha256": "4f77b52d8e3fcfb0a2266d9e2c4b0808793bf238a46bdc4ce912877db5467bcc"
+    },
+    {
+      "date": "2025-05-09",
+      "sha256": "4f3d729762c7994bda626db974ded2022355b3700f39d2bacc71714d1ce972ac"
+    },
+    {
+      "date": "2025-05-12",
+      "sha256": "af972eeaa30c39fc5ffa62f356981b4d0ec7c74e12465a3e222c414dc2ada3f2"
+    },
+    {
+      "date": "2025-05-13",
+      "sha256": "ee6af3f4863b53860c1543a5e6ab067130e3e744e9def901f9d4f308820f9cdb"
+    },
+    {
+      "date": "2025-05-14",
+      "sha256": "7a1b06f967ec5a228108b7c321f43a9a8ac22a20fbbe911cbbea5dc5f116ee9a"
+    },
+    {
+      "date": "2025-05-15",
+      "sha256": "9db278dc44da2f3d54b8436a2644c020a71e77b479e8f872563a4c47ec73774b"
+    },
+    {
+      "date": "2025-05-16",
+      "sha256": "821b3bc3b015aa0511c5a90eae721756c7fc9998f8a0fbef47bb007ad7c2047e"
+    },
+    {
+      "date": "2025-05-19",
+      "sha256": "30e943bf8d1bc7bc14c7a541b122f9ac39bc666ca79f7f068411b4ae9f14f106"
+    },
+    {
+      "date": "2025-05-20",
+      "sha256": "ecbaee84544933c2d995f38bab03254675efa432df82c88d2bfb3735a81a737e"
+    },
+    {
+      "date": "2025-05-21",
+      "sha256": "0a8821de435073e5ba4a0c575c9f2c0096bfbaa73a7b11e8d8e86384e3827eba"
+    },
+    {
+      "date": "2025-05-22",
+      "sha256": "7e9f7264e0c975768e41edae465dac9a2a16b4f5755d422c82dccacdeb2c8993"
+    },
+    {
+      "date": "2025-05-23",
+      "sha256": "6ceded8317df0578b5cd63cc451ec6a288a8dc38939475d6bf32467b4a3cdc61"
+    },
+    {
+      "date": "2025-05-27",
+      "sha256": "480f94d4f28166c66af91863995f546303f171f9364cc246a50973516277d050"
+    },
+    {
+      "date": "2025-05-28",
+      "sha256": "2f5a9b1d8ff997515e3e8b15f763815f679f41ee31df1dc181fcffcb376334e7"
+    },
+    {
+      "date": "2025-05-29",
+      "sha256": "d93d12466a9e502435ae6f65db330c376f3600fba647776fde3553042605c42a"
+    },
+    {
+      "date": "2025-05-30",
+      "sha256": "c3e852b7eed8fdfcdff071209a23c3a9173d48aa23d8aebae92a56a9ea35cd9a"
+    },
+    {
+      "date": "2025-06-02",
+      "sha256": "9d6df684629def7b48829b5034d9a0e7594aded7f83fc3efbacdc72af72bdacb"
+    },
+    {
+      "date": "2025-06-03",
+      "sha256": "8d20357a8e2086e524252885c2cc036bf20b3e5263b92eb1031a22553a588f0c"
+    },
+    {
+      "date": "2025-06-04",
+      "sha256": "51c95a6cccbad85c93b2ea5ab237798b7e9774e44de2e33b2c4ee89720c41ade"
+    },
+    {
+      "date": "2025-06-05",
+      "sha256": "a1666e8b0b409557e11807a66636d3c32481e4eb397333c34f9657f26e9aadaf"
+    },
+    {
+      "date": "2025-06-06",
+      "sha256": "516ffadf33198e832248faa6baeeb03bb120a35025efcfd25acaf332ec2ad1c3"
+    },
+    {
+      "date": "2025-06-09",
+      "sha256": "b2b3cd0209fb93e9bc9fda348643a2a4831e8fb3a492f88ddea04dcf3c30a4e7"
+    },
+    {
+      "date": "2025-06-10",
+      "sha256": "dd560213259f9268ed0e612300e3da97937555b8917371c3abbd81b67421c923"
+    },
+    {
+      "date": "2025-06-11",
+      "sha256": "940926051cceb5bdf032734901c0a2aa4d084d53d01c75b598465e4ce31fab40"
+    },
+    {
+      "date": "2025-06-12",
+      "sha256": "18b08e1f95199ee1d75371107624a4caa247c0fefe136dc2494fcc57ad30e90d"
+    },
+    {
+      "date": "2025-06-13",
+      "sha256": "13ccb1fd7408423c544d7ce7e1a86759db1016dfafc9d9c395ee129b62225b26"
+    },
+    {
+      "date": "2025-06-16",
+      "sha256": "b783b85d699a52ddb6834fdb754cb50cf6eb967d24ad226aa697e4b90e8e47c4"
+    },
+    {
+      "date": "2025-06-17",
+      "sha256": "ddfb237b1d9f4324c4011ab98b1e88c3390dd52f8f3ea93a5fe1673d6fbebf8a"
+    },
+    {
+      "date": "2025-06-18",
+      "sha256": "9bbe78bfa2c7cb7760d44795b9cda082f21d75a0d0a1397eff7e8758d41a086a"
+    },
+    {
+      "date": "2025-06-20",
+      "sha256": "88ceb0ce71c4c96a742b57f43cc919821ded2207528dfb5adf8366ad9ec14344"
+    },
+    {
+      "date": "2025-06-23",
+      "sha256": "729a0afaf91d3ca129a08867f0c5e7f59e798d516418d9e0c38e8fb5ccea28f1"
+    },
+    {
+      "date": "2025-06-24",
+      "sha256": "edd07a58b4d0a82fe99a9ece2f4cc70b45e40264ae74df5f8cecbedb776796a8"
+    },
+    {
+      "date": "2025-06-25",
+      "sha256": "79be43d439e94be347e4a7f08ed60cd3bc0a7e40d5a46c81fcf06a4e9584c194"
+    },
+    {
+      "date": "2025-06-26",
+      "sha256": "df8459aa0f7d6e2ad1a881cc166676c27a67dc06935622a5c69208c152f9d5c4"
+    },
+    {
+      "date": "2025-06-27",
+      "sha256": "204a8070896d40e28431530c123712900327b43cb1f9fc284a28e57ea9e8df25"
+    },
+    {
+      "date": "2025-06-30",
+      "sha256": "6f6c04f9ca765751a8d952454b584f0e17244d5428661dc438dd114fae9da9c9"
+    },
+    {
+      "date": "2025-07-01",
+      "sha256": "675cd2982f53b887ce32e71a04e63b73975bcbbc6cd32d2b3cadf55ea980efa6"
+    },
+    {
+      "date": "2025-07-02",
+      "sha256": "2c825b69a2d1b8513fa2b17ab41845819ee7a74e6f493813a5713d5dbd4bb60c"
+    },
+    {
+      "date": "2025-07-03",
+      "sha256": "b697a0498e4c57c29d3748b655f52a47c9df842664077df03225e41c11264e04"
+    },
+    {
+      "date": "2025-07-07",
+      "sha256": "1b3019a8d81c0688c72cb6304a487d9c284f28af0e8792e282dd69b7f1665519"
+    },
+    {
+      "date": "2025-07-08",
+      "sha256": "7f6142e2f546687cb4dee789c3b54a159bf13036a2ef3d912d9e4161e767f2ee"
+    },
+    {
+      "date": "2025-07-09",
+      "sha256": "318c254f0dc8e59c0e527b9e56bd5fe25ea16799825a0bc69a39fc8106dd9479"
+    },
+    {
+      "date": "2025-07-10",
+      "sha256": "c85f8714f8b5862f125cf5a8ea5526c3a745dd591ff6d2ff4b3308a69126debe"
+    },
+    {
+      "date": "2025-07-11",
+      "sha256": "f6ea6edabe6ba5c1b504346227990a6887f62f4e54966d558c3224082879fa7b"
+    },
+    {
+      "date": "2025-07-14",
+      "sha256": "c5efd322b9eceb4d476a4e614c43b3df6dcafe65a3057fbcbb5f10c512441341"
+    },
+    {
+      "date": "2025-07-15",
+      "sha256": "14860a07cb11cc5b9e9dc12fb80e75fe931b70cad7090e63b4afa9e4efbc9dc5"
+    },
+    {
+      "date": "2025-07-16",
+      "sha256": "d783cfae6bf0cbafc45eafbe616bebaccdc74dc49eec2c35fd84d45a56bd78e7"
+    },
+    {
+      "date": "2025-07-17",
+      "sha256": "bf79c045baaeef375567f8a9ae45023f06371bc7fcc189c7725d376c582eac05"
+    },
+    {
+      "date": "2025-07-18",
+      "sha256": "025f58f21f1c78b6a42e43518f25d634a6b92179dd4b4d75667b1965a95161f6"
+    },
+    {
+      "date": "2025-07-21",
+      "sha256": "e3c36353b1a103ab52341aaae3e74598694da0fb0669e496f22320e04bcfbda0"
+    },
+    {
+      "date": "2025-07-22",
+      "sha256": "e5f44650b3660caa001b5b3e662c2d31c803f5f5b29246e9450e27bbecc41675"
+    },
+    {
+      "date": "2025-07-23",
+      "sha256": "f871ac01313ac76ecc567a54863724210df9fddd8dacf6113c3ecff1ca4d84e5"
+    },
+    {
+      "date": "2025-07-24",
+      "sha256": "8f00aac1edf389f002df83b98134f371861b97a1c0d34880ad3034e13a4430cd"
+    },
+    {
+      "date": "2025-07-25",
+      "sha256": "f85041b846e0a27984ad7ab79e706d9e6d19f61265699bed37557ea1f0b77b8b"
+    },
+    {
+      "date": "2025-07-28",
+      "sha256": "0ea1c609066646fce0f7abc60f4bcc07b62c2e8eb9178e9b1e5db9e89a8bfdb0"
+    },
+    {
+      "date": "2025-07-29",
+      "sha256": "0ffbd0fcf0d0a3a07d24dbfbacc64d68952e893e147c911ad0cf6586cd7422ff"
+    },
+    {
+      "date": "2025-07-30",
+      "sha256": "5af81e11a547004c97418a9dfb7286063a104d651222a83e659b61268a109e09"
+    },
+    {
+      "date": "2025-07-31",
+      "sha256": "d88a5099e6ea02da3f2f045a826e10f494449559364b74161b51912a87ba88a9"
+    },
+    {
+      "date": "2025-08-01",
+      "sha256": "b59d558b5da807e57b1451cc832094a5037da06f9983bdf4b21b04b266f349a1"
+    },
+    {
+      "date": "2025-08-04",
+      "sha256": "aa4a3be06724215af9eab9624895515f352204095ac5c9460c8882d79b4bbedf"
+    },
+    {
+      "date": "2025-08-05",
+      "sha256": "52f34acc095388aa0474a03354b518d64f6f906bc3d42db02f0e978f1079b795"
+    },
+    {
+      "date": "2025-08-06",
+      "sha256": "312f4a73d02094714591b2baf54b29c0770999fb55dbd154bd39d0d2d55d3b77"
+    },
+    {
+      "date": "2025-08-07",
+      "sha256": "962b8b396aa2167f25a3f968bd81a8af3c63f294f211b1390a8173d3c2a1a9e4"
+    },
+    {
+      "date": "2025-08-08",
+      "sha256": "004299cbfa6cb7c8147569235f8a8d99ef9ac3eb327d52ee26b6d4d651c9f258"
+    },
+    {
+      "date": "2025-08-11",
+      "sha256": "c9e36cded321ef434dee6d869f59b4dcc55c1248df3fb1f687aa1f71fc001158"
+    },
+    {
+      "date": "2025-08-12",
+      "sha256": "80af4b44d040484b80f89800cff4d22cb18ee1eb5007cc341245babf135a51da"
+    },
+    {
+      "date": "2025-08-13",
+      "sha256": "0e22fbb7415c8ce47d6a568f75b1935606c3958a69fccdbc9dd085dc13746b4f"
+    },
+    {
+      "date": "2025-08-14",
+      "sha256": "43ecc93a430d4059ed416d0bd330b3c01ec181ceda2a57e6336dac0537b490b2"
+    },
+    {
+      "date": "2025-08-15",
+      "sha256": "010ee306a30e96b71d8506cf8c0168438bfcc589c315fbfb08563ce70025b0c9"
+    },
+    {
+      "date": "2025-08-18",
+      "sha256": "0306972b3e565ee133f1a6e4cca9169cfb77aadbd3eb79dc21b27f0d2d1a1dda"
+    },
+    {
+      "date": "2025-08-19",
+      "sha256": "6ca9960dc6eb7dae550961f5b27592e74330538d5f499378209e9e098620defe"
+    },
+    {
+      "date": "2025-08-20",
+      "sha256": "fbd6eb470591568398a9118c65488cb0de7d1157dd55c4af6e22da6ee2ca7160"
+    },
+    {
+      "date": "2025-08-21",
+      "sha256": "6f067fe6680026ecb27519d8b2db87af6867bad35b89da183b49118f98333aae"
+    },
+    {
+      "date": "2025-08-22",
+      "sha256": "afe357129662a65e172e71ae899ef5b5575fef49ff3b4a901da89a8866d556ca"
+    },
+    {
+      "date": "2025-08-25",
+      "sha256": "7aa3e74f1cf47b5625d96ab79c815917dda495e001baea5793a2c39cb5aa9e6c"
+    },
+    {
+      "date": "2025-08-26",
+      "sha256": "7d14241a4204d0a7716a7ff107a7917922272a7e4ac2ac3fccc6c6e31ad761e6"
+    },
+    {
+      "date": "2025-08-27",
+      "sha256": "476893e03e0a5a5980100bf911757866e282b694af36f79ef1654293c9962d4b"
+    },
+    {
+      "date": "2025-08-28",
+      "sha256": "5d9ab6c9a0d16776e707b961b9f004afeaac02a80add06ba47a0f889e71e5621"
+    },
+    {
+      "date": "2025-08-29",
+      "sha256": "5c01a47cbfb958cfbfab7a92eaa7173ba424bed0889c02bdfa516a1f9a5b647f"
+    },
+    {
+      "date": "2025-09-02",
+      "sha256": "18802298f020739465906836cf51ab5e5fbd6665803a8711a1e6fed866659501"
+    },
+    {
+      "date": "2025-09-03",
+      "sha256": "3d2d22cbd191d8a61596a038f6d6a258761fa20f7198d8c3602b8755dc66f533"
+    },
+    {
+      "date": "2025-09-04",
+      "sha256": "a003f1ec67ea387e1325eb178f50d3b2c99b3d6219c4ff80955febd64c337eed"
+    },
+    {
+      "date": "2025-09-05",
+      "sha256": "752e05b2e7f5964966d6817db23c16a913ccc952843a07442ec9a0344c821de8"
+    },
+    {
+      "date": "2025-09-08",
+      "sha256": "02c17cc8abcdab27f1bf6855acdcf391b893938da6562c1488aac082a9c2bddd"
+    }
+  ],
+  "source_basis_status": [
+    {
+      "source": "Dolt:post-no-preference/stocks",
+      "basis": "raw",
+      "status": "cta_symbol_absent",
+      "rows": 635
+    },
+    {
+      "source": "Dolt:post-no-preference/stocks",
+      "basis": "raw",
+      "status": "cta_symbol_present",
+      "rows": 356
+    },
+    {
+      "source": "legacy:alpaca:sip",
+      "basis": "split",
+      "status": "cta_symbol_absent",
+      "rows": 7128
+    },
+    {
+      "source": "legacy:alpaca:sip",
+      "basis": "split",
+      "status": "cta_symbol_present",
+      "rows": 3391
+    }
+  ],
+  "matched_listing_market_codes": {
+    "N": 3747
+  },
+  "matched_instrument_type_codes": {
+    "0": 3747
+  },
+  "cta_symbol_present": 3747,
+  "source_scope": "CTA post-close symbol snapshot only",
+  "known_by_decision_close": false,
+  "identity_class_certified": false,
+  "corporate_actions_certified": false,
+  "execution_prices_certified": false,
+  "future_ohlcv_read": false,
+  "future_outcomes_read": false,
+  "formal_lean_ready": false
+}

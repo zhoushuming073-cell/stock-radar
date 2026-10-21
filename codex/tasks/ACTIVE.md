@@ -2,12 +2,13 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE SCAN COMPLETE — FORMAL QUALITY/RETURN UNVERIFIED**
 
-The owner reaffirmed the free-source route on 2026-10-21. A bounded
-[CTA + SEC pilot](2026-10-21-box-free-cta-sec-pilot.md) re-verified three
-sealed later-Validation days: 369 candidates, 99 post-close CTA symbol
-matches. Five Dolt/raw cases on one day combine exact accepted T-day OHLCV,
-ten-session same-source raw availability metadata, and pre-T SEC cover-page
-class observations; private mappings remain ignored. The
+The owner reaffirmed the free-source route on 2026-10-21. The
+[CTA + SEC pilot](2026-10-21-box-free-cta-sec-pilot.md) re-verified all
+87 public-CTA-covered later-Validation sessions: 11,510 candidates, 3,747
+post-close CTA symbol matches. A deeper three-day intersection found five
+Dolt/raw cases on one day combining exact accepted T-day OHLCV, ten-session
+same-source raw availability metadata, and pre-T SEC cover-page class
+observations; private mappings remain ignored. The
 [acceptance](../../reports/acceptance/box-free-cta-sec-pilot-2026-10-21.md)
 records the limits. No complete action/factor or accepted execution-price
 chain was certified, no case was promoted, and formal box LEAN remains deferred.

@@ -6,6 +6,7 @@
 
 - Keep Research Infrastructure v1, sealed Train/Validation candidates, and accepted-price stores read-only.
 - Check three spaced Validation sessions in the public NYSE CTA symbol-file window: 2025-05-05, 2025-07-01, 2025-09-08.
+- Extend symbol-snapshot coverage to every frozen Validation session in that public CTA window, with complete file-set rehashing. Keep the three-day deeper issuer/price/SEC pilot distinct from the full-window symbol audit.
 - Bind each aggregate to the sealed candidate-day hash; compare exact-case historical symbols only.
 - For raw-source candidates, intersect existing as-of-T issuer observations, accepted T-day OHLCV, and ten-session same-source raw availability metadata.
 - Review pre-T SEC cover-page class/symbol/exchange evidence for a bounded private follow-up subset.
