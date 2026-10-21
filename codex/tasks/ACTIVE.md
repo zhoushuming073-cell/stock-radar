@@ -2,6 +2,16 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE SCAN COMPLETE — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The owner reaffirmed the free-source route on 2026-10-21. A bounded
+[CTA + SEC pilot](2026-10-21-box-free-cta-sec-pilot.md) re-verified three
+sealed later-Validation days: 369 candidates, 99 post-close CTA symbol
+matches. Five Dolt/raw cases on one day combine exact accepted T-day OHLCV,
+ten-session same-source raw availability metadata, and pre-T SEC cover-page
+class observations; private mappings remain ignored. The
+[acceptance](../../reports/acceptance/box-free-cta-sec-pilot-2026-10-21.md)
+records the limits. No complete action/factor or accepted execution-price
+chain was certified, no case was promoted, and formal box LEAN remains deferred.
+
 The docs-only box roadmap PR #23 and labeling foundation PR #21 are merged
 into main. At the owner's request, the implementation from dependent draft
 PR #24–#27 is consolidated into [draft PR #28](https://github.com/zhoushuming073-cell/stock-radar/pull/28)

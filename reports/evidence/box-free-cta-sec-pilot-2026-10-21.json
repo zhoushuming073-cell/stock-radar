@@ -1,0 +1,261 @@
+{
+  "version": "box-free-cta-sec-pilot-2026-10-21-v1",
+  "scope": "three frozen Validation dates; CTA post-close symbol snapshots and existing local gate audits",
+  "days": [
+    {
+      "version": "box-cta-symbol-coverage-v1",
+      "split": "validation",
+      "decision_date": "2025-05-05",
+      "candidate_file_set_sha256": "570a6993fdb8e1809e064a90ebfb9eabda5a209f7b4589374d5e30e9af6c01dd",
+      "ri_semantic_hash": "74b765911a8a4f18b2074cd8d9e529b25b54afade15309a148b0ca43340b80be",
+      "cta_snapshot_sha256": "877c60f2626fac2aad28bf2e55e683793f0f2e8a2c804560794d4f33dda8534f",
+      "cta_snapshot_rows": 6513,
+      "candidate_rows": 76,
+      "by_source_basis": [
+        {
+          "source": "Dolt:post-no-preference/stocks",
+          "basis": "raw",
+          "status": "cta_symbol_absent",
+          "rows": 3
+        },
+        {
+          "source": "Dolt:post-no-preference/stocks",
+          "basis": "raw",
+          "status": "cta_symbol_present",
+          "rows": 2
+        },
+        {
+          "source": "legacy:alpaca:sip",
+          "basis": "split",
+          "status": "cta_symbol_absent",
+          "rows": 54
+        },
+        {
+          "source": "legacy:alpaca:sip",
+          "basis": "split",
+          "status": "cta_symbol_present",
+          "rows": 17
+        }
+      ],
+      "matched_listing_market_codes": {
+        "N": 19
+      },
+      "matched_instrument_type_codes": {
+        "0": 19
+      },
+      "raw_candidate_rows": 5,
+      "construction_database_sha256": "a41a38992bfd2e0e3fc1a91838725ff9f851bde760ed5aaf6a7fc167abced641",
+      "accepted_database_sha256": "1fd1996e88cc91ab25baf9a4f7615478d99506672ed47c028eaecfefd0240545",
+      "diagnostic_horizon_sessions": 10,
+      "raw_candidate_cross_tab": [
+        {
+          "cta": "cta_absent",
+          "issuer_observation": "OBSERVATIONAL_NO_KNOWN_CONFLICT",
+          "accepted_tday_price": "accepted_tday_missing",
+          "raw_horizon": "raw_horizon_complete",
+          "rows": 2
+        },
+        {
+          "cta": "cta_absent",
+          "issuer_observation": "OBSERVATIONAL_NO_KNOWN_CONFLICT",
+          "accepted_tday_price": "exact_tday_match",
+          "raw_horizon": "raw_horizon_complete",
+          "rows": 1
+        },
+        {
+          "cta": "cta_present",
+          "issuer_observation": "OBSERVATIONAL_NO_KNOWN_CONFLICT",
+          "accepted_tday_price": "accepted_tday_missing",
+          "raw_horizon": "raw_horizon_complete",
+          "rows": 2
+        }
+      ],
+      "private_followup_rows": 0,
+      "source_scope": "CTA post-close symbol snapshot only",
+      "identity_class_certified": false,
+      "corporate_actions_certified": false,
+      "execution_prices_certified": false,
+      "known_by_decision_close": false,
+      "future_ohlcv_read": false,
+      "future_outcomes_read": false,
+      "formal_lean_ready": false
+    },
+    {
+      "version": "box-cta-symbol-coverage-v1",
+      "split": "validation",
+      "decision_date": "2025-07-01",
+      "candidate_file_set_sha256": "809bf22a1594cd5ff66927286bb423c712196a54722853a5486dc4c1a9a52ef7",
+      "ri_semantic_hash": "74b765911a8a4f18b2074cd8d9e529b25b54afade15309a148b0ca43340b80be",
+      "cta_snapshot_sha256": "675cd2982f53b887ce32e71a04e63b73975bcbbc6cd32d2b3cadf55ea980efa6",
+      "cta_snapshot_rows": 6594,
+      "candidate_rows": 156,
+      "by_source_basis": [
+        {
+          "source": "Dolt:post-no-preference/stocks",
+          "basis": "raw",
+          "status": "cta_symbol_absent",
+          "rows": 7
+        },
+        {
+          "source": "Dolt:post-no-preference/stocks",
+          "basis": "raw",
+          "status": "cta_symbol_present",
+          "rows": 7
+        },
+        {
+          "source": "legacy:alpaca:sip",
+          "basis": "split",
+          "status": "cta_symbol_absent",
+          "rows": 102
+        },
+        {
+          "source": "legacy:alpaca:sip",
+          "basis": "split",
+          "status": "cta_symbol_present",
+          "rows": 40
+        }
+      ],
+      "matched_listing_market_codes": {
+        "N": 47
+      },
+      "matched_instrument_type_codes": {
+        "0": 47
+      },
+      "raw_candidate_rows": 14,
+      "construction_database_sha256": "a41a38992bfd2e0e3fc1a91838725ff9f851bde760ed5aaf6a7fc167abced641",
+      "accepted_database_sha256": "1fd1996e88cc91ab25baf9a4f7615478d99506672ed47c028eaecfefd0240545",
+      "diagnostic_horizon_sessions": 10,
+      "raw_candidate_cross_tab": [
+        {
+          "cta": "cta_absent",
+          "issuer_observation": "OBSERVATIONAL_NO_KNOWN_CONFLICT",
+          "accepted_tday_price": "accepted_tday_missing",
+          "raw_horizon": "raw_horizon_complete",
+          "rows": 3
+        },
+        {
+          "cta": "cta_absent",
+          "issuer_observation": "OBSERVATIONAL_NO_KNOWN_CONFLICT",
+          "accepted_tday_price": "exact_tday_match",
+          "raw_horizon": "raw_horizon_complete",
+          "rows": 4
+        },
+        {
+          "cta": "cta_present",
+          "issuer_observation": "OBSERVATIONAL_NO_KNOWN_CONFLICT",
+          "accepted_tday_price": "accepted_tday_missing",
+          "raw_horizon": "raw_horizon_complete",
+          "rows": 2
+        },
+        {
+          "cta": "cta_present",
+          "issuer_observation": "OBSERVATIONAL_NO_KNOWN_CONFLICT",
+          "accepted_tday_price": "exact_tday_match",
+          "raw_horizon": "raw_horizon_complete",
+          "rows": 5
+        }
+      ],
+      "private_followup_rows": 5,
+      "source_scope": "CTA post-close symbol snapshot only",
+      "identity_class_certified": false,
+      "corporate_actions_certified": false,
+      "execution_prices_certified": false,
+      "known_by_decision_close": false,
+      "future_ohlcv_read": false,
+      "future_outcomes_read": false,
+      "formal_lean_ready": false
+    },
+    {
+      "version": "box-cta-symbol-coverage-v1",
+      "split": "validation",
+      "decision_date": "2025-09-08",
+      "candidate_file_set_sha256": "ad830e8bf9f60f366241ed1e985d9f2db1aeace63a2f911a47879ad568e7d383",
+      "ri_semantic_hash": "74b765911a8a4f18b2074cd8d9e529b25b54afade15309a148b0ca43340b80be",
+      "cta_snapshot_sha256": "02c17cc8abcdab27f1bf6855acdcf391b893938da6562c1488aac082a9c2bddd",
+      "cta_snapshot_rows": 6693,
+      "candidate_rows": 137,
+      "by_source_basis": [
+        {
+          "source": "Dolt:post-no-preference/stocks",
+          "basis": "raw",
+          "status": "cta_symbol_absent",
+          "rows": 5
+        },
+        {
+          "source": "Dolt:post-no-preference/stocks",
+          "basis": "raw",
+          "status": "cta_symbol_present",
+          "rows": 1
+        },
+        {
+          "source": "legacy:alpaca:sip",
+          "basis": "split",
+          "status": "cta_symbol_absent",
+          "rows": 99
+        },
+        {
+          "source": "legacy:alpaca:sip",
+          "basis": "split",
+          "status": "cta_symbol_present",
+          "rows": 32
+        }
+      ],
+      "matched_listing_market_codes": {
+        "N": 33
+      },
+      "matched_instrument_type_codes": {
+        "0": 33
+      },
+      "raw_candidate_rows": 6,
+      "construction_database_sha256": "a41a38992bfd2e0e3fc1a91838725ff9f851bde760ed5aaf6a7fc167abced641",
+      "accepted_database_sha256": "1fd1996e88cc91ab25baf9a4f7615478d99506672ed47c028eaecfefd0240545",
+      "diagnostic_horizon_sessions": 10,
+      "raw_candidate_cross_tab": [
+        {
+          "cta": "cta_absent",
+          "issuer_observation": "OBSERVATIONAL_NO_KNOWN_CONFLICT",
+          "accepted_tday_price": "accepted_tday_missing",
+          "raw_horizon": "raw_horizon_incomplete",
+          "rows": 3
+        },
+        {
+          "cta": "cta_absent",
+          "issuer_observation": "OBSERVATIONAL_NO_KNOWN_CONFLICT",
+          "accepted_tday_price": "exact_tday_match",
+          "raw_horizon": "raw_horizon_incomplete",
+          "rows": 2
+        },
+        {
+          "cta": "cta_present",
+          "issuer_observation": "OBSERVATIONAL_NO_KNOWN_CONFLICT",
+          "accepted_tday_price": "accepted_tday_missing",
+          "raw_horizon": "raw_horizon_incomplete",
+          "rows": 1
+        }
+      ],
+      "private_followup_rows": 0,
+      "source_scope": "CTA post-close symbol snapshot only",
+      "identity_class_certified": false,
+      "corporate_actions_certified": false,
+      "execution_prices_certified": false,
+      "known_by_decision_close": false,
+      "future_ohlcv_read": false,
+      "future_outcomes_read": false,
+      "formal_lean_ready": false
+    }
+  ],
+  "aggregate": {
+    "candidate_rows": 369,
+    "cta_symbol_present": 99,
+    "dolt_raw_rows": 25,
+    "dolt_raw_cta_present": 10,
+    "dolt_raw_cta_accepted_tday_and_raw_horizon": 5,
+    "pre_t_sec_cover_page_class_reviewed_for_july_followup": 5,
+    "private_sec_review_sha256": "44d1b41836ea1cad221b87118484aae73561a2258b305bcccb46be017a4a1651"
+  },
+  "public_only": true,
+  "identity_class_certified": false,
+  "corporate_actions_certified": false,
+  "execution_prices_certified": false,
+  "formal_lean_ready": false
+}
