@@ -1,0 +1,37 @@
+{
+  "candidate_days": 142,
+  "cash_entitlement_certified": false,
+  "diagnostic_horizon_sessions": 10,
+  "end": "2025-09-08",
+  "event_scan_complete_coverage_certified": false,
+  "event_source_version": "vt6qeesk27k07492k5jc5b7p04mf0s6o",
+  "exposure": {
+    "dividend": {
+      "candidate_days": 7,
+      "candidate_event_rows": 7,
+      "distinct_symbol_dates": 2
+    },
+    "split": {
+      "candidate_days": 0,
+      "candidate_event_rows": 0,
+      "distinct_symbol_dates": 0
+    }
+  },
+  "formal_lean_ready": false,
+  "future_outcomes_read": false,
+  "official_identity_certified": false,
+  "price_parity_receipt_sha256": "6924f6d78b87033011098ec34ece2b72dc3ec644066676f014fa18f2a89278fc",
+  "private_queue_sha256": "fb026fce19455dcd2d7b02fec75cc98200675270a21028c0d86642fb1a51a60c",
+  "rules_sha256": "4dc6323b47052d7c33ff31dc0745efb96682695c48184bd550aa1627c83eb3fd",
+  "scan_event_rows": {
+    "dividend": 54810,
+    "split": 1207
+  },
+  "scan_sha256": {
+    "dividend": "8324805cf9be59481cfe78a09eac58dc36186c5490f98af8ca1ac99dc6f9966b",
+    "split": "caf6f86a32f136aca35d90f61cfb021e13deade8a1b3438a3c95676f40e691dd"
+  },
+  "split": "validation",
+  "start": "2025-05-05",
+  "version": "box-free-event-exposure-v1"
+}

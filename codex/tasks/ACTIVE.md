@@ -2,6 +2,14 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE SCAN COMPLETE — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [pinned event-exposure follow-up](2026-10-21-box-free-event-exposure-followup.md)
+found two private cash-dividend review leads affecting seven of the bounded
+142 candidate-days over the ten-session diagnostic horizon; no split row
+matched. Issuer-issued dated declarations corroborate the two cash amounts
+and common-share record/payment terms, but neither event-scan completeness
+nor cash entitlement is certified. The [acceptance](../../reports/acceptance/box-free-event-exposure-2026-10-21.md)
+preserves the gate: no box LEAN or return run.
+
 The owner-authorized [free raw-price parity follow-up](2026-10-21-box-free-raw-price-parity-followup.md)
 assessed all 356 CTA-matched Dolt/raw Validation candidate-days. A bounded
 private cohort of 142 candidate-days / 28 observed IDs met the existing
