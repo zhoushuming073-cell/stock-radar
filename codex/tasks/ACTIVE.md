@@ -2,6 +2,13 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE SCAN COMPLETE — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [CTA post-close continuity follow-up](2026-10-21-box-cta-continuity-followup.md)
+finds no symbol, listing-market, instrument-type, halt or status flags across
+1,562 candidate-snapshot checks (142 T days plus ten-session horizons;
+709 distinct observed security/session pairs). The [acceptance](../../reports/acceptance/box-cta-continuity-2026-10-21.md)
+binds all 87 public CTA files by hash. CTA is post-close and cannot certify
+issuer/class identity, complete actions, tradability or formal box LEAN.
+
 The [SEC class-observation follow-up](2026-10-21-box-sec-class-cohort-followup.md)
 now has dated pre-T filing observations for all 28 observed IDs / 142
 candidate-days in the bounded raw-price cohort; see the
