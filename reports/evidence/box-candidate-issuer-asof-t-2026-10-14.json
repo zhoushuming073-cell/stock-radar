@@ -1,0 +1,32 @@
+{
+  "version": "box-candidate-issuer-asof-t-v1",
+  "audit_source_sha256": "d11343c81c5052099318c5c72305d37f4aef62d2863b7157677d9447acd2a68b",
+  "issuer_source_sha256": "20a058fe4fe9f449459d46b6434def3733e217ac656ef24ebd4b63c3c6d471f1",
+  "gate_overlap_source_sha256": "b940abe54e8d7d462725ad98133c0bd920f9d3f48131360dcd0f4471b68d02c6",
+  "construction_sha256": "a41a38992bfd2e0e3fc1a91838725ff9f851bde760ed5aaf6a7fc167abced641",
+  "ri_semantic_hash": "74b765911a8a4f18b2074cd8d9e529b25b54afade15309a148b0ca43340b80be",
+  "train_2024_07_01": {
+    "candidate_file_set_sha256": "407252c54b700c2dfb35646b95c795beb5ad10541ae3ceff1edb774e3376fed5",
+    "private_receipt_sha256": "3ee4f7bc2d95a3443f87e378200e0d37855957ae13ec7058cded4d4b9e9379e2",
+    "selected": 96,
+    "observational_no_known_conflict": 84,
+    "contemporaneous_issuer_alias": 9,
+    "known_identity_conflict": 3,
+    "observational_and_raw_metadata_complete": 15,
+    "known_risk_and_raw_metadata_complete": 3
+  },
+  "validation_2025_06_02": {
+    "candidate_file_set_sha256": "23e2075cea394cfccb5b281aab3bd02f87e15804e4eae66d08951c461d5b4374",
+    "private_receipt_sha256": "d757dc9e26b5915d9cb12e0991b60f6f04b5c342fa2849b2f0fd3e86d4c5b88e",
+    "selected": 146,
+    "observational_no_known_conflict": 138,
+    "contemporaneous_issuer_alias": 6,
+    "known_identity_conflict": 2,
+    "observational_and_raw_metadata_complete": 10,
+    "known_risk_and_raw_metadata_complete": 1
+  },
+  "official_identity_certified": false,
+  "future_outcomes_read": false,
+  "human_labels_read": false,
+  "formal_lean_ready": false
+}

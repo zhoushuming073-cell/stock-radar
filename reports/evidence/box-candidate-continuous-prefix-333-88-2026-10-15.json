@@ -1,0 +1,64 @@
+{
+  "auditor_version": "box-candidate-source-basis-audit-v2",
+  "audit_source_sha256": "107d0a0ec780971669f1c8ba517e770b56a29ded53a8ad7e64bc918e542bfd58",
+  "ri_semantic_hash": "74b765911a8a4f18b2074cd8d9e529b25b54afade15309a148b0ca43340b80be",
+  "train": {
+    "start": "2021-09-01",
+    "end": "2022-12-27",
+    "sessions": 333,
+    "split_total_sessions": 753,
+    "remaining_sessions": 420,
+    "eligible_security_days": 670732,
+    "verified_chunks": 1301,
+    "missing_chunks": 0,
+    "verified_file_set_sha256": "a64de0ecf8d9d072d34fb2426413199338d6789a5201e06c0eb5b31bd7d8153d",
+    "near_lower_union_rows": 29363,
+    "source_basis_counts": [
+      {"source": "legacy:alpaca:sip", "basis": "split", "candidates": 29358},
+      {"source": "legacy:post-no-preference/stocks:public_eod", "basis": "split", "candidates": 5}
+    ],
+    "zero_candidate_sessions": 125,
+    "positive_candidate_sessions": 208,
+    "last_30_completion_intervals": {
+      "first_session": "2022-11-11",
+      "last_session": "2022-12-27",
+      "elapsed_wall_hours": 2.73,
+      "mean_minutes_per_session": 5.46,
+      "min_minutes": 2.16,
+      "max_minutes": 8.15,
+      "conditional_remaining_hours_at_recent_mean": 38.22
+    }
+  },
+  "validation": {
+    "start": "2024-09-30",
+    "end": "2025-02-05",
+    "sessions": 88,
+    "split_total_sessions": 235,
+    "remaining_sessions": 147,
+    "eligible_security_days": 349260,
+    "verified_chunks": 664,
+    "missing_chunks": 0,
+    "verified_file_set_sha256": "9d27d5f95864b0f1800b1b9f30e432883018a170eea37390ec5b9699bef85c4d",
+    "near_lower_union_rows": 12530,
+    "source_basis_counts": [
+      {"source": "Dolt:post-no-preference/stocks", "basis": "raw", "candidates": 1762},
+      {"source": "legacy:alpaca:sip", "basis": "split", "candidates": 10768}
+    ],
+    "zero_candidate_sessions": 0,
+    "positive_candidate_sessions": 88,
+    "last_30_completion_intervals": {
+      "first_session": "2024-12-19",
+      "last_session": "2025-02-05",
+      "elapsed_wall_hours": 3.7,
+      "mean_minutes_per_session": 7.39,
+      "min_minutes": 2.95,
+      "max_minutes": 11.75,
+      "conditional_remaining_hours_at_recent_mean": 18.11
+    }
+  },
+  "timing_method": "mtime of final JSON chunk for each of 31 consecutive sealed sessions; 30 completion intervals",
+  "timing_is_not_a_completion_guarantee": true,
+  "future_ohlcv_values_read": false,
+  "future_outcomes_read": false,
+  "formal_lean_ready": false
+}

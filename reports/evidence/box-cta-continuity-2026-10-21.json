@@ -1,0 +1,30 @@
+{
+  "candidate_days": 142,
+  "candidate_days_with_flags": {},
+  "candidate_snapshot_checks": 1562,
+  "corporate_actions_certified": false,
+  "cta_post_close_only": true,
+  "cta_snapshot_days": 87,
+  "diagnostic_horizon_sessions_after_t": 10,
+  "distinct_security_snapshot_pairs": 709,
+  "end": "2025-09-08",
+  "flagged_snapshot_checks": {},
+  "formal_lean_ready": false,
+  "full_cta_receipt_sha256": "b0f437e83e2b1730c3fddd86c8a5436a53ac861cd64ae911051b716b72c2dd3f",
+  "future_outcomes_read": false,
+  "historical_identity_certified": false,
+  "observed_security_ids": 28,
+  "price_parity_receipt_sha256": "6924f6d78b87033011098ec34ece2b72dc3ec644066676f014fa18f2a89278fc",
+  "private_queue_sha256": "fb026fce19455dcd2d7b02fec75cc98200675270a21028c0d86642fb1a51a60c",
+  "sec_class_receipt_sha256": "367156bee92217e5e7cc0209f9a57549cd9523f0490dc2994eb38ca5f3212119",
+  "split": "validation",
+  "start": "2025-05-05",
+  "t_cta_absent_candidate_days": 0,
+  "t_instrument_type_codes": {
+    "0": 142
+  },
+  "t_listing_market_codes": {
+    "N": 142
+  },
+  "version": "box-cta-continuity-v1"
+}

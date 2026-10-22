@@ -11,6 +11,7 @@ from django.urls import path, include, clear_url_caches
 from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
 from django.views.decorators.http import require_GET, require_POST
 from .store import BoxStore, GateError
+from .ontology_v11 import BoxStoreV11
 
 _root=None
 
@@ -36,6 +37,9 @@ def guarded(fn):
 
 
 def store(origin):return BoxStore(_root,origin)
+
+
+def store_v11(origin):return BoxStoreV11(_root,origin)
 
 
 @guarded
@@ -72,11 +76,43 @@ def skip(request,origin,tid):
     return JsonResponse(store(origin).skip(tid,request.user.pk))
 
 
+@guarded
+@require_GET
+@ensure_csrf_cookie
+def page_v11(request,origin):
+    return HttpResponse((Path(__file__).parent/'box_ui_v11.html').read_text(encoding='utf-8'),content_type='text/html; charset=utf-8')
+
+
+@guarded
+@require_GET
+def tasks_v11(request,origin):return JsonResponse({'tasks':store_v11(origin).list(request.user.pk)})
+
+
+@guarded
+@require_GET
+def task_v11(request,origin,tid):return JsonResponse(store_v11(origin).task(tid,request.user.pk))
+
+
+@guarded
+@require_POST
+def save_v11(request,origin,tid):return JsonResponse(store_v11(origin).save(tid,request.user.pk,body(request)))
+
+
+@guarded
+@require_POST
+def skip_v11(request,origin,tid):
+    if body(request)!={}:raise GateError('skip has no client-controlled state')
+    return JsonResponse(store_v11(origin).skip(tid,request.user.pk))
+
+
 def install(root):
     global _root
     _root=Path(os.environ.get('STOCK_RADAR_BOX_DATA_ROOT',Path(root)/'data/box-label-v1')).resolve()
     module=importlib.import_module(settings.ROOT_URLCONF)
     routes=[path('',page),path('tasks',tasks),path('task/<str:tid>',task),
             path('task/<str:tid>/save',save),path('task/<str:tid>/skip',skip)]
+    routes_v11=[path('',page_v11),path('tasks',tasks_v11),path('task/<str:tid>',task_v11),
+            path('task/<str:tid>/save',save_v11),path('task/<str:tid>/skip',skip_v11)]
     module.urlpatterns.insert(0,path('box-label/v1/<str:origin>/',include(routes)))
+    module.urlpatterns.insert(0,path('box-label/v1.1/<str:origin>/',include(routes_v11)))
     clear_url_caches()

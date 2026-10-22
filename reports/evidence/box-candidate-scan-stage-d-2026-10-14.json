@@ -1,0 +1,37 @@
+{
+  "version": "box-near-lower-candidate-stage-d-v1",
+  "research_infrastructure_semantic_hash": "74b765911a8a4f18b2074cd8d9e529b25b54afade15309a148b0ca43340b80be",
+  "scanner_source_sha256": "bc44d44a840579938fa1269500044c3f9f2ea889d7503f54c7fe60fe509b27df",
+  "gate_source_sha256": "944dc47cb39dfc4fd6a105abc213ff82b779b1e5bf5eaee5d7636eb1e9c5ebb5",
+  "train": {
+    "date": "2024-07-01",
+    "eligible": 3944,
+    "certainly_not_near_lower": 2723,
+    "possible_near_lower": 1221,
+    "unknown_prefixes_retained": 0,
+    "near_lower_union": 96,
+    "private_chunks_verified": 5,
+    "private_file_set_sha256": "407252c54b700c2dfb35646b95c795beb5ad10541ae3ceff1edb774e3376fed5",
+    "reference_full_file_set_sha256": "18fd02c3e61b32876453942fe9442e4c67051929d83d7246226ed301fb3fc8a2",
+    "reference_exact_context_equality": true,
+    "candidate_new_compute_seconds": 163.685,
+    "reference_full_new_compute_seconds": 595.383
+  },
+  "validation": {
+    "date": "2025-06-02",
+    "eligible": 3898,
+    "certainly_not_near_lower": 2059,
+    "possible_near_lower": 1839,
+    "unknown_prefixes_retained": 0,
+    "near_lower_union": 146,
+    "private_chunks_verified": 8,
+    "private_file_set_sha256": "23e2075cea394cfccb5b281aab3bd02f87e15804e4eae66d08951c461d5b4374",
+    "candidate_new_compute_seconds": 258.862,
+    "reference_full_scan_available": false
+  },
+  "frozen_shape_price_series_with_multiple_security_ids": 0,
+  "future_outcomes_read": false,
+  "formal_signal_stream": false,
+  "human_structure_truth_available": false,
+  "box_portfolio_backtest_run": false
+}

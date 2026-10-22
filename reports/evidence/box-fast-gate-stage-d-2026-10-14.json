@@ -1,0 +1,37 @@
+{
+  "audit_code_sha256": "d2fc90c27aaa814e6b57425db597e03d13531440d10522fd1ebddb109b986866",
+  "candidate_only_prerequisite": true,
+  "certainly_not_near_lower": 2723,
+  "decision_date": "2024-07-01",
+  "eligible_security_days": 3944,
+  "formal_signal_stream": false,
+  "full_scan_file_set_sha256": "18fd02c3e61b32876453942fe9442e4c67051929d83d7246226ed301fb3fc8a2",
+  "full_scan_near_lower_union": 96,
+  "future_outcomes_read": false,
+  "future_prices_read": false,
+  "gate_code_sha256": "944dc47cb39dfc4fd6a105abc213ff82b779b1e5bf5eaee5d7636eb1e9c5ebb5",
+  "gate_config_hash": "7ede6014fd9a3e13b3a3d1fe090dac636730288a6eaaa3a4066de782f9eda390",
+  "observed_false_exclusions": 0,
+  "possible_near_lower": 1221,
+  "rejection_reasons_overlapping": {
+    "last_day_declining": 2274,
+    "last_day_overextended": 115,
+    "recent_low_falling": 654,
+    "three_day_overextended": 163,
+    "volume_baseline_unavailable": 9,
+    "volume_spike": 450
+  },
+  "ri_semantic_hash": "74b765911a8a4f18b2074cd8d9e529b25b54afade15309a148b0ca43340b80be",
+  "runtime_versions": {
+    "PyYAML": "6.0.3",
+    "duckdb": "1.5.5",
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "python": "3.13.7",
+    "scipy": "1.18.1"
+  },
+  "split": "train",
+  "trusted_recent_prefixes": 3944,
+  "unknown_or_untrusted_prefixes_retained": 0,
+  "version": "box-near-lower-necessary-gate-v1"
+}

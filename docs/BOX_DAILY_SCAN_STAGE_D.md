@@ -1,0 +1,181 @@
+# Box daily context scan — Stage D
+
+The [longer-prefix audit](../reports/acceptance/box-candidate-source-distribution-prefix-2026-10-15.md)
+adds reproducible aggregate daily distribution to the existing read-only
+source/basis auditor (v2). It verifies Train 257/753 and Validation 34/235
+sessions without exposing private daily rows. Neither split is complete;
+source/basis and issuer gates still apply independently of scanner parity.
+
+The [complete high-density Validation comparison](../reports/acceptance/box-candidate-validation-high-density-parity-2026-10-15.md)
+found exact equality of all 225 near-lower contexts on 2024-10-28 between
+the candidate-only and full-state paths, bringing six dated reference days
+to 1,152/1,152 observed target rows. This does not establish all-date parity
+or quality of the detector's structural judgment.
+
+The [high-density identity/raw-metadata follow-up](../reports/acceptance/box-candidate-high-density-data-gates-2026-10-15.md)
+audits two further complete candidate days using frozen as-of-T issuer
+evidence and future-session **metadata only**. It confirms substantial
+era-dependent raw-price coverage and known alias risks; it does not promote
+any candidate to a trade or formally clear historical identity.
+
+The scanner enumerates supported, research-ready 126-session security-days in
+the **frozen Train or Validation split only**. It uses Research Infrastructure
+v1's trusted `BoxHistory` prefix through decision close T, evaluates the
+quantile and confirmed-pivot detectors independently, and then evaluates the
+versioned lower-band context. No future price, label, return, or portfolio
+state enters selection. Results are **research context**, not executable
+orders or a completed signal stream.
+
+Each date is divided into deterministic 256-security chunks. An immutable
+private receipt contains the indexed/eligible denominator, source/basis,
+processed/excluded counts, both detector state totals, and active context
+rows. It is stored only beneath the local project's ignored `data` directory.
+Existing chunks are checksum-, config-, code-, RI-, selection- and denominator-
+checked before reuse, including the history reader, canonical OHLCV hasher and
+Python/library versions. If a prior process left a `.partial` file, the script
+fails closed; investigate that file before retrying. It never silently
+overwrites an existing receipt.
+
+From the Stage D worktree, a bounded run is:
+
+```powershell
+$env:PYTHONPATH = (Resolve-Path src).Path
+..\stock-radar\.venv\Scripts\python.exe -m scripts.scan_box_daily_stage_d `
+  --research-root ..\stock-radar --split train `
+  --start 2024-07-01 --end 2024-07-01 `
+  --output-dir ..\stock-radar\data\box-range-stage-d\daily-scan-v4 `
+  --max-new-chunks 1
+```
+
+Run the same command again to verify completed chunks and continue to the
+next one. Omit `--max-new-chunks` to finish the selected interval. Change the
+split and dates together when scanning Validation. Historical Test, Fresh and
+cross-split ranges are rejected.
+
+Verify aggregate coverage without printing private identities:
+
+```powershell
+..\stock-radar\.venv\Scripts\python.exe -m scripts.verify_box_daily_stage_d `
+  --research-root ..\stock-radar --split train `
+  --start 2024-07-01 --end 2024-07-01 `
+  --output-dir ..\stock-radar\data\box-range-stage-d\daily-scan-v4
+```
+
+`complete=true` means every expected chunk for the requested interval exists
+and the verifier reconciles all eligible rows and both detector counts. It
+also rejects extra or partial chunk artifacts for a selected day. It
+does **not** mean the whole Train/Validation history is complete, that issuer
+identities are certified, that raw LEAN execution data are available, or that
+the detector predicts returns. Before a complete historical run, use the
+measured day-level runtime to plan the long scan and keep its private
+artifacts outside Git.
+
+The later [necessary-gate audit](../reports/acceptance/box-fast-gate-stage-d-2026-10-14.md)
+checks only whether a row could reach the exact Stage C near-lower state.
+It rejects 69.0% of one real Train day's eligible rows without dropping any
+of its 96 full-scan near-lower cases. It does not recover the other detector
+states, and it is not integrated into this full-state scanner.
+
+The separate [candidate-only scanner](../reports/acceptance/box-candidate-scan-stage-d-2026-10-14.md)
+keeps only near-lower contexts. Unknown prefixes still undergo full detector
+evaluation. It accepts the same frozen split bounds and writes separate
+private immutable receipts. A complete Train reference day matches the
+full-state scan exactly; later independent comparisons also matched complete
+Validation reference days. To continue or verify one day:
+
+```powershell
+$env:PYTHONPATH = (Resolve-Path src).Path
+..\stock-radar\.venv\Scripts\python.exe -m scripts.scan_box_near_lower_stage_d `
+  --research-root ..\stock-radar --split validation `
+  --start 2025-06-02 --end 2025-06-02 `
+  --output-dir ..\stock-radar\data\box-range-stage-d\near-lower-candidate-v1 `
+  --verify-only
+```
+
+Remove `--verify-only` to create missing chunks, and optionally set
+`--max-new-chunks 1` to bound each invocation. The full-state scanner remains
+necessary for any study of other box states. Neither path produces orders or
+formal portfolio results.
+
+Before restarting a stopped long-running candidate writer, confirm no writer
+for that split is still live and use the preflight wrapper. It runs the
+scanner's `--verify-only` path over the requested interval first, rejecting
+unexpected JSON, partial files, corrupted receipts or provenance drift before
+creating missing chunks. Do not run it concurrently with an existing writer:
+
+```powershell
+$env:PYTHONPATH = (Resolve-Path src).Path
+..\stock-radar\.venv\Scripts\python.exe -m scripts.resume_box_candidate_backfill `
+  --research-root ..\stock-radar --split train `
+  --start 2021-09-01 --end 2024-08-29 `
+  --output-dir ..\stock-radar\data\box-range-stage-d\near-lower-candidate-v1
+```
+
+This wrapper leaves the immutable scanner and its code-bound receipts
+unchanged. The existing background Train/Validation writers were started
+after independent preflight verification; keep them running until completion.
+
+A separate [candidate execution-metadata audit](../reports/acceptance/box-candidate-execution-metadata-2026-10-14.md)
+reuses the existing split-bounded ten-session coverage checker on the two
+verified candidate days. Its low same-source raw coverage is a data-readiness
+observation, not a future-price or return study. No LEAN-ready subset is
+certified by metadata alone.
+
+The [candidate as-of-T issuer audit](../reports/acceptance/box-candidate-issuer-asof-t-2026-10-14.md)
+reuses the frozen construction-source and episode/CIK evidence on the same
+two days. It isolates known alias/conflict rows and preserves the distinction
+between an observational absence of known conflict and official identity
+certification. The private issuer/raw intersection is only a dependency
+diagnostic, not a LEAN-ready population.
+
+The [live Train prefix checkpoint](../reports/acceptance/box-candidate-train-prefix-2026-10-14.md)
+verifies a continuous 207-session interval through 2022-06-28, including
+all 560 expected candidate chunks. The background scan may have written later
+private files by the time this dated receipt is read; only a new verifier
+result can expand the verified interval. Keep this distinction when reporting
+progress.
+
+The [cross-period parity receipt](../reports/acceptance/box-candidate-cross-period-parity-2026-10-14.md)
+compares candidate-only and complete full-state outputs on two Train dates
+and one Validation date. All 470 observed near-lower context rows match
+exactly. This validates those dated receipts only; the ongoing backfill and
+unverified dates retain their own denominator and identity/data gates.
+
+The later [Validation-start addendum](../reports/acceptance/box-candidate-validation-start-2026-10-14.md)
+verifies a four-session prefix and compares the exact first Validation day
+against a complete full-state reference. It is a separate dated receipt;
+do not overwrite the earlier three-day parity result or infer that the whole
+Validation split is finished.
+
+The [later dual-prefix checkpoint](../reports/acceptance/box-candidate-dual-prefix-2026-10-14.md)
+independently verifies 222/753 Train and 6/235 Validation sessions, with
+655/655 and 44/44 candidate chunks present. This extends only the verified
+coverage intervals; the background processes and formal data gates remain open.
+
+The [cross-era gate audit](../reports/acceptance/box-candidate-cross-era-gates-2026-10-14.md)
+adds complete 2022 Train and 2024 Validation reference-day issuer/raw-metadata
+checks. It finds zero same-source raw candidate sessions in the 2022 sample,
+despite limited raw rows elsewhere in the period. Continuous prefix verification
+later reached 224/753 Train and 8/235 Validation sessions. These candidate
+contexts still have no official identity or formal execution certificate.
+
+The [source/basis aggregate audit](../reports/acceptance/box-candidate-source-basis-2026-10-14.md)
+uses the existing private chunk verifier and a second file-set hash check.
+It exposes a structural provenance dependency: all 14,358 checked Train
+contexts and 965/1,140 checked Validation contexts are split-adjusted legacy
+series with no same-source raw series in the frozen database. It does not
+remap other-source raw prices or change Research Infrastructure v1.
+
+The [later prefix distribution receipt](../reports/acceptance/box-candidate-prefix-distribution-2026-10-14.md)
+verifies 228/753 Train and 11/235 Validation sessions. The first 125 Train
+sessions are a contiguous zero-eligible 126-session warmup; candidate daily
+counts are summarized only after separating that denominator. Full historical
+coverage and formal quality/execution gates remain incomplete.
+
+The [high-density full-state parity addendum](../reports/acceptance/box-candidate-high-density-parity-2026-10-15.md)
+compares the highest near-lower-count day in that verified Train prefix:
+all 313 target contexts match a complete independent 3,193-row scan exactly.
+Five reference dates total 927/927 observed target rows. Overnight process
+interruption was handled by re-verifying completed Train/Validation prefixes
+before resuming both private background scans; no scanner code or frozen
+database changed.

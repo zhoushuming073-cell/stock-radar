@@ -1,0 +1,60 @@
+{
+  "version": "box-candidate-source-distribution-prefix-v2",
+  "candidate_scanner_source_sha256": "bc44d44a840579938fa1269500044c3f9f2ea889d7503f54c7fe60fe509b27df",
+  "source_auditor_source_sha256": "107d0a0ec780971669f1c8ba517e770b56a29ded53a8ad7e64bc918e542bfd58",
+  "ri_semantic_hash": "74b765911a8a4f18b2074cd8d9e529b25b54afade15309a148b0ca43340b80be",
+  "train": {
+    "start": "2021-09-01",
+    "end": "2022-09-08",
+    "sessions": 257,
+    "frozen_sessions": 753,
+    "eligible_security_days": 422293,
+    "near_lower_union_rows": 17732,
+    "verified_chunks": 869,
+    "missing_chunks": 0,
+    "verified_file_set_sha256": "4bfbae45c6166a57ffb04b3ec6ec0d92d0602daa01d9361890f33ae7133885a0",
+    "source_basis_counts": [
+      {"source": "legacy:alpaca:sip", "basis": "split", "candidates": 17729},
+      {"source": "legacy:post-no-preference/stocks:public_eod", "basis": "split", "candidates": 3}
+    ],
+    "daily_distribution": {
+      "zero_candidate_sessions": 125,
+      "positive_candidate_sessions": 132,
+      "positive_min": 6,
+      "positive_median": 114.5,
+      "positive_max": 342,
+      "top_10_candidate_rows": 2870
+    }
+  },
+  "validation": {
+    "start": "2024-09-30",
+    "end": "2024-11-14",
+    "sessions": 34,
+    "frozen_sessions": 235,
+    "eligible_security_days": 135703,
+    "near_lower_union_rows": 4812,
+    "verified_chunks": 259,
+    "missing_chunks": 0,
+    "verified_file_set_sha256": "1f41c241fcbbf31b10a1d2c63ed18bf2480c54e1693d5629981f5e910d3684df",
+    "source_basis_counts": [
+      {"source": "Dolt:post-no-preference/stocks", "basis": "raw", "candidates": 722},
+      {"source": "legacy:alpaca:sip", "basis": "split", "candidates": 4090}
+    ],
+    "daily_distribution": {
+      "zero_candidate_sessions": 0,
+      "positive_candidate_sessions": 34,
+      "positive_min": 71,
+      "positive_median": 146.0,
+      "positive_max": 228,
+      "top_10_candidate_rows": 1975
+    }
+  },
+  "native_lean_opt_in": true,
+  "pytest_passed": 797,
+  "pytest_skipped": 8,
+  "pytest_warnings": 1,
+  "future_ohlcv_values_read": false,
+  "future_outcomes_read": false,
+  "formal_signal_stream": false,
+  "formal_lean_ready": false
+}

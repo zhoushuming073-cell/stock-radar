@@ -1,0 +1,57 @@
+{
+  "version": "box-candidate-longer-prefix-source-v1",
+  "candidate_scanner_source_sha256": "bc44d44a840579938fa1269500044c3f9f2ea889d7503f54c7fe60fe509b27df",
+  "source_auditor_source_sha256": "107d0a0ec780971669f1c8ba517e770b56a29ded53a8ad7e64bc918e542bfd58",
+  "ri_semantic_hash": "74b765911a8a4f18b2074cd8d9e529b25b54afade15309a148b0ca43340b80be",
+  "train": {
+    "start": "2021-09-01",
+    "end": "2022-10-03",
+    "sessions": 274,
+    "frozen_sessions": 753,
+    "eligible_security_days": 477536,
+    "near_lower_union_rows": 20689,
+    "verified_chunks": 947,
+    "missing_chunks": 0,
+    "verified_file_set_sha256": "69db6091c3eac852df6af9530c4706562c074362a375621931e1ca05f1131263",
+    "source_basis_counts": [
+      {"source": "legacy:alpaca:sip", "basis": "split", "candidates": 20685},
+      {"source": "legacy:post-no-preference/stocks:public_eod", "basis": "split", "candidates": 4}
+    ],
+    "daily_distribution": {
+      "zero_candidate_sessions": 125,
+      "positive_candidate_sessions": 149,
+      "positive_min": 6,
+      "positive_median": 116,
+      "positive_max": 437,
+      "top_10_candidate_rows": 3179
+    }
+  },
+  "validation": {
+    "start": "2024-09-30",
+    "end": "2024-11-27",
+    "sessions": 43,
+    "frozen_sessions": 235,
+    "eligible_security_days": 171656,
+    "near_lower_union_rows": 5962,
+    "verified_chunks": 334,
+    "missing_chunks": 0,
+    "verified_file_set_sha256": "6228a403a11bf910f6e2da991af579a6b4fbdb4f95ac861ac59c957e54c59863",
+    "source_basis_counts": [
+      {"source": "Dolt:post-no-preference/stocks", "basis": "raw", "candidates": 906},
+      {"source": "legacy:alpaca:sip", "basis": "split", "candidates": 5056}
+    ],
+    "daily_distribution": {
+      "zero_candidate_sessions": 0,
+      "positive_candidate_sessions": 43,
+      "positive_min": 60,
+      "positive_median": 144,
+      "positive_max": 228,
+      "top_10_candidate_rows": 2014
+    }
+  },
+  "focused_pytest_passed": 8,
+  "source_code_changed": false,
+  "future_ohlcv_values_read": false,
+  "future_outcomes_read": false,
+  "formal_lean_ready": false
+}

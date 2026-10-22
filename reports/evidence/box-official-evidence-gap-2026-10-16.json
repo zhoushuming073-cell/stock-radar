@@ -1,0 +1,24 @@
+{
+  "construction_database_sha256": "a41a38992bfd2e0e3fc1a91838725ff9f851bde760ed5aaf6a7fc167abced641",
+  "formal_lean_ready": false,
+  "official_asof_t_certified": false,
+  "review_annotations": 1,
+  "review_annotations_with_known_on": 1,
+  "scope": "retrospective construction database inventory; no candidate identity or outcome rows read",
+  "verified_lifecycle_by_type": {
+    "exchange_transfer": 2,
+    "listing": 2,
+    "merger": 3,
+    "split": 1,
+    "ticker_change": 3,
+    "trading_suspension": 4
+  },
+  "verified_lifecycle_events": 15,
+  "verified_lifecycle_missing_evidence_hash": 0,
+  "verified_lifecycle_security_ids": 9,
+  "verified_lifecycle_with_economics_enabled": 0,
+  "verified_lifecycle_with_known_on": 0,
+  "verified_ticker_class_intervals": 19,
+  "verified_ticker_class_security_ids": 10,
+  "version": "box-official-evidence-gap-v1"
+}

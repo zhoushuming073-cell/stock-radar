@@ -1,0 +1,19 @@
+{
+  "alpaca_cash_events": 12,
+  "candidate_days": 142,
+  "cash_entitlement_certified": false,
+  "complete_action_coverage_certified": false,
+  "dolt_exact_symbol_exdate_amount_matches": 12,
+  "formal_lean_ready": false,
+  "future_outcomes_read": false,
+  "observed_symbols": 28,
+  "official_identity_certified": false,
+  "other_action_types_returned": 0,
+  "pinned_dolt_dividend_scan_sha256": "8324805cf9be59481cfe78a09eac58dc36186c5490f98af8ca1ac99dc6f9966b",
+  "prior_event_receipt_sha256": "2af55c76d7cd8935c7dd15a3a0b012dd92d1d90d0bdf30b7c16edd62e7a6eb38",
+  "prior_exposed_cash_events_crosschecked": 2,
+  "private_alpaca_response_sha256": "4561170a9020735dc93c25b62dbe1e33ff0884bbd864d5ab2d7a68d9bd6fdf4a",
+  "private_queue_sha256": "fb026fce19455dcd2d7b02fec75cc98200675270a21028c0d86642fb1a51a60c",
+  "split": "validation",
+  "version": "box-alpaca-action-crosscheck-v1"
+}

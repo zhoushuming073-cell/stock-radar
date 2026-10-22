@@ -1,0 +1,17 @@
+{
+  "version": "box-issuer-alias-asof-t-v1",
+  "date": "2026-10-14",
+  "selection_sha256": "f64acf27893960ed3ac449d398a89bf0cdf4396d170c6669e8ab5043644f15a5",
+  "construction_sha256": "a41a38992bfd2e0e3fc1a91838725ff9f851bde760ed5aaf6a7fc167abced641",
+  "private_receipt_sha256": "879bdaffa6ad9f4fcc5a85bd57cb5697a839c7969de6dc7c9b76b94bb36bf422",
+  "selected": 48,
+  "classifications": {
+    "OBSERVATIONAL_NO_KNOWN_CONFLICT": 43,
+    "CONTEMPORANEOUS_ISSUER_ALIAS": 4,
+    "KNOWN_IDENTITY_CONFLICT": 1
+  },
+  "other_active_security_id_counts": {"0": 44, "1": 3, "2": 1},
+  "official_identity_certified": false,
+  "future_outcomes_read": false,
+  "human_labels_read": false
+}

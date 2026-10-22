@@ -1,6 +1,7 @@
 param(
     [int]$Port = 8124,
     [string]$ResearchRoot = '',
+    [string]$BoxDataRoot = '',
     [string]$CodeRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 )
 
@@ -11,7 +12,14 @@ if (!$ResearchRoot) {
 }
 $env:PYTHONPATH=Join-Path $CodeRoot 'src'
 $env:STOCK_RADAR_RESEARCH_ROOT=$ResearchRoot
-$env:STOCK_RADAR_BOX_DATA_ROOT=Join-Path $CodeRoot 'data\box-label-v1-2m-1y-4y'
+if (!$BoxDataRoot) {
+    $localBatch = Join-Path $CodeRoot 'data\box-label-v1-2m-1y-4y'
+    $siblingBatch = Join-Path (Split-Path $CodeRoot -Parent) 'stock-radar-box-labeling-v1\data\box-label-v1-2m-1y-4y'
+    $BoxDataRoot = if (Test-Path -LiteralPath (Join-Path $localBatch 'manifest.json')) { $localBatch }
+                   elseif (Test-Path -LiteralPath (Join-Path $siblingBatch 'manifest.json')) { $siblingBatch }
+                   else { $localBatch }
+}
+$env:STOCK_RADAR_BOX_DATA_ROOT=$BoxDataRoot
 $env:LABEL_STUDIO_LOCAL_FILES_SERVING_ENABLED='true'
 $env:LABEL_STUDIO_LOCAL_FILES_DOCUMENT_ROOT=Join-Path $ResearchRoot 'data'
 $env:LABEL_STUDIO_BASE_DATA_DIR=Join-Path $ResearchRoot 'data\vision-research\label-studio'

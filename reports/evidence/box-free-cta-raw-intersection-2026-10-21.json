@@ -1,0 +1,65 @@
+{
+  "version": "box-cta-raw-gate-intersection-v1",
+  "split": "validation",
+  "start": "2025-05-05",
+  "end": "2025-09-08",
+  "candidate_file_set_sha256": "48189aae1a54e3607a991df0c84e9d6939b49d7a714369988e561ffdaefbbb09",
+  "cta_snapshot_file_count": 87,
+  "ri_semantic_hash": "74b765911a8a4f18b2074cd8d9e529b25b54afade15309a148b0ca43340b80be",
+  "construction_database_sha256": "a41a38992bfd2e0e3fc1a91838725ff9f851bde760ed5aaf6a7fc167abced641",
+  "accepted_database_sha256": "1fd1996e88cc91ab25baf9a4f7615478d99506672ed47c028eaecfefd0240545",
+  "cta_matched_dolt_raw_candidate_days": 356,
+  "gate_cross_tab": [
+    {
+      "issuer_observation": "CONTEMPORANEOUS_ISSUER_ALIAS",
+      "shape_raw_horizon": "shape_raw_complete",
+      "accepted_tday": "accepted_tday_missing",
+      "accepted_horizon": "not_checked_tday_inexact",
+      "rows": 18
+    },
+    {
+      "issuer_observation": "KNOWN_IDENTITY_CONFLICT",
+      "shape_raw_horizon": "shape_raw_incomplete",
+      "accepted_tday": "accepted_tday_missing",
+      "accepted_horizon": "not_checked_tday_inexact",
+      "rows": 1
+    },
+    {
+      "issuer_observation": "OBSERVATIONAL_NO_KNOWN_CONFLICT",
+      "shape_raw_horizon": "shape_raw_complete",
+      "accepted_tday": "accepted_tday_missing",
+      "accepted_horizon": "not_checked_tday_inexact",
+      "rows": 164
+    },
+    {
+      "issuer_observation": "OBSERVATIONAL_NO_KNOWN_CONFLICT",
+      "shape_raw_horizon": "shape_raw_complete",
+      "accepted_tday": "exact_tday_match",
+      "accepted_horizon": "accepted_metadata_complete",
+      "rows": 142
+    },
+    {
+      "issuer_observation": "OBSERVATIONAL_NO_KNOWN_CONFLICT",
+      "shape_raw_horizon": "shape_raw_incomplete",
+      "accepted_tday": "accepted_tday_missing",
+      "accepted_horizon": "not_checked_tday_inexact",
+      "rows": 19
+    },
+    {
+      "issuer_observation": "OBSERVATIONAL_NO_KNOWN_CONFLICT",
+      "shape_raw_horizon": "shape_raw_incomplete",
+      "accepted_tday": "exact_tday_match",
+      "accepted_horizon": "accepted_metadata_incomplete",
+      "rows": 12
+    }
+  ],
+  "private_followup_candidate_days": 142,
+  "private_followup_observed_security_ids": 28,
+  "horizon_sessions_diagnostic_only": 10,
+  "future_price_values_read": false,
+  "future_outcomes_read": false,
+  "official_identity_certified": false,
+  "corporate_actions_certified": false,
+  "execution_prices_certified": false,
+  "formal_lean_ready": false
+}

@@ -1,0 +1,101 @@
+{
+  "train": {
+    "version": "box-candidate-distribution-audit-v1",
+    "split": "train",
+    "sessions": 753,
+    "chunks": 4167,
+    "candidate_days": 78607,
+    "file_set_sha256": "350aa4ab25e1af5ecd1b06350ef819a2b5107d89ca911f928b97ea86c2b769b6",
+    "distinct_observed_security_ids": 3901,
+    "candidate_days_by_year": {
+      "2022": 29980,
+      "2023": 28571,
+      "2024": 20056
+    },
+    "candidate_days_by_year_source_basis": [
+      {
+        "year": "2022",
+        "source": "legacy:alpaca:sip",
+        "basis": "split",
+        "candidate_days": 29975
+      },
+      {
+        "year": "2022",
+        "source": "legacy:post-no-preference/stocks:public_eod",
+        "basis": "split",
+        "candidate_days": 5
+      },
+      {
+        "year": "2023",
+        "source": "legacy:alpaca:sip",
+        "basis": "split",
+        "candidate_days": 28571
+      },
+      {
+        "year": "2024",
+        "source": "Dolt:post-no-preference/stocks",
+        "basis": "raw",
+        "candidate_days": 1247
+      },
+      {
+        "year": "2024",
+        "source": "legacy:alpaca:sip",
+        "basis": "split",
+        "candidate_days": 18809
+      }
+    ],
+    "top_10_security_candidate_days": 766,
+    "median_candidate_days_per_observed_security": 18,
+    "max_candidate_days_per_observed_security": 84,
+    "zero_candidate_sessions": 125,
+    "duplicate_candidate_keys": 0,
+    "future_outcomes_read": false,
+    "formal_signal_stream": false
+  },
+  "validation": {
+    "version": "box-candidate-distribution-audit-v1",
+    "split": "validation",
+    "sessions": 235,
+    "chunks": 1748,
+    "candidate_days": 33226,
+    "file_set_sha256": "80f7f641045051fd80cae446ba1ebad7ab2c78694d6c76e1260e4054a6b33c96",
+    "distinct_observed_security_ids": 3397,
+    "candidate_days_by_year": {
+      "2024": 8720,
+      "2025": 24506
+    },
+    "candidate_days_by_year_source_basis": [
+      {
+        "year": "2024",
+        "source": "Dolt:post-no-preference/stocks",
+        "basis": "raw",
+        "candidate_days": 1303
+      },
+      {
+        "year": "2024",
+        "source": "legacy:alpaca:sip",
+        "basis": "split",
+        "candidate_days": 7417
+      },
+      {
+        "year": "2025",
+        "source": "Dolt:post-no-preference/stocks",
+        "basis": "raw",
+        "candidate_days": 2426
+      },
+      {
+        "year": "2025",
+        "source": "legacy:alpaca:sip",
+        "basis": "split",
+        "candidate_days": 22080
+      }
+    ],
+    "top_10_security_candidate_days": 501,
+    "median_candidate_days_per_observed_security": 8,
+    "max_candidate_days_per_observed_security": 62,
+    "zero_candidate_sessions": 0,
+    "duplicate_candidate_keys": 0,
+    "future_outcomes_read": false,
+    "formal_signal_stream": false
+  }
+}

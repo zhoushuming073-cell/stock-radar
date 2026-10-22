@@ -1,0 +1,31 @@
+{
+  "version": "box-candidate-train-april-opening-v1",
+  "start": "2024-04-01",
+  "end": "2024-04-05",
+  "sessions": 5,
+  "eligible_security_days": 16904,
+  "chunks": 29,
+  "near_lower_contexts": 449,
+  "file_set_sha256": "962c1211a2e42b667c89a9e7aadceeb73be74222ee30b31d8cdef3160eecd005",
+  "source_basis_counts": [
+    {"source": "legacy:alpaca:sip", "basis": "split", "candidates": 449}
+  ],
+  "missing_chunks": 0,
+  "disjoint_verifier_hashes_agree": true,
+  "frozen_calendar_verified": true,
+  "prior_verified_sessions": 647,
+  "prior_verified_chunks": 3385,
+  "prior_verified_contexts": 65365,
+  "adjoining_sessions": 652,
+  "adjoining_chunks": 3414,
+  "adjoining_contexts": 65814,
+  "frozen_train_sessions": 753,
+  "verified_validation_sessions": 235,
+  "frozen_validation_sessions": 235,
+  "combined_verified_sessions": 887,
+  "combined_frozen_sessions": 988,
+  "formal_lean_ready": false,
+  "free_data_only": true,
+  "future_outcomes_read": false,
+  "private_identifiers_in_public_evidence": false
+}

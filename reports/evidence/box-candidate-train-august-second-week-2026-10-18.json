@@ -1,0 +1,41 @@
+{
+  "version": "box-candidate-train-august-second-week-v1",
+  "start": "2024-08-08",
+  "end": "2024-08-14",
+  "sessions": 5,
+  "eligible_security_days": 19815,
+  "possible_security_days": 10456,
+  "chunks": 44,
+  "near_lower_contexts": 1121,
+  "file_set_sha256": "b7d89cba07f67a34a734ccd771216eaa50758a6df44195b58c756319a90efb2b",
+  "source_basis_counts": [
+    {"source": "Dolt:post-no-preference/stocks", "basis": "raw", "candidates": 167},
+    {"source": "legacy:alpaca:sip", "basis": "split", "candidates": 954}
+  ],
+  "daily_distribution": {
+    "zero_candidate_sessions": 0,
+    "positive_candidate_sessions": 5,
+    "positive_min": 172,
+    "positive_median": 193,
+    "positive_max": 297,
+    "top_10_candidate_rows": 1121
+  },
+  "missing_chunks": 0,
+  "disjoint_verifier_hashes_agree": true,
+  "frozen_calendar_verified": true,
+  "prior_verified_sessions": 737,
+  "prior_verified_chunks": 4019,
+  "prior_verified_contexts": 75479,
+  "adjoining_sessions": 742,
+  "adjoining_chunks": 4063,
+  "adjoining_contexts": 76600,
+  "frozen_train_sessions": 753,
+  "verified_validation_sessions": 235,
+  "frozen_validation_sessions": 235,
+  "combined_verified_sessions": 977,
+  "combined_frozen_sessions": 988,
+  "formal_lean_ready": false,
+  "free_data_only": true,
+  "future_outcomes_read": false,
+  "private_identifiers_in_public_evidence": false
+}

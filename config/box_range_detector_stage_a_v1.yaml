@@ -1,0 +1,22 @@
+# Interpretable starting values, fixed before real-history inspection.
+# Structure recognition only; no return, label or execution tuning.
+version: box-range-detector-stage-a-v1
+lookback_sessions: 126
+window_lengths: [42, 63, 84, 105, 126]
+end_stride: 5
+max_active_age: 20
+min_touch_spacing: 5
+pivot_left: 3
+pivot_right: 3
+min_pivot_prominence_fraction: 0.025
+min_touches_per_side: 2
+min_alternations: 3
+lower_quantile: 0.12
+upper_quantile: 0.88
+zone_fraction_of_width: 0.10
+min_zone_fraction_of_price: 0.012
+min_width_fraction: 0.08
+max_width_fraction: 0.65
+min_occupancy: 0.65
+max_center_drift: 0.35
+break_closes: 2

@@ -1,0 +1,35 @@
+{
+  "version": "box-candidate-train-late-april-to-early-may-v1",
+  "start": "2024-04-22",
+  "end": "2024-05-03",
+  "sessions": 10,
+  "eligible_security_days": 33783,
+  "chunks": 79,
+  "near_lower_contexts": 1589,
+  "file_set_sha256": "0af95277f24515548d085af0c478d1f02fed19ada80a0c4f9a1374dcca16f5cf",
+  "subinterval_file_set_sha256": [
+    {"start": "2024-04-22", "end": "2024-04-26", "sha256": "0e6b61dae71d90d2a79d759408eccec2ce61f4a06373fbf98f6adbad80ab7f33"},
+    {"start": "2024-04-29", "end": "2024-05-03", "sha256": "21a1837d271370de7e31dbd764dfd59276fe935fd0ef434afc89c887d178da53"}
+  ],
+  "source_basis_counts": [
+    {"source": "legacy:alpaca:sip", "basis": "split", "candidates": 1589}
+  ],
+  "missing_chunks": 0,
+  "disjoint_verifier_hashes_agree": true,
+  "frozen_calendar_verified": true,
+  "prior_verified_sessions": 662,
+  "prior_verified_chunks": 3472,
+  "prior_verified_contexts": 66837,
+  "adjoining_sessions": 672,
+  "adjoining_chunks": 3551,
+  "adjoining_contexts": 68426,
+  "frozen_train_sessions": 753,
+  "verified_validation_sessions": 235,
+  "frozen_validation_sessions": 235,
+  "combined_verified_sessions": 907,
+  "combined_frozen_sessions": 988,
+  "formal_lean_ready": false,
+  "free_data_only": true,
+  "future_outcomes_read": false,
+  "private_identifiers_in_public_evidence": false
+}

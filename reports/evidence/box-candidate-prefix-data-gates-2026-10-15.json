@@ -1,0 +1,67 @@
+{
+  "accepted_database_sha256": "1fd1996e88cc91ab25baf9a4f7615478d99506672ed47c028eaecfefd0240545",
+  "accepted_manifest_sha256": "795a01d14fc1158006eb8afe257e0e1adc12719abf3798fd7c82df519f64b4d0",
+  "audit_source_sha256": "597993740b373ea7ef9bb4cf8f3a206c5f777b6a49a730ab7f12f40afff90223",
+  "candidate_file_set_sha256": "495cc9a9a1a6deeeca75ef7e042ff6c8412ef5b11d9f48a5ff03b32cf2593069",
+  "construction_database_sha256": "a41a38992bfd2e0e3fc1a91838725ff9f851bde760ed5aaf6a7fc167abced641",
+  "diagnostic_horizon_sessions": 10,
+  "dolt_raw_candidate_days": 1531,
+  "end": "2025-01-21",
+  "formal_lean_ready": false,
+  "frozen_sessions": 77,
+  "future_outcomes_read": false,
+  "future_price_values_read": false,
+  "horizon_aggregate": {
+    "any_raw_session_rows": 15206,
+    "expected_session_rows": 15310,
+    "issues": {
+      "matching_basis_action_flag": 7,
+      "matching_basis_not_research_ready": 20,
+      "missing_or_duplicate_matching_basis": 104,
+      "same_source_raw_action_flag": 7,
+      "same_source_raw_not_research_ready": 20,
+      "same_source_raw_unavailable_or_ambiguous": 104
+    },
+    "matching_basis_complete_tasks": 1494,
+    "observed_session_rows": 15310,
+    "raw_available_session_rows": 15206,
+    "same_source_raw_complete_tasks": 1494,
+    "split_censored_tasks": 0,
+    "tasks": 1531
+  },
+  "horizon_query_sha256": "e136f3b8bc6c9c4455135feb61c088370e4949fe1e0b4736f8946c578062beb2",
+  "issuer_query_sha256": "20a058fe4fe9f449459d46b6434def3733e217ac656ef24ebd4b63c3c6d471f1",
+  "official_identity_certified": false,
+  "raw_gate_sha256": "b940abe54e8d7d462725ad98133c0bd920f9d3f48131360dcd0f4471b68d02c6",
+  "ri_semantic_hash": "74b765911a8a4f18b2074cd8d9e529b25b54afade15309a148b0ca43340b80be",
+  "split": "validation",
+  "start": "2024-09-30",
+  "tday_auditor_sha256": "c67e359606270853c280ccbbc4bd5ebfbd03ca8ad4fc703d6bda752ea0dac14e",
+  "tday_price_by_issuer_observation_and_raw_metadata": {
+    "accepted_tday_missing": {
+      "CONTEMPORANEOUS_ISSUER_ALIAS": {
+        "raw_metadata_complete": 73,
+        "raw_metadata_incomplete": 4
+      },
+      "KNOWN_IDENTITY_CONFLICT": {
+        "raw_metadata_complete": 29,
+        "raw_metadata_incomplete": 0
+      },
+      "OBSERVATIONAL_NO_KNOWN_CONFLICT": {
+        "raw_metadata_complete": 844,
+        "raw_metadata_incomplete": 32
+      }
+    },
+    "exact_tday_match": {
+      "CONTEMPORANEOUS_ISSUER_ALIAS": {
+        "raw_metadata_complete": 14,
+        "raw_metadata_incomplete": 0
+      },
+      "OBSERVATIONAL_NO_KNOWN_CONFLICT": {
+        "raw_metadata_complete": 534,
+        "raw_metadata_incomplete": 1
+      }
+    }
+  },
+  "version": "box-candidate-prefix-data-gates-v1"
+}

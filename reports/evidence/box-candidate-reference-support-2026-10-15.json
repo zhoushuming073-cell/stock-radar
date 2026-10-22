@@ -1,0 +1,40 @@
+{
+  "audit_source_sha256": "cb0a4a1b85021c0da212971f4fe3230d6116101921b72001d94c2395d9dedbce",
+  "candidate_file_set_sha256": "9845ff397ddbf786428647147256d13dd97a059a8a2f788e3896ff98e68bd7ed",
+  "construction_database_sha256": "a41a38992bfd2e0e3fc1a91838725ff9f851bde760ed5aaf6a7fc167abced641",
+  "dolt_raw_candidate_days": 2329,
+  "end": "2025-03-24",
+  "formal_lean_ready": false,
+  "frozen_sessions": 120,
+  "future_outcomes_read": false,
+  "future_price_values_read": false,
+  "has_older_compatible_cik_but_not_recent": 0,
+  "has_older_compatible_nasdaq_but_not_recent": 0,
+  "historical_manifest_sha256": "0456d29d371b95ae98f6fd382092f553d069528a08342eeee89a4819c99327cf",
+  "issuer_observation_by_reference_support": {
+    "CONTEMPORANEOUS_ISSUER_ALIAS": {
+      "BOTH_RECENT_COMPATIBLE": 125,
+      "CIK_ONLY_RECENT_COMPATIBLE": 15
+    },
+    "KNOWN_IDENTITY_CONFLICT": {
+      "BOTH_RECENT_COMPATIBLE": 25,
+      "CIK_ONLY_RECENT_COMPATIBLE": 20
+    },
+    "OBSERVATIONAL_NO_KNOWN_CONFLICT": {
+      "BOTH_RECENT_COMPATIBLE": 1399,
+      "CIK_ONLY_RECENT_COMPATIBLE": 745
+    }
+  },
+  "issuer_query_sha256": "20a058fe4fe9f449459d46b6434def3733e217ac656ef24ebd4b63c3c6d471f1",
+  "no_full_window_ticker_episode_tasks": 0,
+  "official_identity_certified": false,
+  "recent_reference_conflict_tasks": 0,
+  "reference_freshness_days": 31,
+  "reference_rules_sha256": "d744ae5c6ae193b09dca46646359582bb4da61169f557674126eceb8dd764e72",
+  "ri_semantic_hash": "74b765911a8a4f18b2074cd8d9e529b25b54afade15309a148b0ca43340b80be",
+  "source_auditor_sha256": "107d0a0ec780971669f1c8ba517e770b56a29ded53a8ad7e64bc918e542bfd58",
+  "split": "validation",
+  "start": "2024-09-30",
+  "tasks": 2329,
+  "version": "box-candidate-reference-support-v1"
+}

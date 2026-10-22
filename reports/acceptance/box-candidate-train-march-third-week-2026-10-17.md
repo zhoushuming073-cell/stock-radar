@@ -1,0 +1,9 @@
+# Box candidate Train March third-week checkpoint — 2026-10-17
+
+**Result: three further frozen Train trading sessions pass independent read-only verification.** The 2024-03-18–20 interval contains 10,146 eligible security-days, 24 immutable candidate chunks, zero missing chunks and 410 near-lower contexts. Three disjoint daily verifier/source-audit receipts agree on each day's exact file-set SHA-256. A separate interval verifier re-opened all 24 files and bound the combined file set to `ed0e2f8411d44108c8d855c6bf1061c902c2776cc21b600e2909b7c41dcb9c23`. The frozen Research Infrastructure v1 calendar confirms exactly three trading sessions across the weekend. All 410 contexts use the legacy Alpaca SIP/split basis.
+
+This interval adjoins the previous independently verified boundary of 2024-03-15. Cumulative adjoining Train coverage becomes **641/753 sessions, 3,338 chunks and 64,572 contexts**. Validation remains independently complete at 235/235 sessions. Combined candidate-scan coverage is **876/988 sessions (88.7%)**. These figures measure scan coverage only, not structure accuracy, executable signals or returns.
+
+The owner chose the free-data route: candidate research continues while formal box LEAN backtesting is deferred. This does not waive official as-of-T security identity, accepted same-source execution prices/actions/factors, complete signals or frozen portfolio-rule gates. No paid historical source was ordered or used.
+
+The [aggregate evidence](../evidence/box-candidate-train-march-third-week-2026-10-17.json) contains counts and hashes without private candidate identities or market rows. The low-priority Train writer continues unchanged. No Test/Fresh data, future outcomes, human labels or box LEAN portfolio backtest were used. No source code changed; the latest full Native-inclusive pytest remains **818 passed, 8 skipped, one existing warning**.

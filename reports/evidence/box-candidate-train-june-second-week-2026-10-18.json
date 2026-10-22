@@ -1,0 +1,32 @@
+{
+  "version": "box-candidate-train-june-second-week-v1",
+  "start": "2024-06-10",
+  "end": "2024-06-14",
+  "sessions": 5,
+  "eligible_security_days": 18550,
+  "chunks": 33,
+  "near_lower_contexts": 615,
+  "file_set_sha256": "a577c989a90b4dd038812959e3e8819275ab88d0e74d0da431b600dc893c2ecd",
+  "source_basis_counts": [
+    {"source": "Dolt:post-no-preference/stocks", "basis": "raw", "candidates": 62},
+    {"source": "legacy:alpaca:sip", "basis": "split", "candidates": 553}
+  ],
+  "missing_chunks": 0,
+  "disjoint_verifier_hashes_agree": true,
+  "frozen_calendar_verified": true,
+  "prior_verified_sessions": 696,
+  "prior_verified_chunks": 3717,
+  "prior_verified_contexts": 70778,
+  "adjoining_sessions": 701,
+  "adjoining_chunks": 3750,
+  "adjoining_contexts": 71393,
+  "frozen_train_sessions": 753,
+  "verified_validation_sessions": 235,
+  "frozen_validation_sessions": 235,
+  "combined_verified_sessions": 936,
+  "combined_frozen_sessions": 988,
+  "formal_lean_ready": false,
+  "free_data_only": true,
+  "future_outcomes_read": false,
+  "private_identifiers_in_public_evidence": false
+}

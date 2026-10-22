@@ -46,6 +46,10 @@ def validate(payload):
 
 
 class BoxStore:
+    label_version = LABEL_VERSION
+    annotation_prefix = 'annotations'
+    label_fields = ('shape','position','confidence','reasons','note')
+    validator = staticmethod(validate)
     def __init__(self, root, origin='human'):
         if origin not in ('human','smoke'):
             raise GateError('invalid origin')
@@ -69,7 +73,7 @@ class BoxStore:
 
     @contextmanager
     def connection(self, write=False):
-        c=sqlite3.connect(self.root/f'annotations-{self.origin}.sqlite3',timeout=30)
+        c=sqlite3.connect(self.root/f'{self.annotation_prefix}-{self.origin}.sqlite3',timeout=30)
         c.row_factory=sqlite3.Row
         try:
             if write:c.execute('BEGIN IMMEDIATE')
@@ -101,22 +105,22 @@ class BoxStore:
         # This is the complete human-visible payload. No private identity, score, date, split or future.
         return {'task_id':tid,'charts':charts,'coverage':{k:{'bars':v['length'],'target':{'daily':42,'weekly':52,'monthly':48}[k]}
                     for k,v in r['scales'].items()},'revision':rev,
-                'label':latest['label'] if latest else None,'label_version':LABEL_VERSION}
+                'label':latest['label'] if latest else None,'label_version':self.label_version}
 
     def save(self,tid,user,payload):
-        r=self._task(tid);validate(payload)
+        r=self._task(tid);self.validator(payload)
         with self.connection(True) as c:
             rev,_=self._latest(c,tid,user)
             if rev!=payload['expected_revision']:raise GateError('stale annotation revision')
             record={'annotation_id':uuid4().hex,'task_id':tid,'user_id':user,
                     'revision':rev+1,'created_at':datetime.now(timezone.utc).isoformat(),
-                    'label_version':LABEL_VERSION,'dataset_version':DATASET_VERSION,
+                    'label_version':self.label_version,'dataset_version':DATASET_VERSION,
                     'candidate_plugin_version':r['candidate_plugin_version'],
                     'config_hash':r['config_hash'],'decision_date':r['decision_date'],
                     'security_id':r['security_id'],
                     'tensor_hashes':{k:v['tensor_hash'] for k,v in r['scales'].items()},
                     'render_hashes':{k:v['chart_hash'] for k,v in r['scales'].items()},
-                    'label':{k:payload[k] for k in ('shape','position','confidence','reasons','note')}}
+                    'label':{k:payload[k] for k in self.label_fields}}
             c.execute('INSERT INTO annotation VALUES (?,?,?,?,?,?)',
                       (record['annotation_id'],tid,user,rev+1,record['created_at'],packed(record).decode()))
             return {'task_id':tid,'revision':rev+1,'label':record['label']}

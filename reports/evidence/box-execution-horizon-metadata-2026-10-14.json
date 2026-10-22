@@ -1,0 +1,24 @@
+{
+  "version": "box-execution-horizon-metadata-v1",
+  "date": "2026-10-14",
+  "selection_sha256": "f64acf27893960ed3ac449d398a89bf0cdf4396d170c6669e8ab5043644f15a5",
+  "preflight_sha256": "343ed24ee1c9ac557274becb8a4b9a623144e01bffb4c8d2a3708d4a9526966d",
+  "private_receipt_sha256": "a0e777da8938b469363f14d1a320daf7a843c6c41412aa6d8a181b6e17d2a381",
+  "horizon_sessions": 10,
+  "tasks": 43,
+  "expected_session_rows": 430,
+  "observed_session_rows": 430,
+  "split_censored_tasks": 0,
+  "matching_basis_complete_tasks": 42,
+  "same_source_raw_complete_tasks": 2,
+  "raw_available_session_rows": 20,
+  "any_raw_session_rows": 199,
+  "issues": {
+    "matching_basis_action_flag": 1,
+    "matching_basis_not_research_ready": 1,
+    "same_source_raw_unavailable_or_ambiguous": 410
+  },
+  "future_prices_read": false,
+  "future_outcomes_read": false,
+  "formal_lean_ready": false
+}
