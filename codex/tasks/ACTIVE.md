@@ -2,6 +2,13 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE SCAN COMPLETE — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [later lifecycle observation audit](2026-10-22-box-later-lifecycle-observations.md)
+finds seven vendor-reported non-dividend events for seven observed symbols
+after the frozen Validation end; these symbols appeared on 50 of the earlier
+142 candidate-days. The [acceptance](../../reports/acceptance/box-later-lifecycle-observations-2026-10-22.md)
+keeps these post-T facts retrospective, with no candidate reclassification.
+Vendor coverage remains incomplete and formal box LEAN is still deferred.
+
 The [Alpaca corporate-action crosscheck](2026-10-22-box-alpaca-action-crosscheck.md)
 compared all 12 returned cash-dividend records for the bounded 28-symbol
 cohort against the pinned Dolt scan; all match on exact symbol, ex-date and

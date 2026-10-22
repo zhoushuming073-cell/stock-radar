@@ -1,0 +1,28 @@
+{
+  "annual_cash_dividends": 43,
+  "annual_noncash_by_type": {
+    "cash_mergers": 3,
+    "name_changes": 1,
+    "reverse_splits": 1,
+    "stock_and_cash_mergers": 1,
+    "stock_mergers": 1
+  },
+  "annual_response_events": 50,
+  "complete_action_coverage_certified": false,
+  "formal_lean_ready": false,
+  "future_outcomes_read": false,
+  "later_event_candidate_days": 50,
+  "later_event_observed_symbols": 7,
+  "noncash_events_after_validation_end": 7,
+  "noncash_events_through_validation_end": 0,
+  "official_identity_certified": false,
+  "prior_receipt_sha256": "a58993c7c18cf804ca259330feea263403f1db2dfd6dc097d73cc80433788ad9",
+  "private_annual_response_sha256": "c8d26b49bef062b05afc7e554aa2d384a97358ead0635f8aebe385372764fa79",
+  "private_queue_sha256": "fb026fce19455dcd2d7b02fec75cc98200675270a21028c0d86642fb1a51a60c",
+  "private_short_response_sha256": "4561170a9020735dc93c25b62dbe1e33ff0884bbd864d5ab2d7a68d9bd6fdf4a",
+  "retrospective_only": true,
+  "short_process_window_events": 12,
+  "split": "validation",
+  "used_in_t_time_selection": false,
+  "version": "box-later-lifecycle-observations-v1"
+}
