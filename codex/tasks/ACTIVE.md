@@ -2,6 +2,13 @@
 
 **Status: BOX RANGE STAGE D CANDIDATE SCAN COMPLETE — FORMAL QUALITY/RETURN UNVERIFIED**
 
+The [Alpaca corporate-action crosscheck](2026-10-22-box-alpaca-action-crosscheck.md)
+compared all 12 returned cash-dividend records for the bounded 28-symbol
+cohort against the pinned Dolt scan; all match on exact symbol, ex-date and
+amount, including both earlier exposed events. The [acceptance](../../reports/acceptance/box-alpaca-action-crosscheck-2026-10-22.md)
+retains the private response locally. This is event corroboration only, not
+complete action coverage, dividend entitlement or formal box LEAN readiness.
+
 The [CTA post-close continuity follow-up](2026-10-21-box-cta-continuity-followup.md)
 finds no symbol, listing-market, instrument-type, halt or status flags across
 1,562 candidate-snapshot checks (142 T days plus ten-session horizons;
